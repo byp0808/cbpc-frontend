@@ -44,6 +44,7 @@
     <BondFilter
       ref="refBondFilter"
       :filter-id="curveSampleFilterInfo.curveSample.filterId"
+      :disabled="curveSampleFilterInfo.disabled"
     />
   </div>
 </template>
@@ -60,7 +61,10 @@ export default {
   data() {
     return {
       curveSampleForm: {
-        curveSample: {}
+        curveSample: {
+          filterId: ''
+        },
+        disabled: ''
       },
       curveList: []
     }
@@ -109,7 +113,7 @@ export default {
   },
   methods: {
     save() {
-      if (!this.curveSampleFilterInfo.curveSample.curvePrdCode || this.curveSampleFilterInfo.curvePrdCode == '') {
+      if (!this.curveSampleFilterInfo.curveSample.curvePrdCode || this.curveSampleFilterInfo.curvePrdCode === '') {
         this.$message({
           message: '请选择一条曲线',
           type: 'warning',
@@ -128,7 +132,7 @@ export default {
           duration: 2000
         })
         return false
-      } else if (refBondFilterInfo.rules.length == 0) {
+      } else if (refBondFilterInfo.rules.length === 0) {
         this.$message({
           message: '请应用模板',
           type: 'warning',
@@ -139,14 +143,13 @@ export default {
       }
 
       // 如果是拷贝，则清除ID,新增记录
-      if (this.curveSampleFilterInfo.editType == 'COPY') {
+      if (this.curveSampleFilterInfo.editType === 'COPY') {
         this.curveSampleFilterInfo.curveSample.id = ''
         this.curveSampleFilterInfo.curveSample.filterId = ''
       }
       var data = Object.assign(this.curveSampleFilterInfo, refBondFilterInfo)
       var $this = this
       saveCurveSample(data).then(response => {
-        var data = response
         $this.$emit('saveCureSampleCallBack')
         this.$message({
           message: '保存成功！',
