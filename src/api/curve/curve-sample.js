@@ -27,3 +27,12 @@ export function getCurveSample(curveSampleId) {
     params: { curveSampleId: curveSampleId }
   })
 }
+
+// 删除曲线样本券信息
+export function delCurveSample(id) {
+  return request({
+    url: `${basic_path}/curveSample/delete/` + id,
+    method: 'delete'
+  })
+}
+

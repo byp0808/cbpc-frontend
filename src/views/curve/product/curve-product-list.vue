@@ -1,10 +1,8 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAddCurveProduct">新增</el-button>
-      <el-button type="primary" @click="toggleSelection()">复制新增</el-button>
-      <el-button type="primary" @click="toAddCurveProduct('EDIT')">编辑</el-button>
-      <el-button type="primary" @click="toAddCurveProduct('VIEW')">查看产品</el-button>
+      <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button>
+      <el-button type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
     </div>
     <el-table
@@ -19,7 +17,7 @@
         width="55"
       />
       <el-table-column
-        prop="curveId"
+        prop="prdCode"
         label="产品编号"
         width="120"
       />
@@ -74,11 +72,34 @@
         show-overflow-tooltip
       />
       <el-table-column
-        prop="address"
+        fixed="right"
         label="操作"
-        width="100"
-        show-overflow-tooltip
-      />
+        width="150"
+      >
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="toAddCurveProduct('VIEW',scope.row.prdType,scope.row.rowNo)"
+          >
+            查看
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="handleDelete(scope)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       :current-page="productList.page.pageNumber"
@@ -98,21 +119,14 @@
         <el-button type="primary" @click="saveProduct">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :lock-scroll="lockScroll" width="92%" title="新增曲线样本券产品" :visible.sync="addCurveSampleFormVisible">
+    <el-dialog :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
       <CurveSampleForm
         ref="refCurveSampleForm"
+        @saveCureSampleCallBack="saveCureSampleCallBack"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="addCurveSampleFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveCureSample">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog :lock-scroll="lockScroll" width="92%" title="曲线样本券产品" :visible.sync="viewCurveSampleFormVisible">
-      <CurveSampleForm
-        ref="refCurveSampleForm"
-      />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="viewCurveSampleFormVisible = false">取 消</el-button>
+        <el-button v-if="saveCureSampleBtnVisible" type="primary" @click="saveCureSample">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -122,7 +136,7 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import { queryCurveProductList } from '@/api/curve/curve-product-list.js'
-import { getCurveSample } from '@/api/curve/curve-sample.js'
+import { getCurveSample, delCurveSample } from '@/api/curve/curve-sample.js'
 export default {
   name: 'CurveList', // 曲线样本券列表
   components: {
@@ -144,8 +158,8 @@ export default {
       addCurveProductFormVisible: false,
       // 新增曲线样本券
       addCurveSampleFormVisible: false,
-      // 曲线样本券产品查看
-      viewCurveSampleFormVisible: false,
+      // 曲线样本券保存按钮
+      saveCureSampleBtnVisible: true,
       multipleSelection: '' // 选择记录
     }
   },
@@ -186,79 +200,101 @@ export default {
       })
     },
     // 打开新增产品页面
-    toAddCurveProduct(type) {
-      if (!type) {
+    toAddCurveProduct(type, prdType, rowId) {
+      this.saveCureSampleBtnVisible = true
+
+      if (type == 'ADD') {
         this.addCurveProductFormVisible = true
-      } else if (type == 'EDIT') {
-        // 编辑
-        if (!this.multipleSelection || this.multipleSelection.length == 0) {
+      } else if (type == 'COPY') {
+        if (this.multipleSelection.length != 1) {
           this.$message({
-            message: '请选择一条记录',
-            type: 'warning',
-            showClose: true,
-            duration: 2000
+            type: 'error',
+            message: '仅能选择一条记录'
           })
-          return
-        } else if (this.multipleSelection.length > 1) {
-          this.$message({
-            message: '只能选择一条记录',
-            type: 'warning',
-            showClose: true,
-            duration: 2000
-          })
-          return
+          return false
         }
         var item = this.multipleSelection[0]
-        // 样本券
         if (item.prdType == 'CURVE_SAMPLE') {
           // 查询记录后展现
           getCurveSample(item.rowNo).then(response => {
-            console.info('getCurveSample:' + JSON.stringify(response))
+            console.info('COPY:getCurveSample:' + JSON.stringify(response))
+            var data = response
+            this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
+              curveSample: data,
+              editType: 'COPY'
+            })
+            this.addCurveSampleFormVisible = true
+          })
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '此产品复制暂未开放'
+          })
+        }
+      } else if (type == 'EDIT') {
+        // 样本券
+        if (prdType == 'CURVE_SAMPLE') {
+          // 查询记录后展现
+          getCurveSample(rowId).then(response => {
+            console.info('EDIT:getCurveSample:' + JSON.stringify(response))
             var data = response
             this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
               curveSample: data
-              // curveSelected: data.curvePrdCode,
-              // baseProduct: data.basePrdCode,
-              // curveSampleId: data.id,
             })
-
             this.addCurveSampleFormVisible = true
+          })
+        } else {
+          this.$message({
+            type: 'info',
+            message: '编辑暂未开放'
           })
         }
       } else if (type == 'VIEW') {
-        // 编辑
-        if (!this.multipleSelection || this.multipleSelection.length == 0) {
-          this.$message({
-            message: '请选择一条记录',
-            type: 'warning',
-            showClose: true,
-            duration: 2000
-          })
-          return
-        } else if (this.multipleSelection.length > 1) {
-          this.$message({
-            message: '只能选择一条记录',
-            type: 'warning',
-            showClose: true,
-            duration: 2000
-          })
-          return
-        }
-        var item = this.multipleSelection[0]
+        this.saveCureSampleBtnVisible = false
         // 样本券
-        if (item.prdType == 'CURVE_SAMPLE') {
+        if (prdType == 'CURVE_SAMPLE') {
           // 查询记录后展现
-          getCurveSample(item.rowNo).then(response => {
-            console.info('getCurveSample:' + JSON.stringify(response))
+          getCurveSample(rowId).then(response => {
+            console.info('VIEW:getCurveSample:' + JSON.stringify(response))
             var data = response
             this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
               curveSample: data,
               disabled: 'disabled'
             })
-            this.viewCurveSampleFormVisible = true
+            this.addCurveSampleFormVisible = true
+          })
+        } else {
+          this.$message({
+            type: 'info',
+            message: '查看暂未开放'
           })
         }
+      } else if (type == 'DEL') {
+
       }
+    },
+    // 删除样本券
+    handleDelete({ $index, row }) {
+      // 样本券
+      if (row.prdType != 'CURVE_SAMPLE') {
+        this.$message({
+          type: 'info',
+          message: '删除暂未开放'
+        })
+        return false
+      }
+      this.$confirm('是否删除该样本券?', 'Warning', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await delCurveSample(row.rowNo)
+        this.queryCurveProductList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(err => { console.error(err) })
     },
     // 保存产品
     saveProduct() {
@@ -271,9 +307,10 @@ export default {
         this.addCurveProductFormVisible = false
         this.addCurveSampleFormVisible = true
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
-          curveSelected: '',
-          baseProduct: data.product,
-          curveSampleId: ''
+          curveSample: {
+            curvePrdCode: '',
+            basePrdCode: data.product
+          }
         })
       }
     },
@@ -281,6 +318,12 @@ export default {
     saveCureSample() {
       console.info('saveCureSample:')
       var data = this.$refs.refCurveSampleForm.save()
+    },
+    // 保存曲线样本券回调
+    saveCureSampleCallBack() {
+      console.info('saveCureSampleCallBack')
+      this.addCurveSampleFormVisible = false
+      this.queryCurveProductList()
     }
   }
 }

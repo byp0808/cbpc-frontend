@@ -12,7 +12,7 @@
                 <el-select v-model="curveSampleFilterInfo.curveSample.curvePrdCode" :disabled="curveSampleFilterInfo.disabled" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
-                <input v-model="curveSampleFilterInfo.curveSample.baseProduct" type="hidden">
+                <input v-model="curveSampleFilterInfo.curveSample.basePrdCode" type="hidden">
               </el-form-item>
             </el-form>
           </div>
@@ -43,6 +43,7 @@
     </el-card>
     <BondFilter
       ref="refBondFilter"
+      :filter-id="curveSampleFilterInfo.curveSample.filterId"
     />
   </div>
 </template>
@@ -108,7 +109,7 @@ export default {
   },
   methods: {
     save() {
-      if (!this.curveSampleForm.curveSample.curvePrdCode || this.curveSampleForm.curvePrdCode == '') {
+      if (!this.curveSampleFilterInfo.curveSample.curvePrdCode || this.curveSampleFilterInfo.curvePrdCode == '') {
         this.$message({
           message: '请选择一条曲线',
           type: 'warning',
@@ -136,12 +137,17 @@ export default {
         })
         return false
       }
-      // return {data:data,curveSelected:this.curveSelected};
-      // refBondFilterInfo.curveSelected = this.curveSelected;
-      // refBondFilterInfo.baseProduct = this.baseProduct;
-      // this.curveSampleForm.tempNo = refBondFilterInfo.tempNo;
-      var data = Object.assign(this.curveSampleForm, refBondFilterInfo)
+
+      // 如果是拷贝，则清除ID,新增记录
+      if (this.curveSampleFilterInfo.editType == 'COPY') {
+        this.curveSampleFilterInfo.curveSample.id = ''
+        this.curveSampleFilterInfo.curveSample.filterId = ''
+      }
+      var data = Object.assign(this.curveSampleFilterInfo, refBondFilterInfo)
+      var $this = this
       saveCurveSample(data).then(response => {
+        var data = response
+        $this.$emit('saveCureSampleCallBack')
         this.$message({
           message: '保存成功！',
           type: 'success',
