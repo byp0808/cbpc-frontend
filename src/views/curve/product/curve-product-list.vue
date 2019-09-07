@@ -119,9 +119,11 @@
         <el-button type="primary" @click="saveProduct">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
+    <el-dialog v-if="addCurveSampleFormVisible" :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
       <CurveSampleForm
         ref="refCurveSampleForm"
+        :product-id="productId"
+        :op-type="opType"
         @saveCureSampleCallBack="saveCureSampleCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -136,7 +138,8 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import { queryCurveProductList } from '@/api/curve/curve-product-list.js'
-import { getCurveSample, delCurveSample } from '@/api/curve/curve-sample.js'
+import { delCurveSample } from '@/api/curve/curve-sample.js'
+
 export default {
   name: 'CurveList', // 曲线样本券列表
   components: {
@@ -145,7 +148,8 @@ export default {
   },
   data() {
     return {
-      baseProduct: '',
+      productId: '',
+      opType: '',
       productList: {
         dataList: [],
         page: {
@@ -158,8 +162,6 @@ export default {
       addCurveProductFormVisible: false,
       // 新增曲线样本券
       addCurveSampleFormVisible: false,
-      // 曲线样本券保存按钮
-      saveCureSampleBtnVisible: true,
       multipleSelection: '' // 选择记录
     }
   },
@@ -200,12 +202,14 @@ export default {
       })
     },
     // 打开新增产品页面
-    toAddCurveProduct(type, prdType, rowId) {
+    toAddCurveProduct(opType, prdType, rowId) {
       this.saveCureSampleBtnVisible = true
+      // 产品ID
+      this.productId = ''
+      // 操作类型
+      this.opType = opType
 
-      if (type == 'ADD') {
-        this.addCurveProductFormVisible = true
-      } else if (type == 'COPY') {
+      if (opType === 'COPY') {
         if (this.multipleSelection.length != 1) {
           this.$message({
             type: 'error',
@@ -214,63 +218,29 @@ export default {
           return false
         }
         var item = this.multipleSelection[0]
-        if (item.prdType == 'CURVE_SAMPLE') {
-          // 查询记录后展现
-          getCurveSample(item.rowNo).then(response => {
-            console.info('COPY:getCurveSample:' + JSON.stringify(response))
-            var data = response
-            this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
-              curveSample: data,
-              editType: 'COPY'
-            })
-            this.addCurveSampleFormVisible = true
-          })
+        if (item.prdType === 'CURVE_SAMPLE') {
+          // 产品ID
+          this.productId = item.rowNo
+          this.addCurveSampleFormVisible = true
         } else {
           this.$message({
             type: 'warning',
             message: '此产品复制暂未开放'
           })
         }
-      } else if (type == 'EDIT') {
-        // 样本券
-        if (prdType == 'CURVE_SAMPLE') {
-          // 查询记录后展现
-          getCurveSample(rowId).then(response => {
-            console.info('EDIT:getCurveSample:' + JSON.stringify(response))
-            var data = response
-            this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
-              curveSample: data
-            })
-            this.addCurveSampleFormVisible = true
-          })
+      } else if (opType === 'EDIT' || opType === 'VIEW') {
+        if (prdType === 'CURVE_SAMPLE') {
+          // 产品ID
+          this.productId = rowId
+          this.addCurveSampleFormVisible = true
         } else {
           this.$message({
-            type: 'info',
-            message: '编辑暂未开放'
+            type: 'warning',
+            message: '此产品复制暂未开放'
           })
         }
-      } else if (type == 'VIEW') {
-        this.saveCureSampleBtnVisible = false
-        // 样本券
-        if (prdType == 'CURVE_SAMPLE') {
-          // 查询记录后展现
-          getCurveSample(rowId).then(response => {
-            console.info('VIEW:getCurveSample:' + JSON.stringify(response))
-            var data = response
-            this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
-              curveSample: data,
-              disabled: 'disabled'
-            })
-            this.addCurveSampleFormVisible = true
-          })
-        } else {
-          this.$message({
-            type: 'info',
-            message: '查看暂未开放'
-          })
-        }
-      } else if (type == 'DEL') {
-
+      }else if (opType === 'ADD') {
+        this.addCurveProductFormVisible = true
       }
     },
     // 删除样本券

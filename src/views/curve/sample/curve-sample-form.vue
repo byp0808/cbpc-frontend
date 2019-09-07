@@ -7,12 +7,12 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="grid-content bg-purple">
-            <el-form ref="recCurveForm" :model="curveSampleFilterInfo" label-width="150px">
+            <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="curveSampleFilterInfo.curveSample.curvePrdCode" :disabled="curveSampleFilterInfo.disabled" placeholder="请选择曲线">
+                <el-select v-model="curveSample.curvePrdCode" :disabled="disabled" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
-                <input v-model="curveSampleFilterInfo.curveSample.basePrdCode" type="hidden">
+                <input v-model="curveSample.basePrdCode" type="hidden">
               </el-form-item>
             </el-form>
           </div>
@@ -21,7 +21,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" label-width="150px">
               <el-form-item label="最后操作时间">
-                <el-input v-model="curveSampleFilterInfo.curveSample.lastUpdTs" disabled />
+                <el-input v-model="curveSample.lastUpdTs" disabled />
               </el-form-item>
             </el-form>
           </div>
@@ -29,63 +29,43 @@
         <el-col :span="8">
           <el-form ref="recCurveForm" label-width="150px">
             <el-form-item label="最后操作人">
-              <el-input v-model="curveSampleFilterInfo.curveSample.lastUpdBy" disabled />
+              <el-input v-model="curveSample.lastUpdBy" disabled />
             </el-form-item>
           </el-form>
         </el-col>
       </el-row>
-      <el-form ref="recCurveForm" :model="curveSampleFilterInfo" label-width="150px" hidden>
+      <el-form ref="recCurveForm" :model="curveSample" label-width="150px" hidden>
         <el-form-item label="备注">
-          <el-input v-model="curveSampleFilterInfo.curveSample.remark" type="textarea" />
+          <el-input v-model="curveSample.remark" type="textarea" />
         </el-form-item>
       </el-form>
 
     </el-card>
     <BondFilter
       ref="refBondFilter"
-      :filter-id="curveSampleFilterInfo.curveSample.filterId"
-      :disabled="curveSampleFilterInfo.disabled"
+      :filter-id="curveSample.filterId"
+      :disabled="disabled"
     />
   </div>
 </template>
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { getCurveList, saveCurveSample } from '@/api/curve/curve-sample.js'
+import { getCurveSample, getCurveList, saveCurveSample } from '@/api/curve/curve-sample.js'
 export default {
   name: 'RecCurveForm',
   components: {
     BondFilter
   },
-  props: ['baseProduct'],
+  props: ['productId', 'opType'],
   data() {
     return {
-      curveSampleForm: {
-        curveSample: {
-          filterId: ''
-        },
-        disabled: ''
-      },
+      disabled: '',
       curveList: []
     }
   },
   computed: {
-    // curveList() {
-    //   debugger;
-    //   return getCurveList({}).then(response => {
-    //     var datalist = response.datalist;
-    //     debugger;
-    //     var options = [];
-    //     if (datalist && datalist.length > 0) {
-    //       for (var i = 0 ; i < datalist.length ; i++) {
-    //         var data = datalist[i];
-    //         options.push({value: data.curveId, label: data.productName });
-    //       }
-    //     }
-    //     return  options;
-    //   });
-    // },
-    curveSampleFilterInfo: {
+    curveSample: {
       get() {
         console.info('curveSampleFilterInfo.get')
         return this.$store.state.curveProduct.curveSampleFilterInfo
@@ -97,9 +77,18 @@ export default {
     }
   },
   beforeMount() {
-    const curveSampleFilterInfo = this.$store.state.curveProduct.curveSampleFilterInfo
-    this.curveSampleForm = curveSampleFilterInfo
-    console.info('curve-sample-form.beforeMount:' + JSON.stringify(curveSampleFilterInfo))
+    console.info('===beforeMount===')
+    if (this.productId) {
+      getCurveSample(this.productId).then(reponse => {
+        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
+      })
+
+      if (this.opType === 'VIEW') {
+        this.disabled = true
+      } else {
+        this.disabled = false
+      }
+    }
     getCurveList({}).then(response => {
       var datalist = response.datalist
       this.curveList = []
@@ -113,7 +102,7 @@ export default {
   },
   methods: {
     save() {
-      if (!this.curveSampleFilterInfo.curveSample.curvePrdCode || this.curveSampleFilterInfo.curvePrdCode === '') {
+      if (!this.curveSample.curvePrdCode || this.curvePrdCode === '') {
         this.$message({
           message: '请选择一条曲线',
           type: 'warning',
@@ -143,14 +132,15 @@ export default {
       }
 
       // 如果是拷贝，则清除ID,新增记录
-      if (this.curveSampleFilterInfo.editType === 'COPY') {
-        this.curveSampleFilterInfo.curveSample.id = ''
-        this.curveSampleFilterInfo.curveSample.filterId = ''
+      if (this.opType === 'COPY') {
+        this.curveSample.id = ''
+        this.curveSample.filterId = ''
       }
-      var data = Object.assign(this.curveSampleFilterInfo, refBondFilterInfo)
-      var $this = this
+      var data = Object.assign({ curveSample: this.curveSample }, refBondFilterInfo)
+
+      // 保存
       saveCurveSample(data).then(response => {
-        $this.$emit('saveCureSampleCallBack')
+        this.$emit('saveCureSampleCallBack')
         this.$message({
           message: '保存成功！',
           type: 'success',
