@@ -12,6 +12,10 @@ const taskRouter = {
       path: 'rec-curve-task',
       component: () => import('@/views/valuation/rec-cure/rec-curve-task.vue'),
       name: 'RecCurveTask'
+    },{
+      path: 'curve-sample-task',
+      component: () => import('@/views/curve/sample/curve-sample-task.vue'),
+      name: 'CurveSampleTask'
     }
   ]
 }
