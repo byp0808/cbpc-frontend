@@ -80,7 +80,7 @@
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus == '01'"
+            :disabled="scope.row.dataStatus == '01' || scope.row.relId != null "
             @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
