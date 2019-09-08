@@ -36,3 +36,11 @@ export function delCurveSample(id) {
   })
 }
 
+// 查询曲线产品列表,包含样本券
+export function submitTask(data) {
+  return request({
+    url: `${basic_path}/curveSample/submitTask`,
+    method: 'post',
+    data
+  })
+}
