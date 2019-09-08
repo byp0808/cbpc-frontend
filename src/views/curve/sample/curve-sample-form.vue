@@ -9,11 +9,14 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-autocomplete
-                  v-model="curveSample.curvePrdCode"
-                  :fetch-suggestions="queryCurvePrdCode"
-                  placeholder="请选择曲线"
-                />
+                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="disabled" placeholder="请选择曲线">
+                  <el-option
+                    v-for="item in curveList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
                 <input v-model="curveSample.basePrdCode" type="hidden">
               </el-form-item>
             </el-form>
@@ -81,6 +84,20 @@ export default {
   },
   beforeMount() {
     console.info('===beforeMount===')
+
+    // 先加载列表
+    getCurveList({}).then(response => {
+      var datalist = response.datalist
+      this.curveList = []
+      if (datalist && datalist.length > 0) {
+        for (var i = 0; i < datalist.length; i++) {
+          var data = datalist[i]
+          this.curveList.push({ value: data.curveId, label: data.productName })
+          this.allCurveList.push({ value: data.curveId, label: data.productName })
+        }
+      }
+    })
+
     if (this.productId) {
       getCurveSample(this.productId).then(reponse => {
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
@@ -102,29 +119,18 @@ export default {
         this.curveSample.basePrdCode = this.basePrdCode
       }
     }
-    getCurveList({}).then(response => {
-      var datalist = response.datalist
-      this.curveList = []
-      if (datalist && datalist.length > 0) {
-        for (var i = 0; i < datalist.length; i++) {
-          var data = datalist[i]
-          this.curveList.push({ value: data.curveId, label: data.productName })
-          this.allCurveList.push({ value: data.curveId, label: data.productName })
-        }
-      }
-    })
   },
   methods: {
-    // 曲线autocomplete
-    queryCurvePrdCode(queryString, callback) {
-      console.info('queryString:' + queryString)
-      var list = []
-      for (const i of this.allCurveList) {
-        if (i.lable.indexOf(queryString) > -1) {
-          list.push(i)
+    getCurvePrdCodeValue(prdCode) {
+      if (!prdCode) {
+        return ''
+      } else {
+        for (const i of this.allCurveList) {
+          if (i.value === prdCode) {
+            return i.label
+          }
         }
       }
-      this.curveList = list
     },
     save() {
       if (!this.curveSample.curvePrdCode || this.curvePrdCode === '') {
