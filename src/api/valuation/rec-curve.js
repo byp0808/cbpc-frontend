@@ -28,6 +28,24 @@ export function deleteRecCurve(id) {
   })
 }
 
+// 启用估值曲线配置信息
+export function openRecCurve(id) {
+  return request({
+    url: `${basic_api_valuation}/valuation-curve/open`,
+    method: 'get',
+    params: { id }
+  })
+}
+
+// 停用估值曲线配置信息
+export function closeRecCurve(id) {
+  return request({
+    url: `${basic_api_valuation}/valuation-curve/close`,
+    method: 'get',
+    params: { id }
+  })
+}
+
 // 查询估值曲线详细信息
 export function queryRecCurve(id) {
   return request({

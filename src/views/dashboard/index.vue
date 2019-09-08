@@ -63,7 +63,6 @@
 import { mapGetters } from 'vuex'
 // import adminDashboard from './admin'
 // import editorDashboard from './editor'
-import { taskSubmit } from '@/api/common/task.js'
 
 export default {
   name: 'Dashboard',
@@ -105,22 +104,6 @@ export default {
     toApproval(businessNo, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
       this.$router.push({ name: router })
-    },
-    taskSubmit() {
-      taskSubmit({
-        businessNo: this.approval.businessNo,
-        taskStatus: '02',
-        taskOpinions: '同意，可以通过',
-        taskType: '01'
-      }).then(response => {
-        this.$message({
-          message: '提交成功！',
-          type: 'success',
-          showClose: true
-        })
-        this.approval.recCurveFormVisible = false
-        this.queryTaskList()
-      })
     }
   },
   computed: {

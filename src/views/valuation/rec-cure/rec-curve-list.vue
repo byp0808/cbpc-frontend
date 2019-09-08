@@ -54,7 +54,7 @@
       <el-table-column
         prop="address"
         label="操作"
-        width="160"
+        width="180"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -73,11 +73,20 @@
             删除
           </el-button>
           <el-button
+            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
             type="text"
             size="small"
-            @click.native.prevent="mvToBlackList(scope.$index, bondListAll)"
+            @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
           >
-            停用
+            {{ statusText(scope.row.busiStatus) }}
+          </el-button>
+          <el-button
+            v-if="scope.row.relationId"
+            type="text"
+            size="small"
+            @click.native.prevent="toDetail(scope.row.relationId)"
+          >
+            草稿
           </el-button>
         </template>
       </el-table-column>
@@ -99,7 +108,7 @@
 
 <script>
 import RecCurveForm from '@/views/valuation/rec-cure/rec-curve-form.vue'
-import { queryRecCurveList, deleteRecCurve } from '@/api/valuation/rec-curve.js'
+import { queryRecCurveList, deleteRecCurve, openRecCurve, closeRecCurve } from '@/api/valuation/rec-curve.js'
 export default {
   name: 'RecCurveList',
   components: {
@@ -116,6 +125,16 @@ export default {
     }
   },
   computed: {
+    statusText() {
+      return function(status) {
+        switch (status) {
+          case '02':
+            return '启用中'
+          case '03':
+            return '停用中'
+        }
+      }
+    },
     curveName() {
       return function(curveId) {
         const index = this.$lodash.findIndex(this.curveList, { curveId: curveId })
@@ -169,12 +188,29 @@ export default {
     },
     toAdd() {
       this.$store.commit('recCurve/setRecCurveInfo', {})
-      // this.$store.commit('bondFilter/clearBondFilterId')
+      this.recCurveFormVisible = true
+    },
+    toCopy() {
+      this.$store.dispatch('recCurve/copyCurveInfo')
       this.recCurveFormVisible = true
     },
     saveCallBack() {
       this.recCurveFormVisible = false
       this.loadTable()
+    },
+    changeStatus(status, id) {
+      if (status === '02') {
+        closeRecCurve(id).then(response => {
+          this.loadTable()
+        })
+      } else if (status === '03') {
+        openRecCurve(id).then(response => {
+          this.loadTable()
+        })
+      }
+    },
+    isShowChangeStatusBtn(status) {
+      return status === '02' || status === '03'
     }
   }
 }

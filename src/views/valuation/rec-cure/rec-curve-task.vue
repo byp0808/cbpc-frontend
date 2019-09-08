@@ -6,8 +6,8 @@
       :disabled="disabled"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit">审核通过</el-button>
-      <el-button type="primary" @click="save">审核拒绝</el-button>
+      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
+      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
       <el-button>取 消</el-button>
     </div>
   </div>
@@ -34,11 +34,11 @@ export default {
     this.$store.commit('task/clear')
   },
   methods: {
-    taskSubmit() {
+    taskSubmit(status) {
       taskSubmit({
         businessNo: this.businessNo,
-        taskStatus: '02',
-        taskOpinions: '同意，可以通过',
+        taskStatus: status,
+        taskOpinions: '',
         taskType: '01'
       }).then(response => {
         this.$message({
