@@ -9,8 +9,13 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="curveSample.curvePrdCode" :disabled="disabled" placeholder="请选择曲线">
-                  <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="disabled" placeholder="请选择曲线">
+                  <el-option
+                    v-for="item in curveList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
                 <input v-model="curveSample.basePrdCode" type="hidden">
               </el-form-item>
@@ -51,17 +56,18 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { getCurveSample, getCurveList, saveCurveSample } from '@/api/curve/curve-sample.js'
+import { getCurveSample, getCurveList, saveCurveSample, submitTask } from '@/api/curve/curve-sample.js'
 export default {
   name: 'RecCurveForm',
   components: {
     BondFilter
   },
-  props: ['productId', 'opType'],
+  props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
     return {
       disabled: '',
-      curveList: []
+      curveList: [],
+      allCurveList: []
     }
   },
   computed: {
@@ -78,6 +84,20 @@ export default {
   },
   beforeMount() {
     console.info('===beforeMount===')
+
+    // 先加载列表
+    getCurveList({}).then(response => {
+      var datalist = response.datalist
+      this.curveList = []
+      if (datalist && datalist.length > 0) {
+        for (var i = 0; i < datalist.length; i++) {
+          var data = datalist[i]
+          this.curveList.push({ value: data.curveId, label: data.productName })
+          this.allCurveList.push({ value: data.curveId, label: data.productName })
+        }
+      }
+    })
+
     if (this.productId) {
       getCurveSample(this.productId).then(reponse => {
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
@@ -88,19 +108,30 @@ export default {
       } else {
         this.disabled = false
       }
-    }
-    getCurveList({}).then(response => {
-      var datalist = response.datalist
-      this.curveList = []
-      if (datalist && datalist.length > 0) {
-        for (var i = 0; i < datalist.length; i++) {
-          var data = datalist[i]
-          this.curveList.push({ value: data.curveId, label: data.productName })
-        }
+    } else if (this.businessId) {
+      getCurveSample(this.businessId).then(reponse => {
+        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
+      })
+    } else {
+      this.disabled = false
+      if (this.basePrdCode) {
+        this.curveSample = {}
+        this.curveSample.basePrdCode = this.basePrdCode
       }
-    })
+    }
   },
   methods: {
+    getCurvePrdCodeValue(prdCode) {
+      if (!prdCode) {
+        return ''
+      } else {
+        for (const i of this.allCurveList) {
+          if (i.value === prdCode) {
+            return i.label
+          }
+        }
+      }
+    },
     save() {
       if (!this.curveSample.curvePrdCode || this.curvePrdCode === '') {
         this.$message({
@@ -136,13 +167,31 @@ export default {
         this.curveSample.id = ''
         this.curveSample.filterId = ''
       }
-      var data = Object.assign({ curveSample: this.curveSample }, refBondFilterInfo)
-
+      var data = _.assign({ curveSample: this.curveSample }, refBondFilterInfo)
       // 保存
       saveCurveSample(data).then(response => {
         this.$emit('saveCureSampleCallBack')
         this.$message({
           message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
+    taskSubmit(opType) {
+      if (!this.businessId) {
+        this.$message({
+          message: '获取流程数据失败！',
+          type: 'error',
+          showClose: true
+        })
+      }
+      var data = { businessNo: this.businessId, taskStatus: opType }
+      submitTask(data).then(response => {
+        // 回调函数
+        this.$emit('saveCureSampleCallBack')
+        this.$message({
+          message: '操作成功！',
           type: 'success',
           showClose: true
         })

@@ -123,6 +123,7 @@
       <CurveSampleForm
         ref="refCurveSampleForm"
         :product-id="productId"
+        :base-prd-code="basePrdCode"
         :op-type="opType"
         @saveCureSampleCallBack="saveCureSampleCallBack"
       />
@@ -150,6 +151,7 @@ export default {
     return {
       productId: '',
       opType: '',
+      basePrdCode: '', // 新增时基础产品
       productList: {
         dataList: [],
         page: {
@@ -210,7 +212,7 @@ export default {
       this.opType = opType
 
       if (opType === 'COPY') {
-        if (this.multipleSelection.length != 1) {
+        if (this.multipleSelection.length !== 1) {
           this.$message({
             type: 'error',
             message: '仅能选择一条记录'
@@ -239,7 +241,7 @@ export default {
             message: '此产品复制暂未开放'
           })
         }
-      }else if (opType === 'ADD') {
+      } else if (opType === 'ADD') {
         this.addCurveProductFormVisible = true
       }
     },
@@ -273,15 +275,10 @@ export default {
       console.info('data:' + JSON.stringify(data))
 
       // 收益率曲线样本券，打开筛选器
-      if (data.product == '0018') {
+      if (data.product === '0018') {
         this.addCurveProductFormVisible = false
         this.addCurveSampleFormVisible = true
-        this.$store.commit('curveProduct/setCurveSampleFilterInfo', {
-          curveSample: {
-            curvePrdCode: '',
-            basePrdCode: data.product
-          }
-        })
+        this.basePrdCode = data.product
       }
     },
     // 保存曲线样本券
