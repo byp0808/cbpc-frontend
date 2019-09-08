@@ -80,6 +80,7 @@
           <el-button
             type="text"
             size="small"
+            :disabled="scope.row.dataStatus == '01'"
             @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
@@ -255,10 +256,10 @@ export default {
         })
         return false
       }
-      this.$confirm('是否删除该样本券?', 'Warning', {
+      this.$confirm('是否删除该样本券?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'info'
       }).then(async() => {
         await delCurveSample(row.rowNo)
         this.queryCurveProductList()
