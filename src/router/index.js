@@ -14,6 +14,7 @@ import nestedRouter from './modules/nested'
 import commonsRouter from './modules/common'
 import valuationRouter from './modules/valuation'
 import curveRouter from './modules/curve'
+import taskRouter from './modules/task'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -187,7 +188,7 @@ export const asyncRoutes = [
       }
     ]
   },
-
+  taskRouter,
   /** when your routing map is too long, you can split it into small modules **/
   componentsRouter,
   // chartsRouter,

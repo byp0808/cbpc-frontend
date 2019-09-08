@@ -9,12 +9,3 @@ export function queryTaskList(data) {
     data
   })
 }
-
-// 提交任务
-export function taskSubmit(data) {
-  return request({
-    url: `/pi-valuation/valuation-curve/roamTask`,
-    method: 'post',
-    data
-  })
-}

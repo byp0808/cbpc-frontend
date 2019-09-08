@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="">
     <el-card class="box-card">
       <div slot="header" class="clearfix card-head">
         <h3 style="margin: 0">基本信息</h3>

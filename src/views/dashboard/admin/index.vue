@@ -37,73 +37,6 @@
     <!--<box-card />-->
     <!--</el-col>-->
     <!--</el-row>-->
-    <el-row :gutter="10">
-      <el-col :span="12">
-        <div class="grid-content bg-purple" />
-      </el-col>
-      <el-col :span="12">
-        <div class="grid-content bg-purple">
-          <el-table
-            :data="todoInfo.dataList"
-            style="width: 100%"
-          >
-            <el-table-column
-              prop="businessName"
-              label="业务名称"
-              width="180"
-            />
-            <el-table-column
-              prop="taskName"
-              label="任务名称"
-              width="180"
-            />
-            <el-table-column
-              prop="taskStartUserName"
-              label="发起人"
-            />
-            <el-table-column
-              prop="createTs"
-              label="发起时间"
-            />
-            <el-table-column
-              prop="address"
-              label="操作"
-            >
-              <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  size="small"
-                  @click.native.prevent="toApproval(scope.row.businessNo)"
-                >
-                  审核
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            :current-page="todoInfo.page.pageNumber"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :page-size="todoInfo.page.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="todoInfo.page.totalPage"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </div>
-      </el-col>
-    </el-row>
-    <el-dialog v-if="approval.recCurveFormVisible" fullscreen="" title="新增估值曲线推荐规则" :visible.sync="approval.recCurveFormVisible">
-      <approvalDialog
-        ref="refApprovalDialog"
-        :business-id="approval.businessNo"
-        :disabled="approval.isDisabled"
-      />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="approval.recCurveFormVisible">取 消</el-button>
-        <el-button type="primary" @click="taskSubmit">审核通过</el-button>
-        <el-button type="primary" @click="save">审核拒绝</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -155,20 +88,6 @@ export default {
   data() {
     return {
       // lineChartData: lineChartData.newVisitis,
-      approval: {
-        recCurveFormVisible: false,
-        businessNo: '',
-        isDisabled: true
-      },
-
-      todoInfo: {
-        dataList: [],
-        page: {
-          pageNumber: 1,
-          pageSize: 10
-        }
-      }
-
     }
   },
   beforeMount() {
@@ -191,8 +110,13 @@ export default {
       })
     },
     toApproval(businessNo) {
+      // const that = this
       this.approval.recCurveFormVisible = true
       this.approval.businessNo = businessNo
+      this.$router.push({ path: '/rec-curve-form' })
+      // this.$nextTick(() => {
+      //   that.$router.push({ path: '/dashboard/rec-curve-form' })
+      // })
     },
     taskSubmit() {
       taskSubmit({

@@ -68,7 +68,7 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDelete(scope.row.id)"
           >
             删除
           </el-button>
@@ -99,7 +99,7 @@
 
 <script>
 import RecCurveForm from '@/views/valuation/rec-cure/rec-curve-form.vue'
-import { queryRecCurveList } from '@/api/valuation/rec-curve.js'
+import { queryRecCurveList, deleteRecCurve } from '@/api/valuation/rec-curve.js'
 export default {
   name: 'RecCurveList',
   components: {
@@ -156,6 +156,16 @@ export default {
     toDetail(id) {
       this.recCureId = id
       this.recCurveFormVisible = true
+    },
+    toDelete(id) {
+      deleteRecCurve(id).then(response => {
+        this.$message({
+          message: '删除成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.loadTable()
+      })
     },
     toAdd() {
       this.$store.commit('recCurve/setRecCurveInfo', {})

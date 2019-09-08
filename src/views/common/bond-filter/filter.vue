@@ -2,7 +2,7 @@
   <div class="margin-top">
     <el-card class="box-card">
       <!--{{filterId}}-->
-      <el-select v-model="bondTempSelect.tempNo" placeholder="请选择">
+      <el-select v-model="bondTempSelect.tempNo" placeholder="请选择" :disabled="disabled">
         <el-option
           v-for="temp in bondTempSelect.bondTemps"
           :key="temp.tempNo"
