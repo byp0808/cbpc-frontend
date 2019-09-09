@@ -17,6 +17,11 @@ const curveRouter = {
       component: () => import('@/views/curve/product/curve-product-list.vue'),
       name: 'CurveProduct',
       meta: { title: '曲线产品', noCache: true }
+    },{
+      path: 'curve-product-def',
+      component: () => import('@/views/curve/product/curve-product-def-form.vue'),
+      name: 'CurveProductDef',
+      meta: { title: '曲线产品定义', noCache: true }
     }
   ]
 }

@@ -9,3 +9,11 @@ export function queryCurveProductList(data) {
     data
   })
 }
+// 保存曲线产品
+export function saveProductInfo(data) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/storageCurveInfo`,
+    method: 'post',
+    data
+  })
+}

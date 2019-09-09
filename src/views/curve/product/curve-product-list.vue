@@ -120,6 +120,21 @@
         <el-button type="primary" @click="saveProduct">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      v-if="addCurveProductDefFormVisible"
+
+      width="90%"
+      title="曲线产品"
+      :visible.sync="addCurveProductDefFormVisible"
+    >
+      <CurveProductDefForm
+        ref="refCurveProductDefForm"
+        :lock-scroll="lockScroll"
+        :product-id="productId"
+        :base-prd-code="basePrdCode"
+        :op-type="opType"
+      />
+    </el-dialog>
     <el-dialog v-if="addCurveSampleFormVisible" :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
       <CurveSampleForm
         ref="refCurveSampleForm"
@@ -138,6 +153,7 @@
 
 <script>
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
+import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import { queryCurveProductList } from '@/api/curve/curve-product-list.js'
 import { delCurveSample } from '@/api/curve/curve-sample.js'
@@ -146,7 +162,8 @@ export default {
   name: 'CurveList', // 曲线样本券列表
   components: {
     CurveProductForm,
-    CurveSampleForm
+    CurveSampleForm,
+    CurveProductDefForm
   },
   data() {
     return {
@@ -165,6 +182,8 @@ export default {
       addCurveProductFormVisible: false,
       // 新增曲线样本券
       addCurveSampleFormVisible: false,
+      // 曲线产品定义
+      addCurveProductDefFormVisible: false,
       multipleSelection: '' // 选择记录
     }
   },
@@ -273,13 +292,20 @@ export default {
     saveProduct() {
       // 如果就曲线样本，则跳转筛选器
       var data = this.$refs.refCurveProductForm.save()
-      console.info('data:' + JSON.stringify(data))
+      console.info('saveProduct.data:' + JSON.stringify(data))
+
+      // 产品选择框隐藏
+      this.addCurveProductFormVisible = false
+
+      // 基础产品
+      this.basePrdCode = data.product
 
       // 收益率曲线样本券，打开筛选器
       if (data.product === '0018') {
-        this.addCurveProductFormVisible = false
         this.addCurveSampleFormVisible = true
-        this.basePrdCode = data.product
+      } else {
+        // 显示曲线产品定义框
+        this.addCurveProductDefFormVisible = true
       }
     },
     // 保存曲线样本券
