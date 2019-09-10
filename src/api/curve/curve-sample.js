@@ -1,14 +1,6 @@
 import request from '@/utils/app-request'
 import { basic_api_curve } from '@/api/base-api.js'
 
-// 查询曲线产品列表,获取下拉
-export function getCurveList(data) {
-  return request({
-    url: `${basic_api_curve}/curveProduct/curveList`,
-    method: 'post',
-    data
-  })
-}
 
 // 查询曲线产品列表,包含样本券
 export function saveCurveSample(data) {

@@ -21,21 +21,25 @@
 </template>
 
 <script>
+import { optioins } from '@/api/curve/code-type.js'
+
 export default {
   name: 'CurveProductForm',
   components: {},
   data() {
     return {
       productLine: '',
-      productLineList: [
-        { value: 'CBP', label: '中债估值' },
-        { value: 'CB', label: '中债收益率曲线' }
-      ],
       productGroup: '',
       productGroupList: [],
       product: '',
       productList: [],
       form: {}
+    }
+  },
+  computed: {
+    productLineList() {
+      // 加载产品线
+      return optioins('PRODUCT_LINE')
     }
   },
   watch: {
@@ -45,44 +49,33 @@ export default {
       this.product = ''
       // 获取产品组
       this.getProductGroup(newValue)
+
+      if (this.productGroupList.length > 0) {
+        this.productGroup = this.productGroupList[0].value
+      }
     },
     productGroup(newValue, oldValue) {
       console.info('productGroup.newValue:' + newValue + ',oldValue:' + oldValue)
       this.product = ''
       this.getProduct(this.productLine, newValue)
+
+      if (this.productList.length > 0) {
+        this.product = this.productList[0].value
+      }
     }
   },
   methods: {
     // 获取产品组
     getProductGroup(productLine) {
       if (!productLine) productLine = this.productLine
-      if (productLine == 'CB') {
-        this.productGroupList = [
-          { value: 'CB', label: '收益率曲线' }
-        ]
-        this.productGroup = this.productGroupList[0].value
-      } else if (productLine == 'CBP') {
-        this.productGroupList = [
-          { value: 'CBPB', label: '债权类估值' }
-        ]
-        this.productGroup = this.productGroupList[0].value
-      }
+      this.productGroupList = optioins('PRODUCT_GROUP', productLine)
     },
     // 获取基础产品
     getProduct(productLine, productGroup) {
       if (!productLine) productLine = this.productLine
       if (!productGroup) productGroup = this.productGroup
-      if (productGroup == 'CB') {
-        this.productList = [
-          { value: '0017', label: '收益率曲线' },
-          { value: '0018', label: '收益率曲线样本券' },
-          { value: '0019', label: '市场利率曲线' }
-        ]
-        this.product = this.productList[0].value
-      } else {
-        this.productList = [
-        ]
-      }
+
+      this.productList = optioins('BASE_PRD_CODE', productGroup);
     },
     // 保存产品
     save() {

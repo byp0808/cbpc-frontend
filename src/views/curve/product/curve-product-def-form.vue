@@ -42,7 +42,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" :disabled="disabled" >
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场"  >
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -59,21 +59,21 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="编制日历" prop="createCalendars">
-              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled" >
+              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled">
                 <el-option v-for="item in calendarOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="币种" prop="currency">
-              <el-select v-model="productInfo.currency" placeholder="请选择币种" :disabled="disabled" >
+              <el-select v-model="productInfo.currency" placeholder="请选择币种" :disabled="disabled">
                 <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="利率类型" prop="rateType">
-              <el-select v-model="productInfo.rateType" placeholder="请选择利率类型" :disabled="disabled" >
+              <el-select v-model="productInfo.rateType" placeholder="请选择利率类型" :disabled="disabled">
                 <el-option v-for="item in rateTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -91,13 +91,13 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线基准利率">
-              <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled" >
+              <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in referRateOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8" :offset="8">
-            <el-form-item label="曲线终止日期" prop="curveEndTime" >
+            <el-form-item label="曲线终止日期" prop="curveEndTime">
               <el-date-picker
                 v-model="productInfo.curveEndTime"
                 align="right"
@@ -110,7 +110,7 @@
         </el-row>
       </el-form>
       <div class="text-center">
-        <el-button type="primary" @click="saveProductInfo('productInfo')" :disabled="disabled">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="saveProductInfo('productInfo')">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 1" class="box-card margin-top">
@@ -169,13 +169,13 @@
 </template>
 
 <script>
-import BondFilter from '@/views/common/bond-filter/filter.vue'
 import { formatTimeToStr } from '@/utils/date.js'
 import { saveProductInfo, getCurveProduct } from '@/api/curve/curve-product-list.js'
+import { optioins } from '@/api/curve/code-type.js'
 export default {
   name: 'ValuationProdForm',
   components: {
-    BondFilter
+
   },
   props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
@@ -222,6 +222,7 @@ export default {
     }
 
     return {
+      disabled: false,
       stepActive: 0,
       productInfoRules: {
         productName: [
@@ -264,75 +265,46 @@ export default {
   computed: {
     // 市场选项
     marketOptions() {
-      var list = [
-        { value: '01', label: '中国镜内银行间市场' },
-        { value: '02', label: '香港' },
-        { value: '03', label: '巴黎' },
-        { value: '04', label: '纽约' }
-      ]
-      return list
+      return optioins('CODE_TYPE_MARKET')
     },
     calendarOptions() {
-      var list = [
-        { value: '01', label: '中国镜内银行间市场日历' },
-        { value: '02', label: '香港日历' },
-        { value: '03', label: '巴黎日历' },
-        { value: '04', label: '纽约日历' }
-      ]
-      return list
+      return optioins('CODE_TYPE_CALENDAR')
     },
     currencyOptions() {
-      var list = [
-        { value: '01', label: '人民币' },
-        { value: '02', label: '美元' },
-        { value: '03', label: '港元' },
-        { value: '04', label: '英镑' }
-      ]
-      return list
+      return optioins('CURRENCY')
     },
     rateTypeOptions() {
-      var list = [
-        { value: '01', label: '固定利率' },
-        { value: '02', label: '浮动利率' }
-      ]
-      return list
+      return optioins('RATE_TYPE')
     },
     referRateOptions() {
-      var list = [
-        { value: '01', label: '中国国债收益率曲线' },
-        { value: '02', label: '中国国债收益率曲线2' },
-        { value: '03', label: '中国国债收益率曲3' }
-      ]
-      return list
+      return optioins('REFER_RATE')
     },
     productInfo: {
       get() {
+        console.info('productInfo:')
         var info = this.$store.state.curveProduct.curveProductInfo
         if (info) {
           const market = info.market
           if (market) {
             info.markets = market.split(',')
-          } else {
-            info.markets = []
           }
           const createCalendar = info.createCalendar
           if (createCalendar) {
             info.createCalendars = createCalendar.split(',')
-          } else {
-            info.createCalendars = []
           }
         }
-        return this.$store.state.curveProduct.curveProductInfo
+        return info
       },
       set(info) {
+        console.info('================set....');
         this.$store.commit('curveProduct/setCurveProductInfo', info)
       }
     }
   },
   beforeMount() {
+    this.productInfo = {}
     console.info('beforeMount:' + this.basePrdCode)
     if (this.basePrdCode) {
-      this.productInfo = {}
       this.productInfo.basePrdCode = this.basePrdCode
     }
 
