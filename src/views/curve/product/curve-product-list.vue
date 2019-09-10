@@ -201,7 +201,7 @@ export default {
   },
   methods: {
     handleFilter() {
-      this.productList.page = 1
+      this.productList.page.pageNumber = 1
       this.queryCurveProductList()
     },
     handleSizeChange(pageSize) {
@@ -218,8 +218,9 @@ export default {
     },
     queryCurveProductList() {
       queryCurveProductList({ page: this.productList.page }).then(response => {
-        const { datalist, page } = response
-        this.productList.dataList = datalist
+        console.info('queryCurveProductList.queryCurveProductList...')
+        const { dataList, page } = response
+        this.productList.dataList = dataList
         this.productList.page = page
       })
     },

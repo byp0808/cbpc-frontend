@@ -31,13 +31,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线产品简称" prop="prodShortName">
-              <el-input v-model="productInfo.prodShortName" type="text" />
+            <el-form-item label="曲线产品简称" prop="productShortName">
+              <el-input v-model="productInfo.productShortName" type="text" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线英文名称" prop="prodEnglishName">
-              <el-input v-model="productInfo.prodEnglishName" />
+            <el-form-item label="曲线英文名称" prop="productEnglishName">
+              <el-input v-model="productInfo.productEnglishName" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -230,11 +230,11 @@ export default {
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
-        prodShortName: [
+        productShortName: [
           { required: true, message: '请输入产品简称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 25 个字符', trigger: 'blur' }
         ],
-        prodEnglishName: [
+        productEnglishName: [
           { required: true, message: '请输入产品英文名称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
@@ -357,6 +357,10 @@ export default {
         if (valid) {
           // 调用保存方法
           saveProductInfo(this.getProductInfo()).then(response => {
+            // 保存最新信息
+            if (response && response.curveId) {
+              this.productInfo = response
+            }
             this.stepActive++
             this.$message({
               message: '操作成功！',

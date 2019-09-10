@@ -1,4 +1,4 @@
-import request from '@/utils/request-client'
+import request from '@/utils/app-request'
 import { basic_api_curve } from '@/api/base-api.js'
 
 // 查询曲线产品列表

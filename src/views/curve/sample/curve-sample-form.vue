@@ -87,7 +87,7 @@ export default {
 
     // 先加载列表
     getCurveList({}).then(response => {
-      var datalist = response.datalist
+      var datalist = response
       this.curveList = []
       if (datalist && datalist.length > 0) {
         for (var i = 0; i < datalist.length; i++) {
