@@ -17,3 +17,20 @@ export function saveProductInfo(data) {
     data
   })
 }
+
+// 删除曲线产品
+export function delCurveProduct(id) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/delete/` + id,
+    method: 'delete'
+  })
+}
+
+// 查询曲线产品信息
+export function getCurveProduct(id) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/get/` + id,
+    method: 'get',
+    params: { id: id }
+  })
+}

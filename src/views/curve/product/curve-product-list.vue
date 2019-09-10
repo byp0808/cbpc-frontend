@@ -95,6 +95,7 @@
           <el-button
             type="text"
             size="small"
+            :disabled="scope.row.dataStatus == '01' || scope.row.relId != null "
             @click.native.prevent="handleDelete(scope)"
           >
             删除
@@ -122,7 +123,6 @@
     </el-dialog>
     <el-dialog
       v-if="addCurveProductDefFormVisible"
-
       width="90%"
       title="曲线产品"
       :visible.sync="addCurveProductDefFormVisible"
@@ -155,7 +155,7 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
-import { queryCurveProductList } from '@/api/curve/curve-product-list.js'
+import { queryCurveProductList, delCurveProduct } from '@/api/curve/curve-product-list.js'
 import { delCurveSample } from '@/api/curve/curve-sample.js'
 
 export default {
@@ -257,36 +257,37 @@ export default {
           this.productId = rowId
           this.addCurveSampleFormVisible = true
         } else {
-          this.$message({
-            type: 'warning',
-            message: '此产品复制暂未开放'
-          })
+          // 产品ID
+          this.productId = rowId
+          this.addCurveProductDefFormVisible = true
         }
       } else if (opType === 'ADD') {
         this.addCurveProductFormVisible = true
       }
     },
-    // 删除样本券
+    // 删除
     handleDelete({ $index, row }) {
-      // 样本券
-      if (row.prdType != 'CURVE_SAMPLE') {
-        this.$message({
-          type: 'info',
-          message: '删除暂未开放'
-        })
-        return false
-      }
-      this.$confirm('是否删除该样本券?', '提示', {
+
+      this.$confirm('是否删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        await delCurveSample(row.rowNo)
-        this.queryCurveProductList()
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        if (row.prdType != 'CURVE_SAMPLE'){
+          await delCurveProduct(row.rowNo)
+          this.queryCurveProductList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }else{
+          await delCurveSample(row.rowNo)
+          this.queryCurveProductList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
       }).catch(err => { console.error(err) })
     },
     // 保存产品
