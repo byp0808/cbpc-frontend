@@ -25,6 +25,12 @@ const valuationRouter = {
       meta: { title: '估值产品新增', noCache: true }
     },
     {
+      path: 'prod-detail',
+      component: () => import('@/views/valuation/prod/prod-detail.vue'),
+      name: 'ValuationProdDetail',
+      meta: { title: '估值产品详情', noCache: true }
+    },
+    {
       path: 'rec-curve',
       component: () => import('@/views/valuation/rec-cure/rec-curve-list.vue'),
       name: 'BondFilter',
