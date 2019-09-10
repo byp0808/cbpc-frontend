@@ -17,7 +17,7 @@
         <el-row :gutter="24">
           <el-col :span="8">
             <el-form-item label="曲线产品名称" prop="productName">
-              <el-input v-model="productInfo.productName" type="text" />
+              <el-input v-model="productInfo.productName" :disabled="disabled" type="text" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -31,66 +31,67 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线产品简称" prop="prodShortName">
-              <el-input v-model="productInfo.prodShortName" type="text" />
+            <el-form-item label="曲线产品简称" prop="productShortName">
+              <el-input v-model="productInfo.productShortName" type="text" :disabled="disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线英文名称" prop="prodEnglishName">
-              <el-input v-model="productInfo.prodEnglishName" />
+            <el-form-item label="曲线英文名称" prop="productEnglishName">
+              <el-input v-model="productInfo.productEnglishName" :disabled="disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场">
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场"  >
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线评级">
-              <el-input v-model="productInfo.productGrade" type="text" />
+              <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="排列顺序" prop="sort">
-              <el-input v-model.number="productInfo.sort" />
+              <el-input v-model.number="productInfo.sort" :disabled="disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="编制日历" prop="createCalendars">
-              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历">
+              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled">
                 <el-option v-for="item in calendarOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="币种" prop="currency">
-              <el-select v-model="productInfo.currency" placeholder="请选择币种">
+              <el-select v-model="productInfo.currency" placeholder="请选择币种" :disabled="disabled">
                 <el-option v-for="item in currencyOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="利率类型" prop="rateType">
-              <el-select v-model="productInfo.rateType" placeholder="请选择利率类型">
+              <el-select v-model="productInfo.rateType" placeholder="请选择利率类型" :disabled="disabled">
                 <el-option v-for="item in rateTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线发布日期" prop="curveStartTime">
+            <el-form-item label="曲线发布日期" prop="curveStartTime" :disabled="disabled">
               <el-date-picker
                 v-model="productInfo.curveStartTime"
                 align="right"
                 type="date"
                 placeholder="选择日期"
+                :disabled="disabled"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线基准利率">
-              <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率">
+              <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in referRateOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -102,22 +103,20 @@
                 align="right"
                 type="date"
                 placeholder="选择日期"
+                :disabled="disabled"
               />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div class="text-center">
-        <el-button type="primary" @click="saveProductInfo('productInfo')">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="saveProductInfo('productInfo')">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 1" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>构建曲线类型</h3>
       </div>
-      <BondFilter
-        ref="refBondFilter"
-      />
       <div class="text-center">
         <el-button type="primary" @click="next">保存</el-button>
       </div>
@@ -170,25 +169,25 @@
 </template>
 
 <script>
-import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { formatDate, formatTimeToStr } from '@/utils/date.js'
-import { saveProductInfo } from '@/api/curve/curve-product-list.js'
+import { formatTimeToStr } from '@/utils/date.js'
+import { saveProductInfo, getCurveProduct } from '@/api/curve/curve-product-list.js'
+import { optioins } from '@/api/curve/code-type.js'
 export default {
   name: 'ValuationProdForm',
   components: {
-    BondFilter
+
   },
   props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
     // 曲线发布起始日
     var checkCurveStartTime = (rule, value, callback) => {
       if (!value) {
-        callback();
+        callback()
         return
       }
       var endDate = this.productInfo.curveEndTime
       if (!endDate) {
-        callback();
+        callback()
         return
       }
       var start = formatTimeToStr(value, 'yyyy-MM-dd')
@@ -197,19 +196,19 @@ export default {
       if (start > end) {
         callback(new Error('曲线发布起始日不能晚于曲线终止日期'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
 
     // 曲线发布终止日
     var checkCurveEndTime = (rule, value, callback) => {
       if (!value) {
-        callback();
+        callback()
         return
       }
       var startdate = this.productInfo.curveStartTime
       if (!startdate) {
-        callback();
+        callback()
         return
       }
       var start = formatTimeToStr(startdate, 'yyyy-MM-dd')
@@ -217,24 +216,24 @@ export default {
       console.info('starttime:' + start + ',end:' + end)
       if (start > end) {
         callback(new Error('曲线发布起始日不能晚于曲线终止日期'))
-      }else {
-        callback();
+      } else {
+        callback()
       }
-    };
+    }
 
     return {
+      disabled: false,
       stepActive: 0,
-      productInfo: {},
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
-        prodShortName: [
+        productShortName: [
           { required: true, message: '请输入产品简称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 25 个字符', trigger: 'blur' }
         ],
-        prodEnglishName: [
+        productEnglishName: [
           { required: true, message: '请输入产品英文名称', trigger: 'blur' },
           { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
@@ -251,7 +250,7 @@ export default {
         rateType: [
           { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
-        createCalendars:[
+        createCalendars: [
           { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
         curveStartTime: [
@@ -266,53 +265,66 @@ export default {
   computed: {
     // 市场选项
     marketOptions() {
-      var list = [
-        { value: '01', label: '中国镜内银行间市场' },
-        { value: '02', label: '香港' },
-        { value: '03', label: '巴黎' },
-        { value: '04', label: '纽约' }
-      ]
-      return list
+      return optioins('CODE_TYPE_MARKET')
     },
     calendarOptions() {
-      var list = [
-        { value: '01', label: '中国镜内银行间市场日历' },
-        { value: '02', label: '香港日历' },
-        { value: '03', label: '巴黎日历' },
-        { value: '04', label: '纽约日历' }
-      ]
-      return list
+      return optioins('CODE_TYPE_CALENDAR')
     },
     currencyOptions() {
-      var list = [
-        { value: '01', label: '人民币' },
-        { value: '02', label: '美元' },
-        { value: '03', label: '港元' },
-        { value: '04', label: '英镑' }
-      ]
-      return list
+      return optioins('CURRENCY')
     },
     rateTypeOptions() {
-      var list = [
-        { value: '01', label: '固定利率' },
-        { value: '02', label: '浮动利率' }
-      ]
-      return list
+      return optioins('RATE_TYPE')
     },
     referRateOptions() {
-      var list = [
-        { value: '01', label: '中国国债收益率曲线' },
-        { value: '02', label: '中国国债收益率曲线2' },
-        { value: '03', label: '中国国债收益率曲3' }
-      ]
-      return list
+      return optioins('REFER_RATE')
+    },
+    productInfo: {
+      get() {
+        console.info('productInfo:')
+        var info = this.$store.state.curveProduct.curveProductInfo
+        if (info) {
+          const market = info.market
+          if (market) {
+            info.markets = market.split(',')
+          }
+          const createCalendar = info.createCalendar
+          if (createCalendar) {
+            info.createCalendars = createCalendar.split(',')
+          }
+        }
+        return info
+      },
+      set(info) {
+        console.info('================set....');
+        this.$store.commit('curveProduct/setCurveProductInfo', info)
+      }
     }
   },
   beforeMount() {
-    console.info('beforeMount:' + this.basePrdCode);
+    this.productInfo = {}
+    console.info('beforeMount:' + this.basePrdCode)
     if (this.basePrdCode) {
-      this.productInfo = {}
       this.productInfo.basePrdCode = this.basePrdCode
+    }
+
+    var id = ''
+    if (this.productId) {
+      id = this.productId
+
+      if (this.opType === 'VIEW') {
+        this.disabled = true
+      } else {
+        this.disabled = false
+      }
+    } else if (this.businessId) {
+      id = this.businessId
+    }
+
+    if (id) {
+      getCurveProduct(id).then(reponse => {
+        this.$store.commit('curveProduct/setCurveProductInfo', reponse)
+      })
     }
   },
   methods: {
@@ -323,26 +335,26 @@ export default {
     next() {
       if (this.stepActive++ > 4) this.stepActive = 0
     },
-    getProductInfo(){
-      if ( this.productInfo.markets ) {
-        this.productInfo.market = this.productInfo.markets.join(',');
+    getProductInfo() {
+      if (this.productInfo.markets) {
+        this.productInfo.market = this.productInfo.markets.join(',')
       }
-      if ( this.productInfo.createCalendars ) {
-        this.productInfo.createCalendar = this.productInfo.createCalendars.join(',');
+      if (this.productInfo.createCalendars) {
+        this.productInfo.createCalendar = this.productInfo.createCalendars.join(',')
       }
       if (!this.productInfo.maturityFlag) {
-        this.productInfo.maturityFlag = 1;
+        this.productInfo.maturityFlag = 1
       }
       if (!this.productInfo.spotFlag) {
-        this.productInfo.spotFlag = 1;
+        this.productInfo.spotFlag = 1
       }
       if (!this.productInfo.forwardFlag) {
-        this.productInfo.forwardFlag = 1;
+        this.productInfo.forwardFlag = 1
       }
       if (!this.productInfo.validFlag) {
-        this.productInfo.validFlag = 'N';
+        this.productInfo.validFlag = 'N'
       }
-      return this.productInfo;
+      return this.productInfo
     },
     saveProductInfo(formName) {
       console.info('saveProductInfo1')
@@ -357,13 +369,17 @@ export default {
         if (valid) {
           // 调用保存方法
           saveProductInfo(this.getProductInfo()).then(response => {
+            // 保存最新信息
+            if (response && response.curveId) {
+              this.productInfo = response
+            }
             this.stepActive++
             this.$message({
               message: '操作成功！',
               type: 'success',
               showClose: true
             })
-          });
+          })
         } else {
           console.log('error submit!!')
           return false

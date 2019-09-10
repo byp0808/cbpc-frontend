@@ -12,75 +12,35 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column
-        prop="prdCode"
-        label="产品编号"
-        width="120"
-      />
-      <el-table-column
-        prop="productName"
-        label="产品名称"
-        width="140"
-      />
-      <el-table-column
-        prop="productLine"
-        label="产品线"
-        width="100"
-      />
-      <el-table-column
-        prop="productGroup"
-        label="产品组"
-        width="100"
-      />
-      <el-table-column
-        prop="basePrdCode"
-        label="基础产品"
-        width="100"
-      />
-      <el-table-column
-        prop="curveStartTime"
-        label="产品上市日期"
-        width="120"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="curveEndTime"
-        label="产品退市日期"
-        width="120"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="prdStatus"
-        label="产品状态"
-        width="100"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="approveStatus"
-        label="审批状态"
-        width="100"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="remark"
-        label="产品明细"
-        width="100"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="150"
-      >
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="prdCode" label="产品编号" width="120" />
+      <el-table-column prop="productName" label="产品名称" width="140"  show-overflow-tooltip />
+      <el-table-column prop="productLine" label="产品线" width="100"  show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.productLine | showCodeLabel('PRODUCT_LINE') }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="productGroup" label="产品组" width="100"  show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.productGroup | showCodeLabel('PRODUCT_GROUP') }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="basePrdCode" label="基础产品" width="100"  show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{ scope.row.basePrdCode | showCodeLabel('BASE_PRD_CODE') }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip />
+      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip />
+      <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip />
+      <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip />
+      <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />
+      <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus == '01' || scope.row.relId != null "
+            :disabled="scope.row.dataStatus === '01' || scope.row.relId != null "
             @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
@@ -95,6 +55,7 @@
           <el-button
             type="text"
             size="small"
+            :disabled="scope.row.dataStatus == '01' || scope.row.relId != null "
             @click.native.prevent="handleDelete(scope)"
           >
             删除
@@ -111,7 +72,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog :lock-scroll="lockScroll" width="40%" title="新增产品" :visible.sync="addCurveProductFormVisible">
+    <el-dialog :lock-scroll="lockScroll" width="40%" title="新增产品" v-if="addCurveProductFormVisible" :visible.sync="addCurveProductFormVisible">
       <CurveProductForm
         ref="refCurveProductForm"
       />
@@ -122,7 +83,6 @@
     </el-dialog>
     <el-dialog
       v-if="addCurveProductDefFormVisible"
-
       width="90%"
       title="曲线产品"
       :visible.sync="addCurveProductDefFormVisible"
@@ -155,8 +115,9 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
-import { queryCurveProductList } from '@/api/curve/curve-product-list.js'
+import { queryCurveProductList, delCurveProduct } from '@/api/curve/curve-product-list.js'
 import { delCurveSample } from '@/api/curve/curve-sample.js'
+import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
   name: 'CurveList', // 曲线样本券列表
@@ -164,6 +125,9 @@ export default {
     CurveProductForm,
     CurveSampleForm,
     CurveProductDefForm
+  },
+  filters: {
+    showCodeLabel: showCodeLabel
   },
   data() {
     return {
@@ -201,7 +165,7 @@ export default {
   },
   methods: {
     handleFilter() {
-      this.productList.page = 1
+      this.productList.page.pageNumber = 1
       this.queryCurveProductList()
     },
     handleSizeChange(pageSize) {
@@ -218,8 +182,9 @@ export default {
     },
     queryCurveProductList() {
       queryCurveProductList({ page: this.productList.page }).then(response => {
-        const { datalist, page } = response
-        this.productList.dataList = datalist
+        console.info('queryCurveProductList.queryCurveProductList...')
+        const { dataList, page } = response
+        this.productList.dataList = dataList
         this.productList.page = page
       })
     },
@@ -256,36 +221,36 @@ export default {
           this.productId = rowId
           this.addCurveSampleFormVisible = true
         } else {
-          this.$message({
-            type: 'warning',
-            message: '此产品复制暂未开放'
-          })
+          // 产品ID
+          this.productId = rowId
+          this.addCurveProductDefFormVisible = true
         }
       } else if (opType === 'ADD') {
         this.addCurveProductFormVisible = true
       }
     },
-    // 删除样本券
+    // 删除
     handleDelete({ $index, row }) {
-      // 样本券
-      if (row.prdType != 'CURVE_SAMPLE') {
-        this.$message({
-          type: 'info',
-          message: '删除暂未开放'
-        })
-        return false
-      }
-      this.$confirm('是否删除该样本券?', '提示', {
+      this.$confirm('是否删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        await delCurveSample(row.rowNo)
-        this.queryCurveProductList()
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        if (row.prdType !== 'CURVE_SAMPLE') {
+          await delCurveProduct(row.rowNo)
+          this.queryCurveProductList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        } else {
+          await delCurveSample(row.rowNo)
+          this.queryCurveProductList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
       }).catch(err => { console.error(err) })
     },
     // 保存产品
@@ -311,7 +276,7 @@ export default {
     // 保存曲线样本券
     saveCureSample() {
       console.info('saveCureSample:')
-      var data = this.$refs.refCurveSampleForm.save()
+      this.$refs.refCurveSampleForm.save()
     },
     // 保存曲线样本券回调
     saveCureSampleCallBack() {

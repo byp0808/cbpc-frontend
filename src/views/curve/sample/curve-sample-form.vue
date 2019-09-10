@@ -57,6 +57,7 @@
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
 import { getCurveSample, getCurveList, saveCurveSample, submitTask } from '@/api/curve/curve-sample.js'
+import { getCurveProductOptions } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'RecCurveForm',
   components: {
@@ -86,17 +87,8 @@ export default {
     console.info('===beforeMount===')
 
     // 先加载列表
-    getCurveList({}).then(response => {
-      var datalist = response.datalist
-      this.curveList = []
-      if (datalist && datalist.length > 0) {
-        for (var i = 0; i < datalist.length; i++) {
-          var data = datalist[i]
-          this.curveList.push({ value: data.curveId, label: data.productName })
-          this.allCurveList.push({ value: data.curveId, label: data.productName })
-        }
-      }
-    })
+    this.curveList = getCurveProductOptions();
+    this.allCurveList = this.curveList;
 
     if (this.productId) {
       getCurveSample(this.productId).then(reponse => {
