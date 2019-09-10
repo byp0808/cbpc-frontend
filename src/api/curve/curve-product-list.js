@@ -52,7 +52,7 @@ export function getCurveProductOptions() {
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]
-        options.push({ value: data.curveId, label: data.productName })
+        options.push({ value: data.curvePrdCode, label: data.productName })
       }
     }
   })

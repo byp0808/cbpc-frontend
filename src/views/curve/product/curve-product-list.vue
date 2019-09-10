@@ -14,18 +14,18 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="prdCode" label="产品编号" width="120" />
-      <el-table-column prop="productName" label="产品名称" width="140" />
-      <el-table-column prop="productLine" label="产品线" width="100" >
+      <el-table-column prop="productName" label="产品名称" width="140"  show-overflow-tooltip />
+      <el-table-column prop="productLine" label="产品线" width="100"  show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productLine | showCodeLabel('PRODUCT_LINE') }}
         </template>
       </el-table-column>
-      <el-table-column prop="productGroup" label="产品组" width="100" >
+      <el-table-column prop="productGroup" label="产品组" width="100"  show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productGroup | showCodeLabel('PRODUCT_GROUP') }}
         </template>
       </el-table-column>
-      <el-table-column prop="basePrdCode" label="基础产品" width="100" >
+      <el-table-column prop="basePrdCode" label="基础产品" width="100"  show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.basePrdCode | showCodeLabel('BASE_PRD_CODE') }}
         </template>
