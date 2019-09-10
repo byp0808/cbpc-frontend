@@ -13,6 +13,12 @@ const valuationRouter = {
   },
   children: [
     {
+      path: 'prod-list',
+      component: () => import('@/views/valuation/prod/prod-list.vue'),
+      name: 'ValuationProdList',
+      meta: { title: '估值产品列表', noCache: true }
+    },
+    {
       path: 'prod-form',
       component: () => import('@/views/valuation/prod/prod-form.vue'),
       name: 'ValuationProdForm',

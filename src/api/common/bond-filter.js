@@ -1,4 +1,4 @@
-import request from '@/utils/request-client'
+import request from '@/utils/app-request'
 import { basic_api_market } from '@/api/base-api.js'
 
 // 查询模板列表

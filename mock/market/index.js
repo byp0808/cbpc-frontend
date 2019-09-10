@@ -19,23 +19,23 @@ export default [
             name: '流通场所'
           }],
           compIndices: [{
-            id: 'jianc',
+            id: 'jianc1212',
             name: '待尝期'
           },
           {
-            id: 'daim',
+            id: 'daim312331',
             name: '估价净价'
           },
           {
-            id: 'liut',
+            id: 'liut12333123',
             name: '估价凸性'
           },
           {
-            id: 'liut1',
+            id: 'liut113323123',
             name: '估价收益率'
           },
           {
-            id: 'liut2',
+            id: 'liut2323144',
             name: '估价修正期'
           }]
         }

@@ -1,4 +1,4 @@
-import request from '@/utils/request-client'
+import request from '@/utils/app-request'
 import { basic_path } from '@/api/common/common.js'
 
 // 查询待办任务列表

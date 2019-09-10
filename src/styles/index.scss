@@ -225,7 +225,7 @@ aside {
 
 .margin-top {
   margin:{
-    top: 10px;
+    top: 15px;
   };
 }
 
@@ -249,4 +249,9 @@ aside {
       top: 10px;
     }
   }
+}
+
+.el-card__body .el-card.is-always-shadow {
+  box-shadow: unset;
+  -webkit-box-shadow: unset;
 }

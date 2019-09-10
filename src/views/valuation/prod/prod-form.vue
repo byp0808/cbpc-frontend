@@ -177,7 +177,7 @@
         />
       </el-table>
       <div class="text-center">
-        <el-button type="primary" @click="next">确认</el-button>
+        <el-button type="primary" @click="saveWay">确认</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
@@ -213,29 +213,40 @@
             <el-tabs type="card">
               <el-tab-pane v-for="batch in batchesChoice" :key="batch.batchId" :label="batch.batchName">
                 <el-table
-                  :data="batches"
+                  :data="batchProdIndices[batch.batchId]"
                   tooltip-effect="dark"
                   style="width:100%"
-                  @selection-change="choiceBatch"
                 >
                   <el-table-column
-                    prop="batchName"
+                    prop="name"
                     label="估值指标"
-                  />
-                  <el-table-column
-                    prop="batchName"
-                    label="计算许可"
                   >
-                    <template slot-scope="scope">
-                      <el-checkbox v-model="checked" style="margin-left: 20px" />
+                    <template slot-scope="{row}">
+                      <span>{{ fmtIndexName(row.indexId) }}</span>
                     </template>
                   </el-table-column>
                   <el-table-column
-                    prop="batchName"
+                    label="计算许可"
+                  >
+                    <template slot-scope="{row}">
+                      <el-switch
+                        v-model="batchChoiceIndicesStatus(batch.batchId, row.id).compPermStatus"
+                        active-color="#13ce66"
+                        active-value="1"
+                        inactive-value="0"
+                      />
+                    </template>
+                  </el-table-column>
+                  <el-table-column
                     label="发布许可"
                   >
-                    <template slot-scope="scope">
-                      <el-checkbox v-model="checked" style="margin-left: 20px" />
+                    <template slot-scope="{row}">
+                      <el-switch
+                        v-model="batchChoiceIndicesStatus(batch.batchId, row.id).relaPermStatus"
+                        active-color="#13ce66"
+                        active-value="1"
+                        inactive-value="0"
+                      />
                     </template>
                   </el-table-column>
                 </el-table>
@@ -245,13 +256,40 @@
         </el-col>
       </el-row>
       <div class="text-center">
-        <el-button type="primary" @click="next">保存</el-button>
+        <el-button type="primary" @click="saveBatchIndices">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 5" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>确认产品</h3>
       </div>
+      <el-card
+        v-for="(batch, key) in confirm"
+        :key="key"
+        class="box-card margin-top"
+      >
+        <div slot="header" class="clearfix card-head">
+          <span>{{ fmtBatchName(key) }}</span>
+        </div>
+        <el-table
+          :data="batch.statusData"
+          style="width: 100%"
+        >
+          <el-table-column
+            v-for="(index, key) in batch.indices"
+            :key="key"
+            :prop="index"
+            :label="fmtIndexName(index)"
+            align="center"
+          >
+            <template slot-scope="{row}">
+              <i v-if="row[index] === '1'" style="color: #13ce66" class="el-icon-success" />
+              <i v-else-if="row[index] === '0'" style="color: #ff4949" class="el-icon-error" />
+              <span v-else="">{{ row[index] }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
       <div class="text-center">
         <el-button type="primary">确认</el-button>
       </div>
@@ -261,7 +299,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveProd } from '@/api/valuation/prod.js'
+import { saveProd, confirmProd, indicesProd } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdForm',
   components: {
@@ -269,8 +307,12 @@ export default {
   },
   data() {
     return {
-      stepActive: 4,
+      prodId: '402835816d1a6431016d1a83bee10000',
+      stepActive: 0,
       batchesChoiceTemp: [],
+      batchesChoiceIndices: [],
+      prodIndices: [],
+      confirm: {},
       basicProdList: [{
         id: 'prod-1',
         name: '基础产品1'
@@ -362,25 +404,65 @@ export default {
       get() {
         return this.$store.state.valuationProd.batchIndices.batchesChoice
       }
+    },
+    batchChoiceIndicesStatus() {
+      return function(batchId, indexId) {
+        const arrIndex = this.$lodash.findIndex(this.batchesChoiceIndices, { batchId: batchId, indexId: indexId })
+        return this.batchesChoiceIndices[arrIndex]
+      }
+    },
+    batchProdIndices: {
+      get() {
+        return this.$store.state.valuationProd.batchIndices.batchProdIndices
+      }
+    },
+    fmtIndexName() {
+      return function(indexId) {
+        const index = this.$lodash.findIndex(this.compIndices, { id: indexId })
+        if (index >= 0) {
+          return this.compIndices[index].name
+        } else {
+          return ''
+        }
+      }
+    },
+    fmtBatchName() {
+      return function(batchId) {
+        const index = this.$lodash.findIndex(this.batches, { batchId: batchId })
+        return this.batches[index].batchName
+      }
     }
   },
   beforeMount() {
     this.$store.dispatch('valuationProd/loadProdIndices')
-    this.$store.dispatch('valuationProd/loadValuationWay')
-    this.$store.dispatch('valuationProd/loadBatches')
   },
   methods: {
     choiceBatch(val) {
       this.batchesChoiceTemp = val
     },
     useChoiceBatch() {
+      const that = this
       this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: this.batchesChoiceTemp })
+      this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
+        that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
+        that.$lodash.each(that.prodIndices, function(index, key) {
+          const temp = {
+            batchId: batch.batchId,
+            prodId: that.prodId,
+            indexId: index.id,
+            compPermStatus: '1',
+            relaPermStatus: '1'
+          }
+          that.batchesChoiceIndices.push(temp)
+        })
+      })
     },
     next() {
       if (this.stepActive++ > 5) this.stepActive = 0
     },
     saveProd() {
       saveProd({ step: this.stepActive + 1, valuationProd: this.prodInfo }).then(response => {
+        this.prodId = response
         this.next()
         this.$message({
           showClose: true,
@@ -390,22 +472,62 @@ export default {
       })
     },
     saveProdIndices() {
+      const that = this
       const dataList = []
-      this.$lodash.each(this.basicIndicesBasic, function(value, index) {
-        const data = { prodId: '111', indexId: value, indexType: '01' }
+      this.$lodash.each(this.basicIndicesResult, function(value, index) {
+        const data = { prodId: that.prodId, indexId: value, indexType: '01' }
         dataList.push(data)
       })
 
-      this.$lodash.each(this.compIndicesComp, function(value, index) {
-        const data = { prodId: '111', indexId: value, indexType: '02' }
+      this.$lodash.each(this.compIndicesResult, function(value, index) {
+        const data = { prodId: that.prodId, indexId: value, indexType: '02' }
         dataList.push(data)
       })
 
-      saveProd({ step: this.stepActive + 1, valuationProdIndices: dataList }).then(response => {
-        // this.next()
+      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdIndices: dataList }).then(response => {
+        this.next()
+        this.$store.dispatch('valuationProd/loadValuationWay')
         this.$message({
           showClose: true,
           message: '产品计算指标保存成功',
+          type: 'success'
+        })
+      })
+    },
+    saveWay() {
+      const that = this
+      const dataList = []
+      this.$lodash.each(this.loadValuationWay, function(way, index) {
+        const tep = {
+          prodId: that.prodId,
+          methodId: way.id
+        }
+        dataList.push(tep)
+      })
+      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdMethods: dataList }).then(response => {
+        this.next()
+        this.$store.dispatch('valuationProd/loadBatches')
+        indicesProd(this.prodId).then(response => {
+          const { dataList } = response
+          that.prodIndices = dataList
+        })
+        this.$message({
+          showClose: true,
+          message: '估值方法保存成功',
+          type: 'success'
+        })
+      })
+    },
+    saveBatchIndices() {
+      const that = this
+      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdBatchIndices: this.batchesChoiceIndices }).then(response => {
+        confirmProd(this.prodId).then(response => {
+          this.confirm = response
+        })
+        this.next()
+        this.$message({
+          showClose: true,
+          message: '批次发布指标保存成功',
           type: 'success'
         })
       })
@@ -414,6 +536,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  .el-card__body .el-card.is-always-shadow {
+    box-shadow: unset;
+    -webkit-box-shadow: unset;
+  }
 </style>

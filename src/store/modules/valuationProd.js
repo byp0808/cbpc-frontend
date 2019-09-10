@@ -17,7 +17,8 @@ export default {
     },
     batchIndices: {
       batches: [],
-      batchesChoice: []
+      batchesChoice: [],
+      batchProdIndices: {}
     },
     confirm: {}
   },
@@ -38,6 +39,9 @@ export default {
     setBatchIndices(state, { batches, batchesChoice }) {
       if (batches) state.batchIndices.batches = batches
       if (batchesChoice) state.batchIndices.batchesChoice = batchesChoice
+    },
+    setBatchProdIndices(state, { batchId, prodIndices }) {
+      state.batchIndices.batchProdIndices[batchId] = prodIndices
     }
   },
   actions: {
@@ -59,6 +63,5 @@ export default {
         commit('setBatchIndices', { batches: datalist })
       })
     }
-
   }
 }
