@@ -14,6 +14,7 @@ import store from './store'
 import router from './router'
 
 import _ from 'lodash'
+import moment from 'moment'
 
 import './icons' // icon
 import './permission' // permission control
@@ -44,6 +45,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Object.defineProperty(Vue.prototype, '$lodash', { value: _ })
+Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 
 Vue.config.productionTip = false
 
