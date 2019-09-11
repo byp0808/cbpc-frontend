@@ -10,7 +10,7 @@
         <el-step title="确认产品" />
       </el-steps>
     </el-card>
-    <el-card v-if="stepActive === 0" class="box-card margin-top">
+    <el-card v-show="stepActive === 0" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>基本信息</h3>
       </div>
@@ -37,7 +37,6 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  :picker-options="pickerOptions1"
                   style="width: 100%"
                 />
               </el-form-item>
@@ -46,7 +45,7 @@
         </el-col>
         <el-col :span="8">
           <div class="grid-content bg-purple">
-            <el-form ref="ruleForm2" :model="prodInfo" status-icon :rules="rules2" label-width="100px" class="demo-ruleForm">
+            <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
               <el-form-item label="基础产品">
                 <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%">
                   <el-option
@@ -63,7 +62,6 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  :picker-options="pickerOptions1"
                   style="width: 100%"
                 />
               </el-form-item>
@@ -108,79 +106,107 @@
         </el-col>
       </el-row>
       <div class="text-center">
+        <el-button type="primary" @click="next">下一步</el-button>
         <el-button type="primary" @click="saveProd">保存</el-button>
       </div>
     </el-card>
-    <el-card v-if="stepActive === 1" class="box-card margin-top">
+    <el-card v-show="stepActive === 1" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>选择范围</h3>
       </div>
       <BondFilter
         ref="refBondFilter"
+        :filter-id="prodInfo.bondFilterId"
       />
-      <div class="text-center">
-        <el-button type="primary" @click="next">保存</el-button>
+      <div class="text-center margin-top">
+        <el-button type="primary" @click="back">上一步</el-button>
+        <el-button type="primary" @click="next">下一步</el-button>
+        <el-button type="primary" @click="saveFilter">保存</el-button>
       </div>
     </el-card>
-    <el-card v-if="stepActive === 2" class="box-card margin-top">
+    <el-card v-show="stepActive === 2" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>选择指标</h3>
       </div>
-      <el-transfer
-        v-model="basicIndicesResult"
-        class=""
-        filterable="true"
-        :props="{
-          key: 'id',
-          label: 'name'
-        }"
-        :titles="['估值基本信息', '估值基本信息']"
-        :data="basicIndices"
-      />
-      <el-transfer
-        v-model="compIndicesResult"
-        class=""
-        :props="{
-          key: 'id',
-          label: 'name'
-        }"
-        :titles="['估值指标', '估值指标']"
-        :data="compIndices"
-      />
-      <div class="text-center">
+      <el-row :gutter="20">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-transfer
+              v-model="basicIndicesResult"
+              class=""
+              :filterable="boolTrue"
+              :props="{
+                key: 'id',
+                label: 'name'
+              }"
+              :titles="['估值基本信息', '估值基本信息']"
+              :data="basicIndices"
+            />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" class="margin-top">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-transfer
+              v-model="compIndicesResult"
+              class=""
+              :props="{
+                key: 'id',
+                label: 'name'
+              }"
+              :titles="['估值指标', '估值指标']"
+              :data="compIndices"
+            />
+          </div>
+        </el-col>
+      </el-row>
+      <div class="text-center margin-top">
+        <el-button type="primary" @click="back">上一步</el-button>
+        <el-button type="primary" @click="next">下一步</el-button>
         <el-button type="primary" @click="saveProdIndices">保存</el-button>
       </div>
     </el-card>
-    <el-card v-if="stepActive === 3" class="box-card margin-top">
+    <el-card v-show="stepActive === 3" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>估值方法</h3>
       </div>
-      <el-table
-        :data="loadValuationWay"
-        tooltip-effect="dark"
-        style="width:100%"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column
-          type="selection"
-          width="55"
-        />
-        <el-table-column
-          prop="id"
-          label="估值方法"
-          width="200"
-        />
-        <el-table-column
-          prop="name"
-          label="描述"
-          width=""
-        />
-      </el-table>
-      <div class="text-center">
-        <el-button type="primary" @click="saveWay">确认</el-button>
+      <el-row :gutter="20" class="margin-top">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-table
+              ref="wayTable"
+              :data="loadValuationWay"
+              tooltip-effect="dark"
+              style="width:100%"
+              border
+              @selection-change="choiceWay"
+            >
+              <el-table-column
+                type="selection"
+                width="55"
+              />
+              <el-table-column
+                prop="id"
+                label="估值方法"
+                width="200"
+              />
+              <el-table-column
+                prop="name"
+                label="描述"
+                width=""
+              />
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
+      <div class="text-center margin-top">
+        <el-button type="primary" @click="back">上一步</el-button>
+        <el-button type="primary" @click="next">下一步</el-button>
+        <el-button type="primary" @click="saveWay">保存</el-button>
       </div>
     </el-card>
-    <el-card v-if="stepActive === 4" class="box-card margin-top">
+    <el-card v-show="stepActive === 4" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>批次发布指标</h3>
       </div>
@@ -192,6 +218,8 @@
               <el-button type="primary">刷新</el-button>
             </div>
             <el-table
+              ref="batchesTable"
+              class="margin-top"
               :data="batches"
               tooltip-effect="dark"
               style="width:100%"
@@ -230,7 +258,7 @@
                   >
                     <template slot-scope="{row}">
                       <el-switch
-                        v-model="batchChoiceIndicesStatus(batch.batchId, row.id).compPermStatus"
+                        v-model="batchChoiceIndicesStatus(batch.batchId, row.indexId).compPermStatus"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -242,7 +270,7 @@
                   >
                     <template slot-scope="{row}">
                       <el-switch
-                        v-model="batchChoiceIndicesStatus(batch.batchId, row.id).relaPermStatus"
+                        v-model="batchChoiceIndicesStatus(batch.batchId, row.indexId).relaPermStatus"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -255,11 +283,13 @@
           </div>
         </el-col>
       </el-row>
-      <div class="text-center">
+      <div class="text-center margin-top">
+        <el-button type="primary" @click="back">上一步</el-button>
+        <el-button type="primary" @click="next">下一步</el-button>
         <el-button type="primary" @click="saveBatchIndices">保存</el-button>
       </div>
     </el-card>
-    <el-card v-if="stepActive === 5" class="box-card margin-top">
+    <el-card v-show="stepActive === 5" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>确认产品</h3>
       </div>
@@ -290,8 +320,9 @@
           </el-table-column>
         </el-table>
       </el-card>
-      <div class="text-center">
-        <el-button type="primary">确认</el-button>
+      <div class="text-center margin-top">
+        <el-button type="primary" @click="back">上一步</el-button>
+        <el-button type="primary">提交审核</el-button>
       </div>
     </el-card>
   </div>
@@ -299,7 +330,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveProd, confirmProd, indicesProd, detailProd } from '@/api/valuation/prod.js'
+import { saveProd, confirmProd, indicesProd, detailProd, taskStart } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdForm',
   components: {
@@ -307,8 +338,10 @@ export default {
   },
   data() {
     return {
+      boolTrue: true,
       prodId: '',
-      stepActive: 2,
+      stepActive: 0,
+      valuationWay: [],
       batchesChoiceTemp: [],
       batchesChoiceIndices: [],
       prodIndices: [],
@@ -352,7 +385,8 @@ export default {
       {
         id: 'currency-2',
         name: '币种2'
-      }]
+      }],
+      detail: null
     }
   },
   computed: {
@@ -408,7 +442,7 @@ export default {
     batchChoiceIndicesStatus() {
       return function(batchId, indexId) {
         const arrIndex = this.$lodash.findIndex(this.batchesChoiceIndices, { batchId: batchId, indexId: indexId })
-        return this.batchesChoiceIndices[arrIndex]
+        return this.batchesChoiceIndices[arrIndex] || {}
       }
     },
     batchProdIndices: {
@@ -434,25 +468,105 @@ export default {
     }
   },
   beforeMount() {
-    const that = this
-    this.$store.dispatch('valuationProd/loadProdIndices')
+    this.initData()
     if (this.$store.state.valuationProd.prodId) {
       this.prodId = this.$store.state.valuationProd.prodId
-      detailProd(this.prodId).then(response => {
-        const { valuationProd, valuationProdIndices } = response
-        that.$store.commit('valuationProd/setProdInfo', valuationProd)
-        if (valuationProdIndices) {
-          that.$store.commit('valuationProd/setProdIndices', valuationProdIndices)
-        }
-      })
+      this.initDetailData()
     }
   },
+  mounted() {
+    this.$store.commit('valuationProd/setProdId', '')
+  },
   methods: {
+    back() {
+      if (this.stepActive-- < 0) this.stepActive = 5
+    },
+    next() {
+      if (this.stepActive++ > 5) this.stepActive = 0
+      this.initData()
+      if (this.detail) {
+        this.loadDetail()
+      }
+    },
+    initData() {
+      switch (this.stepActive) {
+        case 0:
+          break
+        case 1:
+          this.$store.dispatch('valuationProd/loadProdIndices')
+          break
+        case 2:
+          this.$store.dispatch('valuationProd/loadValuationWay')
+          break
+        case 3:
+          this.$store.dispatch('valuationProd/loadBatches')
+          indicesProd(this.prodId).then(response => {
+            const { dataList } = response
+            that.prodIndices = dataList
+          })
+          break
+        case 4:
+          break
+        case 5:
+          confirmProd(this.prodId).then(response => {
+            this.confirm = response
+          })
+          break
+      }
+      const that = this
+    },
+    initDetailData() {
+      const that = this
+      detailProd(this.prodId).then(response => {
+        that.detail = response
+        that.loadDetail()
+      })
+    },
+    loadDetail() {
+      const that = this
+      const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds, valuationProdBatchIndices } = this.detail
+      if (this.stepActive === 0) {
+        that.$store.commit('valuationProd/setProdInfo', valuationProd)
+      } else if (this.stepActive === 2 && valuationProdIndices) {
+        const compIndicesResult = []
+        const basicIndicesResult = []
+        this.$store.dispatch('valuationProd/loadProdIndices')
+        that.$lodash.each(valuationProdIndices, function(value, key) {
+          if (value.indexType === '02') {
+            compIndicesResult.push(value.indexId)
+          } else if (value.indexType === '01') {
+            basicIndicesResult.push(value.indexId)
+          }
+        })
+        that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
+      } else if (this.stepActive === 3 && valuationProdMethods) {
+        that.$lodash.each(valuationProdMethods, function(value, key) {
+          const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
+          that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
+        })
+      } else if (this.stepActive === 4 && bachIds) {
+        that.$lodash.each(bachIds, function(value, key) {
+          const index = that.$lodash.findIndex(that.batches, { batchId: value })
+          that.$refs.batchesTable.toggleRowSelection(that.batches[index], true)
+        })
+        this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: that.batchesChoiceTemp })
+        this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
+          that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
+        })
+        if (valuationProdBatchIndices) {
+          this.batchesChoiceIndices = valuationProdBatchIndices
+        }
+      }
+    },
     choiceBatch(val) {
       this.batchesChoiceTemp = val
     },
+    choiceWay(val) {
+      this.valuationWay = val
+    },
     useChoiceBatch() {
       const that = this
+      this.batchesChoiceIndices = []
       this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: this.batchesChoiceTemp })
       this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
         that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
@@ -460,7 +574,7 @@ export default {
           const temp = {
             batchId: batch.batchId,
             prodId: that.prodId,
-            indexId: index.id,
+            indexId: index.indexId,
             compPermStatus: '1',
             relaPermStatus: '1'
           }
@@ -468,19 +582,27 @@ export default {
         })
       })
     },
-    next() {
-      if (this.stepActive++ > 5) this.stepActive = 0
-    },
-    saveProd() {
-      saveProd({ step: this.stepActive + 1, prodId: this.prodId, valuationProd: this.prodInfo }).then(response => {
+    save(data, msg) {
+      const reqData = { step: this.stepActive + 1, prodId: this.prodId }
+      this.$lodash.assign(reqData, data)
+      saveProd(reqData).then(response => {
         this.prodId = response
         this.next()
         this.$message({
           showClose: true,
-          message: '产品信息保存成功',
+          message: `${msg}保存成功`,
           type: 'success'
         })
+        // 保存后回调查询 更新model内的数据信息
+        this.initDetailData()
       })
+    },
+    saveProd() {
+      this.save({ valuationProd: this.prodInfo }, '产品信息')
+    },
+    saveFilter() {
+      console.log(this.$refs.refBondFilter.getData())
+      this.save({ bondFilterInfo: this.$refs.refBondFilter.getData() }, '筛选范围')
     },
     saveProdIndices() {
       const that = this
@@ -494,51 +616,33 @@ export default {
         const data = { prodId: that.prodId, indexId: value, indexType: '02' }
         dataList.push(data)
       })
-
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdIndices: dataList }).then(response => {
-        this.next()
-        this.$store.dispatch('valuationProd/loadValuationWay')
-        this.$message({
-          showClose: true,
-          message: '产品计算指标保存成功',
-          type: 'success'
-        })
-      })
+      this.save({ valuationProdIndices: dataList }, '产品计算指标')
     },
     saveWay() {
       const that = this
       const dataList = []
-      this.$lodash.each(this.loadValuationWay, function(way, index) {
+      this.$lodash.each(this.valuationWay, function(way, index) {
         const tep = {
           prodId: that.prodId,
           methodId: way.id
         }
         dataList.push(tep)
       })
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdMethods: dataList }).then(response => {
-        this.next()
-        this.$store.dispatch('valuationProd/loadBatches')
-        indicesProd(this.prodId).then(response => {
-          const { dataList } = response
-          that.prodIndices = dataList
-        })
-        this.$message({
-          showClose: true,
-          message: '估值方法保存成功',
-          type: 'success'
-        })
-      })
+      this.save({ valuationProdMethods: dataList }, '估值方法')
     },
     saveBatchIndices() {
-      const that = this
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdBatchIndices: this.batchesChoiceIndices }).then(response => {
-        confirmProd(this.prodId).then(response => {
-          this.confirm = response
-        })
-        this.next()
+      this.save({ valuationProdBatchIndices: this.batchesChoiceIndices }, '批次发布指标')
+    },
+    taskStart() {
+      taskStart({
+        businessNo: this.prodId,
+        businessName: '估值产品定义',
+        businessRouter: '',
+        taskName: '估值产品定义'
+      }).then(response => {
         this.$message({
           showClose: true,
-          message: '批次发布指标保存成功',
+          message: '流程提交成功',
           type: 'success'
         })
       })

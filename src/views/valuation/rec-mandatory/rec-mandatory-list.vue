@@ -35,15 +35,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="curveId"
-        label="估值推荐规则"
+        prop="recoDirection"
+        label="强制推荐方向"
         width="260"
         show-overflow-tooltip
-      >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ curveName(scope.row.curveId) }}</span>
-        </template>
-      </el-table-column>
+      />
       <el-table-column
         prop="approveStatus"
         label="状态"
@@ -166,13 +162,14 @@ export default {
   methods: {
     loadTable() {
       queryMandatoryList({ page: this.page }).then(response => {
-        const { valuationCurves, ruleDetail, page } = response
+        const { recForces, ruleDetail, page } = response
         this.page = page
-        this.mandatoryList = valuationCurves
+        this.mandatoryList = recForces
         this.bondFilterList = ruleDetail
       })
     },
     save() {
+      alert('保存')
       this.$refs.RecMandatoryForm.save()
     },
     toDetail(id) {

@@ -9,10 +9,10 @@
           <div class="grid-content bg-purple">
             <el-form :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
               <el-form-item label="产品名称">
-                <el-input v-model="prodInfo.prodName" type="text" auto-complete="off" />
+                <el-input v-model="prodInfo.prodName" type="text" auto-complete="off" :disabled="boolTrue" />
               </el-form-item>
               <el-form-item label="产品状态">
-                <el-select v-model="prodInfo.prodStatus" placeholder="产品状态" style="width: 100%">
+                <el-select v-model="prodInfo.prodStatus" placeholder="产品状态" style="width: 100%" :disabled="boolTrue">
                   <el-option
                     v-for="prodStatus in prodStatusList"
                     :key="prodStatus.id"
@@ -24,6 +24,7 @@
               <el-form-item label="退市日">
                 <el-date-picker
                   v-model="prodInfo.delistingDate"
+                  :disabled="boolTrue"
                   align="right"
                   type="date"
                   placeholder="选择日期"
@@ -37,7 +38,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
               <el-form-item label="基础产品">
-                <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%">
+                <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%" :disabled="boolTrue">
                   <el-option
                     v-for="basicProd in basicProdList"
                     :key="basicProd.id"
@@ -49,15 +50,15 @@
               <el-form-item label="上市日">
                 <el-date-picker
                   v-model="prodInfo.listingDate"
+                  :disabled="boolTrue"
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  :picker-options="pickerOptions1"
                   style="width: 100%"
                 />
               </el-form-item>
               <el-form-item label="币种">
-                <el-select v-model="prodInfo.currency" placeholder="请选择币种" style="width: 100%">
+                <el-select v-model="prodInfo.currency" placeholder="请选择币种" style="width: 100%" :disabled="boolTrue">
                   <el-option
                     v-for="currency in currencyList"
                     :key="currency.id"
@@ -73,7 +74,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
               <el-form-item label="市场">
-                <el-select v-model="prodInfo.prodMarket" placeholder="请选择市场" style="width: 100%">
+                <el-select v-model="prodInfo.prodMarket" placeholder="请选择市场" style="width: 100%" :disabled="boolTrue">
                   <el-option
                     v-for="market in marketList"
                     :key="market.id"
@@ -83,7 +84,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="编制日历">
-                <el-select v-model="prodInfo.calendar" placeholder="请选择编制日历" style="width: 100%">
+                <el-select v-model="prodInfo.calendar" placeholder="请选择编制日历" style="width: 100%" :disabled="boolTrue">
                   <el-option
                     v-for="calendar in calendarList"
                     :key="calendar.id"
@@ -103,58 +104,80 @@
       </div>
       <BondFilter
         ref="refBondFilter"
+        :disabled="boolTrue"
+        :filter-id="prodInfo.bondFilterId"
       />
     </el-card>
     <el-card class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>选择指标</h3>
       </div>
-      <el-transfer
-        v-model="basicIndicesResult"
-        class=""
-        :filterable="boolTrue"
-        :props="{
-          key: 'id',
-          label: 'name'
-        }"
-        :titles="['估值基本信息', '估值基本信息']"
-        :data="basicIndices"
-      />
-      <el-transfer
-        v-model="compIndicesResult"
-        class=""
-        :props="{
-          key: 'id',
-          label: 'name'
-        }"
-        :titles="['估值指标', '估值指标']"
-        :data="compIndices"
-      />
+      <el-row :gutter="20">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-transfer
+              v-model="basicIndicesResult"
+              class=""
+              :filterable="boolTrue"
+              :props="{
+                key: 'id',
+                label: 'name'
+              }"
+              :titles="['估值基本信息', '估值基本信息']"
+              :data="basicIndices"
+            />
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" class="margin-top">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-transfer
+              v-model="compIndicesResult"
+              class=""
+              :props="{
+                key: 'id',
+                label: 'name'
+              }"
+              :titles="['估值指标', '估值指标']"
+              :data="compIndices"
+            />
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
     <el-card class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>估值方法</h3>
       </div>
-      <el-table
-        :data="loadValuationWay"
-        tooltip-effect="dark"
-        style="width:100%"
-      >
-        <el-table-column
-          type="selection"
-          width="55"
-        />
-        <el-table-column
-          prop="id"
-          label="估值方法"
-          width="200"
-        />
-        <el-table-column
-          prop="name"
-          label="描述"
-          width=""
-        />
-      </el-table>
+      <el-row :gutter="20" class="margin-top">
+        <el-col :span="12" :offset="6">
+          <div class="grid-content bg-purple">
+            <el-table
+              ref="wayTable"
+              :data="loadValuationWay"
+              tooltip-effect="dark"
+              style="width:100%"
+            >
+              <el-table-column
+                type="selection"
+                width="55"
+                :selectable="checkSelectable"
+              />
+              <el-table-column
+                prop="id"
+                label="估值方法"
+                width="200"
+              />
+              <el-table-column
+                prop="name"
+                label="描述"
+                width=""
+              />
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
     <el-card class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
@@ -193,7 +216,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveProd, confirmProd, indicesProd, detailProd } from '@/api/valuation/prod.js'
+import { confirmProd, indicesProd, detailProd } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdForm',
   components: {
@@ -202,7 +225,8 @@ export default {
   data() {
     return {
       boolTrue: true,
-      prodId: '402835816d1a6431016d1a89733d000a',
+      boolFalse: false,
+      prodId: '',
       stepActive: 0,
       batchesChoiceTemp: [],
       batchesChoiceIndices: [],
@@ -330,6 +354,9 @@ export default {
   },
   beforeMount() {
     const that = this
+    if (this.$store.state.valuationProd.prodId) {
+      this.prodId = this.$store.state.valuationProd.prodId
+    }
     this.$store.dispatch('valuationProd/loadProdIndices')
     this.$store.dispatch('valuationProd/loadValuationWay')
     this.$store.dispatch('valuationProd/loadBatches')
@@ -337,101 +364,37 @@ export default {
       const { dataList } = response
       that.prodIndices = dataList
     })
+    detailProd(this.prodId).then(response => {
+      const { valuationProd, valuationProdIndices, valuationProdMethods } = response
+      that.$store.commit('valuationProd/setProdInfo', valuationProd)
+      this.initWays(valuationProdIndices)
+      that.$lodash.each(valuationProdMethods, function(value, key) {
+        const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
+        that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
+      })
+    })
     confirmProd(this.prodId).then(response => {
       this.confirm = response
     })
-    detailProd(this.prodId).then(response => {
-      const { valuationProd } = response
-      that.$store.commit('valuationProd/setProdInfo', valuationProd)
-      console.log(response)
-    })
+  },
+  mounted() {
+    this.$store.commit('valuationProd/setProdId', '')
   },
   methods: {
-    choiceBatch(val) {
-      this.batchesChoiceTemp = val
-    },
-    useChoiceBatch() {
-      const that = this
-      this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: this.batchesChoiceTemp })
-      this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
-        that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
-        that.$lodash.each(that.prodIndices, function(index, key) {
-          const temp = {
-            batchId: batch.batchId,
-            prodId: that.prodId,
-            indexId: index.id,
-            compPermStatus: '1',
-            relaPermStatus: '1'
-          }
-          that.batchesChoiceIndices.push(temp)
-        })
-      })
-    },
-    next() {
-      if (this.stepActive++ > 5) this.stepActive = 0
-    },
-    saveProd() {
-      saveProd({ step: this.stepActive + 1, valuationProd: this.prodInfo }).then(response => {
-        this.prodId = response
-        this.next()
-        this.$message({
-          showClose: true,
-          message: '产品信息保存成功',
-          type: 'success'
-        })
-      })
-    },
-    saveProdIndices() {
-      const that = this
-      const dataList = []
-      this.$lodash.each(this.basicIndicesResult, function(value, index) {
-        const data = { prodId: that.prodId, indexId: value, indexType: '01' }
-        dataList.push(data)
-      })
-
-      this.$lodash.each(this.compIndicesResult, function(value, index) {
-        const data = { prodId: that.prodId, indexId: value, indexType: '02' }
-        dataList.push(data)
-      })
-
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdIndices: dataList }).then(response => {
-        this.next()
-        this.$message({
-          showClose: true,
-          message: '产品计算指标保存成功',
-          type: 'success'
-        })
-      })
-    },
-    saveWay() {
-      const that = this
-      const dataList = []
-      this.$lodash.each(this.loadValuationWay, function(way, index) {
-        const tep = {
-          prodId: that.prodId,
-          methodId: way.id
+    initWays(valuationProdIndices) {
+      const compIndicesResult = []
+      const basicIndicesResult = []
+      this.$store.dispatch('valuationProd/loadProdIndices', true)
+      this.$lodash.each(valuationProdIndices, function(value, key) {
+        if (value.indexType === '02') {
+          compIndicesResult.push(value.indexId)
+        } else if (value.indexType === '01') {
+          basicIndicesResult.push(value.indexId)
         }
-        dataList.push(tep)
       })
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdMethods: dataList }).then(response => {
-        this.next()
-        this.$message({
-          showClose: true,
-          message: '估值方法保存成功',
-          type: 'success'
-        })
-      })
+      this.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
     },
-    saveBatchIndices() {
-      const that = this
-      saveProd({ step: this.stepActive + 1, prodId: that.prodId, valuationProdBatchIndices: this.batchesChoiceIndices }).then(response => {
-        this.next()
-        this.$message({
-          showClose: true,
-          message: '批次发布指标保存成功',
-          type: 'success'
-        })
-      })
+    checkSelectable(row) {
     }
   }
 }

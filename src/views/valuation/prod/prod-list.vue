@@ -42,7 +42,7 @@
         label="操作"
       >
         <template slot-scope="{row}">
-          <el-button type="text" size="small" @click="handleClick(row)">查看</el-button>
+          <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
           <el-button type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
         </template>
       </el-table-column>
@@ -83,6 +83,10 @@ export default {
     toEdit(prodId) {
       this.$store.commit('valuationProd/setProdId', prodId)
       this.$router.push({ name: 'ValuationProdForm' })
+    },
+    toDetail(prodId) {
+      this.$store.commit('valuationProd/setProdId', prodId)
+      this.$router.push({ name: 'ValuationProdDetail' })
     },
     handleSizeChange(pageSize) {
       this.todoInfo.page.pageSize = pageSize
