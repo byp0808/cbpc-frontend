@@ -65,3 +65,68 @@ export const REFER_RATE = [
   { value: '02', label: '中国国债收益率曲线2' },
   { value: '03', label: '中国国债收益率曲3' }
 ]
+// 曲线编制类型
+export const CURVE_BUILD_TYPE = [
+  { value: '01', label: '利率' },
+  { value: '02', label: '信用' }
+]
+// 曲线价格源
+export const CURVE_PRICE_FR = [
+  { value: '01', label: '估值' },
+  { value: '02', label: '行情' }
+]
+
+// 该批次所需模型
+export const MODEL = [
+  { value: '01', label: 'hermite模型' },
+  { value: '02', label: '样条模型', disabled: true },
+  { value: '03', label: 'NS模型', disabled: true }
+]
+
+// 该批次所需编制方式
+export const BUILD_TYPE = [
+  { value: '01', label: '人工干预编制' },
+  { value: '02', label: '自动编制' }
+]
+
+// 该批次所需计算方式
+export const COMPUTED_TYPE = [
+  { value: '01', label: '人工干预计算' },
+  { value: '02', label: '自动计算' }
+]
+
+// 该批次所需发布方式
+export const PUBLISH_TYPE = [
+  { value: '01', label: '人工干预发布' },
+  { value: '02', label: '自动发布' }
+]
+
+// 曲线发布类型
+export const CURVEPUB_TYPE = [
+  { value: '01', label: '到期' },
+  { value: '02', label: '即期' },
+  { value: '03', label: '远期' }
+]
+
+// 是否发布曲线样本券
+export const PUBLISH_SAMPLE_FLAG = [
+  { value: '01', label: '估值' },
+  { value: '02', label: '行情' }
+]
+
+// 发布步长
+export const PUBLISH_STEP_SIZE = [
+  { value: '01', label: '估值' },
+  { value: '02', label: '行情' }
+]
+
+// 付息频率
+export const INTEREST_DUE_FREQ = [
+  { value: '01', label: '估值' },
+  { value: '02', label: '行情' }
+]
+
+// 自动编制规则
+export const AUTO_RULE = [
+  { value: '01', label: '中债自动编制规则' }
+]
