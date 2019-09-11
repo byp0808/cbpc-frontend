@@ -41,6 +41,18 @@
         :disabled="disabled"
       />
     </el-card>
+    <el-card class="box-card">
+      <el-form-item label="强制推荐方向：">
+        <el-select v-model="targetValue" filterable placeholder="请选择强制推荐方向">
+          <el-option
+            v-for="item in directions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+    </el-card>
   </div>
 </template>
 
@@ -55,6 +67,18 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     return {
+      direction: [{
+        id: '01',
+        name: '方向长'
+      }, {
+        id: '02',
+        name: '方向短'
+      }],
+      recForceInfo: {
+        id: '',
+        ruleName: '',
+        lastUpdBy: ''
+      }
     }
   },
   computed: {
@@ -79,7 +103,7 @@ export default {
     save() {
       const bondFilterInfo = this.$refs.refBondFilter.getData()
       const data = {
-        recMandatory: this.recMandatoryInfo,
+        recForce: this.recMandatoryInfo,
         bondFilterInfo: bondFilterInfo
       }
       saveRecMandatory(data).then(response => {
