@@ -42,7 +42,7 @@ const valuationRouter = {
       name: 'BondFilter'
     }, {
       path: '/curveList',
-      component: () => import('@/views/valuation/curve/curveRelationShip/curve-list'),
+      component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
       name: 'Table',
       meta: { title: '估值相对曲线设置' }
     }
