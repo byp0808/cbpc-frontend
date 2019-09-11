@@ -68,13 +68,4 @@ export function getCurveOrderList(data) {
   })
 }
 
-// 获取关键期限
-export function getProdcutKdList() {
-  var list = [
-    { id: 'Kd_ID_1', standSlip: '0d', lastUpdTs: 1568103569818 },
-    { id: 'Kd_ID_2', standSlip: '1m', lastUpdTs: 1568104569818 },
-    { id: 'Kd_ID_3', standSlip: '3m', lastUpdTs: 1568107569818 },
-    { id: 'Kd_ID_4', standSlip: '6m', lastUpdTs: 1568108569818 }
-  ]
-  return list
-}
+

@@ -78,55 +78,55 @@ export const CURVE_PRICE_FR = [
 
 // 该批次所需模型
 export const MODEL = [
-  { value: '01', label: 'hermite模型' },
-  { value: '02', label: '样条模型', disabled: true },
-  { value: '03', label: 'NS模型', disabled: true }
+  { value: '1', label: 'hermite模型' },
+  { value: '2', label: '样条模型', disabled: true },
+  { value: '3', label: 'NS模型', disabled: true }
 ]
 
 // 该批次所需编制方式
 export const BUILD_TYPE = [
-  { value: '01', label: '人工干预编制' },
-  { value: '02', label: '自动编制' }
+  { value: '1', label: '人工干预编制' },
+  { value: '2', label: '自动编制' }
 ]
 
 // 该批次所需计算方式
 export const COMPUTED_TYPE = [
-  { value: '01', label: '人工干预计算' },
-  { value: '02', label: '自动计算' }
+  { value: '1', label: '人工干预计算' },
+  { value: '2', label: '自动计算' }
 ]
 
 // 该批次所需发布方式
 export const PUBLISH_TYPE = [
-  { value: '01', label: '人工干预发布' },
-  { value: '02', label: '自动发布' }
+  { value: '1', label: '人工干预发布' },
+  { value: '2', label: '自动发布' }
 ]
 
 // 曲线发布类型
 export const CURVEPUB_TYPE = [
-  { value: '01', label: '到期' },
-  { value: '02', label: '即期' },
-  { value: '03', label: '远期' }
+  { value: '1', label: '到期' },
+  { value: '2', label: '即期' },
+  { value: '3', label: '远期' }
 ]
-
-// 是否发布曲线样本券
-export const PUBLISH_SAMPLE_FLAG = [
-  { value: '01', label: '估值' },
-  { value: '02', label: '行情' }
-]
-
 // 发布步长
 export const PUBLISH_STEP_SIZE = [
-  { value: '01', label: '估值' },
-  { value: '02', label: '行情' }
+  { value: '1', label: '0.01' },
+  { value: '2', label: '0.1' },
+  { value: '3', label: '0.2' },
+  { value: '4', label: '0.5' }
 ]
 
 // 付息频率
 export const INTEREST_DUE_FREQ = [
-  { value: '01', label: '估值' },
-  { value: '02', label: '行情' }
+  { value: '1', label: '一年一次' },
+  { value: '2', label: '一年两次' }
 ]
 
 // 自动编制规则
 export const AUTO_RULE = [
-  { value: '01', label: '中债自动编制规则' }
+  { value: '1', label: '中债自动编制规则' }
+]
+// 是否
+export const Y_OR_N = [
+  { value: 'Y', label: '是' },
+  { value: 'N', label: '否' }
 ]

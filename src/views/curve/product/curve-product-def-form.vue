@@ -117,7 +117,7 @@
           <el-col :span="8">
             <el-form-item label="曲线价格源">
               <el-select v-model="productInfo.curvePriceFr" placeholder="请选择基准利率" :disabled="disabled">
-                <el-option v-for="item in rcurvePriceFrOptions" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in curvePriceFrOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>

@@ -31,8 +31,9 @@
           >
             <CurveProductDefOrderDetailForm
               ref="refCurveProductDefOrderDetailForm"
-              :orderData="tabItem.orderData"
-              :curvePrdKdList="tabItem.curvePrdKdList"
+              :order-data="tabItem.orderData"
+              :curve-prd-kd-list="tabItem.curvePrdKdList"
+              :curve-prd-order-auto-list="tabItem.curvePrdOrderAutoList"
             />
           </el-tab-pane>
         </el-tabs>
@@ -42,9 +43,7 @@
 </template>
 
 <script>
-import { optioins } from '@/api/curve/code-type.js'
-import { getOrderList, getProductOrderList } from '@/api/curve/curve-product-order.js'
-import { getProdcutKdList } from '@/api/curve/curve-product-list.js'
+import { getOrderList, getProductOrderList, queryProdcutKdList, queryProductOrderAutoList } from '@/api/curve/curve-product-order.js'
 import CurveProductDefOrderDetailForm from '@/views/curve/product/curve-product-def-order-detail.vue'
 
 export default {
@@ -55,6 +54,7 @@ export default {
   props: ['productId', 'opType'],
   data() {
     return {
+      productIdLocal: '',
       disabled: false,
       lockScroll: true,
       multipleSelection: [''], // 已勾选
@@ -63,25 +63,38 @@ export default {
       productOrderList: [], // 产品已经关联批次列表
       editableTabsValue: '2',
       editableTabs: [],
-      tabIndex: 1 ,
-      autoRuleCurveList: {},
+      tabIndex: 1,
+      curvePrdOrderAutoList: {},
       curvePrdKdList: {}
     }
   },
   computed: {
   },
   beforeMount() {
-    console.info('curve-product-def-order.vue.beforeMount:')
-    // 查询产品已经关联批次
-    getProductOrderList({ productId: this.productId }).then(response => {
-      console.info('curve-product-def-order.vue.beforeMount.getProductOrderList...')
-      this.productOrderList = response
-      // 加载批次列表
-      this.loadOrderList()
-    })
-    console.info('this.productOrderList:' + this.productOrderList)
+    this.productIdLocal = this.productId;
+    this.productIdLocal = 'd7810466a01646a082e206087c96e15c'
+    console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
+    this.init()
   },
   methods: {
+    // 加载批次所有数据
+    async init() {
+      // 查询产品已经关联批次
+      await getProductOrderList({ productId: this.productIdLocal }).then(response => {
+        this.productOrderList = response
+      })
+      // 查询产品批次-自动编制-已关联批次权重信息
+      await queryProductOrderAutoList({ cerverId: this.productIdLocal }).then(response => {
+        this.curvePrdOrderAutoList = response
+      })
+      // 查询产品批次-发布关键期限
+      await queryProdcutKdList({ cerverId: this.productIdLocal }).then(response => {
+        this.curvePrdKdList = response
+      })
+
+      // 加载批次列表
+      this.loadOrderList()
+    },
     handleSelectionChange(items) {
       this.multipleSelection = items
     },
@@ -123,32 +136,36 @@ export default {
       // 获取所有选择的数据
       var firstTab = ''
       this.editableTabs = []
-      for ( const index in this.multipleSelection) {
+      for (const index in this.multipleSelection) {
         const item = this.multipleSelection[index]
         const newTabName = item.id
-        if ( index == 0 ) {
+        if (index == 0) {
           firstTab = newTabName
         }
         // 判断是否存在newTabName
         const title = item.orderName
+
+        // 获取批次信息
         const orderData = this.getProductOrderInfo(newTabName)
-        const autoRuleCurveList = this.getAutoRuleCurveList(newTabName)
+        // 产品批次-关键期限
         const curvePrdKdList = this.getCurvePrdKdList(newTabName)
+        // 产品批次-自动编制列表
+        const curvePrdOrderAutoList = this.getCurvePrdOrderAutoList(newTabName)
         this.editableTabs.push({
           title: title,
           name: newTabName,
           orderData: orderData,
-          autoRuleCurveList: autoRuleCurveList,
-          curvePrdKdList: curvePrdKdList
+          curvePrdKdList: curvePrdKdList,
+          curvePrdOrderAutoList: curvePrdOrderAutoList
         })
       }
       // 默认选中第一个
       this.editableTabsValue = firstTab
     },
     // 从已关联的列表中获取信息
-    getProductOrderInfo(orderId){
+    getProductOrderInfo(orderId) {
       console.info('getProductOrderInfo:' + orderId)
-      for ( const index in this.productOrderList) {
+      for (const index in this.productOrderList) {
         const item = this.productOrderList[index]
         if (orderId === item.orderId) {
           return item
@@ -157,20 +174,26 @@ export default {
       return {}
     },
     // 从已关联的列表中获取信息
-    getAutoRuleCurveList(orderId){
-      var item = this.autoRuleCurveList[orderId]
-      if (!item) {
-        this.autoRuleCurveList[orderId] = item;
+    getCurvePrdKdList(orderId) {
+      var list = []
+      for (var i = 0 ; this.curvePrdKdList.length ; i ++) {
+        var item = this.curvePrdKdList[i]
+        if (item.curveOrderId === orderId) {
+          list.push(item)
+        }
       }
-      return item
+      return list
     },
-    // 从已关联的列表中获取信息
-    getCurvePrdKdList(orderId){
-      var item = this.getCurvePrdKdList[orderId]
-      if (!item) {
-        this.getCurvePrdKdList[orderId] = item;
+    // 曲线产品批次自动编制触发条件
+    getCurvePrdOrderAutoList(orderId) {
+      var list = []
+      for (const index in this.curvePrdOrderAutoList) {
+        const item = this.curvePrdOrderAutoList[index]
+        if (orderId === item.orderId) {
+          list.push(item)
+        }
       }
-      return item
+      return list
     }
   }
 }
