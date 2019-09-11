@@ -10,6 +10,24 @@ export function prodList(data) {
   })
 }
 
+// 保存债券筛选器
+export function saveFilter(data) {
+  return request({
+    url: `${basic_api_market}/bond-filter/save-filter`,
+    method: 'post',
+    data
+  })
+}
+
+// 提交审批
+export function taskStart(data) {
+  return request({
+    url: `${basic_api_valuation}/prod/task-start`,
+    method: 'post',
+    data
+  })
+}
+
 // 保存估值产品配置信息
 export function saveProd(data) {
   return request({

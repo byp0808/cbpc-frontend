@@ -38,10 +38,10 @@ export function queryBondsResult(data) {
 }
 
 // 根据筛选器Id 查筛选器详细信息
-export function queryFilterInfoById(filterId) {
+export function queryFilterInfoById(data) {
   return request({
     url: `${basic_api_market}/bond-filter/stored-filter`,
-    method: 'get',
-    params: { filterId }
+    method: 'post',
+    data
   })
 }

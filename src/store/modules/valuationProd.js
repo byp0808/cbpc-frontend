@@ -49,9 +49,16 @@ export default {
     }
   },
   actions: {
-    loadProdIndices({ commit }) {
+    loadProdIndices({ commit }, disable) {
       queryBasicProdIndex().then(response => {
         const { basicIndices, compIndices } = response
+        for (const basicIndex in basicIndices) {
+          basicIndices[basicIndex].disabled = disable
+        }
+        for (const compIndex in compIndices) {
+          compIndices[compIndex].disabled = disable
+        }
+
         commit('setProdIndices', { basicIndices: basicIndices, compIndices: compIndices })
       })
     },
