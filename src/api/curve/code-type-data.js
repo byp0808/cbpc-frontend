@@ -130,3 +130,9 @@ export const Y_OR_N = [
   { value: 'Y', label: '是' },
   { value: 'N', label: '否' }
 ]
+
+// 所需状态
+export const CURVE_BUILD_STATUS = [
+  { value: '1', label: '已发布' },
+  { value: '2', label: '其他' }
+]

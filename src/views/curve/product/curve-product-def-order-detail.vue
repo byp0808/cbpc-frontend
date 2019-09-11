@@ -90,7 +90,7 @@
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
       <el-row>
-        <el-col :span="13">
+        <el-col :span="14">
           <el-table
             ref="curvePrdOrderAutoListLocal"
             :data="curvePrdOrderAutoListLocal"
@@ -98,13 +98,28 @@
             style="width: 100%"
           >
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
-            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip >
+            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
               <template slot-scope="{row}">
                 <el-input v-model.number="row.curveWeight" class="edit-input" size="small" style="width: 50px" /> %
               </template>
             </el-table-column>
             <el-table-column prop="depCurveOrderName" label="批次" width="140" show-overflow-tooltip />
-            <el-table-column prop="curveBuildStatus" label="所需状态" width="140" show-overflow-tooltip />
+            <el-table-column prop="curveBuildStatus" label="所需状态" width="80" show-overflow-tooltip >
+              <template slot-scope="scope">
+                {{ scope.row.curveBuildStatus | showCodeLabel('CURVE_BUILD_STATUS') }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="" label="操作" width="60" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="small"
+                  @click.native.prevent="curvePrdOrderAutoListLocal.splice(scope.$index, 1)"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
         <el-col :span="6" :offset="3">
@@ -131,10 +146,14 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
+import { showCodeLabel } from '@/api/curve/code-type.js'
 import { getCurveOrderList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
+  },
+  filters: {
+    showCodeLabel: showCodeLabel
   },
   props: ['orderData', 'curvePrdKdList', 'curvePrdOrderAutoList'],
   data() {
@@ -221,11 +240,10 @@ export default {
     getCurveOrderList({ orderId: this.orderData.orderId }).then(response => {
       console.info('queryCurveProductList.queryCurveProductList...')
       const { dataList } = response
-      for (var i = 0 ; i < dataList.length; i++ ) {
+      for (var i = 0; i < dataList.length; i++) {
         var item = dataList[i]
         this.autoRuleCurveOptions.push({ value: item.productName, lable: item.curvePrdCode })
       }
-
     })
   },
   methods: {

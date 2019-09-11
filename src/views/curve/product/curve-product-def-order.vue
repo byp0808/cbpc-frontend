@@ -176,9 +176,9 @@ export default {
     // 从已关联的列表中获取信息
     getCurvePrdKdList(orderId) {
       var list = []
-      for (var i = 0 ; this.curvePrdKdList.length ; i ++) {
+      for (var i = 0 ; i < this.curvePrdKdList.length ; i ++) {
         var item = this.curvePrdKdList[i]
-        if (item.curveOrderId === orderId) {
+        if (item.orderId === orderId) {
           list.push(item)
         }
       }
