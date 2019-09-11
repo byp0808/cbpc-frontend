@@ -152,8 +152,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '05' })
-        this.load()
+        editCurveRelationBusiStatus({ id: id, busiStatus: '05' }).then(
+          this.load()
+        )
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -184,8 +185,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '03' })
-        this.load()
+        editCurveRelationBusiStatus({ id: id, busiStatus: '03' }).then(
+          this.load()
+        )
       }).catch(() => {
         this.$message({
           type: 'info',

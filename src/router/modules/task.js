@@ -20,6 +20,10 @@ const taskRouter = {
       path: 'curve-relaion-task',
       component: () => import('@/views/valuation/curve-relation/curve-relation-task.vue'),
       name: 'curveRelaionTask'
+    }, {
+      path: 'recForce-task',
+      component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-task.vue'),
+      name: 'recForceTask'
     }
   ]
 }
