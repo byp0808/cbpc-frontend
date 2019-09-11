@@ -30,7 +30,7 @@ export function showCodeLabel(value, codeType) {
  * 获取码值列表
  */
 export function optioins(codeType, parent) {
-  console.info('codeType:' + codeType + ',parent:' + parent)
+  // console.info('codeType:' + codeType + ',parent:' + parent)
   var typeList = getCodeTypeList(codeType)
   var options = []
   if (typeList && typeList.length > 0) {

@@ -30,8 +30,16 @@
           {{ scope.row.basePrdCode | showCodeLabel('BASE_PRD_CODE') }}
         </template>
       </el-table-column>
-      <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip />
-      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip />
+      <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip >
+        <template slot-scope="scope">
+          {{ $moment(scope.row.curveStartTime).format('YYYY-MM-DD')}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip >
+        <template slot-scope="scope">
+          {{ $moment(scope.row.curveEndTime).format('YYYY-MM-DD')}}
+        </template>
+      </el-table-column>
       <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip />
       <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip />
       <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />

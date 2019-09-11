@@ -96,7 +96,14 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8" :offset="8">
+          <el-col :span="8">
+            <el-form-item label="曲线编制类型">
+              <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
+                <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" >
             <el-form-item label="曲线终止日期" prop="curveEndTime">
               <el-date-picker
                 v-model="productInfo.curveEndTime"
@@ -105,6 +112,13 @@
                 placeholder="选择日期"
                 :disabled="disabled"
               />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="曲线价格源">
+              <el-select v-model="productInfo.curvePriceFr" placeholder="请选择基准利率" :disabled="disabled">
+                <el-option v-for="item in rcurvePriceFrOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -153,8 +167,13 @@
       <div slot="header" class="clearfix card-head">
         <h3>批次发布</h3>
       </div>
+      <CurveProductDefOrderForm
+        ref="refCurveProductDefOrderForm"
+        :product-id="productId"
+        :op-type="opType"
+      />
       <div class="text-center">
-        <el-button type="primary" @click="next">确认</el-button>
+        <el-button type="primary" @click="saveOrder">确认</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
@@ -172,10 +191,11 @@
 import { formatTimeToStr } from '@/utils/date.js'
 import { saveProductInfo, getCurveProduct } from '@/api/curve/curve-product-list.js'
 import { optioins } from '@/api/curve/code-type.js'
+import CurveProductDefOrderForm from '@/views/curve/product/curve-product-def-order.vue'
 export default {
-  name: 'ValuationProdForm',
+  name: 'CurveProductDefForm',
   components: {
-
+    CurveProductDefOrderForm
   },
   props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
@@ -223,7 +243,7 @@ export default {
 
     return {
       disabled: false,
-      stepActive: 0,
+      stepActive: 3,
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
@@ -278,6 +298,12 @@ export default {
     },
     referRateOptions() {
       return optioins('REFER_RATE')
+    },
+    curveBuildTypeOptions() {
+      return optioins('CURVE_BUILD_TYPE')
+    },
+    curvePriceFrOptions() {
+      return optioins('CURVE_PRICE_FR')
     },
     productInfo: {
       get() {
@@ -356,6 +382,7 @@ export default {
       }
       return this.productInfo
     },
+    // 保存产品基本信息
     saveProductInfo(formName) {
       console.info('saveProductInfo1')
       if (!this.productInfo.basePrdCode) {
@@ -386,6 +413,10 @@ export default {
         }
       })
       console.info('saveProductInfo3')
+    },
+    // 保存批次
+    saveOrder(){
+
     }
   }
 }
