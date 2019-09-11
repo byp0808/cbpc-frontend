@@ -21,8 +21,8 @@ export default {
   actions: {
     queryTaskList({ commit, state }) {
       queryTaskList({ page: state.todoInfo.page }).then(response => {
-        const { datalist, page } = response
-        commit('setTodoList', datalist)
+        const { dataList, page } = response
+        commit('setTodoList', dataList)
         commit('setPage', page)
       })
     }

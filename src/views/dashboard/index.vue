@@ -49,7 +49,7 @@
             :page-sizes="[10, 20, 30, 40, 50]"
             :page-size="todoInfo.page.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="todoInfo.page.totalPage"
+            :total="todoInfo.page.totalRecord"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
