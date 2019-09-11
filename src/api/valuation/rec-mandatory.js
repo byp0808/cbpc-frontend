@@ -12,7 +12,7 @@ export function queryMandatoryList(data) {
 // 保存估值强制推荐规则信息
 export function saveRecMandatory(data) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/save`,
+    url: `${basic_api_valuation}/valuation-force/save`,
     method: 'post',
     data
   })
@@ -21,8 +21,8 @@ export function saveRecMandatory(data) {
 // 删除估值强制推荐规则信息
 export function deleteRecMandatory(id) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/del`,
-    method: 'get',
+    url: `${basic_api_valuation}/valuation-force/del`,
+    method: 'post',
     params: { id }
   })
 }
@@ -30,8 +30,8 @@ export function deleteRecMandatory(id) {
 // 启用估值强制推荐规则信息
 export function openRecMandatory(id) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/open`,
-    method: 'get',
+    url: `${basic_api_valuation}/valuation-force/open`,
+    method: 'post',
     params: { id }
   })
 }
@@ -39,25 +39,25 @@ export function openRecMandatory(id) {
 // 停用估值强制推荐规则信息
 export function closeRecMandatory(id) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/close`,
-    method: 'get',
+    url: `${basic_api_valuation}/valuation-force/close`,
+    method: 'post',
     params: { id }
   })
 }
 
 // 查询估值强制推荐规则信息
-export function queryRecMandatory(id) {
+export function queryRecMandatory(data) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/get-one`,
-    method: 'get',
-    params: { id }
+    url: `${basic_api_valuation}/valuation-force/get-one`,
+    method: 'post',
+    data
   })
 }
 
 // 提交任务
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/valuation-curve/roamTask`,
+    url: `/pi-valuation/valuation-force/roamTask`,
     method: 'post',
     data
   })
