@@ -25,6 +25,12 @@ const valuationRouter = {
       meta: { title: '估值产品新增', noCache: true }
     },
     {
+      path: 'prod-detail',
+      component: () => import('@/views/valuation/prod/prod-detail.vue'),
+      name: 'ValuationProdDetail',
+      meta: { title: '估值产品详情', noCache: true }
+    },
+    {
       path: 'rec-curve',
       component: () => import('@/views/valuation/rec-cure/rec-curve-list.vue'),
       name: 'BondFilter',
@@ -36,7 +42,7 @@ const valuationRouter = {
       name: 'BondFilter'
     }, {
       path: '/curveList',
-      component: () => import('@/views/valuation/curve/curveRelationShip/curve-list'),
+      component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
       name: 'Table',
       meta: { title: '估值相对曲线设置' }
     }

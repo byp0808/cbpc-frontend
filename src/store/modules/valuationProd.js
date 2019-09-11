@@ -2,6 +2,7 @@ import { queryBasicProdIndex, queryValuationWay, queryBatches } from '@/api/valu
 export default {
   namespaced: true,
   state: {
+    prodId: '',
     prodInfo: {
     },
     bondFilter: {},
@@ -23,8 +24,11 @@ export default {
     confirm: {}
   },
   mutations: {
+    setProdId(state, prodId) {
+      state.prodId = prodId
+    },
     setProdInfo(state, prodInfo) {
-      state.setProdInfo = prodInfo
+      state.prodInfo = prodInfo
     },
     setProdIndices(state, { basicIndices, basicIndicesResult, compIndices, compIndicesResult }) {
       if (basicIndices) state.prodIndices.basicIndices = basicIndices

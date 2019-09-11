@@ -37,6 +37,15 @@ export function confirmProd(data) {
   })
 }
 
+// 产品详情
+export function detailProd(data) {
+  return request({
+    url: `${basic_api_valuation}/prod/detail`,
+    method: 'post',
+    data
+  })
+}
+
 // 查询基础产品指标信息
 export function queryBasicProdIndex(data) {
   return request({
