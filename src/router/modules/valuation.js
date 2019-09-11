@@ -45,6 +45,11 @@ const valuationRouter = {
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
       name: 'Table',
       meta: { title: '估值相对曲线设置' }
+    }, {
+      path: '/mandatoryList',
+      component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-list.vue'),
+      name: 'Table',
+      meta: { title: '设置估值强制推荐规则' }
     }
   ]
 }
