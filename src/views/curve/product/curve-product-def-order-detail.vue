@@ -48,7 +48,7 @@
     </div>
     <el-table
       ref="orderTable"
-      :data="curvePrdKdList"
+      :data="curvePrdKdListLocal"
       tooltip-effect="dark"
       style="width: 100%"
     >
@@ -92,12 +92,12 @@
       <el-row>
         <el-col :span="13">
           <el-table
-            ref="curvePrdOrderAutoList"
+            ref="curvePrdOrderAutoListLocal"
             :data="curvePrdOrderAutoListLocal"
             tooltip-effect="dark"
             style="width: 100%"
           >
-            <el-table-column prop="curveName" label="曲线名称" width="140" show-overflow-tooltip />
+            <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
             <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip >
               <template slot-scope="{row}">
                 <el-input v-model.number="row.curveWeight" class="edit-input" size="small" style="width: 50px" /> %
@@ -147,12 +147,13 @@ export default {
       publishStepSizeSelected: [],
       disabled: false,
       // 自动编制规则
-      autoRule: '01',
+      autoRule: '1',
       curvePrdKdListLocal: [],
       // 自动编制规则弹窗
       addAutoRuleFormVisible: false,
       // 自动编制规则-选择曲线
       autoRuleCurve: '',
+      // 曲线-权重信息
       curvePrdOrderAutoListLocal: [],
       // 批次自动编制关键期限
       curvePrdOrderAutoKtListLocal: [],
@@ -184,7 +185,7 @@ export default {
     },
     // 是否发布曲线样本券
     publishSampleFlagOption() {
-      return optioins('PUBLISH_SAMPLE_FLAG')
+      return optioins('Y_OR_N')
     },
     // 发布步长
     publishStepSizeOption() {
@@ -205,6 +206,12 @@ export default {
     // 加载关键期限
     this.curvePrdKdListLocal = this.curvePrdKdList
     this.curvePrdOrder = this.orderData
+    // 更新曲线发布类型、发布步长、付息频率
+    if (this.curvePrdOrder) {
+      this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
+      this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+      this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
+    }
     if (!this.curvePrdOrderAutoList) {
       this.curvePrdOrderAutoListLocal = []
     } else {
@@ -224,9 +231,9 @@ export default {
   methods: {
     // 获取form数据
     getAllForm() {
-      this.curveProductInfo.interestDueFreq = this.interestDueFreqSelected.join(',')
-      this.curveProductInfo.curvePubType = this.curvePubTypeSelected.join(',')
-      this.curveProductInfo.publishStepSize = this.publishStepSizeSelected.join(',')
+      this.curvePrdOrder.interestDueFreq = this.interestDueFreqSelected.join(',')
+      this.curvePrdOrder.curvePubType = this.curvePubTypeSelected.join(',')
+      this.curvePrdOrder.publishStepSize = this.publishStepSizeSelected.join(',')
       return this.curvePrdOrder
     },
     // 应用所选批次
@@ -265,9 +272,9 @@ export default {
         curveOrderName: this.orderData.orderName, // 曲线批次ID，批次名称
         curveWeight: '', // 权重
         curveId: value, // 依赖曲线ID
-        curveName: label, // 依赖曲线名称
+        productName: label, // 依赖曲线名称
         depCurveOrderId: '', // 依赖曲线对应批次ID
-        depCurveOrderName: '', // 批次名称
+        orderName: '', // 批次名称
         curveBuildStatus: '' // 曲线编制状态
       })
     },

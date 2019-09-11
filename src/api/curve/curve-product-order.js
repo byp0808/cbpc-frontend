@@ -30,9 +30,20 @@ export function getProductOrderList(data) {
     data
   })
 }
+// 获取关键期限
+export function queryProdcutKdList(data) {
+  return request({
+    url: `${basic_api_curve}/curveProductOrder/orderKts`,
+    method: 'post',
+    data
+  })
+}
 
-// 获取已关联批次
-export function getProductOrderIds() {
-  var list = ['ORDER_ID_1', 'ORDER_ID_3']
-  return list
+// 查询产品-自动编制
+export function queryProductOrderAutoList(data){
+  return request({
+    url: `${basic_api_curve}/curveProductOrderAuto/list`,
+    method: 'post',
+    data
+  })
 }
