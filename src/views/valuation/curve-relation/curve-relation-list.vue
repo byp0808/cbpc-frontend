@@ -39,6 +39,19 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div>
+      <el-pagination
+        :current-page="page.pageNumber"
+        :page-sizes="[10, 20, 30, 40, 50]"
+        :page-size="page.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.totalRecord"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
+    <div>
       <el-dialog lock-scroll="false" width="30%" title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible">
         <AddRulesForm
           ref="recAddRulesForm"
@@ -89,38 +102,43 @@ export default {
       }],
       // 曲线列表
       curveList: [{
-        id: '1',
-        curveName: '测试1'
+        curveId: '1',
+        productName: '测试1'
       }, {
-        id: '2',
-        curveName: '测试2'
+        curveId: '2',
+        productName: '测试2'
       }],
       relationId: '',
       multipleSelection: [],
       targetValue: '',
       relativeValue: '',
-      radio: ''
+      radio: '',
+      page: {
+        pageNumber: 1,
+        pageSize: 10
+      }
     }
   },
   computed: {
     // 通过码值匹配曲线名称
     curveName() {
       return function(curveId) {
-        const index = this.$lodash.findIndex(this.curveList, { id: curveId })
+        const index = this.$lodash.findIndex(this.curveList, { curveId: curveId })
         if (index >= 0) {
-          return this.$lodash.get(this.curveList, [index, 'curveName'])
+          return this.$lodash.get(this.curveList, [index, 'productName'])
         }
       }
     }
   },
   beforeMount() {
-    queryCurveRelationList().then(response => {
-      const { datalist } = response
-      this.curveRelationList = datalist
+    queryCurveRelationList({ page: this.page }).then(response => {
+      const { dataList, page } = response
+      this.curveRelationList = dataList
+      this.page = page
       // 加载曲线列表
       getCurveList().then(response => {
-        const { datalist } = response
-        this.curveList = datalist
+        const { dataList } = response
+        this.curveList = dataList
       })
     })
   },
@@ -132,16 +150,18 @@ export default {
           relativeValue: row.relativeCurveId })
     },
     load() {
-      queryCurveRelationList().then(response => {
-        const { datalist } = response
-        this.curveRelationList = datalist
+      queryCurveRelationList({ page: this.page }).then(response => {
+        const { dataList, page } = response
+        this.curveRelationList = dataList
+        this.page = page
       })
     },
     // 保存 曲线关系规则
     save() {
       if (this.$refs.recAddRulesForm.verify() === true) {
-        this.$refs.recAddRulesForm.save()
-        this.load()
+        this.$refs.recAddRulesForm.save().then(
+          this.load()
+        )
         this.addRulesVisible = false
       }
     },
@@ -169,8 +189,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '02' })
-        this.load()
+        editCurveRelationBusiStatus({ id: id, busiStatus: '02' }).then(
+          this.load()
+        )
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -225,6 +246,14 @@ export default {
       this.targetValue = targetValue
       this.relativeValue = relativeValue
       this.addRulesVisible = true
+    },
+    handleSizeChange(pageSize) {
+      this.page.pageSize = pageSize
+      this.load()
+    },
+    handleCurrentChange(currentPage) {
+      this.page.pageNumber = currentPage
+      this.load()
     }
   }
 }

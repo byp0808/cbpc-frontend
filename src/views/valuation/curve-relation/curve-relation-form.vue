@@ -5,9 +5,9 @@
         <el-select v-model="targetValue" filterable placeholder="请选择目标曲线">
           <el-option
             v-for="item in curveList"
-            :key="item.id"
-            :label="item.curveName"
-            :value="item.id"
+            :key="item.curveId"
+            :label="item.productName"
+            :value="item.curveId"
           />
         </el-select>
       </el-form-item>
@@ -15,9 +15,9 @@
         <el-select v-model="relativeValue" filterable placeholder="请选择相对曲线">
           <el-option
             v-for="item in curveList"
-            :key="item.id"
-            :label="item.curveName"
-            :value="item.id"
+            :key="item.curveId"
+            :label="item.productName"
+            :value="item.curveId"
           />
         </el-select>
       </el-form-item>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { saveCurveRelation, editCurveRelation, getCurveList } from '@/api/valuation/curve-relation.js'
+import { saveCurveRelation, getCurveList } from '@/api/valuation/curve-relation.js'
 export default {
   name: 'AddRulesForm',
   props: ['relationId', 'targetValue', 'relativeValue'],
@@ -57,7 +57,7 @@ export default {
         ? saveCurveRelation(
           { curveId: this.targetValue,
             relativeCurveId: this.relativeValue })
-        : editCurveRelation(
+        : saveCurveRelation(
           { oldId: this.relationId,
             curveId: this.targetValue,
             relativeCurveId: this.relativeValue }

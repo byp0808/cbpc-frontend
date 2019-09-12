@@ -52,7 +52,7 @@ module.exports = {
         proxyTimeout: 1000 * 60 * 5
       },
       [process.env.VUE_APP_BASE_API + '/pi-market']: {
-        target: 'http://127.0.0.1:8080',
+        target: 'http://192.168.8.126:8080',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5
