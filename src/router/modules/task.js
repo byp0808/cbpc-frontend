@@ -24,6 +24,10 @@ const taskRouter = {
       path: 'valuation-prod-task',
       component: () => import('@/views/valuation/prod/prod-task.vue'),
       name: 'ValuationProdTask'
+    }, {
+      path: 'recForce-task',
+      component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-task.vue'),
+      name: 'recForceTask'
     }
   ]
 }
