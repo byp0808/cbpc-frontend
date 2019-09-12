@@ -19,10 +19,28 @@ export function saveFilter(data) {
   })
 }
 
-// 提交审批
+// 发起审批
 export function taskStart(data) {
   return request({
     url: `${basic_api_valuation}/prod/task-start`,
+    method: 'post',
+    data
+  })
+}
+
+// 验证产品名称
+export function checkProdName(data) {
+  return request({
+    url: `${basic_api_valuation}/prod/check-name`,
+    method: 'post',
+    data
+  })
+}
+
+// 提交审批
+export function taskAudit(data) {
+  return request({
+    url: `${basic_api_valuation}/prod/task-audit`,
     method: 'post',
     data
   })

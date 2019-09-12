@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+
     <el-form ref="curvePrdOrder" :model="curvePrdOrder" label-width="140px">
       <el-form-item label="该批次所需模型">
         <el-radio-group v-model="curvePrdOrder.model">
@@ -46,9 +47,45 @@
     <div class="clearfix card-head">
       <h4>发布关键期限:</h4>
     </div>
+
+    <div class="order-switch">
+      <el-form ref="curvePrdOrder" :model="curvePrdOrder" style="float: right;padding-right: 10px;" label-width="50px">
+        <el-row>
+          <div class="switch-item">
+            <label class="switch-label">批次开关</label>
+            <el-switch v-model="curvePrdOrder.validFlag" active-value="Y" inactive-value="N" />
+          </div>
+        </el-row>
+        <el-row>
+          <div class="switch-item">
+            <el-checkbox-group v-model="curvePrdOrder.orderClosedFlag">
+              <el-checkbox label="批次关闭生效时间" name="type" true-label="1" false-label="0" />
+            </el-checkbox-group>
+          </div>
+        </el-row>
+        <el-row>
+          <div class="switch-item">
+            <label class="switch-label">开始</label>
+            <el-col :span="4">
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+            </el-col>
+          </div>
+        </el-row>
+        <el-row>
+          <div class="switch-item">
+            <label class="switch-label">结束</label>
+            <el-col :span="4">
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+            </el-col>
+          </div>
+        </el-row>
+      </el-form>
+      <el-button type="primary" size="small" round>加载上一批次配置</el-button>
+    </div>
+
     <el-table
       ref="orderTable"
-      :data="curvePrdKdListLocal"
+      :data="curvePrdKdList"
       tooltip-effect="dark"
       style="width: 100%"
     >
@@ -90,28 +127,47 @@
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
       <el-row>
-        <el-col :span="13">
+        <el-col :span="14">
           <el-table
-            ref="curvePrdOrderAutoListLocal"
-            :data="curvePrdOrderAutoListLocal"
+            ref="curvePrdOrderAutoList"
+            :data="curvePrdOrderAutoList"
             tooltip-effect="dark"
             style="width: 100%"
           >
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
-            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip >
+            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
               <template slot-scope="{row}">
                 <el-input v-model.number="row.curveWeight" class="edit-input" size="small" style="width: 50px" /> %
               </template>
             </el-table-column>
-            <el-table-column prop="depCurveOrderName" label="批次" width="140" show-overflow-tooltip />
-            <el-table-column prop="curveBuildStatus" label="所需状态" width="140" show-overflow-tooltip />
+            <el-table-column prop="" label="批次" width="140" show-overflow-tooltip>
+              <template>
+                {{ orderName }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="curveBuildStatus" label="所需状态" width="80" show-overflow-tooltip>
+              <template slot-scope="scope">
+                {{ scope.row.curveBuildStatus | showCodeLabel('CURVE_BUILD_STATUS') }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="" label="操作" width="60" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="small"
+                  @click.native.prevent="curvePrdOrderAutoList.splice(scope.$index, 1)"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
         <el-col :span="6" :offset="3">
           <el-button type="primary" @click="reloadKd">预览</el-button>
           <el-table
             ref="curvePrdOrderAutoKtList"
-            :data="curvePrdOrderAutoKtListLocal"
+            :data="curvePrdOrderAutoKtList"
             tooltip-effect="dark"
             style="width: 100%"
           >
@@ -131,12 +187,16 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
+import { showCodeLabel } from '@/api/curve/code-type.js'
 import { getCurveOrderList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
   },
-  props: ['orderData', 'curvePrdKdList', 'curvePrdOrderAutoList'],
+  filters: {
+    showCodeLabel: showCodeLabel
+  },
+  props: ['orderName', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'curvePrdOrderAutoKtList'],
   data() {
     return {
       lockScroll: true,
@@ -148,16 +208,10 @@ export default {
       disabled: false,
       // 自动编制规则
       autoRule: '1',
-      curvePrdKdListLocal: [],
       // 自动编制规则弹窗
       addAutoRuleFormVisible: false,
       // 自动编制规则-选择曲线
       autoRuleCurve: '',
-      // 曲线-权重信息
-      curvePrdOrderAutoListLocal: [],
-      // 批次自动编制关键期限
-      curvePrdOrderAutoKtListLocal: [],
-
       // 曲线列表
       autoRuleCurveOptions: []
     }
@@ -203,42 +257,51 @@ export default {
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
 
-    // 加载关键期限
-    this.curvePrdKdListLocal = this.curvePrdKdList
     this.curvePrdOrder = this.orderData
     // 更新曲线发布类型、发布步长、付息频率
     if (this.curvePrdOrder) {
-      this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
-      this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
-      this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
+      if (this.curvePrdOrder.interestDueFreq) {
+        this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
+      }
+      if (this.curvePrdOrder.curvePubType) {
+        this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+      }
+      if (this.curvePrdOrder.publishStepSize) {
+        this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
+      }
     }
     if (!this.curvePrdOrderAutoList) {
-      this.curvePrdOrderAutoListLocal = []
-    } else {
-      this.curvePrdOrderAutoListLocal = this.curvePrdOrderAutoList
+      this.curvePrdOrderAutoList = []
     }
 
     getCurveOrderList({ orderId: this.orderData.orderId }).then(response => {
       console.info('queryCurveProductList.queryCurveProductList...')
       const { dataList } = response
-      for (var i = 0 ; i < dataList.length; i++ ) {
+      for (var i = 0; i < dataList.length; i++) {
         var item = dataList[i]
         this.autoRuleCurveOptions.push({ value: item.productName, lable: item.curvePrdCode })
       }
-
     })
   },
   methods: {
-    // 获取form数据
-    getAllForm() {
+    // 获取获取批次信息
+    getCurvePrdOrder() {
       this.curvePrdOrder.interestDueFreq = this.interestDueFreqSelected.join(',')
       this.curvePrdOrder.curvePubType = this.curvePubTypeSelected.join(',')
       this.curvePrdOrder.publishStepSize = this.publishStepSizeSelected.join(',')
       return this.curvePrdOrder
     },
-    // 应用所选批次
-    applyOrder() {
-
+    // 获取关键期限
+    getPrdKtList() {
+      return this.curvePrdKdList
+    },
+    // 获取自动编制
+    getPrdOrderAutoList() {
+      return this.curvePrdOrderAutoList
+    },
+    // 获取自动编制关键期限
+    getPrdOrderAutoKtList() {
+      return this.curvePrdOrderAutoKtList
     },
     // 删除关键期限
     deleteCurvePrdKd(index, row) {
@@ -267,7 +330,7 @@ export default {
         })
         return false
       }
-      this.curvePrdOrderAutoListLocal.push({
+      this.curvePrdOrderAutoList.push({
         curveOrderId: this.orderData.curveOrderId, // 曲线批次ID
         curveOrderName: this.orderData.orderName, // 曲线批次ID，批次名称
         curveWeight: '', // 权重
@@ -280,8 +343,8 @@ export default {
     },
     // 检查曲线ID
     checkPrdOrderAuto(curveId) {
-      for (var i = 0; i < this.curvePrdOrderAutoListLocal.length; i++) {
-        var item = this.curvePrdOrderAutoListLocal[i]
+      for (var i = 0; i < this.curvePrdOrderAutoList.length; i++) {
+        var item = this.curvePrdOrderAutoList[i]
         if (item.curveId === curveId) {
           return false
         }
@@ -303,5 +366,28 @@ export default {
 <style scoped>
   .el-form-item {
     margin-bottom: 0px;
+  }
+  .order-switch{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 200px;
+    width: 240px;
+    border: 1px solid #c0c4cc;
+    text-align: center;
+  }
+  .switch-label{
+    float: left;
+    text-align: right;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #606266;
+    line-height: 40px;
+    padding: 0 12px 0 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  .switch-item{
+    line-height: 36px;
   }
 </style>

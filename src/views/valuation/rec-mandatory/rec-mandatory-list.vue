@@ -37,7 +37,7 @@
       <el-table-column
         prop="recoDirection"
         label="强制推荐方向"
-        width="260"
+        width="200"
         show-overflow-tooltip
       />
       <el-table-column
@@ -49,7 +49,7 @@
       <el-table-column
         prop="address"
         label="操作"
-        width="180"
+        width="240"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -65,7 +65,7 @@
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
           >
-            停用
+            删除
           </el-button>
           <el-button
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
@@ -95,7 +95,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值曲线推荐规则" :visible.sync="recCurveFormVisible">
+    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值强制推荐规则" :visible.sync="recCurveFormVisible">
       <RecMandatoryForm
         ref="RecMandatoryForm"
         :rec-mandatory-data="recMandatoryData"
@@ -169,7 +169,6 @@ export default {
       })
     },
     save() {
-      alert('保存')
       this.$refs.RecMandatoryForm.save()
     },
     toDetail(id) {
@@ -190,10 +189,6 @@ export default {
       this.$store.commit('recMandatory/setRecMandatoryInfo', {})
       this.recCurveFormVisible = true
     },
-    toCopy() {
-      this.$store.dispatch('recMandatory/copyMandatoryInfo')
-      this.recCurveFormVisible = true
-    },
     saveCallBack() {
       this.recCurveFormVisible = false
       this.loadTable()
@@ -211,8 +206,17 @@ export default {
     },
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'
+    },
+    handleSizeChange(pageSize) {
+      this.todoInfo.page.pageSize = pageSize
+      this.queryTaskList()
+    },
+    handleCurrentChange(currentPage) {
+      this.todoInfo.page.pageNumber = currentPage
+      this.queryTaskList()
     }
   }
+
 }
 </script>
 

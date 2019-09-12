@@ -69,3 +69,40 @@ export function getCurveOrderList(data) {
 }
 
 
+
+// 保存曲线类型
+export function storageCurveInfo(data) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/storageCurveInfo`,
+    method: 'post',
+    data
+  })
+}
+
+
+// 查询曲线产品关键期限
+export function queryCurvePrdKd(data) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/curvePrdKdList`,
+    method: 'post',
+    data
+  })
+}
+
+// 查询曲线产品远期期限
+export function queryCurvePrdNk(data) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/curvePrdNkList`,
+    method: 'post',
+    data
+  })
+}
+
+// 定义曲线产品关键期限
+export function defCurvePeriod(data){
+  return request({
+    url: `${basic_api_curve}/curveProduct/defCurvePeriod`,
+    method: 'post',
+    data
+  })
+}

@@ -20,38 +20,38 @@ export function saveRecCurve(data) {
 }
 
 // 删除估值曲线配置信息
-export function deleteRecCurve(id) {
+export function deleteRecCurve(data) {
   return request({
     url: `${basic_api_valuation}/valuation-curve/del`,
-    method: 'get',
-    params: { id }
+    method: 'post',
+    data
   })
 }
 
 // 启用估值曲线配置信息
-export function openRecCurve(id) {
+export function openRecCurve(data) {
   return request({
     url: `${basic_api_valuation}/valuation-curve/open`,
-    method: 'get',
-    params: { id }
+    method: 'post',
+    data
   })
 }
 
 // 停用估值曲线配置信息
-export function closeRecCurve(id) {
+export function closeRecCurve(data) {
   return request({
     url: `${basic_api_valuation}/valuation-curve/close`,
-    method: 'get',
-    params: { id }
+    method: 'post',
+    data
   })
 }
 
 // 查询估值曲线详细信息
-export function queryRecCurve(id) {
+export function queryRecCurve(data) {
   return request({
     url: `${basic_api_valuation}/valuation-curve/get-one`,
-    method: 'get',
-    params: { id }
+    method: 'post',
+    data
   })
 }
 
@@ -59,7 +59,7 @@ export function queryRecCurve(id) {
 export function queryCurveList() {
   return request({
     url: `${basic_api_valuation}/valuation-curve/curve-list`,
-    method: 'get'
+    method: 'post'
   })
 }
 

@@ -19,29 +19,29 @@ export function saveRecMandatory(data) {
 }
 
 // 删除估值强制推荐规则信息
-export function deleteRecMandatory(id) {
+export function deleteRecMandatory(data) {
   return request({
     url: `${basic_api_valuation}/valuation-force/del`,
     method: 'post',
-    params: { id }
+    data
   })
 }
 
 // 启用估值强制推荐规则信息
-export function openRecMandatory(id) {
+export function openRecMandatory(data) {
   return request({
     url: `${basic_api_valuation}/valuation-force/open`,
     method: 'post',
-    params: { id }
+    data
   })
 }
 
 // 停用估值强制推荐规则信息
-export function closeRecMandatory(id) {
+export function closeRecMandatory(data) {
   return request({
     url: `${basic_api_valuation}/valuation-force/close`,
     method: 'post',
-    params: { id }
+    data
   })
 }
 

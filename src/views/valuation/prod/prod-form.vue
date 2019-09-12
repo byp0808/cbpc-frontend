@@ -14,11 +14,11 @@
       <div slot="header" class="clearfix card-head">
         <h3>基本信息</h3>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
-              <el-form-item label="产品名称">
+      <el-form ref="prodBasicForm" :model="prodInfo" :rules="rules" status-icon label-width="100px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="产品名称" prop="prodName">
                 <el-input v-model="prodInfo.prodName" type="text" auto-complete="off" />
               </el-form-item>
               <el-form-item label="产品状态">
@@ -40,13 +40,11 @@
                   style="width: 100%"
                 />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
-              <el-form-item label="基础产品">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="基础产品" prop="prodBasic">
                 <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%">
                   <el-option
                     v-for="basicProd in basicProdList"
@@ -65,7 +63,7 @@
                   style="width: 100%"
                 />
               </el-form-item>
-              <el-form-item label="币种">
+              <el-form-item label="币种" prop="currency">
                 <el-select v-model="prodInfo.currency" placeholder="请选择币种" style="width: 100%">
                   <el-option
                     v-for="currency in currencyList"
@@ -75,13 +73,11 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
-              <el-form-item label="市场">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="市场" prop="prodMarket">
                 <el-select v-model="prodInfo.prodMarket" placeholder="请选择市场" style="width: 100%">
                   <el-option
                     v-for="market in marketList"
@@ -101,13 +97,13 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-      </el-row>
+            </div>
+          </el-col>
+        </el-row>
+      </el-form>
       <div class="text-center">
-        <el-button type="primary" @click="next">下一步</el-button>
-        <el-button type="primary" @click="saveProd">保存</el-button>
+        <!--<el-button type="primary" @click="next">下一步</el-button>-->
+        <el-button type="primary" @click="saveProd('prodBasicForm')">保存</el-button>
       </div>
     </el-card>
     <el-card v-show="stepActive === 1" class="box-card margin-top">
@@ -119,8 +115,8 @@
         :filter-id="prodInfo.bondFilterId"
       />
       <div class="text-center margin-top">
-        <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary" @click="next">下一步</el-button>
+        <!--<el-button type="primary" @click="back">上一步</el-button>-->
+        <!--<el-button type="primary" @click="next">下一步</el-button>-->
         <el-button type="primary" @click="saveFilter">保存</el-button>
       </div>
     </el-card>
@@ -162,8 +158,8 @@
         </el-col>
       </el-row>
       <div class="text-center margin-top">
-        <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary" @click="next">下一步</el-button>
+        <!--<el-button type="primary" @click="back">上一步</el-button>-->
+        <!--<el-button type="primary" @click="next">下一步</el-button>-->
         <el-button type="primary" @click="saveProdIndices">保存</el-button>
       </div>
     </el-card>
@@ -284,8 +280,8 @@
         </el-col>
       </el-row>
       <div class="text-center margin-top">
-        <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary" @click="next">下一步</el-button>
+        <!--<el-button type="primary" @click="back">上一步</el-button>-->
+        <!--<el-button type="primary" @click="next">下一步</el-button>-->
         <el-button type="primary" @click="saveBatchIndices">保存</el-button>
       </div>
     </el-card>
@@ -321,8 +317,8 @@
         </el-table>
       </el-card>
       <div class="text-center margin-top">
-        <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary">提交审核</el-button>
+        <!--<el-button type="primary" @click="back">上一步</el-button>-->
+        <el-button type="primary" @click="taskStart">提交审核</el-button>
       </div>
     </el-card>
   </div>
@@ -330,7 +326,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveProd, confirmProd, indicesProd, detailProd, taskStart } from '@/api/valuation/prod.js'
+import { saveProd, confirmProd, indicesProd, detailProd, taskStart, checkProdName } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdForm',
   components: {
@@ -386,7 +382,22 @@ export default {
         id: 'currency-2',
         name: '币种2'
       }],
-      detail: null
+      detail: null,
+      rules: {
+        prodName: [
+          { required: true, message: '请输入产品名称', trigger: 'blur' },
+          { validator: this.checkProdName, trigger: 'blur' }
+        ],
+        prodBasic: [
+          { required: true, message: '请选择基础产品', trigger: 'blur' }
+        ],
+        prodMarket: [
+          { required: true, message: '请选择市场', trigger: 'blur' }
+        ],
+        currency: [
+          { required: true, message: '请选择市场', trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {
@@ -597,11 +608,18 @@ export default {
         this.initDetailData()
       })
     },
-    saveProd() {
-      this.save({ valuationProd: this.prodInfo }, '产品信息')
+    saveProd(formName) {
+      debugger
+      this.$refs[formName].validate((valid) => {
+        debugger
+        if (valid) {
+          this.save({ valuationProd: this.prodInfo }, '产品信息')
+        } else {
+          return false
+        }
+      })
     },
     saveFilter() {
-      console.log(this.$refs.refBondFilter.getData())
       this.save({ bondFilterInfo: this.$refs.refBondFilter.getData() }, '筛选范围')
     },
     saveProdIndices() {
@@ -637,7 +655,7 @@ export default {
       taskStart({
         businessNo: this.prodId,
         businessName: '估值产品定义',
-        businessRouter: '',
+        businessRouter: 'ValuationProdTask',
         taskName: '估值产品定义'
       }).then(response => {
         this.$message({
@@ -645,6 +663,22 @@ export default {
           message: '流程提交成功',
           type: 'success'
         })
+        this.$router.push({ name: 'ValuationProdList' })
+      })
+    },
+    checkProdName(rule, value, callback) {
+      var data = {
+        prodName: value
+      }
+      if (this.prodId) {
+        data.id = this.prodId
+      }
+      checkProdName(data).then(response => {
+        if (!response) {
+          callback(new Error('产品名称重复,请调整产品名称'))
+        } else {
+          callback()
+        }
       })
     }
   }

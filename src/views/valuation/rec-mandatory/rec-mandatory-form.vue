@@ -11,7 +11,7 @@
               <el-form-item label="规则ID">
                 <el-input v-model="recMandatoryInfo.id" disabled />
               </el-form-item>
-              <el-form-item label="曲线规则名称">
+              <el-form-item label="规则名称">
                 <el-input v-model="recMandatoryInfo.ruleName" :disabled="disabled" />
               </el-form-item>
             </el-form>
@@ -23,6 +23,22 @@
               <el-form-item label="最后操作人">
                 <el-input v-model="recMandatoryInfo.lastUpdBy" disabled />
               </el-form-item>
+              <el-form-item label="强制推荐方向：">
+                <el-select v-model="recMandatoryInfo.recoDirection" filterable placeholder="请选择强制推荐方向" :disabled="disabled">
+                  <el-option
+                    v-for="item in directions"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="grid-content bg-purple">
+            <el-form ref="recMandatoryInfo" :model="recMandatoryInfo" label-width="150px">
               <el-form-item label="最后操作时间">
                 <el-input v-model="recMandatoryInfo.lastUpdTs" disabled />
               </el-form-item>
@@ -41,24 +57,13 @@
         :disabled="disabled"
       />
     </el-card>
-    <el-card class="box-card">
-      <el-form-item label="强制推荐方向：">
-        <el-select v-model="targetValue" filterable placeholder="请选择强制推荐方向">
-          <el-option
-            v-for="item in directions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-    </el-card>
   </div>
 </template>
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
 import { saveRecMandatory, queryRecMandatory } from '@/api/valuation/rec-mandatory.js'
+
 export default {
   name: 'RecMandatoryForm',
   components: {
@@ -67,18 +72,13 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     return {
-      direction: [{
+      directions: [{
         id: '01',
         name: '方向长'
       }, {
         id: '02',
         name: '方向短'
-      }],
-      recForceInfo: {
-        id: '',
-        ruleName: '',
-        lastUpdBy: ''
-      }
+      }]
     }
   },
   computed: {

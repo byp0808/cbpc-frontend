@@ -3,6 +3,19 @@ import { basic_api_curve } from '@/api/base-api.js'
 import { formatTimeToStr } from '@/utils/date.js'
 
 // 获取批次列表
+export function getOrderName(id) {
+  var list = getOrderList()
+  var label = id
+  for (const index in list) {
+    const item = list[index]
+    if ( id === item.id) {
+      return item.orderName
+    }
+  }
+  return label
+}
+
+// 获取批次列表
 export function getOrderList() {
   var list = [
     { id: 'ORDER_ID_1', orderName: '批次1', compTime: 1568103569818, pubTime: 1568116569818 },
@@ -43,6 +56,15 @@ export function queryProdcutKdList(data) {
 export function queryProductOrderAutoList(data){
   return request({
     url: `${basic_api_curve}/curveProductOrderAuto/list`,
+    method: 'post',
+    data
+  })
+}
+
+// 保存产品批次信息
+export function savePrdOrder(data){
+  return request({
+    url: `${basic_api_curve}/curveProductOrder/save`,
     method: 'post',
     data
   })

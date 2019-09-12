@@ -131,6 +131,9 @@
       <div slot="header" class="clearfix card-head">
         <h3>构建曲线类型</h3>
       </div>
+      <CurveConstructType
+        ref="curveConstructType"
+      />
       <div class="text-center">
         <el-button type="primary" @click="next">保存</el-button>
       </div>
@@ -139,28 +142,11 @@
       <div slot="header" class="clearfix card-head">
         <h3>定义曲线期限</h3>
       </div>
-      <el-transfer
-        v-model="value4"
-        class="text-center"
-        :props="{
-          key: 'value',
-          label: 'desc'
-        }"
-        :titles="['估值基本信息', '估值基本信息']"
-        :data="data3"
-      />
-      <el-transfer
-        v-model="value4"
-        class="text-center"
-        :props="{
-          key: 'value',
-          label: 'desc'
-        }"
-        :titles="['估值指标', '估值指标']"
-        :data="data3"
+      <CurvePrdKd
+        ref="curvePrdKd"
       />
       <div class="text-center">
-        <el-button type="primary" @click="next">保存</el-button>
+        <el-button type="primary" @click="defCurvePeriod">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 3" class="box-card margin-top">
@@ -189,13 +175,17 @@
 
 <script>
 import { formatTimeToStr } from '@/utils/date.js'
-import { saveProductInfo, getCurveProduct } from '@/api/curve/curve-product-list.js'
+import { saveProductInfo, getCurveProduct ,storageCurveInfo,defCurvePeriod} from '@/api/curve/curve-product-list.js'
 import { optioins } from '@/api/curve/code-type.js'
 import CurveProductDefOrderForm from '@/views/curve/product/curve-product-def-order.vue'
+import CurveConstructType from '@/views/curve/product/curve-construct-type.vue'
+import CurvePrdKd from '@/views/curve/product/curve-prd-kd.vue'
 export default {
   name: 'CurveProductDefForm',
   components: {
-    CurveProductDefOrderForm
+    CurveProductDefOrderForm,
+    CurveConstructType,
+    CurvePrdKd
   },
   props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
@@ -243,7 +233,7 @@ export default {
 
     return {
       disabled: false,
-      stepActive: 3,
+      stepActive: 0,
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
@@ -415,8 +405,47 @@ export default {
       console.info('saveProductInfo3')
     },
     // 保存批次
-    saveOrder(){
-
+    async saveOrder() {
+      const {result} = await this.$refs.refCurveProductDefOrderForm.saveOrder()
+      if (result) {
+        this.stepActive++
+      }
+    },
+    /**
+     * 保存曲线类型
+     */
+    storageCurveInfo() {
+      var productInfo = this.getProductInfo();
+      var curveConstructType = this.$refs.curveConstructType.getCurveConstructType();
+      var data = _.assign(productInfo,curveConstructType);
+      storageCurveInfo(data).then(response => {
+        this.stepActive++
+        this.$message({
+          message: '操作成功！',
+          type: 'success',
+          showClose: true
+        })
+      });
+    },
+    /**
+     * 定义曲线类型
+     */
+    defCurvePeriod(){
+      debugger
+      var curvePrdKdList = this.$refs.curvePrdKd.obtainCurvePrdKdList();
+      var curvePrdNkList = this.$refs.curvePrdKd.obtainCurvePrdNkList();
+      var data = {
+        curvePrdKdList : curvePrdKdList,
+        curvePrdNkList : curvePrdNkList
+      }
+      defCurvePeriod(data).then(response => {
+        this.stepActive++
+        this.$message({
+          message: '操作成功！',
+          type: 'success',
+          showClose: true
+        })
+      });
     }
   }
 }
