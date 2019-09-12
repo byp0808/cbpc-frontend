@@ -1,8 +1,12 @@
 <template>
   <div class="app-container">
+    <div style="margin-bottom: 20px">
+      <el-button type="primary" @click="toAdd">新增产品</el-button>
+    </div>
     <el-table
       :data="prodList"
       style="width: 100%"
+      empty-text="空"
     >
       <el-table-column
         prop="prodName"
@@ -18,7 +22,7 @@
         prop="listingDate"
         label="产品上市日期"
       >
-        <template slot-scope="{row}">
+        <template v-if="row.listingDate" slot-scope="{row}">
           {{ $moment(row.listingDate).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
@@ -26,7 +30,7 @@
         prop="delistingDate"
         label="产品退市日期"
       >
-        <template slot-scope="{row}">
+        <template v-if="row.delistingDate" slot-scope="{row}">
           {{ $moment(row.delistingDate).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
@@ -44,6 +48,7 @@
         <template slot-scope="{row}">
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
           <el-button type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
+          <el-button v-if="row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -73,13 +78,13 @@ export default {
     }
   },
   beforeMount() {
-    prodList({ page: this.page }).then(response => {
-      const { dataList, page } = response
-      this.prodList = dataList
-      this.page = page
-    })
+    this.queryList()
   },
   methods: {
+    toAdd() {
+      this.$store.commit('valuationProd/clear')
+      this.$router.push({ name: 'ValuationProdForm' })
+    },
     toEdit(prodId) {
       this.$store.commit('valuationProd/setProdId', prodId)
       this.$router.push({ name: 'ValuationProdForm' })
@@ -88,13 +93,20 @@ export default {
       this.$store.commit('valuationProd/setProdId', prodId)
       this.$router.push({ name: 'ValuationProdDetail' })
     },
+    queryList() {
+      prodList({ page: this.page }).then(response => {
+        const { dataList, page } = response
+        this.prodList = dataList
+        this.page = page
+      })
+    },
     handleSizeChange(pageSize) {
-      this.todoInfo.page.pageSize = pageSize
-      this.queryTaskList()
+      this.page.pageSize = pageSize
+      this.queryList()
     },
     handleCurrentChange(currentPage) {
-      this.todoInfo.page.pageNumber = currentPage
-      this.queryTaskList()
+      this.page.pageNumber = currentPage
+      this.queryList()
     }
   }
 }

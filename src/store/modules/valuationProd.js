@@ -24,6 +24,20 @@ export default {
     confirm: {}
   },
   mutations: {
+    clear(state) {
+      state.prodId = ''
+      state.prodInfo = {}
+      state.prodIndices.basicIndices = []
+      state.prodIndices.basicIndicesResult = []
+      state.prodIndices.compIndices = []
+      state.prodIndices.compIndicesResult = []
+      state.valuationWay.dataList = []
+      state.valuationWay.results = []
+      state.batchIndices.batches = []
+      state.batchIndices.batchesChoice = []
+      state.batchIndices.batchProdIndices = []
+      state.confirm = {}
+    },
     setProdId(state, prodId) {
       state.prodId = prodId
     },

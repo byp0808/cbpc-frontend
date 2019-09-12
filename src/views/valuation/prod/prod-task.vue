@@ -13,7 +13,7 @@
 
 <script>
 import ValuationProdDetail from '@/views/valuation/prod/prod-detail.vue'
-import { taskSubmit } from '@/api/valuation/prod.js'
+import { taskAudit } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdTask',
   components: {
@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     taskSubmit(status) {
-      taskSubmit({
+      taskAudit({
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',

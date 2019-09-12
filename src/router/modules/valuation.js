@@ -22,12 +22,14 @@ const valuationRouter = {
       path: 'prod-form',
       component: () => import('@/views/valuation/prod/prod-form.vue'),
       name: 'ValuationProdForm',
-      meta: { title: '估值产品新增', noCache: true }
+      hidden: true,
+      meta: { title: '估值产品新增', noCache: true, breadcrumb: false }
     },
     {
       path: 'prod-detail',
       component: () => import('@/views/valuation/prod/prod-detail.vue'),
       name: 'ValuationProdDetail',
+      hidden: true,
       meta: { title: '估值产品详情', noCache: true }
     },
     {
