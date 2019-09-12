@@ -1,11 +1,12 @@
 <template>
+    <!-- 编制关键期限 -->
     <div class="app-container">
         <div class="filter-container">
             <label>编制关键期限： </label>
-            <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+            <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="">
                 <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
-            <el-button v-waves class="filter-item" type="primary" @click="handleFilter">
+            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter">
                 应用模板
             </el-button>
         </div>
@@ -57,15 +58,48 @@
             </div>
         </el-dialog>
 
-        <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-            <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-                <el-table-column prop="key" label="Channel"/>
-                <el-table-column prop="pv" label="Pv"/>
-            </el-table>
-            <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-        </el-dialog>
+
+        <!-- 远期N/K值 -->
+        <div class="filter-container" style="padding-top: 40px">
+            <label>远期N/K值： </label>
+            <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="">
+                <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+            </el-select>
+            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter">
+                应用模板
+            </el-button>
+        </div>
+
+        <el-table :data="curvePrdNkList" border highlight-current-row style="width: 820px;">
+            <el-table-column label="N值" width="150px">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.nvalue }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="K值" width="150px" align="center">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.kvalue }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作时间" width="150px" align="center">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.operateTs | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="备注" width="270px" align="center">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.remark}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                    <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdNkList)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+                    @pagination="getCurvePrdNkList"/>
     </div>
 </template>
 
@@ -74,7 +108,7 @@
   import {parseTime} from '@/utils'
   import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-  import {queryCurvePrdKd, delCurveProduct} from '@/api/curve/curve-product-list.js'
+  import {queryCurvePrdKd, delCurveProduct,queryCurvePrdNk} from '@/api/curve/curve-product-list.js'
 
   export default {
     name: 'CurvePrdKdTable',
@@ -105,28 +139,24 @@
       return {
         tableKey: 0,
         curvePrdKdList: null,
+        curvePrdNkList: null,
         total: 0,
         listLoading: true,
         listQuery: {
           page: 1,
-          limit: 20,
+          limit: 5,
           importance: undefined,
           title: undefined,
           type: undefined,
           sort: '+id'
         },
-        importanceOptions: [1, 2, 3],
         sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
-        statusOptions: ['published', 'draft', 'deleted'],
-        showReviewer: false,
         temp: {
           id: undefined,
           sampleIntervalUp: '',
           sampleIntervalDown: ''
         },
         dialogFormVisible: false,
-        dialogPvVisible: false,
-        pvData: [],
         rules: {
           sampleIntervalUp: [
             {required: true, message: '样本区间上限不可为空值', trigger: 'change'},
@@ -137,8 +167,7 @@
             { type: 'number', message: '样本区间下限必须为数字值'},
             { validator: comparison, trigger: 'blur' }
           ]
-        },
-        downloadLoading: false
+        }
       }
 
     },
@@ -156,9 +185,23 @@
           }, 1.5 * 1000)
         })
       },
-      handleFilter() {
+      getCurvePrdNkList(){
+        debugger
+        queryCurvePrdNk({curveId:'1111'}).then(response => {
+          debugger
+          this.curvePrdNkList = response.dataList
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1.5 * 1000)
+        })
+      },
+      handleCurvePrdKdFilter() {
         this.listQuery.page = 1
         this.getCurvePrdKdList()
+      },
+      handleCurvePrdNkFilter() {
+        this.listQuery.page = 1
+        this.getCurvePrdNkList()
       },
       handleEdit(index, rows) {
         // copy obj
@@ -183,6 +226,9 @@
       },
       obtainCurvePrdKdList(){
         return this.curvePrdKdList;
+      },
+      obtainCurvePrdNkList(){
+        return this.curvePrdNkList;
       }
     }
   }

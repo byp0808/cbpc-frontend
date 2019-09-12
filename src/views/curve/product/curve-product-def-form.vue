@@ -146,7 +146,7 @@
         ref="curvePrdKd"
       />
       <div class="text-center">
-        <el-button type="primary" @click="defCurvePrdKd">保存</el-button>
+        <el-button type="primary" @click="defCurvePeriod">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 3" class="box-card margin-top">
@@ -175,7 +175,7 @@
 
 <script>
 import { formatTimeToStr } from '@/utils/date.js'
-import { saveProductInfo, getCurveProduct ,storageCurveInfo,defCurvePrdKd} from '@/api/curve/curve-product-list.js'
+import { saveProductInfo, getCurveProduct ,storageCurveInfo,defCurvePeriod} from '@/api/curve/curve-product-list.js'
 import { optioins } from '@/api/curve/code-type.js'
 import CurveProductDefOrderForm from '@/views/curve/product/curve-product-def-order.vue'
 import CurveConstructType from '@/views/curve/product/curve-construct-type.vue'
@@ -412,11 +412,9 @@ export default {
      * 保存曲线类型
      */
     storageCurveInfo() {
-      debugger
       var productInfo = this.getProductInfo();
       var curveConstructType = this.$refs.curveConstructType.getCurveConstructType();
       var data = _.assign(productInfo,curveConstructType);
-      debugger
       storageCurveInfo(data).then(response => {
         this.stepActive++
         this.$message({
@@ -429,10 +427,15 @@ export default {
     /**
      * 定义曲线类型
      */
-    defCurvePrdKd(){
+    defCurvePeriod(){
       debugger
-      var data = this.$refs.curvePrdKd.obtainCurvePrdKdList();
-      defCurvePrdKd(data).then(response => {
+      var curvePrdKdList = this.$refs.curvePrdKd.obtainCurvePrdKdList();
+      var curvePrdNkList = this.$refs.curvePrdKd.obtainCurvePrdNkList();
+      var data = {
+        curvePrdKdList : curvePrdKdList,
+        curvePrdNkList : curvePrdNkList
+      }
+      defCurvePeriod(data).then(response => {
         this.stepActive++
         this.$message({
           message: '操作成功！',

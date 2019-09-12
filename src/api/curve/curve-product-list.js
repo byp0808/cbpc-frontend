@@ -89,10 +89,19 @@ export function queryCurvePrdKd(data) {
   })
 }
 
-// 定义曲线产品关键期限
-export function defCurvePrdKd(data){
+// 查询曲线产品远期期限
+export function queryCurvePrdNk(data) {
   return request({
-    url: `${basic_api_curve}/curveProduct/defCurvePrdKd`,
+    url: `${basic_api_curve}/curveProduct/curvePrdNkList`,
+    method: 'post',
+    data
+  })
+}
+
+// 定义曲线产品关键期限
+export function defCurvePeriod(data){
+  return request({
+    url: `${basic_api_curve}/curveProduct/defCurvePeriod`,
     method: 'post',
     data
   })
