@@ -233,7 +233,7 @@ export default {
 
     return {
       disabled: false,
-      stepActive: 3,
+      stepActive: 0,
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
