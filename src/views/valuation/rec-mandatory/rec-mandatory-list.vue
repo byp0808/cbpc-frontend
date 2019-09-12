@@ -37,7 +37,7 @@
       <el-table-column
         prop="recoDirection"
         label="强制推荐方向"
-        width="260"
+        width="200"
         show-overflow-tooltip
       />
       <el-table-column
@@ -49,7 +49,7 @@
       <el-table-column
         prop="address"
         label="操作"
-        width="180"
+        width="240"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -59,6 +59,13 @@
             @click.native.prevent="toDetail(scope.row.id)"
           >
             规则调整
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="toDelete(scope.row.id)"
+          >
+            删除
           </el-button>
           <el-button
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
