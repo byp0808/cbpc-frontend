@@ -162,7 +162,7 @@ export default {
   },
   methods: {
     loadTable() {
-      queryRecCurveList().then(response => {
+      queryRecCurveList({}).then(response => {
         const { valuationCurves, curveList, ruleDetail } = response
         this.recCurveList = valuationCurves
         this.curveList = curveList

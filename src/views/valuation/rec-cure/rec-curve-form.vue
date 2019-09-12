@@ -95,8 +95,8 @@ export default {
       })
     }
     queryCurveList().then(response => {
-      const { datalist } = response
-      this.curveList = datalist
+      const { dataList } = response
+      this.curveList = dataList
     })
   },
   methods: {
