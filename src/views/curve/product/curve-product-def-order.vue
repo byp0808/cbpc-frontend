@@ -32,6 +32,7 @@
             <CurveProductDefOrderDetailForm
               ref="refCurveProductDefOrderDetailForm"
               :order-data="tabItem.orderData"
+              :order-name="tabItem.title"
               :curve-prd-kd-list="tabItem.curvePrdKdList"
               :curve-prd-order-auto-list="tabItem.curvePrdOrderAutoList"
             />
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import { getOrderList, getProductOrderList, queryProdcutKdList, queryProductOrderAutoList } from '@/api/curve/curve-product-order.js'
+import { getOrderList, getProductOrderList, queryProdcutKdList, queryProductOrderAutoList, savePrdOrder } from '@/api/curve/curve-product-order.js'
 import CurveProductDefOrderDetailForm from '@/views/curve/product/curve-product-def-order-detail.vue'
 
 export default {
@@ -71,7 +72,7 @@ export default {
   computed: {
   },
   beforeMount() {
-    this.productIdLocal = this.productId;
+    this.productIdLocal = this.productId
     this.productIdLocal = 'd7810466a01646a082e206087c96e15c'
     console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
     this.init()
@@ -147,6 +148,9 @@ export default {
 
         // 获取批次信息
         const orderData = this.getProductOrderInfo(newTabName)
+        orderData.orderId = item.id
+        orderData.orderName = item.orderName
+
         // 产品批次-关键期限
         const curvePrdKdList = this.getCurvePrdKdList(newTabName)
         // 产品批次-自动编制列表
@@ -171,14 +175,25 @@ export default {
           return item
         }
       }
-      return {}
+      var item = {
+        curveOrderId: 'TEMP_' + orderId, // 临时ID
+        orderId: orderId,
+        model: '1', // 模型
+        buildType: '2', // 编制方式
+        computedType: '2', // 计算方式
+        publishType: '2', // 编制方式
+        publishSampleFlag: 'N', // 是否发布样本券
+        abc: ''
+      }
+      this.productOrderList.push(item)
+      return item
     },
     // 从已关联的列表中获取信息
     getCurvePrdKdList(orderId) {
       var list = []
-      for (var i = 0 ; this.curvePrdKdList.length ; i ++) {
+      for (var i = 0; i < this.curvePrdKdList.length; i++) {
         var item = this.curvePrdKdList[i]
-        if (item.curveOrderId === orderId) {
+        if (item.orderId === orderId) {
           list.push(item)
         }
       }
@@ -194,6 +209,118 @@ export default {
         }
       }
       return list
+    },
+    // 验证批次信息
+    validateCurvePrdOrder(info) {
+      var msg = []
+      if (!info) {
+        msg.push('批次信息不能为空;')
+        return msg
+      }
+
+      if (!info.model) {
+        msg.push('批次所需模型不能为空')
+      }
+      if (!info.buildType) {
+        msg.push('编辑方式不能为空')
+      }
+      if (!info.computedType) {
+        msg.push('批次所需计算方式不能为空')
+      }
+      if (!info.publishType) {
+        msg.push('批次所需发布方式不能为空')
+      }
+      if (!info.curvePubType) {
+        msg.push('曲线发布类型不能为空')
+      }
+      if (!info.publishSampleFlag) {
+        msg.push('是否发布样本券不能为空')
+      }
+      if (!info.publishStepSize) {
+        msg.push('发布步长不能为空')
+      }
+      if (!info.interestDueFreq) {
+        msg.push('付息频率不能为空')
+      }
+      return msg.join('、')
+    },
+    // 保存
+    async saveOrder() {
+      // 获取所有tab列表
+      console.info('orderInfo')
+      console.info(this.productOrderList)
+      // 从  取关键期限
+      const list = this.$refs.refCurveProductDefOrderDetailForm
+      const orders = []
+      if (list && list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i]
+          const curvePrdOrder = item.getCurvePrdOrder()
+          const prdKtList = item.getPrdKtList()
+          const prdOrderAutoList = item.getPrdOrderAutoList()
+          const prdOrderAutoKtList = item.getPrdOrderAutoKtList()
+          const orderName = curvePrdOrder.orderName
+
+          // 验证批次信息
+          const msg = this.validateCurvePrdOrder(curvePrdOrder)
+          if (msg) {
+            this.$message({
+              type: 'warning',
+              duration: 10000,
+              showClose: true,
+              message: '批次【' + orderName + '】数据校验异常:' + msg
+            })
+            return false
+          }
+          // 验证发布关键期限
+          if (!prdKtList || prdKtList.length <= 0) {
+            this.$message({
+              type: 'warning',
+              duration: 10000,
+              showClose: true,
+              message: '批次【' + orderName + '】发布关键期限为空'
+            })
+            return false
+          }
+          // 校验数据
+          orders.push(
+            {
+              curvePrdOrder: curvePrdOrder,
+              prdKtList: prdKtList,
+              prdOrderAutoList: prdOrderAutoList,
+              prdOrderAutoKtList: prdOrderAutoKtList
+            }
+          )
+        }
+      } else {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '未设置批次信息'
+        })
+        return false
+      }
+
+      var result = false
+      if (!this.productIdLocal) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '未获取到产品ID'
+        })
+        return false
+      }
+      await savePrdOrder({ curveId: this.productIdLocal, orders: orders }).then(response => {
+        console.info(response)
+        // 保存最新信息
+        result = true
+        this.$message({
+          message: '操作成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
+      return result
     }
   }
 }

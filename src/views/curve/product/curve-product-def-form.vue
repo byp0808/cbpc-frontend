@@ -405,8 +405,11 @@ export default {
       console.info('saveProductInfo3')
     },
     // 保存批次
-    saveOrder(){
-
+    async saveOrder() {
+      const {result} = await this.$refs.refCurveProductDefOrderForm.saveOrder()
+      if (result) {
+        this.stepActive++
+      }
     },
     /**
      * 保存曲线类型
