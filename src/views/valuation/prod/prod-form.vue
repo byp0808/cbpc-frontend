@@ -322,7 +322,7 @@
       </el-card>
       <div class="text-center margin-top">
         <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary">提交审核</el-button>
+        <el-button type="primary" @click="taskStart">提交审核</el-button>
       </div>
     </el-card>
   </div>
@@ -637,7 +637,7 @@ export default {
       taskStart({
         businessNo: this.prodId,
         businessName: '估值产品定义',
-        businessRouter: '',
+        businessRouter: 'ValuationProdTask',
         taskName: '估值产品定义'
       }).then(response => {
         this.$message({

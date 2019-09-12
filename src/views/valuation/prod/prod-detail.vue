@@ -222,6 +222,7 @@ export default {
   components: {
     BondFilter
   },
+  props: ['businessNo'],
   data() {
     return {
       boolTrue: true,
@@ -354,8 +355,8 @@ export default {
   },
   beforeMount() {
     const that = this
-    if (this.$store.state.valuationProd.prodId) {
-      this.prodId = this.$store.state.valuationProd.prodId
+    if (this.$store.state.valuationProd.prodId || this.businessNo) {
+      this.prodId = this.$store.state.valuationProd.prodId || this.businessNo
     }
     this.$store.dispatch('valuationProd/loadProdIndices')
     this.$store.dispatch('valuationProd/loadValuationWay')
