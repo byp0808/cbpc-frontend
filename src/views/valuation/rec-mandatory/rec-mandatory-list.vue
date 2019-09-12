@@ -35,15 +35,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="curveId"
-        label="估值推荐规则"
+        prop="recoDirection"
+        label="强制推荐方向"
         width="260"
         show-overflow-tooltip
-      >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ curveName(scope.row.curveId) }}</span>
-        </template>
-      </el-table-column>
+      />
       <el-table-column
         prop="approveStatus"
         label="状态"
@@ -63,13 +59,6 @@
             @click.native.prevent="toDetail(scope.row.id)"
           >
             规则调整
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="toDelete(scope.row.id)"
-          >
-            停用
           </el-button>
           <el-button
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
@@ -99,7 +88,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值曲线推荐规则" :visible.sync="recCurveFormVisible">
+    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值强制推荐规则" :visible.sync="recCurveFormVisible">
       <RecMandatoryForm
         ref="RecMandatoryForm"
         :rec-mandatory-data="recMandatoryData"
@@ -166,9 +155,9 @@ export default {
   methods: {
     loadTable() {
       queryMandatoryList({ page: this.page }).then(response => {
-        const { valuationCurves, ruleDetail, page } = response
+        const { recForces, ruleDetail, page } = response
         this.page = page
-        this.mandatoryList = valuationCurves
+        this.mandatoryList = recForces
         this.bondFilterList = ruleDetail
       })
     },
@@ -193,10 +182,6 @@ export default {
       this.$store.commit('recMandatory/setRecMandatoryInfo', {})
       this.recCurveFormVisible = true
     },
-    toCopy() {
-      this.$store.dispatch('recMandatory/copyMandatoryInfo')
-      this.recCurveFormVisible = true
-    },
     saveCallBack() {
       this.recCurveFormVisible = false
       this.loadTable()
@@ -214,8 +199,17 @@ export default {
     },
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'
+    },
+    handleSizeChange(pageSize) {
+      this.todoInfo.page.pageSize = pageSize
+      this.queryTaskList()
+    },
+    handleCurrentChange(currentPage) {
+      this.todoInfo.page.pageNumber = currentPage
+      this.queryTaskList()
     }
   }
+
 }
 </script>
 

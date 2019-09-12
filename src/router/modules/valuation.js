@@ -48,10 +48,23 @@ const valuationRouter = {
       name: 'Table',
       meta: { title: '估值相对曲线设置' }
     }, {
-      path: '/mandatoryList',
+      path: '/rec-mandatory-list',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-list.vue'),
-      name: 'Table',
-      meta: { title: '设置估值强制推荐规则' }
+      name: 'mandatoryList',
+      meta: { title: '设置估值强制推荐规则', noCache: true }
+    }, {
+      path: '/rec-mandatory-form',
+      component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-form.vue'),
+      name: 'mandatoryForm'
+    }, {
+      path: '/bondsNonp-list',
+      component: () => import('@/views/valuation/bondsNonp/bondsNonp-list.vue'),
+      name: 'bondsNonpList',
+      meta: { title: '设置不参与估值资产列表', noCache: true }
+    }, {
+      path: '/bondsNonp-form',
+      component: () => import('@/views/valuation/bondsNonp/bondsNonp-form.vue'),
+      name: 'bondsNonpForm'
     }
   ]
 }
