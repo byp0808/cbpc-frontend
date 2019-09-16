@@ -114,22 +114,9 @@
     name: 'CurvePrdKdTable',
     components: {Pagination},
     directives: {waves},
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'info',
-          deleted: 'danger'
-        }
-        return statusMap[status]
-      },
-      typeFilter(type) {
-        return calendarTypeKeyValue[type]
-      }
-    },
+    props: ['productId'],
     data() {
       var comparison = (rule, value, callback) => {
-        debugger
         if (value <= this.temp.sampleIntervalUp) {
           callback(new Error('样本区间下限大于样本区间上限!'));
         } else {
@@ -147,14 +134,14 @@
           limit: 5,
           importance: undefined,
           title: undefined,
-          type: undefined,
-          sort: '+id'
+          type: undefined
         },
-        sortOptions: [{label: 'ID Ascending', key: '+id'}, {label: 'ID Descending', key: '-id'}],
+        sortOptions: [],
         temp: {
           id: undefined,
           sampleIntervalUp: '',
-          sampleIntervalDown: ''
+          sampleIntervalDown: '',
+          operateTs:''
         },
         dialogFormVisible: false,
         rules: {
@@ -172,13 +159,13 @@
 
     },
     created() {
-
+      this.getCurvePrdKdList();
+      this.getCurvePrdNkList();
     },
     methods: {
       getCurvePrdKdList(){
-        debugger
-        queryCurvePrdKd({curveId:'1111'}).then(response => {
-          debugger
+        var curveId = this.productId;
+        queryCurvePrdKd({curveId:curveId}).then(response => {
           this.curvePrdKdList = response.dataList
           setTimeout(() => {
             this.listLoading = false
@@ -186,9 +173,8 @@
         })
       },
       getCurvePrdNkList(){
-        debugger
-        queryCurvePrdNk({curveId:'1111'}).then(response => {
-          debugger
+        var curveId = this.productId;
+        queryCurvePrdNk({curveId:curveId}).then(response => {
           this.curvePrdNkList = response.dataList
           setTimeout(() => {
             this.listLoading = false
@@ -197,11 +183,11 @@
       },
       handleCurvePrdKdFilter() {
         this.listQuery.page = 1
-        this.getCurvePrdKdList()
+
       },
       handleCurvePrdNkFilter() {
         this.listQuery.page = 1
-        this.getCurvePrdNkList()
+
       },
       handleEdit(index, rows) {
         // copy obj
@@ -220,6 +206,7 @@
       storageCurvePrdKd(formName){
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            this.temp.operateTs=new Date();
             this.dialogFormVisible = false;
           }
         });

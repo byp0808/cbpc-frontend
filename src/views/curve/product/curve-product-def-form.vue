@@ -152,6 +152,7 @@
       </div>
       <CurvePrdKd
         ref="curvePrdKd"
+        :productId = "productId"
       />
       <div class="text-center">
         <el-button type="primary" :disabled="disabled" @click="defCurvePeriod">保存</el-button>
