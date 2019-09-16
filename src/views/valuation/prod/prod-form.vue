@@ -609,9 +609,7 @@ export default {
       })
     },
     saveProd(formName) {
-      debugger
       this.$refs[formName].validate((valid) => {
-        debugger
         if (valid) {
           this.save({ valuationProd: this.prodInfo }, '产品信息')
         } else {
