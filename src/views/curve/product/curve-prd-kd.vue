@@ -3,8 +3,8 @@
     <div class="app-container">
         <div class="filter-container">
             <label>编制关键期限： </label>
-            <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="">
-                <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+            <el-select v-model="prdKdMod" style="width: 140px" class="filter-item">
+                <el-option v-for="item in prdKdMods" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
             <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter">
                 应用模板
@@ -35,9 +35,6 @@
             </el-table-column>
         </el-table>
 
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getCurvePrdKdList"/>
-
         <el-dialog title="修改编制关键期限" :visible.sync="dialogFormVisible">
             <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px"
                      style="width: 400px; margin-left:50px;">
@@ -62,8 +59,8 @@
         <!-- 远期N/K值 -->
         <div class="filter-container" style="padding-top: 40px">
             <label>远期N/K值： </label>
-            <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="">
-                <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+            <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item">
+                <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
             <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter">
                 应用模板
@@ -97,9 +94,6 @@
                 </template>
             </el-table-column>
         </el-table>
-
-        <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
-                    @pagination="getCurvePrdNkList"/>
     </div>
 </template>
 
@@ -127,16 +121,21 @@
         tableKey: 0,
         curvePrdKdList: null,
         curvePrdNkList: null,
-        total: 0,
         listLoading: true,
-        listQuery: {
-          page: 1,
-          limit: 5,
-          importance: undefined,
-          title: undefined,
-          type: undefined
-        },
-        sortOptions: [],
+        prdKdMod:null,
+        forwardFlagMod:null,
+        prdKdMods: [
+          {label:'模板一',key:'0001'},
+          {label:'模板二',key:'0002'},
+          {label:'模板三',key:'0003'},
+          {label:'模板四',key:'0004'},
+        ],
+        forwardFlagMods: [
+          {label:'模板一',key:'0001'},
+          {label:'模板二',key:'0002'},
+          {label:'模板三',key:'0003'},
+          {label:'模板四',key:'0004'},
+        ],
         temp: {
           id: undefined,
           sampleIntervalUp: '',
@@ -182,11 +181,14 @@
         })
       },
       handleCurvePrdKdFilter() {
-        this.listQuery.page = 1
-
+          this.curvePrdKdList = [
+            {standSlip:'1d', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'2d', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'1M', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'1Y', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''}
+          ]
       },
       handleCurvePrdNkFilter() {
-        this.listQuery.page = 1
 
       },
       handleEdit(index, rows) {
@@ -212,9 +214,15 @@
         });
       },
       obtainCurvePrdKdList(){
+        for(var i = 0 ;i<this.curvePrdKdList.length;i++){
+          this.curvePrdKdList[i].curveId=this.productId
+        }
         return this.curvePrdKdList;
       },
       obtainCurvePrdNkList(){
+        for(var i = 0 ;i<this.curvePrdNkList.length;i++){
+          this.curvePrdNkList[i].curveId=this.productId
+        }
         return this.curvePrdNkList;
       }
     }

@@ -450,14 +450,15 @@ export default {
      * 定义曲线类型
      */
     defCurvePeriod() {
-      debugger
       var curvePrdKdList = this.$refs.curvePrdKd.obtainCurvePrdKdList()
       var curvePrdNkList = this.$refs.curvePrdKd.obtainCurvePrdNkList()
       var data = {
         curvePrdKdList: curvePrdKdList,
         curvePrdNkList: curvePrdNkList
       }
+      debugger
       defCurvePeriod(data).then(response => {
+        debugger
         this.stepActive++
         this.$message({
           message: '操作成功！',
