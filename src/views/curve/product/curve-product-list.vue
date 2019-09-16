@@ -227,10 +227,9 @@ export default {
           this.productId = item.rowNo
           this.addCurveSampleFormVisible = true
         } else {
-          this.$message({
-            type: 'warning',
-            message: '此产品复制暂未开放'
-          })
+          // 产品ID
+          this.productId = item.rowNo
+          this.addCurveProductDefFormVisible = true
         }
       } else if (opType === 'EDIT' || opType === 'VIEW') {
         if (prdType === 'CURVE_SAMPLE') {

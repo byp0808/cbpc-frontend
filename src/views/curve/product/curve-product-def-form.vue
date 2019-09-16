@@ -404,7 +404,11 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // 调用保存方法
-          saveProductInfo(this.getProductInfo()).then(response => {
+          var data = {
+            ccdcCurvePrdInfo: this.getProductInfo(),
+            opType: this.opType
+          }
+          saveProductInfo(data).then(response => {
             // 保存最新信息
             if (response && response.curveId) {
               this.productInfo = response
