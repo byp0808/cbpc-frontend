@@ -7,6 +7,7 @@
           :data="orderList"
           tooltip-effect="dark"
           style="width: 100%"
+          :disabled="disabled"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="30" />
@@ -18,7 +19,7 @@
           </el-table-column>
         </el-table>
         <div class="text-center">
-          <el-button type="primary" style="margin-top: 10px" @click="applyOrder">应用所选批次</el-button>
+          <el-button type="primary" style="margin-top: 10px" :disabled="disabled" @click="applyOrder">应用所选批次</el-button>
         </div>
       </el-col>
       <el-col :span="17">
@@ -33,8 +34,13 @@
               ref="refCurveProductDefOrderDetailForm"
               :order-data="tabItem.orderData"
               :order-name="tabItem.title"
-              :curve-prd-kd-list="tabItem.curvePrdKdList"
+              :order-index="index"
+              :disabled="disabled"
+              :curve-prd-kd-list="tabItem.curvePrdOrderKtList"
               :curve-prd-order-auto-list="tabItem.curvePrdOrderAutoList"
+              :auto-prd-order-kts="tabItem.autoPrdOrderKts"
+              :prd-order-auto-kds="tabItem.prdOrderAutoKds"
+              @locaLastOrder="locaLastOrder"
             />
           </el-tab-pane>
         </el-tabs>
@@ -44,7 +50,9 @@
 </template>
 
 <script>
-import { getOrderList, getProductOrderList, queryProdcutKdList, queryProductOrderAutoList, savePrdOrder } from '@/api/curve/curve-product-order.js'
+
+import { queryCurvePrdKd } from '@/api/curve/curve-product-list.js'
+import { getOrderList, getProductOrderList, queryCurvePrdOrderKtList, queryProductOrderAutoList, savePrdOrder, queryAutoPrdOrderKts, queryPrdOrderAutoKts } from '@/api/curve/curve-product-order.js'
 import CurveProductDefOrderDetailForm from '@/views/curve/product/curve-product-def-order-detail.vue'
 
 export default {
@@ -52,11 +60,10 @@ export default {
   components: {
     CurveProductDefOrderDetailForm
   },
-  props: ['productId', 'opType'],
+  props: ['productId', 'opType', 'disabled'],
   data() {
     return {
       productIdLocal: '',
-      disabled: false,
       lockScroll: true,
       multipleSelection: [''], // 已勾选
       orderList: [], // 公共-批次列表
@@ -66,22 +73,31 @@ export default {
       editableTabs: [],
       tabIndex: 1,
       curvePrdOrderAutoList: {},
-      curvePrdKdList: {}
+      curvePrdKdList: {}, // 产品关键期限
+      curvePrdOrderKtList: {}, // 产品批次关键期限
+      autoPrdOrderKts: [], // 产品-自动编制-关联曲线对应的产品关键期限
+      prdOrderAutoKds: [], // 产品-自动编制-当前曲线关键期限
+      temp: ''
     }
   },
   computed: {
   },
   beforeMount() {
     this.productIdLocal = this.productId
-    this.productIdLocal = 'd7810466a01646a082e206087c96e15c'
+    // this.productIdLocal = '4028b8816d18e4c2016d1915bdc70004'
     console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
     this.init()
   },
   methods: {
     // 加载批次所有数据
     async init() {
+      // 查询产品关键期限，如果选择批次未生成生成相应 产品批次关键期限 信息，则默认取产品关键期限
+      await queryCurvePrdKd({ curveId: this.productIdLocal }).then(response => {
+        this.curvePrdKdList = response.dataList
+      })
+
       // 查询产品已经关联批次
-      await getProductOrderList({ productId: this.productIdLocal }).then(response => {
+      await getProductOrderList({ curveId: this.productIdLocal }).then(response => {
         this.productOrderList = response
       })
       // 查询产品批次-自动编制-已关联批次权重信息
@@ -89,8 +105,17 @@ export default {
         this.curvePrdOrderAutoList = response
       })
       // 查询产品批次-发布关键期限
-      await queryProdcutKdList({ cerverId: this.productIdLocal }).then(response => {
-        this.curvePrdKdList = response
+      await queryCurvePrdOrderKtList({ cerverId: this.productIdLocal }).then(response => {
+        this.curvePrdOrderKtList = response
+      })
+
+      // 查询产品-自动编制-关联曲线对应的产品关键期限
+      await queryAutoPrdOrderKts({ cerverId: this.productIdLocal }).then(response => {
+        this.autoPrdOrderKts = response
+      })
+      // 根据曲线编号，查询当前曲线关键期限
+      await queryPrdOrderAutoKts({ cerverId: this.productIdLocal }).then(response => {
+        this.prdOrderAutoKds = response
       })
 
       // 加载批次列表
@@ -152,14 +177,14 @@ export default {
         orderData.orderName = item.orderName
 
         // 产品批次-关键期限
-        const curvePrdKdList = this.getCurvePrdKdList(newTabName)
+        const curvePrdOrderKtList = this.getcurvePrdOrderKtList(newTabName)
         // 产品批次-自动编制列表
         const curvePrdOrderAutoList = this.getCurvePrdOrderAutoList(newTabName)
         this.editableTabs.push({
           title: title,
           name: newTabName,
           orderData: orderData,
-          curvePrdKdList: curvePrdKdList,
+          curvePrdOrderKtList: curvePrdOrderKtList,
           curvePrdOrderAutoList: curvePrdOrderAutoList
         })
       }
@@ -189,14 +214,21 @@ export default {
       return item
     },
     // 从已关联的列表中获取信息
-    getCurvePrdKdList(orderId) {
+    getcurvePrdOrderKtList(orderId) {
       var list = []
-      for (var i = 0; i < this.curvePrdKdList.length; i++) {
-        var item = this.curvePrdKdList[i]
+      for (var i = 0; i < this.curvePrdOrderKtList.length; i++) {
+        var item = this.curvePrdOrderKtList[i]
         if (item.orderId === orderId) {
           list.push(item)
         }
       }
+
+      // 如果产品批次关键期限中没有相应记录，则从产品关键期限列表中获取
+      if (list.length === 0) {
+        // list = this.curvePrdKdList  // 不能直接赋值，只能拷贝
+        list = _.cloneDeep(this.curvePrdKdList)
+      }
+
       return list
     },
     // 曲线产品批次自动编制触发条件
@@ -258,7 +290,7 @@ export default {
           const curvePrdOrder = item.getCurvePrdOrder()
           const prdKtList = item.getPrdKtList()
           const prdOrderAutoList = item.getPrdOrderAutoList()
-          const prdOrderAutoKtList = item.getPrdOrderAutoKtList()
+          const prdOrderAutoKtList = item.getPrdOrderAutoKtListSelected()
           const orderName = curvePrdOrder.orderName
 
           // 验证批次信息
@@ -312,6 +344,7 @@ export default {
       }
       await savePrdOrder({ curveId: this.productIdLocal, orders: orders }).then(response => {
         console.info(response)
+        this.$emit('saveOrderCallBack')
         // 保存最新信息
         result = true
         this.$message({
@@ -319,8 +352,47 @@ export default {
           type: 'success',
           showClose: true
         })
+        return result
       })
       return result
+    },
+    // 加载上一次数据
+    locaLastOrder(index) {
+      console.info('locaLastOrder,加载上一次数据:' + index)
+      if (index <= 0) {
+        this.$message({
+          type: 'warning',
+          showClose: true,
+          message: '没有上一批次信息'
+        })
+        return false
+      }
+      const list = this.$refs.refCurveProductDefOrderDetailForm
+      if (list && list.length > 0) {
+        const src = list[index - 1]
+        const target = list[index]
+        const srcOrder = src.getCurvePrdOrder()
+        const targetOrder = target.getCurvePrdOrder()
+
+        // 拷贝
+        targetOrder.model = srcOrder.model
+        targetOrder.buildType = srcOrder.buildType
+        targetOrder.computedType = srcOrder.computedType
+        targetOrder.publishType = srcOrder.publishType
+        targetOrder.curvePubType = srcOrder.curvePubType
+        targetOrder.publishSampleFlag = srcOrder.publishSampleFlag
+        targetOrder.publishStepSize = srcOrder.publishStepSize
+        targetOrder.interestDueFreq = srcOrder.interestDueFreq
+        targetOrder.orderClosedFlag = srcOrder.orderClosedFlag
+        targetOrder.orderClosedSt = srcOrder.orderClosedSt
+        targetOrder.orderClosedEt = srcOrder.orderClosedEt
+        targetOrder.orderKeyTermNo = srcOrder.orderKeyTermNo
+        targetOrder.orderAutoBuildRule = srcOrder.orderAutoBuildRule
+
+        targetOrder.interestDueFreqSelected = srcOrder.interestDueFreqSelected
+        targetOrder.curvePubTypeSelected = srcOrder.curvePubTypeSelected
+        targetOrder.publishStepSizeSelected = srcOrder.publishStepSizeSelected
+      }
     }
   }
 }

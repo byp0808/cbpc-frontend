@@ -28,6 +28,23 @@ export function saveProductInfo(data) {
   })
 }
 
+// 曲线产品确认
+export function confirmCurveInfo(productId) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/confirmCurveInfo/` + productId,
+    method: 'post'
+  })
+}
+
+// 查询曲线产品列表,包含样本券
+export function finishCurveInfo(data) {
+  return request({
+    url: `${basic_api_curve}/curveProduct/finishCurveInfo`,
+    method: 'post',
+    data
+  })
+}
+
 // 删除曲线产品
 export function delCurveProduct(id) {
   return request({

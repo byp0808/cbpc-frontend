@@ -44,7 +44,7 @@ export function getProductOrderList(data) {
   })
 }
 // 获取关键期限
-export function queryProdcutKdList(data) {
+export function queryCurvePrdOrderKtList(data) {
   return request({
     url: `${basic_api_curve}/curveProductOrder/orderKts`,
     method: 'post',
@@ -65,6 +65,33 @@ export function queryProductOrderAutoList(data){
 export function savePrdOrder(data){
   return request({
     url: `${basic_api_curve}/curveProductOrder/save`,
+    method: 'post',
+    data
+  })
+}
+
+// 查询产品-自动编制-关联曲线对应的产品关键期限
+export function queryAutoPrdOrderKts(data) {
+  return request({
+    url: `${basic_api_curve}/curveProductOrderAuto/autoPrdOrderKts`,
+    method: 'post',
+    data
+  })
+}
+
+// 查询产品-曲线编号，查询关键期限列表
+export function queryPrdOrderKts(data) {
+  return request({
+    url: `${basic_api_curve}/curveProductOrderAuto/prdOrderKts`,
+    method: 'post',
+    data
+  })
+}
+
+// 根据曲线编号，查询曲线自动编制关键期限
+export function queryPrdOrderAutoKts(data) {
+  return request({
+    url: `${basic_api_curve}/curveProductOrderAuto/prdOrderAutoKds`,
     method: 'post',
     data
   })

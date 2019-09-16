@@ -2,6 +2,21 @@
  *  码值临时数据
  *    add by nohi 20190910
   */
+// 审批状态
+export const APPROVE_SATAUS = [
+  { value: '01', label: '待审批/待审核' },
+  { value: '02', label: '通过' },
+  { value: '03', label: '拒绝' }
+]
+
+// 产品状态
+export const CURVE_PRODCUT_SATAUS = [
+  { value: '1', label: '待售' },
+  { value: '2', label: '在售' },
+  { value: '3', label: '停产' },
+  { value: '4', label: '退市' }
+]
+
 // 产品线
 export const PRODUCT_LINE = [
   { value: 'CBP', label: '中债估值' },

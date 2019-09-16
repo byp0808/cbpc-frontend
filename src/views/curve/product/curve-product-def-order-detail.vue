@@ -4,42 +4,42 @@
     <el-form ref="curvePrdOrder" :model="curvePrdOrder" label-width="140px">
       <el-form-item label="该批次所需模型">
         <el-radio-group v-model="curvePrdOrder.model">
-          <el-radio v-for="item in modelOption" :key="item.value" :disabled="item.disabled" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in modelOption" :key="item.value" :disabled="disabled || item.disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需编制方式">
         <el-radio-group v-model="curvePrdOrder.buildType">
-          <el-radio v-for="item in buildTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in buildTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需计算方式">
         <el-radio-group v-model="curvePrdOrder.computedType">
-          <el-radio v-for="item in computedTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in computedTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需发布方式">
         <el-radio-group v-model="curvePrdOrder.publishType">
-          <el-radio v-for="item in publishTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in publishTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
         <el-radio-group v-model="curvePrdOrder.publishSampleFlag">
-          <el-radio v-for="item in publishSampleFlagOption" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in publishSampleFlagOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="发布步长">
         <el-checkbox-group v-model="publishStepSizeSelected">
-          <el-checkbox v-for="item in publishStepSizeOption" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in publishStepSizeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="付息频率">
         <el-checkbox-group v-model="interestDueFreqSelected">
-          <el-checkbox v-for="item in interestDueFreqOption" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in interestDueFreqOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
     </el-form>
@@ -53,13 +53,13 @@
         <el-row>
           <div class="switch-item">
             <label class="switch-label">批次开关</label>
-            <el-switch v-model="curvePrdOrder.validFlag" active-value="Y" inactive-value="N" />
+            <el-switch v-model="curvePrdOrder.validFlag" :disabled="disabled" active-value="Y" inactive-value="N" />
           </div>
         </el-row>
         <el-row>
           <div class="switch-item">
             <el-checkbox-group v-model="curvePrdOrder.orderClosedFlag">
-              <el-checkbox label="批次关闭生效时间" name="type" true-label="1" false-label="0" />
+              <el-checkbox label="批次关闭生效时间" :disabled="disabled" name="type" true-label="1" false-label="0" />
             </el-checkbox-group>
           </div>
         </el-row>
@@ -67,7 +67,7 @@
           <div class="switch-item">
             <label class="switch-label">开始</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedSt" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
             </el-col>
           </div>
         </el-row>
@@ -75,12 +75,12 @@
           <div class="switch-item">
             <label class="switch-label">结束</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedEt" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled"type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
             </el-col>
           </div>
         </el-row>
       </el-form>
-      <el-button type="primary" size="small" round>加载上一批次配置</el-button>
+      <el-button type="primary" size="small" @click="loadLastOrder(orderIndex)" :disabled="disabled" round>加载上一批次配置</el-button>
     </div>
 
     <el-table
@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :orderId="item.orderId"/>
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -164,14 +164,14 @@
           </el-table>
         </el-col>
         <el-col :span="6" :offset="3">
-          <el-button type="primary" @click="reloadKd">预览</el-button>
+          <el-button type="primary" @click="preview">预览</el-button>
           <el-table
             ref="curvePrdOrderAutoKtList"
             :data="curvePrdOrderAutoKtList"
             tooltip-effect="dark"
             style="width: 100%"
           >
-            <el-table-column type="selection" width="55" @selectable="prdOrderAutoKtSelectable" />
+            <el-table-column type="selection" width="55" :selectable="prdOrderAutoKtSelectable" />
             <el-table-column prop="standSlip" label="关键期限" width="140" show-overflow-tooltip />
           </el-table>
         </el-col>
@@ -179,7 +179,7 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="addAutoRuleFormVisible = false">取 消</el-button>
-        <el-button :disabled="disabled" type="primary">确 定</el-button>
+        <el-button :disabled="disabled" type="primary" @click="saveOrderAuto">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -189,6 +189,7 @@
 import { optioins } from '@/api/curve/code-type.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
 import { getCurveOrderList } from '@/api/curve/curve-product-list.js'
+import { queryPrdOrderKts } from '@/api/curve/curve-product-order.js'
 export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
@@ -196,7 +197,7 @@ export default {
   filters: {
     showCodeLabel: showCodeLabel
   },
-  props: ['orderName', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'curvePrdOrderAutoKtList'],
+  props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds'],
   data() {
     return {
       lockScroll: true,
@@ -205,7 +206,6 @@ export default {
       interestDueFreqSelected: [],
       curvePubTypeSelected: [],
       publishStepSizeSelected: [],
-      disabled: false,
       // 自动编制规则
       autoRule: '1',
       // 自动编制规则弹窗
@@ -213,7 +213,9 @@ export default {
       // 自动编制规则-选择曲线
       autoRuleCurve: '',
       // 曲线列表
-      autoRuleCurveOptions: []
+      autoRuleCurveOptions: [],
+      // 曲线产品自动编制关键期限
+      curvePrdOrderAutoKtList: []
     }
   },
   computed: {
@@ -279,9 +281,10 @@ export default {
       const { dataList } = response
       for (var i = 0; i < dataList.length; i++) {
         var item = dataList[i]
-        this.autoRuleCurveOptions.push({ value: item.productName, lable: item.curvePrdCode })
+        this.autoRuleCurveOptions.push({ value: item.curveId, label: item.productName, orderId: item.orderId })
       }
     })
+
   },
   methods: {
     // 获取获取批次信息
@@ -303,6 +306,19 @@ export default {
     getPrdOrderAutoKtList() {
       return this.curvePrdOrderAutoKtList
     },
+    // 获取自动编制关键期限，选择列表
+    getPrdOrderAutoKtListSelected() {
+      var selected = []
+      if (this.$refs.curvePrdOrderAutoKtList) {
+        var selecttion = this.$refs.curvePrdOrderAutoKtList.selection
+        if (selecttion && selecttion.length > 0) {
+          for (let i = 0 ; i < selecttion.length ; i++) {
+            selected.push( selecttion[i].standSlip )
+          }
+        }
+      }
+      return selected
+    },
     // 删除关键期限
     deleteCurvePrdKd(index, row) {
       this.curvePrdKdList.splice(index, 1)
@@ -315,6 +331,7 @@ export default {
       console.info('toAddCurve:')
       var value = this.autoRuleCurve
       var label = this.$refs.autoRuleCurve.selectedLabel
+      var orderId = this.$refs.autoRuleCurve.selected.$attrs.orderId
       if (!value) {
         this.$message({
           type: 'error',
@@ -336,7 +353,7 @@ export default {
         curveWeight: '', // 权重
         curveId: value, // 依赖曲线ID
         productName: label, // 依赖曲线名称
-        depCurveOrderId: '', // 依赖曲线对应批次ID
+        depCurveOrderId: orderId, // 依赖曲线对应批次ID
         orderName: '', // 批次名称
         curveBuildStatus: '' // 曲线编制状态
       })
@@ -351,13 +368,82 @@ export default {
       }
       return true
     },
-    // 加载关键期限
-    reloadKd() {
+    // 获取列表中曲线ID
+    getAutoCurveIds() {
+      var ids = []
+      if (this.curvePrdOrderAutoList && this.curvePrdOrderAutoList.length > 0) {
+        for (let i = 0; i < this.curvePrdOrderAutoList.length; i++) {
+          ids.push(this.curvePrdOrderAutoList[i].curveId)
+        }
+      }
+      return ids
+    },
+    // 预览
+    preview() {
+      console.info('preview')
 
+      this.curvePrdOrderAutoKtList = []
+      // 查询关键期限列表
+      queryPrdOrderKts({ curveIds: this.getAutoCurveIds().join(',') }).then(response => {
+        const list = response
+        const standSlipArray = []
+        if (list && list.length > 0) {
+          for (var i = 0; i < list.length; i++) {
+            var item = list[i]
+            if (this.curvePrdOrderAutoKtList.indexOf(item) < 0) {
+              this.curvePrdOrderAutoKtList.push({ standSlip: item })
+              standSlipArray.push(item)
+            }
+          }
+        }
+
+        // 增加当前产品关键期限
+        if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
+          for (var i = 0; i < this.curvePrdKdList.length; i++) {
+            const item = this.curvePrdKdList[i]
+
+            if ( standSlipArray.indexOf(item.standSlip) < 0 ) {
+              this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
+            }
+          }
+        }
+      })
     },
     // 是否可选
-    prdOrderAutoKtSelectable() {
+    prdOrderAutoKtSelectable(row, index) {
+      console.info('prdOrderAutoKtSelectable')
+      if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
+        for (var i = 0; i < this.curvePrdKdList.length; i++) {
+          const item = this.curvePrdKdList[i]
+          if (item.standSlip === row.standSlip) {
+            return true
+          }
+        }
+      }
       return false
+    },
+    // 保存自动编制
+    saveOrderAuto(){
+      var list = this.curvePrdOrderAutoList
+      if (list && list.length > 0) {
+        for (let i = 0 ; i < list.length ; i++) {
+          var item = list[i];
+          if (!item.curveWeight) {
+            this.$message({
+              type: 'warning',
+              duration: 10000,
+              showClose: true,
+              message: '权重不能为空'
+            })
+            return false
+          }
+        }
+      }
+      this.addAutoRuleFormVisible = false
+    },
+    // 加载上一批次信息
+    loadLastOrder(index) {
+      this.$emit('locaLastOrder', index)
     }
   }
 }

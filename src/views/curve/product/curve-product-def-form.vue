@@ -22,7 +22,14 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线基础产品">
-              <el-input v-model="productInfo.basePrdCode" disabled="disabled" />
+              <el-select v-model="productInfo.basePrdCode" filterable disabled="disabled" placeholder="请选择曲线">
+                <el-option
+                  v-for="item in optioins('BASE_PRD_CODE')"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -42,7 +49,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场"  >
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" @change="selectTrigger('market')">
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -59,7 +66,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="编制日历" prop="createCalendars">
-              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled">
+              <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled" @change="selectTrigger('createCalendar')" >
                 <el-option v-for="item in calendarOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -135,7 +142,7 @@
         ref="curveConstructType"
       />
       <div class="text-center">
-        <el-button type="primary" @click="next">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="next">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 2" class="box-card margin-top">
@@ -146,7 +153,7 @@
         ref="curvePrdKd"
       />
       <div class="text-center">
-        <el-button type="primary" @click="defCurvePeriod">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="defCurvePeriod">保存</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 3" class="box-card margin-top">
@@ -156,18 +163,25 @@
       <CurveProductDefOrderForm
         ref="refCurveProductDefOrderForm"
         :product-id="productId"
+        :disabled="disabled"
         :op-type="opType"
+        @saveOrderCallBack="saveOrderCallBack"
       />
       <div class="text-center">
-        <el-button type="primary" @click="saveOrder">确认</el-button>
+        <el-button type="primary" :disabled="disabled" @click="saveOrder">确认</el-button>
       </div>
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>确认产品</h3>
       </div>
+      <CurveProductDefConfirm
+        ref="refCurveProductDefConfirm"
+        :product-id="productId"
+        :op-type="opType"
+      />
       <div class="text-center">
-        <el-button type="primary" @click="next">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="curvePrdConfirm">保存</el-button>
       </div>
     </el-card>
   </div>
@@ -175,17 +189,19 @@
 
 <script>
 import { formatTimeToStr } from '@/utils/date.js'
-import { saveProductInfo, getCurveProduct ,storageCurveInfo,defCurvePeriod} from '@/api/curve/curve-product-list.js'
+import { saveProductInfo, getCurveProduct , storageCurveInfo, defCurvePeriod, confirmCurveInfo} from '@/api/curve/curve-product-list.js'
 import { optioins } from '@/api/curve/code-type.js'
 import CurveProductDefOrderForm from '@/views/curve/product/curve-product-def-order.vue'
 import CurveConstructType from '@/views/curve/product/curve-construct-type.vue'
 import CurvePrdKd from '@/views/curve/product/curve-prd-kd.vue'
+import CurveProductDefConfirm from '@/views/curve/product/curve-product-def-confirm.vue'
 export default {
   name: 'CurveProductDefForm',
   components: {
     CurveProductDefOrderForm,
     CurveConstructType,
-    CurvePrdKd
+    CurvePrdKd,
+    CurveProductDefConfirm
   },
   props: ['basePrdCode', 'productId', 'opType', 'businessId'],
   data() {
@@ -335,8 +351,10 @@ export default {
       }
     } else if (this.businessId) {
       id = this.businessId
+      this.productId = id
+      this.disabled = true
     }
-
+    console.info('曲线产品ID:' + this.productId)
     if (id) {
       getCurveProduct(id).then(reponse => {
         this.$store.commit('curveProduct/setCurveProductInfo', reponse)
@@ -344,6 +362,7 @@ export default {
     }
   },
   methods: {
+    optioins: optioins,
     stepOnclick(index) {
       console.info('stepOnclick:' + index)
       this.stepActive = index
@@ -389,6 +408,7 @@ export default {
             // 保存最新信息
             if (response && response.curveId) {
               this.productInfo = response
+              this.productId = this.productInfo.curveId
             }
             this.stepActive++
             this.$message({
@@ -407,9 +427,13 @@ export default {
     // 保存批次
     async saveOrder() {
       const {result} = await this.$refs.refCurveProductDefOrderForm.saveOrder()
+      console.info('保存批次信息，返回:' + result)
       if (result) {
         this.stepActive++
       }
+    },
+    saveOrderCallBack(){
+      this.stepActive++
     },
     /**
      * 保存曲线类型
@@ -435,8 +459,8 @@ export default {
       var curvePrdKdList = this.$refs.curvePrdKd.obtainCurvePrdKdList();
       var curvePrdNkList = this.$refs.curvePrdKd.obtainCurvePrdNkList();
       var data = {
-        curvePrdKdList : curvePrdKdList,
-        curvePrdNkList : curvePrdNkList
+        curvePrdKdList: curvePrdKdList,
+        curvePrdNkList: curvePrdNkList
       }
       defCurvePeriod(data).then(response => {
         this.stepActive++
@@ -445,7 +469,37 @@ export default {
           type: 'success',
           showClose: true
         })
+      })
+    },
+    // 产品确认
+    curvePrdConfirm() {
+      if (!this.productId) {
+        this.$message({
+          message: '获取产品信息失败，请刷新后重新操作！',
+          type: 'warning',
+          showClose: true
+        })
+        return false
+      }
+      confirmCurveInfo( this.productId ).then(response => {
+        this.stepActive++
+        this.$emit('confirmCurveInfoCallBack')
+        this.$message({
+          message: '操作成功！',
+          type: 'success',
+          showClose: true
+        })
       });
+    },
+    // 多选事件
+    selectTrigger(type) {
+      if (type === 'market') {
+        if (this.productInfo.markets) {
+          this.productInfo.market = this.productInfo.markets.join(',')
+        }
+      } else if (type === 'createCalendar') {
+        this.productInfo.createCalendar = this.productInfo.createCalendars.join(',')
+      }
     }
   }
 }

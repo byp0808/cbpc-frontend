@@ -14,41 +14,49 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="prdCode" label="产品编号" width="120" />
-      <el-table-column prop="productName" label="产品名称" width="140"  show-overflow-tooltip />
-      <el-table-column prop="productLine" label="产品线" width="100"  show-overflow-tooltip>
+      <el-table-column prop="productName" label="产品名称" width="140" show-overflow-tooltip />
+      <el-table-column prop="productLine" label="产品线" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productLine | showCodeLabel('PRODUCT_LINE') }}
         </template>
       </el-table-column>
-      <el-table-column prop="productGroup" label="产品组" width="100"  show-overflow-tooltip>
+      <el-table-column prop="productGroup" label="产品组" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productGroup | showCodeLabel('PRODUCT_GROUP') }}
         </template>
       </el-table-column>
-      <el-table-column prop="basePrdCode" label="基础产品" width="100"  show-overflow-tooltip>
+      <el-table-column prop="basePrdCode" label="基础产品" width="140" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.basePrdCode | showCodeLabel('BASE_PRD_CODE') }}
         </template>
       </el-table-column>
       <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip >
         <template slot-scope="scope">
-          {{ $moment(scope.row.curveStartTime).format('YYYY-MM-DD')}}
+          {{ scope.row.curveStartTime == null ? '' : $moment(scope.row.curveStartTime).format('YYYY-MM-DD')}}
         </template>
       </el-table-column>
       <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip >
         <template slot-scope="scope">
-          {{ $moment(scope.row.curveEndTime).format('YYYY-MM-DD')}}
+          {{ scope.row.curveEndTime == null ? '' : $moment(scope.row.curveEndTime).format('YYYY-MM-DD')}}
         </template>
       </el-table-column>
-      <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip />
-      <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip />
+      <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip >
+        <template slot-scope="scope">
+          {{ scope.row.prdStatus | showCodeLabel('CURVE_PRODCUT_SATAUS') }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip >
+        <template slot-scope="scope">
+          {{ scope.row.approveStatus | showCodeLabel('APPROVE_SATAUS') }}
+        </template>
+      </el-table-column>
       <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus === '01' || scope.row.relId != null "
+            :disabled="scope.row.dataStatus === '01' || scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
@@ -63,7 +71,7 @@
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus == '01' || scope.row.relId != null "
+            :disabled="scope.row.dataStatus == '01' || scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="handleDelete(scope)"
           >
             删除
@@ -101,6 +109,7 @@
         :product-id="productId"
         :base-prd-code="basePrdCode"
         :op-type="opType"
+        @confirmCurveInfoCallBack="confirmCurveInfoCallBack"
       />
     </el-dialog>
     <el-dialog v-if="addCurveSampleFormVisible" :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
@@ -290,6 +299,12 @@ export default {
     saveCureSampleCallBack() {
       console.info('saveCureSampleCallBack')
       this.addCurveSampleFormVisible = false
+      this.queryCurveProductList()
+    },
+    // 产品宝确认回调
+    confirmCurveInfoCallBack() {
+      console.info('confirmCurveInfoCallBack')
+      this.addCurveProductDefFormVisible = false
       this.queryCurveProductList()
     }
   }
