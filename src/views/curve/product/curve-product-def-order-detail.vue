@@ -52,14 +52,14 @@
       <el-form ref="curvePrdOrder" :model="curvePrdOrder" style="float: right;padding-right: 10px;" label-width="50px">
         <el-row>
           <div class="switch-item">
-            <label class="switch-label">批次开关</label>
+            <label class="switch-label">批次临时开关</label>
             <el-switch v-model="curvePrdOrder.validFlag" :disabled="disabled" active-value="Y" inactive-value="N" />
           </div>
         </el-row>
         <el-row>
           <div class="switch-item">
             <el-checkbox-group v-model="curvePrdOrder.orderClosedFlag">
-              <el-checkbox label="批次关闭生效时间" :disabled="disabled" name="type" true-label="1" false-label="0" />
+              <el-checkbox label="批次关闭的生效时间" :disabled="disabled" name="type" true-label="1" false-label="0" />
             </el-checkbox-group>
           </div>
         </el-row>
@@ -67,7 +67,7 @@
           <div class="switch-item">
             <label class="switch-label">开始</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" />
             </el-col>
           </div>
         </el-row>
@@ -75,7 +75,7 @@
           <div class="switch-item">
             <label class="switch-label">结束</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled"type="datetime" style="width:180px" format="yyyy-MM-dd HH:mm" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" />
             </el-col>
           </div>
         </el-row>

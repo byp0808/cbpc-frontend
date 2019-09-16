@@ -133,7 +133,9 @@ export const PUBLISH_STEP_SIZE = [
 // 付息频率
 export const INTEREST_DUE_FREQ = [
   { value: '1', label: '一年一次' },
-  { value: '2', label: '一年两次' }
+  { value: '2', label: '一年两次' },
+  { value: '3', label: '一年四次' },
+  { value: '4', label: '一年次十二次' }
 ]
 
 // 自动编制规则

@@ -13,7 +13,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>基本信息</h3>
       </div>
-      <el-form ref="productInfo" :model="productInfo" status-icon :rules="productInfoRules" label-width="120px" class="demo-ruleForm">
+      <el-form ref="productInfo" :model="productInfo" status-icon :rules="productInfoRules" label-width="120px" class="demo-ruleForm baseinfo">
         <el-row :gutter="24">
           <el-col :span="8">
             <el-form-item label="曲线产品名称" prop="productName">
@@ -60,11 +60,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="排列顺序" prop="sort">
-              <el-input v-model.number="productInfo.sort" :disabled="disabled" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="编制日历" prop="createCalendars">
               <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled" @change="selectTrigger('createCalendar')">
                 <el-option v-for="item in calendarOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -108,17 +103,6 @@
               <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
                 <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="曲线终止日期" prop="curveEndTime">
-              <el-date-picker
-                v-model="productInfo.curveEndTime"
-                align="right"
-                type="date"
-                placeholder="选择日期"
-                :disabled="disabled"
-              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -516,6 +500,18 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+  .baseinfo .el-select__tags {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .baseinfo .el-select {
+    width: 100%
+  }
+  .baseinfo .el-select > div > span {
+    display: block;
+  }
+  .baseinfo .el-select .el-select__tags>span{
+    display: block;
+  }
 </style>
