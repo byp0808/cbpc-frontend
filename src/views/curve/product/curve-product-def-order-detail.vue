@@ -9,37 +9,37 @@
       </el-form-item>
       <el-form-item label="该批次所需编制方式">
         <el-radio-group v-model="curvePrdOrder.buildType">
-          <el-radio v-for="item in buildTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in buildTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需计算方式">
         <el-radio-group v-model="curvePrdOrder.computedType">
-          <el-radio v-for="item in computedTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in computedTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需发布方式">
         <el-radio-group v-model="curvePrdOrder.publishType">
-          <el-radio v-for="item in publishTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in publishTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
         <el-radio-group v-model="curvePrdOrder.publishSampleFlag">
-          <el-radio v-for="item in publishSampleFlagOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in publishSampleFlagOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="发布步长">
         <el-checkbox-group v-model="publishStepSizeSelected">
-          <el-checkbox v-for="item in publishStepSizeOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in publishStepSizeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="付息频率">
         <el-checkbox-group v-model="interestDueFreqSelected">
-          <el-checkbox v-for="item in interestDueFreqOption" :disabled="disabled" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in interestDueFreqOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
     </el-form>
@@ -80,7 +80,7 @@
           </div>
         </el-row>
       </el-form>
-      <el-button type="primary" size="small" @click="loadLastOrder(orderIndex)" :disabled="disabled" round>加载上一批次配置</el-button>
+      <el-button type="primary" size="small" :disabled="disabled" round @click="loadLastOrder(orderIndex)">加载上一批次配置</el-button>
     </div>
 
     <el-table
@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :orderId="item.orderId"/>
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :order-id="item.orderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -215,7 +215,9 @@ export default {
       // 曲线列表
       autoRuleCurveOptions: [],
       // 曲线产品自动编制关键期限
-      curvePrdOrderAutoKtList: []
+      curvePrdOrderAutoKtList: [],
+      // 自动编制关键期限，勾选内容
+      prdOrderAutoKdsKeys: []
     }
   },
   computed: {
@@ -285,6 +287,13 @@ export default {
       }
     })
 
+    // 如果产品批次-自动编制-关键期限列表，不为空，则说明已经保存过数据，页面初始化时显示列表
+    this.prdOrderAutoKdsKeys = []
+    if (this.prdOrderAutoKds && this.prdOrderAutoKds.length > 0) {
+      for (var i = 0; i < this.prdOrderAutoKds.length; i++) {
+        this.prdOrderAutoKdsKeys.push(this.prdOrderAutoKds[i].standSlip)
+      }
+    }
   },
   methods: {
     // 获取获取批次信息
@@ -312,8 +321,8 @@ export default {
       if (this.$refs.curvePrdOrderAutoKtList) {
         var selecttion = this.$refs.curvePrdOrderAutoKtList.selection
         if (selecttion && selecttion.length > 0) {
-          for (let i = 0 ; i < selecttion.length ; i++) {
-            selected.push( selecttion[i].standSlip )
+          for (let i = 0; i < selecttion.length; i++) {
+            selected.push(selecttion[i].standSlip)
           }
         }
       }
@@ -325,7 +334,10 @@ export default {
     },
     // 规则设置
     toSetRule() {
+      console.info('========tosetrule==========')
       this.addAutoRuleFormVisible = true
+      // init auto kt
+      this.preview()
     },
     toAddCurve() {
       console.info('toAddCurve:')
@@ -402,9 +414,18 @@ export default {
           for (var i = 0; i < this.curvePrdKdList.length; i++) {
             const item = this.curvePrdKdList[i]
 
-            if ( standSlipArray.indexOf(item.standSlip) < 0 ) {
+            if (standSlipArray.indexOf(item.standSlip) < 0) {
               this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
             }
+          }
+        }
+
+        // 增加自动勾选内容 prdOrderAutoKdsKeys
+        for (var i = 0; i < this.curvePrdOrderAutoKtList.length; i++) {
+          const item = this.curvePrdOrderAutoKtList[i]
+
+          if (this.prdOrderAutoKdsKeys.indexOf(item.standSlip) >= 0) {
+            this.$refs.curvePrdOrderAutoKtList.toggleRowSelection(item, true) // 默认选中
           }
         }
       })
@@ -423,11 +444,11 @@ export default {
       return false
     },
     // 保存自动编制
-    saveOrderAuto(){
+    saveOrderAuto() {
       var list = this.curvePrdOrderAutoList
       if (list && list.length > 0) {
-        for (let i = 0 ; i < list.length ; i++) {
-          var item = list[i];
+        for (let i = 0; i < list.length; i++) {
+          var item = list[i]
           if (!item.curveWeight) {
             this.$message({
               type: 'warning',

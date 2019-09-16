@@ -101,20 +101,20 @@ export default {
         this.productOrderList = response
       })
       // 查询产品批次-自动编制-已关联批次权重信息
-      await queryProductOrderAutoList({ cerverId: this.productIdLocal }).then(response => {
+      await queryProductOrderAutoList({ curveId: this.productIdLocal }).then(response => {
         this.curvePrdOrderAutoList = response
       })
       // 查询产品批次-发布关键期限
-      await queryCurvePrdOrderKtList({ cerverId: this.productIdLocal }).then(response => {
+      await queryCurvePrdOrderKtList({ curveId: this.productIdLocal }).then(response => {
         this.curvePrdOrderKtList = response
       })
 
       // 查询产品-自动编制-关联曲线对应的产品关键期限
-      await queryAutoPrdOrderKts({ cerverId: this.productIdLocal }).then(response => {
+      await queryAutoPrdOrderKts({ curveId: this.productIdLocal }).then(response => {
         this.autoPrdOrderKts = response
       })
-      // 根据曲线编号，查询当前曲线关键期限
-      await queryPrdOrderAutoKts({ cerverId: this.productIdLocal }).then(response => {
+      // 根据曲线编号，查询当前曲线所有批次自动编制关键期限列表
+      await queryPrdOrderAutoKts({ curveId: this.productIdLocal }).then(response => {
         this.prdOrderAutoKds = response
       })
 
@@ -180,16 +180,30 @@ export default {
         const curvePrdOrderKtList = this.getcurvePrdOrderKtList(newTabName)
         // 产品批次-自动编制列表
         const curvePrdOrderAutoList = this.getCurvePrdOrderAutoList(newTabName)
+        // 产品批次-自动编制-已经勾选保存关键期限
+        const prdOrderAutoKds = this.getPrdOrderAutoKds(newTabName)
         this.editableTabs.push({
           title: title,
           name: newTabName,
           orderData: orderData,
           curvePrdOrderKtList: curvePrdOrderKtList,
-          curvePrdOrderAutoList: curvePrdOrderAutoList
+          curvePrdOrderAutoList: curvePrdOrderAutoList,
+          prdOrderAutoKds: prdOrderAutoKds
         })
       }
       // 默认选中第一个
       this.editableTabsValue = firstTab
+    },
+    // 产品批次-自动编制-已经勾选保存关键期限
+    getPrdOrderAutoKds(orderId) {
+      var list = []
+      for (var i = 0; i < this.prdOrderAutoKds.length; i++) {
+        var item = this.prdOrderAutoKds[i]
+        if (item.orderId === orderId) {
+          list.push(item)
+        }
+      }
+      return list
     },
     // 从已关联的列表中获取信息
     getProductOrderInfo(orderId) {
