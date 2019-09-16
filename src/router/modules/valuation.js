@@ -57,14 +57,23 @@ const valuationRouter = {
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-form.vue'),
       name: 'mandatoryForm'
     }, {
-      path: '/bondsNonp-list',
-      component: () => import('@/views/valuation/bondsNonp/bondsNonp-list.vue'),
-      name: 'bondsNonpList',
+      path: 'bonds-nonp-list',
+      component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-list.vue'),
+      name: 'BondsNonpList',
       meta: { title: '设置不参与估值资产列表', noCache: true }
     }, {
-      path: '/bondsNonp-form',
-      component: () => import('@/views/valuation/bondsNonp/bondsNonp-form.vue'),
-      name: 'bondsNonpForm'
+      path: 'bonds-nonp-form',
+      component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-form.vue'),
+      name: 'BondsNonpForm'
+    }, {
+      path: 'date-set-list',
+      component: () => import('@/views/valuation/date-set/date-set-list.vue'),
+      name: 'DateSetList',
+      meta: { title: '设置首次估值日列表', noCache: true }
+    }, {
+      path: 'date-set-form',
+      component: () => import('@/views/valuation/date-set/date-set-form.vue'),
+      name: 'DateSetForm'
     }
   ]
 }

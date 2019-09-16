@@ -28,10 +28,18 @@ const taskRouter = {
       path: 'recForce-task',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-task.vue'),
       name: 'recForceTask'
-    },{
+    }, {
       path: 'curve-product-def-task',
       component: () => import('@/views/curve/product/curve-product-def-task.vue'),
       name: 'CurveProductDefTask'
+    }, {
+      path: 'date-set-task',
+      component: () => import('@/views/valuation/date-set/date-set-task.vue'),
+      name: 'DateSetTask'
+    }, {
+      path: 'bonds-nonp-task',
+      component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-task.vue'),
+      name: 'BondsNonpTask'
     }
   ]
 }

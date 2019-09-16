@@ -108,7 +108,7 @@
 
 <script>
 import RecCurveForm from '@/views/valuation/rec-cure/rec-curve-form.vue'
-import { queryRecCurveList, deleteRecCurve, openRecCurve, closeRecCurve } from '@/api/valuation/rec-curve.js'
+import { queryRecCurveList, deleteRecCurve, switchStatus } from '@/api/valuation/rec-curve.js'
 export default {
   name: 'RecCurveList',
   components: {
@@ -200,11 +200,11 @@ export default {
     },
     changeStatus(status, id) {
       if (status === '02') {
-        closeRecCurve(id).then(response => {
+        switchStatus({ id: id, busiStatus: '03' }).then(response => {
           this.loadTable()
         })
       } else if (status === '03') {
-        openRecCurve(id).then(response => {
+        switchStatus({ id: id, busiStatus: '02' }).then(response => {
           this.loadTable()
         })
       }
