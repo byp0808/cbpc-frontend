@@ -74,6 +74,11 @@ const valuationRouter = {
       path: 'date-set-form',
       component: () => import('@/views/valuation/date-set/date-set-form.vue'),
       name: 'DateSetForm'
+    }, {
+      path: '/taskAllocation-list',
+      component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
+      name: 'taskAllocationList',
+      meta: { title: '设置任务分配规则', noCache: true }
     }
   ]
 }

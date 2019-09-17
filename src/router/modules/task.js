@@ -40,6 +40,14 @@ const taskRouter = {
       path: 'bonds-nonp-task',
       component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-task.vue'),
       name: 'BondsNonpTask'
+    }, {
+      path: 'rule-set-task',
+      component: () => import('@/views/valuation/task-allocation/rule-set-task.vue'),
+      name: 'RuleSetTask'
+    }, {
+      path: 'personnel-set-task',
+      component: () => import('@/views/valuation/task-allocation/personnel-set-task.vue'),
+      name: 'PersonnelSetTask'
     }
   ]
 }
