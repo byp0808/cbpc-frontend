@@ -61,7 +61,7 @@ export function getCurveProduct(id) {
     params: { id: id }
   })
 }
-// 获取曲线产品列表，仅包含曲线产品
+// 获取曲线产品列表，仅包含曲线产品，key为曲线产品编号
 export function getCurveProductOptions() {
   var options = []
   getCurveList({}).then(response => {
@@ -70,6 +70,21 @@ export function getCurveProductOptions() {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]
         options.push({ value: data.curvePrdCode, label: data.productName })
+      }
+    }
+  })
+  return options
+}
+
+// 获取曲线产品列表，仅包含曲线产品，key为曲线产品ID
+export function getCurveProductIdOptions() {
+  var options = []
+  getCurveList({}).then(response => {
+    var datalist = response
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ value: data.curveId, label: data.productName })
       }
     }
   })

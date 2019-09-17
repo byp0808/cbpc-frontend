@@ -22,6 +22,11 @@ const curveRouter = {
       component: () => import('@/views/curve/product/curve-product-def-form.vue'),
       name: 'CurveProductDef',
       meta: { title: '曲线产品定义', noCache: true }
+    },{
+      path: 'curve-set-hisindex',
+      component: () => import('@/views/curve/set/curve-set-hisindex.vue'),
+      name: 'CurveSetHisIndex',
+      meta: { title: '计算历史分位点', noCache: true }
     }
   ]
 }

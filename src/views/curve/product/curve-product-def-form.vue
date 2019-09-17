@@ -400,6 +400,7 @@ export default {
               this.productInfo = response
               this.productId = this.productInfo.curveId
             }
+            this.opType = this.opType + '_SAVED'
             this.stepActive++
             this.$message({
               message: '操作成功！',
@@ -434,8 +435,7 @@ export default {
       var data = _.assign(productInfo, curveConstructType)
       // 调用保存方法
       var sendData = {
-        ccdcCurvePrdInfo: data,
-        opType: this.opType
+        ccdcCurvePrdInfo: data
       }
       storageCurveInfo(sendData).then(response => {
         this.stepActive++
