@@ -35,17 +35,17 @@ const valuationRouter = {
     {
       path: 'rec-curve',
       component: () => import('@/views/valuation/rec-cure/rec-curve-list.vue'),
-      name: 'BondFilter',
+      name: 'RecCurve',
       meta: { title: '设置曲线推荐规则', noCache: true }
     },
     {
       path: 'rec-curve-form',
       component: () => import('@/views/valuation/rec-cure/rec-curve-form.vue'),
-      name: 'BondFilter'
+      name: 'RecCurveForm'
     }, {
       path: '/curveList',
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
-      name: 'Table',
+      name: 'CurveRelationList',
       meta: { title: '估值相对曲线设置' }
     }, {
       path: '/rec-mandatory-list',

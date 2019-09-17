@@ -14,10 +14,17 @@
               <el-form-item label="资产概念分类">
                 <el-input v-model="bondsNonpInfo.bondsConceptType" disabled />
               </el-form-item>
-              <el-form-item label="资产编码">
+              <el-form-item
+                prop="bondsId"
+                label="资产编码"
+                :rules="[
+                  { required: true, message: '请输入资产编码', trigger: ['blur', 'change'] }
+                ]"
+              >
                 <el-input
                   v-model="bondsNonpInfo.bondsId"
                   :disabled="disabled"
+                  placeholder="请输入资产编码"
                   clearable
                 >
                   <el-button slot="append" icon="el-icon-search" @click="queryBondsAttr()" />
@@ -36,7 +43,7 @@
                 <el-input v-model="bondsNonpInfo.bondsShortName" disabled />
               </el-form-item>
               <el-form-item label="有效期（天）">
-                <el-input v-model="bondsNonpInfo.indate" :disabled="disabled" />
+                <el-input v-model="bondsNonpInfo.indate" :disabled="disabled" placeholder="请输入有效期" />
               </el-form-item>
             </el-form>
           </div>
@@ -56,7 +63,7 @@
       </el-row>
       <el-form ref="bondsNonpInfo" :model="bondsNonpInfo" label-width="150px">
         <el-form-item label="不参与原因">
-          <el-input v-model="bondsNonpInfo.cause" type="textarea" :disabled="disabled" />
+          <el-input v-model="bondsNonpInfo.cause" type="textarea" :disabled="disabled" placeholder="请输入不参与原因" />
         </el-form-item>
       </el-form>
     </el-card>
@@ -87,8 +94,8 @@ export default {
   },
   beforeMount() {
     if (this.businessId) {
-      queryBondsNonp(this.businessId).then(reponse => {
-        this.$store.commit('bondsNonp/setBondsNonpInfo', reponse)
+      queryBondsNonp(this.businessId).then(response => {
+        this.$store.commit('bondsNonp/setBondsNonpInfo', response)
       })
     }
   },
@@ -108,13 +115,11 @@ export default {
       const bondsId = this.bondsNonpInfo.bondsId
       if (bondsId) {
         queryBondsById(bondsId).then(response => {
-          console.log('full')
-          this.$store.commit('bondsNonp/setBondsAttrInfo', response)
+          this.bondsNonpInfo.bondsId = response.bondsId
+          this.bondsNonpInfo.bondsConceptType = response.bondsConceptType
+          this.bondsNonpInfo.bondsShortName = response.bondsShortName
+          this.bondsNonpInfo.bondsIssuer = response.bondsIssuer
         })
-      } else {
-        console.log('empty')
-        const empty = { bondsConceptType: '', bondsShortName: '', bondsIssuer: '' }
-        this.$store.commit('bondsNonp/setBondsAttrInfo', empty)
       }
     }
   }

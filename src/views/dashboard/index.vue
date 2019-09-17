@@ -9,23 +9,23 @@
           </div>
           <el-row>
             <el-col :span="20">
-              <div class="grid-content bg-purple" >
-                <v-calendar :attributes="calendar.attributes" @update:fromPage="onPageUpdate" class="custom-calendar">
+              <div class="grid-content bg-purple">
+                <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
                   <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
-                    <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{day.day}}</span>
+                    <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{ day.day }}</span>
                     <div class="flex-grow overflow-y-scroll">
-                      <el-tag hit size="small" v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" :type="getTagType(index)"  >{{getSubName(m)}}</el-tag>
+                      <el-tag v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" hit size="small" :type="getTagType(index)">{{ getSubName(m) }}</el-tag>
                     </div>
                   </div>
                 </v-calendar>
               </div>
             </el-col>
             <el-col :span="4">
-              <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting"></el-button>
+              <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting" />
               <ul>
                 <li v-for=" (m, index) in calendar.my" :key="index">
-                  <el-tag hit :type="getTagType(index)" size="small" >{{getSubName(m)}}</el-tag>
-                  <span class="remark">{{getCalendarName(m)}}</span>
+                  <el-tag hit :type="getTagType(index)" size="small">{{ getSubName(m) }}</el-tag>
+                  <span class="remark">{{ getCalendarName(m) }}</span>
                 </li>
               </ul>
             </el-col>
@@ -45,24 +45,26 @@
               <el-table-column
                 prop="businessName"
                 label="业务名称"
-                width="180"
+                width="170"
               />
               <el-table-column
                 prop="taskName"
                 label="任务名称"
-                width="180"
+                width="170"
               />
               <el-table-column
                 prop="taskStartUserName"
                 label="发起人"
               />
               <el-table-column
-                prop="createTs"
+                prop="createdTs"
                 label="发起时间"
+                width="160"
               />
               <el-table-column
                 prop="address"
                 label="操作"
+                width="60"
               >
                 <template slot-scope="scope">
                   <el-button
@@ -88,7 +90,7 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog title="日历设置" :visible.sync="calendar.visible" v-if="calendar.visible">
+    <el-dialog v-if="calendar.visible" title="日历设置" :visible.sync="calendar.visible">
       <el-row :gutter="20">
         <el-col :span="18" :offset="6">
           <div class="grid-content bg-purple">
@@ -100,7 +102,7 @@
                 key: 'code',
                 label: 'name'
               }"
-            ></el-transfer>
+            />
           </div>
         </el-col>
       </el-row>
