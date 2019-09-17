@@ -65,6 +65,11 @@ const valuationRouter = {
       path: '/bondsNonp-form',
       component: () => import('@/views/valuation/bondsNonp/bondsNonp-form.vue'),
       name: 'bondsNonpForm'
+    }, {
+      path: '/taskAllocation-list',
+      component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
+      name: 'taskAllocationList',
+      meta: { title: '设置任务分配规则', noCache: true }
     }
   ]
 }

@@ -70,7 +70,7 @@
 
 <script>
 import AddRulesForm from '@/views/valuation/curve-relation/curve-relation-form.vue'
-import { queryCurveRelationList, editCurveRelationBusiStatus, getCurveList } from '@/api/valuation/curve-relation.js'
+import { queryCurveRelationList, editCurveRelationBusiStatus, getCurveList, delCurveRelation } from '@/api/valuation/curve-relation.js'
 export default {
   name: 'CurveList',
   comments: {
@@ -81,33 +81,9 @@ export default {
     return {
       addRulesVisible: false,
       // 曲线关系列表
-      curveRelationList: [{
-        id: '1',
-        curveId: '2',
-        relativeCurveId: '1',
-        approveStatus: '02',
-        busiStatus: '02'
-      }, {
-        id: '2',
-        curveId: '1',
-        relativeCurveId: '2',
-        approveStatus: '2',
-        busiStatus: '05'
-      }, {
-        id: '2',
-        curveId: '1',
-        relativeCurveId: '2',
-        approveStatus: '3',
-        busiStatus: '05'
-      }],
+      curveRelationList: [],
       // 曲线列表
-      curveList: [{
-        curveId: '1',
-        productName: '测试1'
-      }, {
-        curveId: '2',
-        productName: '测试2'
-      }],
+      curveList: [],
       relationId: '',
       multipleSelection: [],
       targetValue: '',
@@ -172,7 +148,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '05' })
+        delCurveRelation({ id: id, busiStatus: '05' })
         this.load()
       }).catch(() => {
         this.$message({

@@ -1,6 +1,5 @@
 import request from '@/utils/request-client'
-import { basic_api_valuation } from '@/api/base-api.js'
-import { basic_api_curve } from '@/api/base-api.js'
+import { basic_api_valuation, basic_api_curve } from '@/api/base-api.js'
 
 // 获取曲线关系列表
 export function queryCurveRelationList(data) {
@@ -13,22 +12,31 @@ export function queryCurveRelationList(data) {
   )
 }
 // 获取曲线关系
-export function queryCurveRelation() {
+export function queryCurveRelation(data) {
   return request(
     {
-      url: `${basic_api_valuation}/curve-relation/curve-relation`,
+      url: `${basic_api_valuation}/curve-relation/get-curve-relation`,
       method: 'post',
-      params: {}
+      data: data
     }
   )
 }
-// 调用曲线服务获取曲线列表
-// 获取曲线关系列表
+// 调用曲线服务 获取曲线列表
 export function getCurveList() {
   return request(
     {
       url: `${basic_api_curve}/curveProduct/curveList`,
       method: 'post'
+    }
+  )
+}
+// 调用曲线服务 获取曲线名称
+export function getCurve(data) {
+  return request(
+    {
+      url: `${basic_api_curve}/curveProduct/curve`,
+      method: 'post',
+      data: data
     }
   )
 }
@@ -42,8 +50,18 @@ export function saveCurveRelation(data) {
     }
   )
 }
-// 停/启/删除 曲线关系规则
+// 停/启 曲线关系规则
 export function editCurveRelationBusiStatus(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/curve-relation/edit-busi-status`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+// 删除 曲线关系规则
+export function delCurveRelation(data) {
   return request(
     {
       url: `${basic_api_valuation}/curve-relation/edit-busi-status`,

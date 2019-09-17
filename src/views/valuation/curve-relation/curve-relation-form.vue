@@ -32,13 +32,7 @@ export default {
   props: ['relationId', 'targetValue', 'relativeValue'],
   data() {
     return {
-      curveList: [{
-        curveId: '1',
-        productName: '测试曲线1（AAA)'
-      }, {
-        curveId: '2',
-        productName: '测试曲线2（AAA+)'
-      }],
+      curveList: [],
       method: {
       }
     }
