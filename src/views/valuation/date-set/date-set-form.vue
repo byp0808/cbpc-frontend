@@ -24,7 +24,13 @@
                 <el-input v-model="dateSetInfo.lastUpdBy" disabled />
               </el-form-item>
               <el-form-item label="首次估值日：">
-                <el-select v-model="dateSetInfo.firstDateType" filterable placeholder="请选择首次估值日" :disabled="disabled">
+                <el-select
+                  v-model="dateSetInfo.firstDateType"
+                  filterable
+                  placeholder="请选择首次估值日"
+                  :disabled="disabled"
+                  @change="typeChange"
+                >
                   <el-option
                     v-for="item in firstDateTypes"
                     :key="item.id"
@@ -42,7 +48,7 @@
               <el-form-item label="最后操作时间">
                 <el-input v-model="dateSetInfo.lastUpdTs" disabled />
               </el-form-item>
-              <el-form-item label="延后天数">
+              <el-form-item v-if="dateSetInfo.firstDateType !== '01'" label="延后天数">
                 <el-input v-model="dateSetInfo.delayDays" :disabled="disabled" />
               </el-form-item>
             </el-form>
@@ -119,6 +125,9 @@ export default {
           showClose: true
         })
       })
+    },
+    typeChange(val) {
+      console.log(val)
     }
   }
 }

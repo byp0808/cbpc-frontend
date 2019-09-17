@@ -2,12 +2,14 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-button type="primary" @click="toAdd">新增不参与估值设置</el-button>
+      <el-button type="info" @click="batchDelete">批量移出</el-button>
     </div>
     <el-table
       ref="refBondsNonpTable"
       :data="bondsNonpList"
       tooltip-effect="dark"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
@@ -69,8 +71,9 @@
       />
       <el-table-column
         prop="address"
+        fixed="right"
         label="操作"
-        width="240"
+        width="200"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -86,7 +89,7 @@
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
           >
-            删除
+            移出
           </el-button>
           <el-button
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
@@ -135,7 +138,7 @@
 import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
 import { queryBondsNonpList, deleteBondsNonp, switchStatus } from '@/api/valuation/bonds-nonp.js'
 export default {
-  name: 'DateSetList',
+  name: 'BondNonpList',
   components: {
     BondsNonpForm
   },
@@ -149,7 +152,8 @@ export default {
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      multipleSelection: []
     }
   },
   computed: {
@@ -175,8 +179,15 @@ export default {
         this.bondsNonpList = dataList
       })
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     save() {
       this.$refs.BondsNonpForm.save()
+    },
+    cancel() {
+      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.bondsNonpFormVisible = false
     },
     toDetail(id) {
       this.bondsNonpId = id
@@ -185,7 +196,7 @@ export default {
     toDelete(id) {
       deleteBondsNonp([id]).then(response => {
         this.$message({
-          message: '删除成功！',
+          message: '移出成功！',
           type: 'success',
           showClose: true
         })
@@ -193,7 +204,26 @@ export default {
       })
     },
     batchDelete() {
-
+      const res = []
+      this.multipleSelection.forEach(obj => {
+        res.push(obj.id)
+      })
+      if (res.length === 0) {
+        this.$message({
+          message: '请选择至少一条数据进行操作！',
+          type: 'warning',
+          showClose: true
+        })
+        return
+      }
+      deleteBondsNonp(res).then(response => {
+        this.$message({
+          message: '批量移出，操作成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.loadTable()
+      })
     },
     toAdd() {
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
