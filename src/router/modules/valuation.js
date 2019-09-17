@@ -35,17 +35,17 @@ const valuationRouter = {
     {
       path: 'rec-curve',
       component: () => import('@/views/valuation/rec-cure/rec-curve-list.vue'),
-      name: 'BondFilter',
+      name: 'RecCurve',
       meta: { title: '设置曲线推荐规则', noCache: true }
     },
     {
       path: 'rec-curve-form',
       component: () => import('@/views/valuation/rec-cure/rec-curve-form.vue'),
-      name: 'BondFilter'
+      name: 'RecCurveForm'
     }, {
       path: '/curveList',
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
-      name: 'Table',
+      name: 'CurveRelationList',
       meta: { title: '估值相对曲线设置' }
     }, {
       path: '/rec-mandatory-list',
@@ -57,19 +57,23 @@ const valuationRouter = {
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-form.vue'),
       name: 'mandatoryForm'
     }, {
-      path: '/bondsNonp-list',
-      component: () => import('@/views/valuation/bondsNonp/bondsNonp-list.vue'),
-      name: 'bondsNonpList',
+      path: 'bonds-nonp-list',
+      component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-list.vue'),
+      name: 'BondsNonpList',
       meta: { title: '设置不参与估值资产列表', noCache: true }
     }, {
-      path: '/bondsNonp-form',
-      component: () => import('@/views/valuation/bondsNonp/bondsNonp-form.vue'),
-      name: 'bondsNonpForm'
+      path: 'bonds-nonp-form',
+      component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-form.vue'),
+      name: 'BondsNonpForm'
     }, {
-      path: '/taskAllocation-list',
-      component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
-      name: 'taskAllocationList',
-      meta: { title: '设置任务分配规则', noCache: true }
+      path: 'date-set-list',
+      component: () => import('@/views/valuation/date-set/date-set-list.vue'),
+      name: 'DateSetList',
+      meta: { title: '设置首次估值日列表', noCache: true }
+    }, {
+      path: 'date-set-form',
+      component: () => import('@/views/valuation/date-set/date-set-form.vue'),
+      name: 'DateSetForm'
     }
   ]
 }

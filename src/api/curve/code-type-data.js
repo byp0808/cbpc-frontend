@@ -37,14 +37,6 @@ export const BASE_PRD_CODE = [
 ]
 
 // 市场
-export const MARKET = [
-  { value: '01', label: '中国镜内银行间市场' },
-  { value: '02', label: '香港' },
-  { value: '03', label: '巴黎' },
-  { value: '04', label: '纽约' }
-]
-
-// 市场
 export const CODE_TYPE_MARKET = [
   { value: '01', label: '中国镜内银行间市场' },
   { value: '02', label: '香港' },
@@ -151,4 +143,18 @@ export const Y_OR_N = [
 // 曲线编制状态
 export const CURVE_BUILD_STATUS = [
   { value: '1', label: '已发布' }
+]
+
+// 计算历史分位点，类型
+export const COMPUTE_HISINDEX = [
+  { value: '1', label: '自曲线发布以来' },
+  { value: '2', label: '最近' }
+]
+
+// 计算历史分位点，日期类型
+export const COMPUTE_HIS_DATE = [
+  { value: '1', label: '1个月' },
+  { value: '2', label: '3个月' },
+  { value: '3', label: '6个月' },
+  { value: '4', label: '1年' }
 ]

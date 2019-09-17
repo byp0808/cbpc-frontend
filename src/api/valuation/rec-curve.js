@@ -28,19 +28,10 @@ export function deleteRecCurve(data) {
   })
 }
 
-// 启用估值曲线配置信息
-export function openRecCurve(data) {
+// 启用/停用估值曲线配置信息
+export function switchStatus(data) {
   return request({
-    url: `${basic_api_valuation}/valuation-curve/open`,
-    method: 'post',
-    data
-  })
-}
-
-// 停用估值曲线配置信息
-export function closeRecCurve(data) {
-  return request({
-    url: `${basic_api_valuation}/valuation-curve/close`,
+    url: `${basic_api_valuation}/valuation-curve/switch`,
     method: 'post',
     data
   })
@@ -66,7 +57,7 @@ export function queryCurveList() {
 // 提交任务
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/valuation-curve/roamTask`,
+    url: `/pi-valuation/valuation-curve/roam-task`,
     method: 'post',
     data
   })

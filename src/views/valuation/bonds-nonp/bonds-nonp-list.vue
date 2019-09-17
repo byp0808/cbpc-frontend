@@ -1,55 +1,79 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增强制推荐规则</el-button>
+      <el-button type="primary" @click="toAdd">新增不参与估值设置</el-button>
+      <el-button type="info" @click="batchDelete">批量移出</el-button>
     </div>
     <el-table
-      ref="refRecCureTable"
-      :data="mandatoryList"
+      ref="refBondsNonpTable"
+      :data="bondsNonpList"
       tooltip-effect="dark"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
         width="55"
       />
       <el-table-column
-        prop="id"
-        label="规则ID"
+        prop="bondsConceptType"
+        label="资产概念分类"
         show-overflow-tooltip
-        width="145"
+        width="120"
       />
       <el-table-column
-        prop="ruleName"
-        label="规则描述"
+        prop="bondsId"
+        label="资产编码"
         show-overflow-tooltip
-        width="165"
+        width="100"
       />
       <el-table-column
-        prop="bondFilterId"
-        label="资产规划"
+        prop="bondsShortName"
+        label="资产简称"
         show-overflow-tooltip
-      >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ ruleDetail(scope.row.bondFilterId) }}</span>
-        </template>
-      </el-table-column>
+        width="160"
+      />
       <el-table-column
-        prop="recoDirection"
-        label="强制推荐方向"
-        width="200"
+        prop="bondsIssuer"
+        label="发行人"
         show-overflow-tooltip
+        width="100"
+      />
+      <el-table-column
+        prop="cause"
+        label="不参与原因"
+        show-overflow-tooltip
+        width="180"
+      />
+      <el-table-column
+        prop="dateStart"
+        label="添加日期"
+        show-overflow-tooltip
+        width="140"
+      />
+      <el-table-column
+        prop="indate"
+        label="有效期（天）"
+        show-overflow-tooltip
+        width="140"
+      />
+      <el-table-column
+        prop="dateEnd"
+        label="自动释放日期"
+        show-overflow-tooltip
+        width="140"
       />
       <el-table-column
         prop="approveStatus"
-        label="状态"
+        label="审核状态"
         width="120"
         show-overflow-tooltip
       />
       <el-table-column
         prop="address"
+        fixed="right"
         label="操作"
-        width="240"
+        width="200"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -58,14 +82,14 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            规则调整
+            设置
           </el-button>
           <el-button
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
           >
-            删除
+            移出
           </el-button>
           <el-button
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
@@ -95,15 +119,15 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值强制推荐规则" :visible.sync="recCurveFormVisible">
-      <RecMandatoryForm
-        ref="RecMandatoryForm"
-        :rec-mandatory-data="recMandatoryData"
-        :business-id="mandatoryId"
+    <el-dialog v-if="bondsNonpFormVisible" width="92%" title="不参与估值设置" :visible.sync="bondsNonpFormVisible">
+      <BondsNonpForm
+        ref="BondsNonpForm"
+        :bonds-nonp-data="bondsNonpData"
+        :business-id="bondsNonpId"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="recCurveFormVisible = false">取 消</el-button>
+        <el-button @click="bondsNonpFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
@@ -111,24 +135,25 @@
 </template>
 
 <script>
-import RecMandatoryForm from '@/views/valuation/rec-mandatory/rec-mandatory-form.vue'
-import { queryMandatoryList, deleteRecMandatory, switchStatus } from '@/api/valuation/rec-mandatory.js'
+import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
+import { queryBondsNonpList, deleteBondsNonp, switchStatus } from '@/api/valuation/bonds-nonp.js'
 export default {
-  name: 'RecMandatoryList',
+  name: 'BondNonpList',
   components: {
-    RecMandatoryForm
+    BondsNonpForm
   },
   data() {
     return {
-      recCurveFormVisible: false,
-      mandatoryId: '',
-      mandatoryList: [],
+      bondsNonpFormVisible: false,
+      bondsNonpId: '',
+      bondsNonpList: [],
       bondFilterList: [],
-      recMandatoryData: {},
+      bondsNonpData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      multipleSelection: []
     }
   },
   computed: {
@@ -141,19 +166,6 @@ export default {
             return '停用中'
         }
       }
-    },
-    ruleDetail() {
-      return function(bondFilterId) {
-        const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
-        let ruleDetail = ''
-        this.$lodash.forEach(ruleList, function(value, key) {
-          ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-          if (key < ruleList.length - 1) {
-            ruleDetail += ', '
-          }
-        })
-        return ruleDetail
-      }
     }
   },
   beforeMount() {
@@ -161,24 +173,52 @@ export default {
   },
   methods: {
     loadTable() {
-      queryMandatoryList({ page: this.page }).then(response => {
-        const { recForces, ruleDetail, page } = response
+      queryBondsNonpList({ page: this.page }).then(response => {
+        const { dataList, page } = response
         this.page = page
-        this.mandatoryList = recForces
-        this.bondFilterList = ruleDetail
+        this.bondsNonpList = dataList
       })
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     save() {
-      this.$refs.RecMandatoryForm.save()
+      this.$refs.BondsNonpForm.save()
+    },
+    cancel() {
+      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.bondsNonpFormVisible = false
     },
     toDetail(id) {
-      this.mandatoryId = id
-      this.recCurveFormVisible = true
+      this.bondsNonpId = id
+      this.bondsNonpFormVisible = true
     },
     toDelete(id) {
-      deleteRecMandatory(id).then(response => {
+      deleteBondsNonp([id]).then(response => {
         this.$message({
-          message: '删除成功！',
+          message: '移出成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.loadTable()
+      })
+    },
+    batchDelete() {
+      const res = []
+      this.multipleSelection.forEach(obj => {
+        res.push(obj.id)
+      })
+      if (res.length === 0) {
+        this.$message({
+          message: '请选择至少一条数据进行操作！',
+          type: 'warning',
+          showClose: true
+        })
+        return
+      }
+      deleteBondsNonp(res).then(response => {
+        this.$message({
+          message: '批量移出，操作成功！',
           type: 'success',
           showClose: true
         })
@@ -186,11 +226,11 @@ export default {
       })
     },
     toAdd() {
-      this.$store.commit('recMandatory/setRecMandatoryInfo', {})
-      this.recCurveFormVisible = true
+      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.bondsNonpFormVisible = true
     },
     saveCallBack() {
-      this.recCurveFormVisible = false
+      this.bondsNonpFormVisible = false
       this.loadTable()
     },
     changeStatus(status, id) {

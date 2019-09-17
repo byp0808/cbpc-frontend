@@ -27,19 +27,10 @@ export function deleteRecMandatory(data) {
   })
 }
 
-// 启用估值强制推荐规则信息
-export function openRecMandatory(data) {
+// 启用/停用估值强制推荐规则信息
+export function switchStatus(data) {
   return request({
-    url: `${basic_api_valuation}/valuation-force/open`,
-    method: 'post',
-    data
-  })
-}
-
-// 停用估值强制推荐规则信息
-export function closeRecMandatory(data) {
-  return request({
-    url: `${basic_api_valuation}/valuation-force/close`,
+    url: `${basic_api_valuation}/valuation-force/switch`,
     method: 'post',
     data
   })
@@ -57,7 +48,7 @@ export function queryRecMandatory(data) {
 // 提交任务
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/valuation-force/roamTask`,
+    url: `/pi-valuation/valuation-force/roam-task`,
     method: 'post',
     data
   })

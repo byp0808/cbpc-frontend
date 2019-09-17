@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增强制推荐规则</el-button>
+      <el-button type="primary" @click="toAdd">新增首次估值日设置</el-button>
     </div>
     <el-table
-      ref="refRecCureTable"
-      :data="mandatoryList"
+      ref="refDateSetTable"
+      :data="dateSetList"
       tooltip-effect="dark"
       style="width: 100%"
     >
@@ -17,32 +17,37 @@
         prop="id"
         label="规则ID"
         show-overflow-tooltip
-        width="145"
+        width="160"
       />
       <el-table-column
         prop="ruleName"
-        label="规则描述"
+        label="规则名称"
         show-overflow-tooltip
-        width="165"
+        width="140"
       />
       <el-table-column
-        prop="bondFilterId"
-        label="资产规划"
+        prop="ruleDesc"
+        label="规则说明"
+        width="400"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ ruleDetail(scope.row.bondFilterId) }}</span>
+          <span style="margin-left: 10px">{{ ruleDetail(scope.row.filterId) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="recoDirection"
-        label="强制推荐方向"
-        width="200"
+        prop="firstDateType"
+        label="首次估值日"
+        width="160"
         show-overflow-tooltip
-      />
+      >
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ dateSetFormat(scope.row) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="approveStatus"
-        label="状态"
+        label="审核状态"
         width="120"
         show-overflow-tooltip
       />
@@ -58,7 +63,7 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            规则调整
+            设置
           </el-button>
           <el-button
             type="text"
@@ -95,15 +100,15 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值强制推荐规则" :visible.sync="recCurveFormVisible">
-      <RecMandatoryForm
-        ref="RecMandatoryForm"
-        :rec-mandatory-data="recMandatoryData"
-        :business-id="mandatoryId"
+    <el-dialog v-if="dateSetFormVisible" width="92%" title="首次估值日设置" :visible.sync="dateSetFormVisible">
+      <DateSetForm
+        ref="DateSetForm"
+        :date-set-data="dateSetData"
+        :business-id="dateSetId"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="recCurveFormVisible = false">取 消</el-button>
+        <el-button @click="dateSetFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
@@ -111,20 +116,20 @@
 </template>
 
 <script>
-import RecMandatoryForm from '@/views/valuation/rec-mandatory/rec-mandatory-form.vue'
-import { queryMandatoryList, deleteRecMandatory, switchStatus } from '@/api/valuation/rec-mandatory.js'
+import DateSetForm from '@/views/valuation/date-set/date-set-form.vue'
+import { queryDateSetList, deleteDateSet, switchStatus } from '@/api/valuation/date-set.js'
 export default {
-  name: 'RecMandatoryList',
+  name: 'DateSetList',
   components: {
-    RecMandatoryForm
+    DateSetForm
   },
   data() {
     return {
-      recCurveFormVisible: false,
-      mandatoryId: '',
-      mandatoryList: [],
+      dateSetFormVisible: false,
+      dateSetId: '',
+      dateSetList: [],
       bondFilterList: [],
-      recMandatoryData: {},
+      dateSetData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -142,9 +147,21 @@ export default {
         }
       }
     },
+    dateSetFormat() {
+      return function(row) {
+        let type = ''
+        if (row.firstDateType !== '01') {
+          type += row.firstDateType + '+' + row.delayDays + '天'
+        } else {
+          type = '起息日'
+        }
+
+        return type
+      }
+    },
     ruleDetail() {
-      return function(bondFilterId) {
-        const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
+      return function(filterId) {
+        const ruleList = this.$lodash.get(this.bondFilterList, filterId)
         let ruleDetail = ''
         this.$lodash.forEach(ruleList, function(value, key) {
           ruleDetail += value.ruleCode + ' = ' + value.ruleValue
@@ -161,22 +178,22 @@ export default {
   },
   methods: {
     loadTable() {
-      queryMandatoryList({ page: this.page }).then(response => {
-        const { recForces, ruleDetail, page } = response
+      queryDateSetList({ page: this.page }).then(response => {
+        const { dateSets, ruleDetail, page } = response
         this.page = page
-        this.mandatoryList = recForces
+        this.dateSetList = dateSets
         this.bondFilterList = ruleDetail
       })
     },
     save() {
-      this.$refs.RecMandatoryForm.save()
+      this.$refs.DateSetForm.save()
     },
     toDetail(id) {
-      this.mandatoryId = id
-      this.recCurveFormVisible = true
+      this.dateSetId = id
+      this.dateSetFormVisible = true
     },
     toDelete(id) {
-      deleteRecMandatory(id).then(response => {
+      deleteDateSet(id).then(response => {
         this.$message({
           message: '删除成功！',
           type: 'success',
@@ -186,11 +203,11 @@ export default {
       })
     },
     toAdd() {
-      this.$store.commit('recMandatory/setRecMandatoryInfo', {})
-      this.recCurveFormVisible = true
+      this.$store.commit('dateSet/setDateSetInfo', {})
+      this.dateSetFormVisible = true
     },
     saveCallBack() {
-      this.recCurveFormVisible = false
+      this.dateSetFormVisible = false
       this.loadTable()
     },
     changeStatus(status, id) {
