@@ -5,13 +5,17 @@
     </div>
     <div>
       <el-table ref="multipleTable" :data="personnelList" tooltip-effect="dark">
-        <el-table-column align="center" label="选择" min-width="5%">
+        <el-table-column prop="taskRangeId" align="center" label="选择" min-width="5%">
           <template slot-scope="scope">
-            <el-radio v-model="radio" :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
+            <el-radio :label="scope.row.taskRangeId" class="textRadio">&nbsp;</el-radio>
           </template>
         </el-table-column>
         <el-table-column prop="taskRangeName" label="规则名称" min-width="35%" show-overflow-tooltip />
-        <el-table-column prop="userId" label="分配人员" min-width="35%" show-overflow-tooltip />
+        <el-table-column prop="userId" label="分配人员" min-width="35%" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span>{{ ruleDetail(scope.row.taskRangeId) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="scope.row.approveStatus==='01'">待审核</span>
@@ -22,11 +26,11 @@
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">设置</el-button>
-            <el-button v-else type="text" size="small" @click="edit(scope.row.id,scope.row.curveId,scope.row.relativeCurveId)">设置</el-button>
+            <el-button v-else type="text" size="small">设置</el-button>
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
-            <el-button v-else type="text" size="small" @click="delCurveRelation(scope.row.id)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
+            <el-button v-else type="text" size="small" @click="delCurveRelation(scope.row.taskRangeId)">删除</el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -57,6 +61,7 @@
 <script>
 
 import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form'
+import { taskAllocationList } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetList',
   components: { PersonnelSetForm },
@@ -64,19 +69,42 @@ export default {
     return {
       personnelFormVisible: false,
       personnelList: [],
+      distRatioList: [], // 人员任务分配列表
       page: {
         pageNumber: 1,
         pageSize: 10
       }
     }
   },
+  beforeMount() {
+    this.load()
+  },
   methods: {
+    load() {
+      taskAllocationList({ page: this.page }).then(response => {
+        const { taskAllocationDtoList, distRatioDetail, page } = response
+        this.personnelList = taskAllocationDtoList
+        this.distRatioList = distRatioDetail
+        this.page = page
+      })
+    },
     disableEdit() {
       this.$message({
         message: '不能操作待审核状态的数据！',
         type: 'warning',
         showClose: true
       })
+    },
+    ruleDetail(taskRangeId) {
+      const ruleList = this.$lodash.get(this.distRatioList, taskRangeId)
+      let ruleDetail = ''
+      this.$lodash.forEach(ruleList, function(value, key) {
+        ruleDetail += value.userId + ':' + value.distRatio + '%'
+        if (key < ruleList.length - 1) {
+          ruleDetail += ', '
+        }
+      })
+      return ruleDetail
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize

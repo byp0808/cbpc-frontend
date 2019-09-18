@@ -66,7 +66,6 @@ export default {
       ],
       // 任务分配规则对象
       ruleInfo: {
-        id: '', // 任务分配规则Id
         taskRangeId: '', // 任务范围Id
         personnelTaskList: [ // 人员-分配比例 集合
           { userId: '', distRatio: '' }
