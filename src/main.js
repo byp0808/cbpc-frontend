@@ -70,21 +70,6 @@ if (!token) {
   window.location = '/'
 }
 
-const userJob
-if (cloudOn) {
-  userJob = new Promise((resolve, reject) => {
-
-  })
-} else {
-  userJob = new Promise((resolve, reject) => {
-
-  })
-}
-
-Promise.all([userJob]).then((result) => {
-
-})
-
 new Vue({
   el: '#app',
   router,

@@ -52,16 +52,16 @@ export default [
     url: '/user/info\.*',
     type: 'get',
     response: config => {
-      const { token } = config.query
-      const info = users[token]
-
-      // mock error
-      if (!info) {
-        return {
-          code: 50008,
-          message: 'Login failed, unable to get user details.'
-        }
-      }
+      // const { token } = config.query
+      // const info = users[token]
+      //
+      // // mock error
+      // if (!info) {
+      //   return {
+      //     code: 50008,
+      //     message: 'Login failed, unable to get user details.'
+      //   }
+      // }
 
       return {
         "data": {
