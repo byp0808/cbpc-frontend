@@ -19,8 +19,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      // config.headers['Access-Token'] = getToken()
-      config.headers['token'] = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjgyMDEzNTAsInVzZXJJZCI6ImFkbWluIiwib3JnSWQiOiIwMDAwMSIsInVzZXJuYW1lIjoi566h55CG5ZGYIn0.nDO2L6DjpiTZO6hCmLuL1BbZi-GNnej1Cqvp-wIi2bM'
+      config.headers['token'] = getToken()
     }
     return config
   },

@@ -34,7 +34,7 @@ import * as filters from './filters' // global filters
  */
 import { mockXHR } from '../mock'
 if (process.env.NODE_ENV === 'production') {
-  mockXHR()
+  // mockXHR()
 }
 
 Vue.use(Element, {
@@ -55,6 +55,35 @@ Object.defineProperty(Vue.prototype, '$lodash', { value: _ })
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 
 Vue.config.productionTip = false
+
+// ------------------------------------------------------------------------------------------------------------------->
+const cloudOn = true
+if (process.env.NODE_ENV === 'production') {
+  // do nothing
+} else {
+  sessionStorage.setItem('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjgyMDEzNTAsInVzZXJJZCI6ImFkbWluIiwib3JnSWQiOiIwMDAwMSIsInVzZXJuYW1lIjoi566h55CG5ZGYIn0.nDO2L6DjpiTZO6hCmLuL1BbZi-GNnej1Cqvp-wIi2bM')
+  mockXHR()
+}
+
+const token = sessionStorage.getItem('token')
+if (!token) {
+  window.location = '/'
+}
+
+const userJob
+if (cloudOn) {
+  userJob = new Promise((resolve, reject) => {
+
+  })
+} else {
+  userJob = new Promise((resolve, reject) => {
+
+  })
+}
+
+Promise.all([userJob]).then((result) => {
+
+})
 
 new Vue({
   el: '#app',

@@ -64,8 +64,50 @@ export default [
       }
 
       return {
-        code: 20000,
-        data: info
+        "data": {
+          "createdTs": "2019-01-14 10:30:26",
+          "createdBy": "admin",
+          "lastUpdTs": "2019-09-16 20:22:03",
+          "lastUpdBy": "ANONYMOUS",
+          "tenantId": null,
+          "userId": "admin",
+          "empId": null,
+          "userCode": "admin",
+          "mobilePhone": null,
+          "weixCode": null,
+          "userPass": "ddbcfe94f08537e96133b213d75b9ffb3e405281eae546f644f298a27e9065f7",
+          "userType": "01",
+          "userHeadId": null,
+          "userHeadImg": null,
+          "userName": "管理员",
+          "userStatus": "01",
+          "pwdInitFlag": "N",
+          "pwdErrNum": 0,
+          "unlockTs": null,
+          "lastLoginTs": 1568702309000,
+          "macCode": null,
+          "ipAddr": null,
+          "effectDt": null,
+          "expireDt": null,
+          "userOrgName": null,
+          "menus":  [
+            "Valuation",
+            "ValuationProdList",
+            "ValuationRecCurve",
+            "ValuationCurveRelationList",
+            "ValuationMandatoryList",
+            "ValuationBondsNonpList",
+            "ValuationDateSetList",
+            "ValuationTaskAllocationList",
+            "Curve",
+            "CurveProduct",
+            "CurveProductDef",
+            "CurveSetHisIndex"
+          ]
+        },
+        "msg": null,
+        "flag": 0,
+        "com": null
       }
     }
   },
