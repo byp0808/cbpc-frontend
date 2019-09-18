@@ -2,6 +2,16 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-button type="primary" @click="toAdd">新增不参与估值设置</el-button>
+      <el-upload
+        style="display: inline-block;"
+        :action="uploadUrl"
+        :multiple="false"
+        name="attach"
+        :on-success="uploadSuccess"
+        :show-file-list="false"
+      >
+        <el-button type="primary">批量添加</el-button>
+      </el-upload>
       <el-button type="info" @click="batchDelete">批量移出</el-button>
     </div>
     <el-table
@@ -137,6 +147,7 @@
 <script>
 import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
 import { queryBondsNonpList, deleteBondsNonp, switchStatus } from '@/api/valuation/bonds-nonp.js'
+import { basic_api_valuation } from '../../../api/base-api'
 export default {
   name: 'BondNonpList',
   components: {
@@ -144,6 +155,7 @@ export default {
   },
   data() {
     return {
+      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       bondsNonpFormVisible: false,
       bondsNonpId: '',
       bondsNonpList: [],
@@ -247,13 +259,16 @@ export default {
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'
     },
+    uploadSuccess() {
+      this.$message.success('批量添加成功')
+    },
     handleSizeChange(pageSize) {
-      this.todoInfo.page.pageSize = pageSize
-      this.queryTaskList()
+      this.page.pageSize = pageSize
+      this.loadTable()
     },
     handleCurrentChange(currentPage) {
-      this.todoInfo.page.pageNumber = currentPage
-      this.queryTaskList()
+      this.page.pageNumber = currentPage
+      this.loadTable()
     }
   }
 

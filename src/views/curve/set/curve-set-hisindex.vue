@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-col :span="10">
-      <el-form ref="form" :model="form" label-width="140px">
-        <el-form-item label="曲线名称">
+      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
+        <el-form-item label="曲线名称" prop="curveId">
           <el-select v-model="form.curveId" filterable placeholder="请选择曲线" class="with-full"  @change="curveIdChange">
             <el-option
               v-for="item in curveList"
@@ -12,7 +12,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="关键期限">
+        <el-form-item label="关键期限" prop="curvePrdKd">
           <el-select v-model="form.curvePrdKd" placeholder="请选择活动区域" class="with-full">
             <el-option
               v-for="item in curvePrdKdList"
@@ -24,9 +24,11 @@
         </el-form-item>
         <el-form-item label="计算历史分位点">
           <el-col :span="11">
-            <el-select v-model="form.computeHisIndex" placeholder="" @change="computeHisIndexChange">
-              <el-option v-for="item in computeHisIndexOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
+            <el-form-item prop="computeHisIndex">
+              <el-select v-model="form.computeHisIndex" placeholder="" @change="computeHisIndexChange" prop="computeHisIndex">
+                <el-option v-for="item in computeHisIndexOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
           </el-col>
           <el-col :span="11" :offset="2">
             <el-select v-model="form.computeHisDate" :disabled="computeHisDateDisabled" placeholder="">
@@ -34,16 +36,16 @@
             </el-select>
           </el-col>
         </el-form-item>
-        <el-form-item label="输入关键期限收益率">
+        <el-form-item label="输入关键期限收益率" prop="rate">
           <el-col :span="11">
-            <el-input v-model.number="form.rate" />
+            <el-input type="number" v-model="form.rate" />
           </el-col>
           <el-col :span="1">
             %
           </el-col>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">计算</el-button>
+          <el-button type="primary" @click="onSubmit('form')">计算</el-button>
         </el-form-item>
         <el-form-item v-if="computeResult">
           <p>计算结果：{{ computeResult }}%</p>
@@ -71,6 +73,21 @@ export default {
         computeHisIndex: '',
         computeHisDate: '',
         rate: ''
+      },
+      rules: {
+        curveId: [
+          {required: true, message: '请选择一条曲线', trigger: 'blur'}
+        ],
+        curvePrdKd: [
+          {required: true, message: '请选择关键期限', trigger: 'blur'}
+        ],
+        computeHisIndex: [
+          {required: true, message: '请选择历史分位点', trigger: 'blur'}
+        ],
+        rate: [
+          {required: true, message: '请输入利率', trigger: 'blur'}
+        ]
+
       }
     }
   },
@@ -122,9 +139,16 @@ export default {
     // 计算
     onSubmit() {
       console.log('submit!')
-      computeHisIndex(this.form).then(response => {
-        this.computeResultVisible = true
-        this.computeResult = response.result
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          computeHisIndex(this.form).then(response => {
+            this.computeResultVisible = true
+            this.computeResult = response.result
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     }
   }
