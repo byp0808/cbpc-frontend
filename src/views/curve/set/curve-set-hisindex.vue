@@ -3,7 +3,7 @@
     <el-col :span="10">
       <el-form ref="form" :model="form" label-width="140px">
         <el-form-item label="曲线名称">
-          <el-select v-model="form.curveId" filterable placeholder="请选择曲线" class="with-full">
+          <el-select v-model="form.curveId" filterable placeholder="请选择曲线" class="with-full"  @change="curveIdChange">
             <el-option
               v-for="item in curveList"
               :key="item.value"
@@ -24,7 +24,7 @@
         </el-form-item>
         <el-form-item label="计算历史分位点">
           <el-col :span="11">
-            <el-select v-model="form.computeHisIndex" placeholder="">
+            <el-select v-model="form.computeHisIndex" placeholder="" @change="computeHisIndexChange">
               <el-option v-for="item in computeHisIndexOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-col>
@@ -35,10 +35,18 @@
           </el-col>
         </el-form-item>
         <el-form-item label="输入关键期限收益率">
-          <el-input v-model.number="form.rate" />
+          <el-col :span="11">
+            <el-input v-model.number="form.rate" />
+          </el-col>
+          <el-col :span="1">
+            %
+          </el-col>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">计算</el-button>
+        </el-form-item>
+        <el-form-item v-if="computeResult">
+          <p>计算结果：{{ computeResult }}%</p>
         </el-form-item>
       </el-form>
     </el-col>
@@ -46,6 +54,7 @@
 </template>
 <script>
 import { getCurveProductIdOptions, queryCurvePrdKd } from '@/api/curve/curve-product-list.js'
+import { computeHisIndex } from '@/api/curve/curve-set-hisindex.js'
 import { optioins } from '@/api/curve/code-type.js'
 export default {
   data() {
@@ -73,9 +82,14 @@ export default {
       return optioins('COMPUTE_HIS_DATE')
     }
   },
-  watch: {
-    curveId(newValue, oldValue) {
-      console.info('curveId.newValue:' + newValue + ',oldValue:' + oldValue)
+  beforeMount() {
+    console.info('===beforeMount===')
+    // 先加载列表
+    this.curveList = getCurveProductIdOptions()
+  },
+  methods: {
+    curveIdChange(newValue) {
+      console.info('curveId.newValue:' + newValue)
       this.curvePrdKdList = []
       this.curvePrdKd = ''
       // 获取产品组
@@ -85,7 +99,7 @@ export default {
         this.curvePrdKd = this.curvePrdKdList[0].value
       }
     },
-    computeHisIndex(newValue, oldValue) {
+    computeHisIndexChange(newValue) {
       // 自曲线发布以来，时间隐藏不可选
       if (newValue === '1') {
         this.computeHisDateDisabled = true
@@ -93,14 +107,7 @@ export default {
       } else if (newValue === '2') {
         this.computeHisDateDisabled = false
       }
-    }
-  },
-  beforeMount() {
-    console.info('===beforeMount===')
-    // 先加载列表
-    this.curveList = getCurveProductIdOptions()
-  },
-  methods: {
+    },
     async getCurvePrdKd(curveId) {
       this.curvePrdKdList = []
       await queryCurvePrdKd({ curveId: curveId }).then(response => {
@@ -115,6 +122,10 @@ export default {
     // 计算
     onSubmit() {
       console.log('submit!')
+      computeHisIndex(this.form).then(response => {
+        this.computeResultVisible = true
+        this.computeResult = response.result
+      })
     }
   }
 }
