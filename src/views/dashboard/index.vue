@@ -84,7 +84,7 @@
               layout="total, sizes, prev, pager, next, jumper"
               :total="todoInfo.page.totalRecord"
               @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
+              @current-change="handleCutags-viewrrentChange"
             />
           </div>
         </el-card>
@@ -138,6 +138,24 @@ export default {
         ]
       }
       // currentRole: 'adminDashboard'
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'roles'
+    ]),
+    todoInfo: {
+      get() {
+        return this.$store.state.homePage.todoInfo
+      }
+    }
+  },
+  beforeMount() {
+    this.queryTaskList()
+  },
+  created() {
+    if (!this.roles.includes('admin')) {
+      this.currentRole = 'editorDashboard'
     }
   },
   methods: {
@@ -209,24 +227,6 @@ export default {
     getTagType(index) {
       const type = ['', 'success', 'warning', 'danger']
       return type[index % 4]
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'roles'
-    ]),
-    todoInfo: {
-      get() {
-        return this.$store.state.homePage.todoInfo
-      }
-    }
-  },
-  beforeMount() {
-    this.queryTaskList()
-  },
-  created() {
-    if (!this.roles.includes('admin')) {
-      this.currentRole = 'editorDashboard'
     }
   }
 }

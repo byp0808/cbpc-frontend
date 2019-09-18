@@ -1,11 +1,10 @@
 import request from '@/utils/app-request'
-import { basic_path } from '@/api/common/common.js'
 import { basic_api_market } from '@/api/base-api.js'
 
 // 查询待办任务列表
 export function queryTaskList(data) {
   return request({
-    url: `${basic_path}/task/todo-list`,
+    url: `${basic_api_market}/task/todo-list`,
     method: 'post',
     data
   })
@@ -27,4 +26,9 @@ export function saveMyCalendar(data) {
     method: 'post',
     data
   })
+}
+
+// 消息查询
+export function queryMsg(data) {
+
 }
