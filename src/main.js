@@ -70,9 +70,47 @@ if (!token) {
   window.location = '/'
 }
 
-new Vue({
-  el: '#app',
-  router,
-  store,
-  render: h => h(App)
+import { getLang } from './utils/i18n'
+import VueI18n from 'vue-i18n'
+import { getLanguagePack, getDicts } from './api/resources'
+const messages = {}
+let dictJob, i18nJob
+if (cloudOn) {
+  dictJob = new Promise((resolve, reject) => {
+    getDicts().then((data) => {
+      messages[getLang()] = _.assignIn(messages[getLang()], { dicts: data })
+      resolve()
+    })
+  })
+  i18nJob = new Promise((resolve, reject) => {
+    getLanguagePack().then((response) => {
+      messages[getLang()] = _.assignIn(messages[getLang()], response.data)
+      resolve()
+    })
+  })
+} else {
+  dictJob = new Promise((resolve, reject) => {
+    messages[getLang()] = _.assignIn(messages[getLang()], {dict: {}})
+    resolve()
+  })
+  i18nJob = new Promise((resolve, reject) => {
+    messages[getLang()] = _.assignIn(messages[getLang()], {})
+    resolve()
+  })
+}
+
+Promise.all([i18nJob, dictJob]).then((result) => {
+  const i18n = new VueI18n({
+    locale: getLang(),
+    messages
+  })
+  new Vue({
+    el: '#app',
+    router,
+    store,
+    i18n,
+    render: h => h(App)
+  })
+}).catch((error) => {
+  console.log(error)
 })
