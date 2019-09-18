@@ -43,12 +43,12 @@ const valuationRouter = {
       component: () => import('@/views/valuation/rec-cure/rec-curve-form.vue'),
       name: 'RecCurveForm'
     }, {
-      path: '/curveList',
+      path: 'curveList',
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
       name: 'CurveRelationList',
       meta: { title: '估值相对曲线设置' }
     }, {
-      path: '/rec-mandatory-list',
+      path: 'rec-mandatory-list',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-list.vue'),
       name: 'mandatoryList',
       meta: { title: '设置估值强制推荐规则', noCache: true }
@@ -75,7 +75,7 @@ const valuationRouter = {
       component: () => import('@/views/valuation/date-set/date-set-form.vue'),
       name: 'DateSetForm'
     }, {
-      path: '/taskAllocation-list',
+      path: 'taskAllocation-list',
       component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
       name: 'taskAllocationList',
       meta: { title: '设置任务分配规则', noCache: true }
