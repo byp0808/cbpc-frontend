@@ -9,14 +9,15 @@ const valuationRouter = {
   name: 'Valuation',
   meta: {
     title: '估值',
-    icon: 'common'
+    icon: 'chart',
+    roles: ['Valuation']
   },
   children: [
     {
       path: 'prod-list',
       component: () => import('@/views/valuation/prod/prod-list.vue'),
       name: 'ValuationProdList',
-      meta: { title: '估值产品列表', noCache: true }
+      meta: { title: '估值产品列表', noCache: true, roles: ['ValuationProdList'] }
     },
     {
       path: 'prod-form',
@@ -35,8 +36,8 @@ const valuationRouter = {
     {
       path: 'rec-curve',
       component: () => import('@/views/valuation/rec-cure/rec-curve-list.vue'),
-      name: 'RecCurve',
-      meta: { title: '设置曲线推荐规则', noCache: true }
+      name: 'ValuationRecCurve',
+      meta: { title: '设置曲线推荐规则', noCache: true, roles: ['ValuationRecCurve'] }
     },
     {
       path: 'rec-curve-form',
@@ -45,13 +46,13 @@ const valuationRouter = {
     }, {
       path: 'curveList',
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
-      name: 'CurveRelationList',
-      meta: { title: '估值相对曲线设置' }
+      name: 'ValuationCurveRelationList',
+      meta: { title: '估值相对曲线设置', roles: ['ValuationCurveRelationList'] }
     }, {
       path: 'rec-mandatory-list',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-list.vue'),
-      name: 'mandatoryList',
-      meta: { title: '设置估值强制推荐规则', noCache: true }
+      name: 'ValuationMandatoryList',
+      meta: { title: '设置估值强制推荐规则', noCache: true, roles: ['ValuationMandatoryList'] }
     }, {
       path: '/rec-mandatory-form',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-form.vue'),
@@ -59,8 +60,8 @@ const valuationRouter = {
     }, {
       path: 'bonds-nonp-list',
       component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-list.vue'),
-      name: 'BondsNonpList',
-      meta: { title: '设置不参与估值资产列表', noCache: true }
+      name: 'ValuationBondsNonpList',
+      meta: { title: '设置不参与估值资产列表', noCache: true, roles: ['ValuationBondsNonpList'] }
     }, {
       path: 'bonds-nonp-form',
       component: () => import('@/views/valuation/bonds-nonp/bonds-nonp-form.vue'),
@@ -68,8 +69,8 @@ const valuationRouter = {
     }, {
       path: 'date-set-list',
       component: () => import('@/views/valuation/date-set/date-set-list.vue'),
-      name: 'DateSetList',
-      meta: { title: '设置首次估值日列表', noCache: true }
+      name: 'ValuationDateSetList',
+      meta: { title: '设置首次估值日列表', noCache: true, roles: ['ValuationDateSetList'] }
     }, {
       path: 'date-set-form',
       component: () => import('@/views/valuation/date-set/date-set-form.vue'),
@@ -77,8 +78,8 @@ const valuationRouter = {
     }, {
       path: 'taskAllocation-list',
       component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
-      name: 'taskAllocationList',
-      meta: { title: '设置任务分配规则', noCache: true }
+      name: 'ValuationTaskAllocationList',
+      meta: { title: '设置任务分配规则', noCache: true, roles: ['ValuationTaskAllocationList'] }
     }, {
       path: '/scheme-form',
       component: () => import('@/views/valuation/scheme/scheme-form.vue'),
