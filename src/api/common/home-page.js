@@ -28,3 +28,8 @@ export function saveMyCalendar(data) {
     data
   })
 }
+
+// 消息查询
+export function queryMsg(data) {
+
+}
