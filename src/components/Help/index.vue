@@ -1,7 +1,7 @@
 <template>
   <div>
     <svg-icon icon-class="help" @click="click" />
-    <a ref="readmeDownload" style="display: none" href="/readme/readme.docx" download="帮助文档"></a>
+    <a ref="readmeDownload" style="display: none" href="/readme/readme.docx" download="帮助文档"/>
   </div>
 </template>
 
