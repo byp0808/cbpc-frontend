@@ -5,21 +5,21 @@
       <el-row>
         <el-col :span="24">
           <div class="grid-content bg-purple-dark">
-            <p>产品介绍</p>
+            <p>{{ sysInfo }}</p>
           </div>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <div class="grid-content bg-purple-dark">
-            <p>版本信息</p>
+            <p>{{ sysVersion }}</p>
           </div>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <div class="grid-content bg-purple-dark">
-            <p>版权所有</p>
+            <p>{{ sysCopyright }}</p>
           </div>
         </el-col>
       </el-row>
@@ -28,16 +28,26 @@
 </template>
 
 <script>
+import { queryAboutInfo } from '@/api/common/home-page.js'
 export default {
   name: 'About',
   data() {
     return {
-      aboutFormVisible: false
+      aboutFormVisible: false,
+      sysInfo: '',
+      sysCopyright: '',
+      sysVersion: ''
     }
   },
   methods: {
     click() {
       this.aboutFormVisible = true
+      queryAboutInfo().then(response => {
+        const { SYSTEM_VERSION, SYSTEM_COPYRIGHT, SYSTEM_INFO } = response
+        this.sysVersion = SYSTEM_VERSION
+        this.sysCopyright = SYSTEM_COPYRIGHT
+        this.sysInfo = SYSTEM_INFO
+      })
     }
   }
 }

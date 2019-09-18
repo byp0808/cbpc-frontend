@@ -33,6 +33,51 @@
         </el-card>
       </el-col>
       <el-col :span="12">
+        <el-card class="box-card margin-top calendar-job">
+          <div slot="header" class="clearfix card-head">
+            <h3>我的消息</h3>
+          </div>
+          <el-table
+            :data="msg.msgList"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="msgTitle"
+              label="标题"
+              width="180"
+            />
+            <el-table-column
+              prop="msgTypeSub"
+              label="类型"
+              width="180"
+            />
+            <el-table-column
+              prop="msgContent"
+              label="内容"
+            />
+            <el-table-column
+              prop="msgFrom"
+              label="发布人"
+            />
+            <el-table-column
+              prop="sendTime"
+              label="发布时间"
+            />
+          </el-table>
+          <el-pagination
+            :current-page="msg.page.pageNumber"
+            :page-sizes="[10, 20, 30, 40, 50]"
+            :page-size="msg.page.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="msg.page.totalRecord"
+            @size-change="handleSizeChangeMsg"
+            @current-change="handleCurrentChangeMsg"
+          />
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="10">
+      <el-col :span="12">
         <el-card class="box-card margin-top">
           <div slot="header" class="clearfix card-head">
             <h3>待办任务列表</h3>
@@ -148,10 +193,16 @@ export default {
       get() {
         return this.$store.state.homePage.todoInfo
       }
+    },
+    msg: {
+      get() {
+        return this.$store.state.homePage.message
+      }
     }
   },
   beforeMount() {
     this.queryTaskList()
+    this.$store.dispatch('homePage/queryMsgList', {})
   },
   created() {
     if (!this.roles.includes('admin')) {
@@ -227,6 +278,13 @@ export default {
     getTagType(index) {
       const type = ['', 'success', 'warning', 'danger']
       return type[index % 4]
+    },
+    handleSizeChangeMsg(pageSize) {
+      this.page.pageSize = pageSize
+      this.$store.dispatch('homePage/queryMsgList', { pageSize: pageSize })
+    },
+    handleCurrentChangeMsg(currentPage) {
+      this.$store.dispatch('homePage/queryMsgList', { pageNumber: currentPage })
     }
   }
 }

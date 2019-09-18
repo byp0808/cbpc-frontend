@@ -28,7 +28,29 @@ export function saveMyCalendar(data) {
   })
 }
 
-// 消息查询
-export function queryMsg(data) {
+// 未读消息数量
+export function queryNewMsgCount(data) {
+  return request({
+    url: `${basic_api_market}/msg/msg-records`,
+    method: 'get',
+    data
+  })
+}
 
+// 消息查询
+export function queryMsgList(data) {
+  return request({
+    url: `${basic_api_market}/msg/list`,
+    method: 'post',
+    data
+  })
+}
+
+// about
+export function queryAboutInfo(data) {
+  return request({
+    url: `${basic_api_market}/msg/about`,
+    method: 'get',
+    data
+  })
 }
