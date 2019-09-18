@@ -7,6 +7,7 @@ const taskRouter = {
   component: Layout,
   redirect: 'noRedirect',
   name: 'Task',
+  hidden: true,
   children: [
     {
       path: 'rec-curve-task',
