@@ -9,24 +9,25 @@ const curveRouter = {
   name: 'Curve',
   meta: {
     title: '曲线',
-    icon: 'chart'
+    icon: 'chart',
+    roles: ['Curve']
   },
   children: [
     {
       path: 'curve-product',
       component: () => import('@/views/curve/product/curve-product-list.vue'),
       name: 'CurveProduct',
-      meta: { title: '曲线产品', noCache: true }
+      meta: { title: '曲线产品', noCache: true, roles: ['CurveProduct'] }
     }, {
       path: 'curve-product-def',
       component: () => import('@/views/curve/product/curve-product-def-form.vue'),
       name: 'CurveProductDef',
-      meta: { title: '曲线产品定义', noCache: true }
+      meta: { title: '曲线产品定义', noCache: true, roles: ['CurveProductDef'] }
     }, {
       path: 'curve-set-hisindex',
       component: () => import('@/views/curve/set/curve-set-hisindex.vue'),
       name: 'CurveSetHisIndex',
-      meta: { title: '计算历史分位点', noCache: true }
+      meta: { title: '计算历史分位点', noCache: true, roles: ['CurveSetHisIndex'] }
     }
   ]
 }

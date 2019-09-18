@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <!--<component :is="currentRole" />-->
     <el-row :gutter="10">
-      <el-col :span="12">
+      <el-col :span="14">
         <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
             <h3>工作日历</h3>
@@ -32,7 +32,7 @@
           </el-row>
         </el-card>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="10">
         <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
             <h3>我的消息</h3>
@@ -296,8 +296,8 @@ export default {
   &.vc-container {
     --day-border: 1px solid #b8c2cc;
     --day-border-highlight: 1px solid #b8c2cc;
-    --day-width: 90px;
-    --day-height: 90px;
+    --day-width: 70px;
+    --day-height: 70px;
     --weekday-bg: #f8fafc;
     --weekday-border: 1px solid #eaeaea;
     border-radius: 0;
@@ -320,10 +320,10 @@ export default {
       height: var(--day-height);
       min-width: var(--day-width);
       background-color: #fff;
-      width: 92px;
+      width: 82px;
       .el-tag--small {
         line-height: 22px;
-        padding: 0 5px;
+        padding: 0 2px 0 2px;
       }
       .el-tag {
         /*line-height: 26px;*/

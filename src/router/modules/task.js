@@ -7,6 +7,7 @@ const taskRouter = {
   component: Layout,
   redirect: 'noRedirect',
   name: 'Task',
+  hidden: true,
   children: [
     {
       path: 'rec-curve-task',
@@ -43,7 +44,7 @@ const taskRouter = {
     }, {
       path: 'rule-set-task',
       component: () => import('@/views/valuation/task-allocation/rule-set-task.vue'),
-      name: 'RuleSetTask'
+      name: 'c'
     }, {
       path: 'personnel-set-task',
       component: () => import('@/views/valuation/task-allocation/personnel-set-task.vue'),

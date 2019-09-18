@@ -46,14 +46,23 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { addTaskRange } from '@/api/valuation/task-allocation.js'
+import { addTaskRange, queryTaskRange } from '@/api/valuation/task-allocation.js'
+
 export default {
   name: 'RuleSetForm',
   components: { BondFilter },
+  props: ['businessId', 'disabled'],
   data() {
     return {
-      disabled: false,
       ruleInfo: {}
+    }
+  },
+  beforeMount() {
+    if (this.businessId) {
+      queryTaskRange(this.businessId).then(response => {
+        const { data } = response
+        this.ruleInfo = data
+      })
     }
   },
   methods: {
