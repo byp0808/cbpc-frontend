@@ -91,6 +91,15 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      :current-page="page.pageNumber"
+      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-size="page.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="page.totalRecord"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
     <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值曲线推荐规则" :visible.sync="recCurveFormVisible">
       <RecCurveForm
         ref="refRecCurveForm"
@@ -121,7 +130,11 @@ export default {
       recCurveList: [],
       curveList: [],
       bondFilterList: [],
-      recCurveData: {}
+      recCurveData: {},
+      page: {
+        pageNumber: 1,
+        pageSize: 10
+      }
     }
   },
   computed: {
@@ -162,11 +175,12 @@ export default {
   },
   methods: {
     loadTable() {
-      queryRecCurveList({}).then(response => {
-        const { valuationCurves, curveList, ruleDetail } = response
+      queryRecCurveList({ page: this.page }).then(response => {
+        const { valuationCurves, curveList, ruleDetail, page } = response
         this.recCurveList = valuationCurves
         this.curveList = curveList
         this.bondFilterList = ruleDetail
+        this.page = page
       })
     },
     save() {
@@ -211,8 +225,17 @@ export default {
     },
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'
+    },
+    handleSizeChange(pageSize) {
+      this.page.pageSize = pageSize
+      this.loadTable()
+    },
+    handleCurrentChange(currentPage) {
+      this.page.pageNumber = currentPage
+      this.loadTable()
     }
   }
+
 }
 </script>
 

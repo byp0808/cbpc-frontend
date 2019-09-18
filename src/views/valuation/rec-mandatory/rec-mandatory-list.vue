@@ -208,12 +208,12 @@ export default {
       return status === '02' || status === '03'
     },
     handleSizeChange(pageSize) {
-      this.todoInfo.page.pageSize = pageSize
-      this.queryTaskList()
+      this.page.pageSize = pageSize
+      this.loadTable()
     },
     handleCurrentChange(currentPage) {
-      this.todoInfo.page.pageNumber = currentPage
-      this.queryTaskList()
+      this.page.pageNumber = currentPage
+      this.loadTable()
     }
   }
 
