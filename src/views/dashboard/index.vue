@@ -35,7 +35,7 @@
       <el-col :span="10">
         <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
-            <h3>我的消息</h3>
+            <h3>{{$t("mymessage")}}</h3>
           </div>
           <el-table
             :data="msg.msgList"

@@ -57,7 +57,7 @@ Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 Vue.config.productionTip = false
 
 // ------------------------------------------------------------------------------------------------------------------->
-const cloudOn = true
+const cloudOn = false
 if (process.env.NODE_ENV === 'production') {
   // do nothing
 } else {
@@ -90,15 +90,16 @@ if (cloudOn) {
   })
 } else {
   dictJob = new Promise((resolve, reject) => {
-    messages[getLang()] = _.assignIn(messages[getLang()], {dict: {}})
+    messages[getLang()] = _.assignIn(messages[getLang()], { dict: {}})
     resolve()
   })
   i18nJob = new Promise((resolve, reject) => {
-    messages[getLang()] = _.assignIn(messages[getLang()], {})
+    messages[getLang()] = _.assignIn(messages[getLang()], {
+      'mymessage': '我的消息'
+    })
     resolve()
   })
 }
-
 Promise.all([i18nJob, dictJob]).then((result) => {
   const i18n = new VueI18n({
     locale: getLang(),

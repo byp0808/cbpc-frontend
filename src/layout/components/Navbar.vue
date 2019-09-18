@@ -33,20 +33,20 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link>
-          <router-link to="/">
-            <el-dropdown-item>Dashboard</el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          <!--<router-link to="/profile/index">-->
+            <!--<el-dropdown-item>Profile</el-dropdown-item>-->
+          <!--</router-link>-->
+          <!--<router-link to="/">-->
+            <!--<el-dropdown-item>Dashboard</el-dropdown-item>-->
+          <!--</router-link>-->
+          <!--<a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">-->
+            <!--<el-dropdown-item>Github</el-dropdown-item>-->
+          <!--</a>-->
+          <!--<a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">-->
+            <!--<el-dropdown-item>Docs</el-dropdown-item>-->
+          <!--</a>-->
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
+            <span style="display:block;" @click="logout">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -56,6 +56,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { removeToken } from '@/utils/auth'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
@@ -92,8 +93,10 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      removeToken()
+      window.location = '/'
+      // await this.$store.dispatch('user/logout')
+      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
 }
