@@ -3,7 +3,7 @@
     <div class="app-container">
         <div class="filter-container">
             <label>编制关键期限： </label>
-            <el-select v-model="prdKdMod" style="width: 140px" class="filter-item">
+            <el-select v-model="prdKdMod" style="width: 140px" class="filter-item" :disabled="disabled">
                 <el-option v-for="item in prdKdMods" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
             <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter" :disabled="disabled">
@@ -32,8 +32,8 @@
             </el-table-column>
             <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-button type="text" size="big" @click="handleEdit(scope.$index, curvePrdKdList)">修改</el-button>
-                    <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdKdList)">删除</el-button>
+                    <el-button type="text" size="big" @click="handleEdit(scope.$index, curvePrdKdList)" :disabled="disabled">修改</el-button>
+                    <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdKdList)" :disabled="disabled">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -100,10 +100,10 @@
         <!-- 远期N/K值 -->
         <div class="filter-container" style="padding-top: 40px">
             <label>远期N/K值： </label>
-            <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item">
+            <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item" :disabled="disabled">
                 <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
-            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter">
+            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter" :disabled="disabled">
                 应用模板
             </el-button>
         </div>
