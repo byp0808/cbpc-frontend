@@ -28,6 +28,11 @@ const curveRouter = {
       component: () => import('@/views/curve/set/curve-set-hisindex.vue'),
       name: 'CurveSetHisIndex',
       meta: { title: '计算历史分位点', noCache: true, roles: ['CurveSetHisIndex'] }
+    }, {
+      path: 'curve-set-homology',
+      component: () => import('@/views/curve/set/curve-set-homology.vue'),
+      name: 'CurveSetHomology',
+      meta: { title: '设置同调曲线', noCache: true }
     }
   ]
 }

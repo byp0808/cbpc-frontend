@@ -59,29 +59,28 @@
         prop="dateStart"
         label="添加日期"
         show-overflow-tooltip
-        width="140"
+        width="100"
       />
       <el-table-column
         prop="indate"
         label="有效期（天）"
         show-overflow-tooltip
-        width="140"
+        width="120"
       />
       <el-table-column
         prop="dateEnd"
         label="自动释放日期"
         show-overflow-tooltip
-        width="140"
+        width="120"
       />
       <el-table-column
         prop="approveStatus"
         label="审核状态"
-        width="120"
+        width="100"
         show-overflow-tooltip
       />
       <el-table-column
         prop="address"
-        fixed="right"
         label="操作"
         width="200"
         show-overflow-tooltip

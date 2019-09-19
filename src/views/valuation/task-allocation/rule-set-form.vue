@@ -13,7 +13,6 @@
               </el-form-item>
               <el-form-item label="最后操作人">
                 <el-input v-model="ruleInfo.lastUpdBy" disabled />
-                name: 'RuleSetForm',
               </el-form-item>
             </el-form>
           </div>
