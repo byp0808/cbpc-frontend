@@ -33,6 +33,16 @@ const curveRouter = {
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
       name: 'CurveSetHomology',
       meta: { title: '设置同调曲线', noCache: true }
+    }, {
+      path: 'curve-all-task',
+      component: () => import('@/views/curve-task/AllTaskList'),
+      name: 'CurveAllTask',
+      meta: { title: '曲线任务列表', noCache: true }
+    }, {
+      path: 'curve-my-task',
+      component: () => import('@/views/curve-task/MyTaskList'),
+      name: 'CurveMyTask',
+      meta: { title: '我的曲线任务', noCache: true }
     }
   ]
 }
