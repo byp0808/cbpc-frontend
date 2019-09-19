@@ -39,7 +39,7 @@
         <el-table :data="curveHomologyList" border highlight-current-row style="width: 600px;">
             <el-table-column label="同调曲线" width="400px" align="center">
                 <template slot-scope="scope">
-                    <span>{{ scope.row.homologyProductName }}</span>
+                    <span>{{ scope.row.productName }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="199px" class-name="small-padding fixed-width">
@@ -76,10 +76,17 @@
       this.selectCurve = getCurveProductIdOptions()
       this.selectCurveHomology = getCurveProductIdOptions()
     },
+    created() {
+      this.getCurveHomologyList({
+        curveId : this.temp.curveId,
+        approveStatus : this.temp.approveStatus
+      });
+    },
     methods: {
       // 查询列表
-      getCurveHomologyList() {
-        querycurveHomology().then(response => {
+      getCurveHomologyList(data) {
+        querycurveHomology(data).then(response => {
+          debugger
           this.curveHomologyList = response.dataList
           setTimeout(1.5 * 1000)
         })
@@ -102,7 +109,6 @@
           })
           return false
         }
-        debugger
         for (var i = 0; i < this.curveHomologyList.length; i++) {
           var item = this.curveHomologyList[i]
           if (item.homologyCurveId === homologyCurveId) {

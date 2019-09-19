@@ -47,7 +47,7 @@ const actions = {
   // get user info
   getInfo({ commit }) {
     return new Promise((resolve, reject) => {
-      getInfo().then(data => {
+      getInfo({ 'appId': '01' }).then(data => {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
@@ -61,7 +61,7 @@ const actions = {
 
         commit('SET_ROLES', menus)
         commit('SET_NAME', userName)
-        commit('SET_AVATAR', '/default.jpeg')
+        commit('SET_AVATAR', './default.jpeg')
         commit('SET_INTRODUCTION', '')
         resolve(data)
       }).catch(error => {
@@ -76,7 +76,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
-        removeToken()
+        // removeToken()
         resetRouter()
         resolve()
       }).catch(error => {
