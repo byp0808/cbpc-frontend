@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
@@ -40,7 +40,7 @@ module.exports = {
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API + '/pi-valuation']: {
-        target: 'http://localhost:8081',
+        target: 'http://192.168.8.100:2000',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5
@@ -52,7 +52,7 @@ module.exports = {
         proxyTimeout: 1000 * 60 * 5
       },
       [process.env.VUE_APP_BASE_API + '/pi-market']: {
-        target: 'http://localhost:8080',
+        target: 'http://192.168.8.100:2000',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5

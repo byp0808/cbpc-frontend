@@ -57,7 +57,7 @@ Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 Vue.config.productionTip = false
 
 // ------------------------------------------------------------------------------------------------------------------->
-const cloudOn = false
+const cloudOn = true
 if (process.env.NODE_ENV === 'production') {
   // do nothing
 } else {

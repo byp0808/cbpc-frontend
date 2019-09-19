@@ -50,12 +50,12 @@ export default {
   width: 1em;
   height: 1em;
   vertical-align: -0.15em;
-  fill: currentColor;
+  fill: currentColor !important;
   overflow: hidden;
 }
 
 .svg-external-icon {
-  background-color: currentColor;
+  background-color: currentColor !important;
   mask-size: cover!important;
   display: inline-block;
 }
