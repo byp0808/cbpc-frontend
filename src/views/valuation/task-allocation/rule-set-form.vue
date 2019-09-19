@@ -13,6 +13,7 @@
               </el-form-item>
               <el-form-item label="最后操作人">
                 <el-input v-model="ruleInfo.lastUpdBy" disabled />
+                name: 'RuleSetForm',
               </el-form-item>
             </el-form>
           </div>
@@ -49,7 +50,6 @@ import BondFilter from '@/views/common/bond-filter/filter.vue'
 import { addTaskRange, queryTaskRange } from '@/api/valuation/task-allocation.js'
 
 export default {
-  name: 'RuleSetForm',
   components: { BondFilter },
   props: ['businessId', 'disabled'],
   data() {
