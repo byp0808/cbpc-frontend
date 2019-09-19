@@ -49,13 +49,13 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" @change="selectTrigger('market')">
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" @change="selectTrigger('market')" :disabled="disabled" >
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col><el-col :span="8">
             <el-form-item label="产品状态" prop="prdStatus">
-              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" >
+              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" :disabled="disabled" >
                 <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
