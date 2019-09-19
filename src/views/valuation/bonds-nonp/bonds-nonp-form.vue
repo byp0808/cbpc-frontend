@@ -83,11 +83,9 @@ export default {
   computed: {
     bondsNonpInfo: {
       get() {
-        console.log('get')
         return this.$store.state.bondsNonp.bondsNonpInfo
       },
       set(bondsNonpInfo) {
-        console.log('set')
         this.$store.commit('bondsNonp/setBondsNonpInfo', bondsNonpInfo)
       }
     }
