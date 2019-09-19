@@ -135,3 +135,37 @@ export function defCurvePeriod(data) {
     data
   })
 }
+
+// 查询同调曲线dto列表
+export function querycurveHomologyDto(){
+  return request({
+    url: `${basic_api_curve}/curveHomology/queryCurveHomologyDto`,
+    method: 'post'
+  })
+}
+
+// 删除同调曲线dto列表
+export function delcurveHomologyDto(data){
+  return request({
+    url: `${basic_api_curve}/curveHomology/delcurveHomologyDto`,
+    method: 'post',
+    data
+  })
+}
+
+// 查询同调曲线列表
+export function querycurveHomology(data){
+  return request({
+    url: `${basic_api_curve}/curveHomology/queryCurveHomology`,
+    method: 'post',
+    data
+  })
+}
+
+export function storageHomology(data){
+  return request({
+    url: `${basic_api_curve}/curveHomology/storageHomology`,
+    method: 'post',
+    data
+  })
+}
