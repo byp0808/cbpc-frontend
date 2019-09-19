@@ -8,7 +8,7 @@
             <h3>工作日历</h3>
           </div>
           <el-row>
-            <el-col :span="20">
+            <el-col :span="21">
               <div class="grid-content bg-purple">
                 <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
                   <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
@@ -20,7 +20,7 @@
                 </v-calendar>
               </div>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting" />
               <ul>
                 <li v-for=" (m, index) in calendar.my" :key="index">
@@ -44,12 +44,10 @@
             <el-table-column
               prop="msgTitle"
               label="标题"
-              width="180"
             />
             <el-table-column
               prop="msgTypeSub"
               label="类型"
-              width="180"
             />
             <el-table-column
               prop="msgContent"
@@ -77,7 +75,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="10">
-      <el-col :span="12">
+      <el-col :span="14">
         <el-card class="box-card margin-top">
           <div slot="header" class="clearfix card-head">
             <h3>待办任务列表</h3>
@@ -297,7 +295,7 @@ export default {
     --day-border: 1px solid #b8c2cc;
     --day-border-highlight: 1px solid #b8c2cc;
     --day-width: 70px;
-    --day-height: 70px;
+    --day-height: 82px;
     --weekday-bg: #f8fafc;
     --weekday-border: 1px solid #eaeaea;
     border-radius: 0;
