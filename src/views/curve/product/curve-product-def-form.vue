@@ -53,6 +53,12 @@
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
+          </el-col><el-col :span="8">
+            <el-form-item label="产品状态" prop="prdStatus">
+              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" >
+                <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线评级">
@@ -81,21 +87,21 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线发布日期" prop="curveStartTime" :disabled="disabled">
-              <el-date-picker
-                v-model="productInfo.curveStartTime"
-                align="right"
-                type="date"
-                placeholder="选择日期"
-                :disabled="disabled"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
             <el-form-item label="曲线基准利率">
               <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in referRateOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="曲线发布日期" prop="curveStartTime" :disabled="disabled">
+              <el-date-picker
+                      v-model="productInfo.curveStartTime"
+                      align="right"
+                      type="date"
+                      placeholder="选择日期"
+                      :disabled="disabled"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -110,6 +116,11 @@
               <el-select v-model="productInfo.curvePriceFr" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in curvePriceFrOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="备注(对内展示)" prop="remark">
+              <el-input v-model="productInfo.remark" type="text" :disabled="disabled" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -270,6 +281,9 @@ export default {
         ],
         curveEndTime: [
           { validator: checkCurveEndTime, trigger: 'change' }
+        ],
+        remark:[
+          { min: 0, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ]
       }
     }
@@ -296,6 +310,9 @@ export default {
     },
     curvePriceFrOptions() {
       return optioins('CURVE_PRICE_FR')
+    },
+    prdStatusOptions() {
+      return optioins('CURVE_PRODCUT_SATAUS')
     },
     productInfo: {
       get() {
