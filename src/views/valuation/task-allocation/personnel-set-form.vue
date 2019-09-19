@@ -2,7 +2,7 @@
   <div class="">
     <el-form ref="" :model="ruleInfo" label-width="110px">
       <el-form-item label="1.选择任务范围">
-        <el-select v-model="ruleInfo.taskRangeId" filterable placeholder="请选择任务范围">
+        <el-select v-model="ruleInfo.taskRangeId" filterable placeholder="请选择任务范围" :disabled="disabled">
           <el-option
             v-for="item in taskRangeList"
             :key="item.id"
@@ -12,10 +12,10 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        v-for="(personnel, index) in ruleInfo.personnelTaskList"
+        v-for="(personnel, index) in ruleInfo.distRuleList"
         :key="personnel.key"
         :label="'人员' + (index+1)"
-        :prop="'personnels.' + index + '.value'"
+        :prop="'ruleInfo.distRuleList.' + index + '.value'"
         :rules="{ required: true, message: '人员不能为空', trigger: 'blur'}"
       >
         <el-col :span="10">
@@ -51,8 +51,10 @@
 </template>
 
 <script>
+import { addTaskAllocation, queryTaskRangeList } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetForm',
+  props: ['taskRangeId', 'disabled'],
   data() {
     return {
       // 任务范围列表
@@ -66,28 +68,45 @@ export default {
       ],
       // 任务分配规则对象
       ruleInfo: {
-        taskRangeId: '', // 任务范围Id
-        personnelTaskList: [ // 人员-分配比例 集合
-          { userId: '', distRatio: '' }
-        ],
+        taskRangeId: '', // 任务范围Id // 人员-分配比例 集合
+        distRuleList: [{ userId: '', distRatio: '' }],
         lastUpdBy: '', // 最后更新者
         lastUpdTs: '' // 最后更新时间
       } // 规则对象
     }
   },
+  beforeMount() {
+    queryTaskRangeList().then(response => {
+      const { taskRangeList } = response
+      this.taskRangeList = taskRangeList
+      this.ruleInfo.taskRangeId = this.taskRangeId
+    })
+  },
   methods: {
     addPersonnel() {
-      this.ruleInfo.personnelTaskList.push({
+      this.ruleInfo.distRuleList.push({
         userId: '',
         distRatio: '',
         key: Date.now()
       })
     },
     removePersonnel(item) {
-      var index = this.ruleInfo.personnelTaskList.indexOf(item)
+      console.log(item)
+      var index = this.ruleInfo.distRuleList.indexOf(item)
       if (index !== -1) {
-        this.ruleInfo.personnelTaskList.splice(index, 1)
+        this.ruleInfo.distRuleList.splice(index, 1)
       }
+    },
+    save() {
+      addTaskAllocation(this.ruleInfo).then(response => {
+        console.log(response)
+        this.$emit('saveCallBack')
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
     }
   }
 }
