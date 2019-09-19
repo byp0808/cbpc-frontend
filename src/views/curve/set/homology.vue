@@ -36,13 +36,13 @@
                 添加
             </el-button>
         </el-form-item>
-        <el-table :data="curveHomologyList" border highlight-current-row style="width: 600px;">
-            <el-table-column label="同调曲线" width="400px" align="center">
+        <el-table :data="curveHomologyList" border highlight-current-row style="width: 727px;">
+            <el-table-column label="同调曲线" width="500px" align="center">
                 <template slot-scope="scope">
                     <span>{{ scope.row.productName }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" width="199px" class-name="small-padding fixed-width">
+            <el-table-column label="操作" align="center" width="226px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <el-button type="text" size="big"
                                @click="curveHomologyDelete(scope.$index, curveHomologyList)">删除
@@ -72,6 +72,7 @@
     },
     beforeMount() {
       console.info('===beforeMount===')
+      this.getCurveHomologyDtoList
       // 先加载列表
       this.selectCurve = getCurveProductIdOptions()
       this.selectCurveHomology = getCurveProductIdOptions()

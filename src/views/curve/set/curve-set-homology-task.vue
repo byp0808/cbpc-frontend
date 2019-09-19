@@ -2,7 +2,7 @@
     <div class="app-container">
         <Homology
                 ref="Homology"
-                :business-id="businessNo"
+                :temp="temp"
                 :disabled="disabled"
         />
         <div class="button-box-fixed">
@@ -15,7 +15,7 @@
 
 <script>
   import Homology from '@/views/curve/set/homology.vue'
-  import { finishCurveInfo} from '@/api/curve/curve-product-list.js'
+  import {querycurveHomologyDto,finishHomology} from '@/api/curve/curve-product-list.js'
   export default {
     name: 'CurveSetHomologyTask',
     components: {
@@ -24,17 +24,36 @@
     data() {
       return {
         businessNo: '',
+        temp: {
+          curveId: '',
+          approveStatus: '01',
+          lastUpdBy: '',
+          lastUpdTs: '',
+        },
         disabled: true
       }
     },
     beforeMount() {
       this.businessNo = this.$store.state.task.businessNo
+      this.temp.curveId = this.businessNo
+      this.getCurveHomologyDtoList({
+        curveId: this.temp.curveId,
+        approveStatus: '01'
+      })
       console.info('beforeMount.businessNo:' + this.businessNo)
     },
     mounted() {
       this.$store.commit('task/clear')
     },
     methods: {
+      getCurveHomologyDtoList() {
+        querycurveHomologyDto().then(response => {
+          debugger
+          this.temp.lastUpdBy = response.dataList[0].lastUpdBy
+          this.temp.lastUpdTs = response.dataList[0].lastUpdTs
+          setTimeout(1.5 * 1000)
+        })
+      },
       finishHomology(taskStatus) {
         if (!this.businessNo) {
           this.$message({
@@ -44,7 +63,7 @@
           })
         }
         var data = { curveId: this.businessNo, approveStatus: taskStatus }
-        finishCurveInfo(data).then(response => {
+        finishHomology(data).then(response => {
           this.$message({
             message: '操作成功！',
             type: 'success',

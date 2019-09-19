@@ -49,6 +49,10 @@ const taskRouter = {
       path: 'personnel-set-task',
       component: () => import('@/views/valuation/task-allocation/personnel-set-task.vue'),
       name: 'PersonnelSetTask'
+    }, {
+      path: 'curve-set-homology-task',
+      component: () => import('@/views/curve/set/curve-set-homology-task.vue'),
+      name: 'CurveSetHomologyTask'
     }
   ]
 }
