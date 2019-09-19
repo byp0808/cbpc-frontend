@@ -6,8 +6,8 @@
                 :disabled="disabled"
         />
         <div class="button-box-fixed">
-            <el-button type="primary" @click="finishCurveInfo('02')">审核通过</el-button>
-            <el-button type="primary" @click="finishCurveInfo('03')">审核拒绝</el-button>
+            <el-button type="primary" @click="finishHomology('02')">审核通过</el-button>
+            <el-button type="primary" @click="finishHomology('03')">审核拒绝</el-button>
             <el-button>取 消</el-button>
         </div>
     </div>
@@ -35,7 +35,7 @@
       this.$store.commit('task/clear')
     },
     methods: {
-      finishCurveInfo(taskStatus) {
+      finishHomology(taskStatus) {
         if (!this.businessNo) {
           this.$message({
             message: '获取流程数据失败！',
@@ -43,7 +43,7 @@
             showClose: true
           })
         }
-        var data = { businessNo: this.businessNo, taskStatus: taskStatus }
+        var data = { curveId: this.businessNo, approveStatus: taskStatus }
         finishCurveInfo(data).then(response => {
           this.$message({
             message: '操作成功！',

@@ -8,11 +8,12 @@ export function login(data) {
   })
 }
 
-export function getInfo() {
+export function getInfo(data) {
   return request({
-    url: '/user/info',
-    // url: '/pi-sys/xxx',
-    method: 'get'
+    // url: '/user/info',
+    url: '/pi-sys/sys/user/user-info',
+    method: 'post',
+    data
   })
 }
 

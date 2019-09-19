@@ -2,7 +2,7 @@ import request from '@/utils/app-request'
 
 export function getLanguagePack() {
   return request({
-    url: 'pi-sys/sys/sys-code/language',
+    url: '/pi-sys/common/sys/language',
     method: 'get'
   })
 }
