@@ -38,7 +38,7 @@
             </el-button>
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除
             </el-button>
-            <el-button v-else type="text" size="small" @click="delte(scope.row.id)">删除</el-button>
+            <el-button v-else type="text" size="small" @click="delete(scope.row.id)">删除</el-button>
             <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用
             </el-button>
             <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">
@@ -156,7 +156,7 @@ export default {
       this.taskRangeId = id
       this.ruleSetFormVisible = true
     },
-    delte(id) {
+    delete(id) {
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
