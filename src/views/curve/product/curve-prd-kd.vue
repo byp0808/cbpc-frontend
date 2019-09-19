@@ -22,7 +22,7 @@
             </el-table-column>
             <el-table-column label="样本区间" width="290px" align="center">
                 <template slot-scope="scope">
-                    <span>[{{ scope.row.sampleIntervalUp }}y,{{ scope.row.sampleIntervalDown }}y)</span>
+                    <span>[{{ scope.row.sampleIntervalDown }}y,{{ scope.row.sampleIntervalUp }}y)</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作时间" width="150px" align="center">
@@ -61,14 +61,30 @@
         </el-dialog>
 
         <el-dialog title="修改编制关键期限" :visible.sync="dialogFormVisible">
-            <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px"
-                     style="width: 400px; margin-left:50px;">
-                <el-form-item label="样本区间下限" prop="sampleIntervalDown">
-                    <el-input v-model.number="temp.sampleIntervalDown"/>
-                </el-form-item>
-                <el-form-item label="样本区间上限" prop="sampleIntervalUp">
-                    <el-input v-model.number="temp.sampleIntervalUp"/>
-                </el-form-item>
+            <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px">
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="单位">
+                            <el-select v-model="unit">
+                                <el-option value="d">d</el-option>
+                                <el-option value="m">m</el-option>
+                                <el-option value="y">y</el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="样本区间下限" prop="sampleIntervalDown">
+                            <el-input v-model="sampleIntervalDown"/>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10" :offset="2">
+                        <el-form-item type="number" label="样本区间上限" prop="sampleIntervalUp">
+                            <el-input type="number" v-model="sampleIntervalUp"/>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">
@@ -137,19 +153,23 @@
     props: ['productId','disabled'],
     data() {
       var comparison = (rule, value, callback) => {
-        if (value >= this.temp.sampleIntervalUp) {
+        value = this.sampleIntervalDown
+        if (value >= this.sampleIntervalUp) {
           callback(new Error('样本区间下限必须小于于样本区间上限!'));
         } else {
           callback();
         }
       };
       return {
+        unit: 'y',
         tableKey: 0,
         curvePrdKdList: [],
         curvePrdNkList: [],
         listLoading: true,
         prdKdMod:null,
         forwardFlagMod:null,
+        sampleIntervalDown: null,
+        sampleIntervalUp: null,
         prdKdMods: [
           {label:'模板一',key:'0001'},
           {label:'模板二',key:'0002'},
@@ -227,6 +247,11 @@
         // 将上下限转换成为数字
         this.temp.sampleIntervalUp = Number(this.temp.sampleIntervalUp);
         this.temp.sampleIntervalDown = Number(this.temp.sampleIntervalDown);
+
+        this.sampleIntervalDown = Number(this.temp.sampleIntervalDown);
+        this.sampleIntervalUp = Number(this.temp.sampleIntervalUp);
+        // 强制单位为y
+        this.unit = 'y'
         this.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
@@ -236,9 +261,31 @@
         rows.splice(index, 1);
       },
       storageCurvePrdKd(formName){
+        // 按单位转换数值
+        var sampleIntervalDown = this.sampleIntervalDown
+        var sampleIntervalUp = this.sampleIntervalUp
+
+        if ('m' == this.unit) {
+          sampleIntervalDown = sampleIntervalDown / 12
+          sampleIntervalUp = sampleIntervalUp / 12
+        } else if ('d' == this.unit) {
+          sampleIntervalDown = sampleIntervalDown / 365
+          sampleIntervalUp = sampleIntervalUp / 365
+        } else {
+          sampleIntervalDown = sampleIntervalDown / 1
+          sampleIntervalUp = sampleIntervalUp / 1
+        }
+        sampleIntervalDown = sampleIntervalDown.toFixed(2)
+        sampleIntervalUp = sampleIntervalUp.toFixed(2)
+        // 转换为数值
+        sampleIntervalDown = sampleIntervalDown / 1
+        sampleIntervalUp = sampleIntervalUp / 1
+
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.temp.operateTs=new Date();
+            this.temp.sampleIntervalUp = sampleIntervalUp
+            this.temp.sampleIntervalDown = sampleIntervalDown
             this.dialogFormVisible = false;
           }
         });
@@ -288,8 +335,8 @@
           this.curvePrdKdList = []
           this.curvePrdKdList.push({
             standSlip: standSlip,
-            sampleIntervalUp: 0,
-            sampleIntervalDown: 1,
+            sampleIntervalDown: 0,
+            sampleIntervalUp: 1,
             operateTs: new Date()
           })
         } else {
@@ -299,8 +346,8 @@
             if (standSlip < item.standSlip) {
               this.curvePrdKdList.splice(i,0,{
                 standSlip: standSlip,
-                sampleIntervalUp: 0,
-                sampleIntervalDown: 1,
+                sampleIntervalDown: 0,
+                sampleIntervalUp: 1,
                 operateTs: new Date()
               })
               isdown = true
@@ -311,8 +358,8 @@
             // 如果for循环没有执行插入，则最后插入
             this.curvePrdKdList.push({
               standSlip: standSlip,
-              sampleIntervalUp: 0,
-              sampleIntervalDown: 1,
+              sampleIntervalDown: 0,
+              sampleIntervalUp: 1,
               operateTs: new Date()
             })
           }

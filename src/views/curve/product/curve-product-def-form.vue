@@ -496,8 +496,44 @@ export default {
      * 定义曲线类型
      */
     defCurvePeriod() {
+      console.info('curve-product-def-form.vue==>defCurvePeriod')
       var curvePrdKdList = this.$refs.curvePrdKd.obtainCurvePrdKdList()
       var curvePrdNkList = this.$refs.curvePrdKd.obtainCurvePrdNkList()
+
+      // 验证列表数据
+      if (curvePrdKdList && curvePrdKdList.length > 0) {
+        for (let i = 0; i < curvePrdKdList.length; i++) {
+          var item = curvePrdKdList[i]
+          if ( !item.sampleIntervalDown && item.sampleIntervalDown != 0 ||  !item.sampleIntervalUp && item.sampleIntervalUp != 0) {
+            this.$message({
+              message: '第' + (i+1) +'条关键期限，样本区间上、下限不能为空！',
+              type: 'error',
+              showClose: true
+            })
+            return false
+          } else if (item.sampleIntervalDown >= item.sampleIntervalUp) {
+            this.$message({
+              message: '第' + (i+1) +'条关键期限,样本区间下限必须小于区间上限！',
+              type: 'error',
+              showClose: true
+            })
+            return false
+          }
+          // 判断是否有区间交集
+          if ( i + 1 < curvePrdKdList.length) {
+            var nextItem = curvePrdKdList[i+1]
+            if (item.sampleIntervalUp > nextItem.sampleIntervalDown ) {
+              this.$message({
+                message: '关键期限，第' + (i+1) +'条区间上限，不能大于' + (i+2) + '条区间下限',
+                type: 'error',
+                showClose: true
+              })
+              return false
+            }
+          }
+        }
+      }
+
       var data = {
         curvePrdKdList: curvePrdKdList,
         curvePrdNkList: curvePrdNkList
