@@ -11,3 +11,20 @@ export function computeHisIndex(data) {
   })
 }
 
+// 加载本部门配置
+export function getCurveSetHisIndexByOrgId(data) {
+  return request({
+    url: `${basic_api_curve}` + '/curveSet/getByOrgId',
+    method: 'post',
+    data: data
+  })
+}
+
+// 保存本部门配置
+export function saveCurveSetHisIndexByOrgId(data) {
+  return request({
+    url: `${basic_api_curve}` + '/curveSet/save',
+    method: 'post',
+    data: data
+  })
+}

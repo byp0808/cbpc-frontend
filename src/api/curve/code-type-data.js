@@ -154,7 +154,6 @@ export const COMPUTE_HISINDEX = [
 // 计算历史分位点，日期类型
 export const COMPUTE_HIS_DATE = [
   { value: '1', label: '1个月' },
-  { value: '2', label: '3个月' },
-  { value: '3', label: '6个月' },
-  { value: '4', label: '1年' }
+  { value: '2', label: '2个月' },
+  { value: '3', label: '3个月' }
 ]
