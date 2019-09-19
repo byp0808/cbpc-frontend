@@ -9,7 +9,7 @@ const valuationRouter = {
   name: 'Valuation',
   meta: {
     title: '估值',
-    icon: 'chart',
+    icon: 'evaluation',
     roles: ['Valuation']
   },
   children: [

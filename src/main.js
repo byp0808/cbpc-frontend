@@ -90,7 +90,12 @@ if (cloudOn) {
   })
 } else {
   dictJob = new Promise((resolve, reject) => {
-    messages[getLang()] = _.assignIn(messages[getLang()], { dict: {}})
+    messages[getLang()] = _.assignIn(messages[getLang()], { dict: {
+      VAL_SCENE: { '01': '正常', '02': '清算', '03': '成本' },
+      MARKET_GRADE: { '01': 'AAA', '02': 'AAA-', '03': 'AA', '04': 'A' },
+      ADJ_TYPE: { '01': '常规调整', '02': '多次调整' },
+      RECO_DIRE: { '': '不进行含权推荐', '01': '推荐长', '02': '推荐短' }
+    }})
     resolve()
   })
   i18nJob = new Promise((resolve, reject) => {
