@@ -5,7 +5,6 @@
       <el-button type="primary" class="float-left">规则重复性校验</el-button>
     </div>
     <div>
-
       <el-table ref="multipleTable" :data="taskRangeList" tooltip-effect="dark">
         <el-table-column align="center" label="选择" min-width="5%">
           <template slot-scope="scope">
@@ -38,7 +37,7 @@
             </el-button>
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除
             </el-button>
-            <el-button v-else type="text" size="small" @click="delete(scope.row.id)">删除</el-button>
+            <el-button v-else type="text" size="small" @click="deleteInfo(scope.row.id)">删除</el-button>
             <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用
             </el-button>
             <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">
@@ -60,7 +59,7 @@
       />
     </div>
     <div>
-      <el-dialog v-if="ruleSetFormVisible" width="92%" title="新增任务分配规则" :visible.sync="ruleSetFormVisible">
+      <el-dialog v-if="ruleSetFormVisible" width="92%" title="设置任务分配规则" :visible.sync="ruleSetFormVisible">
         <RuleSetForm
           ref="refRuleSetForm"
           :business-id="taskRangeId"
@@ -156,7 +155,7 @@ export default {
       this.taskRangeId = id
       this.ruleSetFormVisible = true
     },
-    delete(id) {
+    deleteInfo(id) {
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

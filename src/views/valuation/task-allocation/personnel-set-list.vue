@@ -26,7 +26,7 @@
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">设置</el-button>
-            <el-button v-else type="text" size="small">设置</el-button>
+            <el-button v-else type="text" size="small" @click="edit(scope.row.taskRangeId)">设置</el-button>
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
             <el-button v-else type="text" size="small" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
             <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
@@ -48,10 +48,15 @@
     </div>
     <div>
       <el-dialog v-if="personnelFormVisible" width="600px" title="新增人员设置" :visible.sync="personnelFormVisible">
-        <PersonnelSetForm />
+        <PersonnelSetForm
+          ref="refPersonnelSetForm"
+          :disabled="disabled"
+          :task-range-id="taskRangeId"
+          @saveCallBack="saveCallBack"
+        />
         <div slot="footer" class="dialog-footer">
           <el-button @click="personnelFormVisible = false">取 消</el-button>
-          <el-button type="primary">确 定</el-button>
+          <el-button type="primary" @click="save">保存</el-button>
         </div>
       </el-dialog>
     </div>
@@ -70,6 +75,8 @@ export default {
       personnelFormVisible: false,
       personnelList: [],
       distRatioList: [], // 人员任务分配列表
+      taskRangeId: '',
+      disabled: false,
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -118,6 +125,7 @@ export default {
     },
     start(id) {
       editTaskAllocation({ taskRangeId: id, busiStatus: '02' }).then(response => {
+        console.log(id)
         this.load()
         this.$message({
           message: '已启用！',
@@ -130,11 +138,20 @@ export default {
       editTaskAllocation({ taskRangeId: id, busiStatus: '03' }).then(response => {
         this.load()
         this.$message({
-          message: '已启用！',
+          message: '已停用！',
           type: 'success',
           showClose: true
         })
       })
+    },
+    edit(id) {
+      this.taskRangeId = id
+      this.disabled = true
+      this.personnelFormVisible = true
+    },
+    saveCallBack() {
+      this.personnelFormVisible = false
+      this.load()
     },
     ruleDetail(taskRangeId) {
       const ruleList = this.$lodash.get(this.distRatioList, taskRangeId)
@@ -154,6 +171,9 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.load()
+    },
+    save() {
+      this.$refs.refPersonnelSetForm.save()
     }
   }
 }

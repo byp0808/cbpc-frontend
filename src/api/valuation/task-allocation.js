@@ -83,3 +83,14 @@ export function delTaskAllocation(data) {
     }
   )
 }
+
+// 新增/编辑 人员任务分配规则
+export function addTaskAllocation(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/add-task-allocation`,
+      method: 'post',
+      data: data
+    }
+  )
+}
