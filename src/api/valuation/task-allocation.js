@@ -54,11 +54,30 @@ export function delTaskRange(id) {
 }
 
 // 获取人员任务分配列表
-// 删除 任务分配范围
 export function taskAllocationList(data) {
   return request(
     {
       url: `${basic_api_valuation}/valuation-task/task-allocation-list`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+// 停用/启用 人员任务分配规则
+export function editTaskAllocation(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/edit-task-busi-status`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+// 删除 人员任务分配规则
+export function delTaskAllocation(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/del-task-allocation`,
       method: 'post',
       data: data
     }

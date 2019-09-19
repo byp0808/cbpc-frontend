@@ -28,7 +28,7 @@
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">设置</el-button>
             <el-button v-else type="text" size="small">设置</el-button>
             <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
-            <el-button v-else type="text" size="small" @click="delCurveRelation(scope.row.taskRangeId)">删除</el-button>
+            <el-button v-else type="text" size="small" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
             <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
             <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
           </template>
@@ -61,7 +61,7 @@
 <script>
 
 import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form'
-import { taskAllocationList } from '@/api/valuation/task-allocation.js'
+import { taskAllocationList, editTaskAllocation, delTaskAllocation } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetList',
   components: { PersonnelSetForm },
@@ -93,6 +93,47 @@ export default {
         message: '不能操作待审核状态的数据！',
         type: 'warning',
         showClose: true
+      })
+    },
+    delTaskAllocation(id) {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delTaskAllocation({ taskRangeId: id }).then(response => {
+          this.load()
+          this.$message({
+            message: '删除成功！',
+            type: 'success',
+            showClose: true
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    start(id) {
+      editTaskAllocation({ taskRangeId: id, busiStatus: '02' }).then(response => {
+        this.load()
+        this.$message({
+          message: '已启用！',
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
+    stop(id) {
+      editTaskAllocation({ taskRangeId: id, busiStatus: '03' }).then(response => {
+        this.load()
+        this.$message({
+          message: '已启用！',
+          type: 'success',
+          showClose: true
+        })
       })
     },
     ruleDetail(taskRangeId) {
