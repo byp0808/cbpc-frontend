@@ -55,8 +55,7 @@
   import {
     querycurveHomologyDto,
     storageHomology,
-    delcurveHomologyDto,
-    getCurveProductIdOptions
+    delcurveHomologyDto
   } from '@/api/curve/curve-product-list.js'
   import Homology from '@/views/curve/set/homology.vue'
   export default {
@@ -66,16 +65,12 @@
     },
     data() {
       return {
-        curveHomologyDtoList: null,
-        selectCurve: null,
-        selectCurveHomology: null,
+        curveHomologyDtoList: [],
         temp: {
           curveId: '',
           approveStatus: '',
-          currentUser: '',
-          lastUpdTs: '',
-          homologyCurveId: '',
-          curveHomologyList: null
+          lastUpdBy: '',
+          lastUpdTs: ''
         },
         dialogFormVisible: false,
       }
