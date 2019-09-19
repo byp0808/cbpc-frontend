@@ -6,8 +6,11 @@
             <el-select v-model="prdKdMod" style="width: 140px" class="filter-item">
                 <el-option v-for="item in prdKdMods" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
-            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter">
+            <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter" :disabled="disabled">
                 应用模板
+            </el-button>
+            <el-button v-waves class="filter-item" type="primary" @click="toAddCurvePrdKd" :disabled="disabled" >
+                添加标准期限
             </el-button>
         </div>
 
@@ -19,7 +22,7 @@
             </el-table-column>
             <el-table-column label="样本区间" width="290px" align="center">
                 <template slot-scope="scope">
-                    <span>[{{ scope.row.sampleIntervalUp }},{{ scope.row.sampleIntervalDown }})</span>
+                    <span>[{{ scope.row.sampleIntervalUp }}y,{{ scope.row.sampleIntervalDown }}y)</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作时间" width="150px" align="center">
@@ -35,22 +38,44 @@
             </el-table-column>
         </el-table>
 
+        <el-dialog title="添加关键期限" :visible.sync="curvePrdKdFormVisible">
+            <el-form ref="curvePrdKdForm" :rules="rules" :model="temp" label-position="left" label-width="120px"
+                     style="width: 400px; margin-left:50px;">
+                <el-select v-model="curvePrdKdForm.standSlip" filterable placeholder="请选择关键期限">
+                    <el-option
+                            v-for="item in optioins('STAND_SLIP')"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                    />
+                </el-select>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="curvePrdKdFormVisible = false">
+                    取消
+                </el-button>
+                <el-button type="primary" @click="addCurvePrdKd('curvePrdKdForm')">
+                    确认
+                </el-button>
+            </div>
+        </el-dialog>
+
         <el-dialog title="修改编制关键期限" :visible.sync="dialogFormVisible">
             <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px"
                      style="width: 400px; margin-left:50px;">
+                <el-form-item label="样本区间下限" prop="sampleIntervalDown">
+                    <el-input v-model.number="temp.sampleIntervalDown"/>
+                </el-form-item>
                 <el-form-item label="样本区间上限" prop="sampleIntervalUp">
                     <el-input v-model.number="temp.sampleIntervalUp"/>
                 </el-form-item>
-              <el-form-item label="样本区间下限" prop="sampleIntervalDown">
-                <el-input v-model.number="temp.sampleIntervalDown"/>
-              </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">
-                    Cancel
+                    取消
                 </el-button>
                 <el-button type="primary" @click="storageCurvePrdKd('dataForm')">
-                    Confirm
+                    确认
                 </el-button>
             </div>
         </el-dialog>
@@ -99,6 +124,7 @@
 
 <script>
   import waves from '@/directive/waves' // waves directive
+  import { optioins } from '@/api/curve/code-type.js'
   import {parseTime} from '@/utils'
   import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -108,19 +134,19 @@
     name: 'CurvePrdKdTable',
     components: {Pagination},
     directives: {waves},
-    props: ['productId'],
+    props: ['productId','disabled'],
     data() {
       var comparison = (rule, value, callback) => {
-        if (value <= this.temp.sampleIntervalUp) {
-          callback(new Error('样本区间下限大于样本区间上限!'));
+        if (value >= this.temp.sampleIntervalUp) {
+          callback(new Error('样本区间下限必须小于于样本区间上限!'));
         } else {
           callback();
         }
       };
       return {
         tableKey: 0,
-        curvePrdKdList: null,
-        curvePrdNkList: null,
+        curvePrdKdList: [],
+        curvePrdNkList: [],
         listLoading: true,
         prdKdMod:null,
         forwardFlagMod:null,
@@ -153,7 +179,10 @@
             { type: 'number', message: '样本区间下限必须为数字值'},
             { validator: comparison, trigger: 'blur' }
           ]
-        }
+        },
+        // 新增关键期限
+        curvePrdKdFormVisible: false,
+        curvePrdKdForm: {}
       }
 
     },
@@ -162,6 +191,7 @@
       this.getCurvePrdNkList();
     },
     methods: {
+      optioins: optioins,
       getCurvePrdKdList(){
         var curveId = this.productId;
         queryCurvePrdKd({curveId:curveId}).then(response => {
@@ -224,6 +254,71 @@
           this.curvePrdNkList[i].curveId=this.productId
         }
         return this.curvePrdNkList;
+      },
+      // 打开新增关键期限dialog
+      toAddCurvePrdKd() {
+        this.curvePrdKdFormVisible = true
+      },
+      // 添加关键期限
+      addCurvePrdKd() {
+        console.info('curve-prd-kd.vue.addCurvePrdKd')
+        var standSlip = this.curvePrdKdForm.standSlip
+        if (!standSlip) {
+          this.$message({
+            type: 'error',
+            message: '仅能选择一条期限'
+          })
+          return false
+        }
+        // 判断列表中是否已经存在期限
+        for (let i = 0; i < this.curvePrdKdList.length; i++) {
+          var item = this.curvePrdKdList[i]
+          if (standSlip == item.standSlip) {
+            this.$message({
+              type: 'error',
+              message: '该期限已经存在'
+            })
+            return false
+          }
+        }
+
+
+        // 添加数据
+        if (!this.curvePrdKdList || this.curvePrdKdList.length == 0) {
+          this.curvePrdKdList = []
+          this.curvePrdKdList.push({
+            standSlip: standSlip,
+            sampleIntervalUp: 0,
+            sampleIntervalDown: 1,
+            operateTs: new Date()
+          })
+        } else {
+          var isdown = false
+          for (let i = 0; i < this.curvePrdKdList.length; i++) {
+            var item = this.curvePrdKdList[i]
+            if (standSlip < item.standSlip) {
+              this.curvePrdKdList.splice(i,0,{
+                standSlip: standSlip,
+                sampleIntervalUp: 0,
+                sampleIntervalDown: 1,
+                operateTs: new Date()
+              })
+              isdown = true
+              break
+            }
+          }
+          if (!isdown) {
+            // 如果for循环没有执行插入，则最后插入
+            this.curvePrdKdList.push({
+              standSlip: standSlip,
+              sampleIntervalUp: 0,
+              sampleIntervalDown: 1,
+              operateTs: new Date()
+            })
+          }
+        }
+
+        this.curvePrdKdFormVisible = false
       }
     }
   }

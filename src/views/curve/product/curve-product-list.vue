@@ -56,7 +56,7 @@
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus === '01' || scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="toAddCurveProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
@@ -71,7 +71,7 @@
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.dataStatus == '01' || scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="handleDelete(scope)"
           >
             删除

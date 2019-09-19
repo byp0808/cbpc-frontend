@@ -105,6 +105,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
+            <el-form-item label="曲线终止日期" prop="curveEndTime" :disabled="disabled">
+              <el-date-picker
+                      v-model="curveEndTime"
+                      align="right"
+                      type="date"
+                      placeholder="选择日期"
+                      :disabled="disabled"
+                      :picker-options="pickerOptions"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
             <el-form-item label="曲线编制类型">
               <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
                 <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -136,6 +148,7 @@
       <CurveConstructType
         ref="curveConstructType"
         :product-info="productInfo"
+        :disabled="disabled"
       />
       <div class="text-center">
         <el-button type="primary" :disabled="disabled" @click="storageCurveInfo">保存</el-button>
@@ -148,6 +161,7 @@
       <CurvePrdKd
         ref="curvePrdKd"
         :product-id="productId"
+        :disabled="disabled"
       />
       <div class="text-center">
         <el-button type="primary" :disabled="disabled" @click="defCurvePeriod">保存</el-button>
@@ -225,6 +239,7 @@ export default {
 
     // 曲线发布终止日
     var checkCurveEndTime = (rule, value, callback) => {
+      value = this.productInfo.curveEndTime
       if (!value) {
         callback()
         return
@@ -247,6 +262,7 @@ export default {
     return {
       disabled: false,
       stepActive: 0,
+      curveEndTime: null,
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
@@ -284,6 +300,11 @@ export default {
         ],
         remark:[
           { min: 0, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+        ]
+      },
+      pickerOptions: {
+        shortcuts: [
+                { text: '今天', onClick(picker) {picker.$emit('pick', new Date()) } }
         ]
       }
     }
@@ -336,12 +357,20 @@ export default {
       }
     }
   },
+  watch:{
+    curveEndTime(newValue,oldValue) {
+      console.info('curveEndTime:' + newValue)
+      this.productInfo.curveEndTime = newValue
+    }
+  },
   beforeMount() {
     this.productInfo = {}
     console.info('beforeMount:' + this.basePrdCode)
     if (this.basePrdCode) {
       this.productInfo.basePrdCode = this.basePrdCode
     }
+    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime();
+    this.curveEndTime = this.productInfo.curveEndTime
 
     var id = ''
     if (this.productId) {

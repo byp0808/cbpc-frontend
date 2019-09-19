@@ -157,3 +157,12 @@ export const COMPUTE_HIS_DATE = [
   { value: '2', label: '2个月' },
   { value: '3', label: '3个月' }
 ]
+
+// 关键期限
+export const STAND_SLIP = [
+  { value: '0.01', label: '0.01' },
+  { value: '0.08', label: '0.08' },
+  { value: '0.24', label: '0.24' },
+  { value: '0.5', label: '0.5' },
+  { value: '1', label: '1' }
+]
