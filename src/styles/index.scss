@@ -5,6 +5,8 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
+path { fill: inherit !important }
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;
