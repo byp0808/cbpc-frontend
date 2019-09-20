@@ -24,7 +24,7 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
-import { dict } from './utils/dict' // 字典处理
+import { dict, dft } from './utils/dict' // 字典处理
 
 /**
  * If you don't want to use mock-server
@@ -56,6 +56,7 @@ Object.keys(filters).forEach(key => {
 Object.defineProperty(Vue.prototype, '$lodash', { value: _ })
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 Object.defineProperty(Vue.prototype, '$dict', { value: dict })
+Object.defineProperty(Vue.prototype, '$dft', { value: dft })
 
 Vue.config.productionTip = false
 
@@ -65,7 +66,7 @@ if (process.env.NODE_ENV === 'production') {
   // do nothing
 } else {
   sessionStorage.setItem('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjgyMDEzNTAsInVzZXJJZCI6ImFkbWluIiwib3JnSWQiOiIwMDAwMSIsInVzZXJuYW1lIjoi566h55CG5ZGYIn0.nDO2L6DjpiTZO6hCmLuL1BbZi-GNnej1Cqvp-wIi2bM')
-  mockXHR()
+  // mockXHR()
 }
 
 const token = sessionStorage.getItem('token')
@@ -93,7 +94,7 @@ if (cloudOn) {
   })
 } else {
   dictJob = new Promise((resolve, reject) => {
-    messages[getLang()] = _.assignIn(messages[getLang()], { dict: {
+    messages[getLang()] = _.assignIn(messages[getLang()], { dicts: {
       VAL_SCENE: { '01': '正常', '02': '清算', '03': '成本' },
       MARKET_GRADE: { '01': 'AAA', '02': 'AAA-', '03': 'AA', '04': 'A' },
       ADJ_TYPE: { '01': '常规调整', '02': '多次调整' },
