@@ -24,6 +24,8 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import { dict } from './utils/dict' // 字典处理
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -53,6 +55,7 @@ Object.keys(filters).forEach(key => {
 
 Object.defineProperty(Vue.prototype, '$lodash', { value: _ })
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
+Object.defineProperty(Vue.prototype, '$dict', { value: dict })
 
 Vue.config.productionTip = false
 
