@@ -28,15 +28,15 @@
         </el-row>
 
         <el-form-item label="选择同调曲线">
-            <el-select ref="homologyCurve" v-model="homologyCurveId" placeholder="请选择同调曲线">
-                <el-option v-for="item in selectCurveHomology" :key="item.value" :label="item.label" :value="item.value"/>
+            <el-select ref="referCurve" v-model="referCurveId" placeholder="请选择同调曲线">
+                <el-option v-for="item in selectCurveRefer" :key="item.value" :label="item.label" :value="item.value"/>
             </el-select>
             <el-button class="filter-item" style="margin-left: 10px;" type="primary"
-                       @click="curveHomologyAdd">
+                       @click="curveReferAdd">
                 添加
             </el-button>
         </el-form-item>
-        <el-table :data="curveHomologyList" border highlight-current-row style="width: 727px;">
+        <el-table :data="curveReferList" border highlight-current-row style="width: 727px;">
             <el-table-column label="同调曲线" width="500px" align="center">
                 <template slot-scope="scope">
                     <span>{{ scope.row.productName }}</span>
@@ -45,7 +45,7 @@
             <el-table-column label="操作" align="center" width="226px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <el-button type="text" size="big"
-                               @click="curveHomologyDelete(scope.$index, curveHomologyList)">删除
+                               @click="curveReferDelete(scope.$index, curveReferList)">删除
                     </el-button>
                 </template>
             </el-table-column>
@@ -55,65 +55,64 @@
 
 <script>
   import {
-    querycurveHomology,
+    queryCurveRefer,
     getCurveProductIdOptions
   } from '@/api/curve/curve-product-list.js'
 
   export default {
-    name: "Homology",
+    name: "Refer",
     props: ['temp'],
     data() {
       return {
         selectCurve: [],
-        selectCurveHomology: [],
-        homologyCurveId: '',
-        curveHomologyList: []
+        selectCurveRefer: [],
+        referCurveId: '',
+        curveReferList: []
       }
     },
     beforeMount() {
       console.info('===beforeMount===')
-      this.getCurveHomologyDtoList
+      this.getCurveReferDtoList
       // 先加载列表
       this.selectCurve = getCurveProductIdOptions()
-      this.selectCurveHomology = getCurveProductIdOptions()
+      this.selectCurveRefer = getCurveProductIdOptions()
     },
     created() {
-      this.getCurveHomologyList({
+      this.getCurveReferList({
         curveId : this.temp.curveId,
         approveStatus : this.temp.approveStatus
       });
     },
     methods: {
       // 查询列表
-      getCurveHomologyList(data) {
-        querycurveHomology(data).then(response => {
+      getCurveReferList(data) {
+        queryCurveRefer(data).then(response => {
           debugger
-          this.curveHomologyList = response.dataList
+          this.curveReferList = response.dataList
           setTimeout(1.5 * 1000)
         })
       },
 
       // 列表删除
-      curveHomologyDelete(index, rows) {
+      curveReferDelete(index, rows) {
         rows[index]
         rows.splice(index, 1);
       },
 
       // 选择同调曲线并添加到列表
-      curveHomologyAdd() {
-        var homologyCurveId = this.homologyCurveId
-        var label = this.$refs.homologyCurve.selectedLabel
-        if (!homologyCurveId) {
+      curveReferAdd() {
+        var referCurveId = this.referCurveId
+        var label = this.$refs.referCurve.selectedLabel
+        if (!referCurveId) {
           this.$message({
             type: 'error',
             message: '请选择曲线'
           })
           return false
         }
-        debugger
-        for (var i = 0; i < this.curveHomologyList.length; i++) {
-          var item = this.curveHomologyList[i]
-          if (item.homologyCurveId === homologyCurveId) {
+        for (var i = 0; i < this.curveReferList.length; i++) {
+          var item = this.curveReferList[i]
+          if (item.referCurveId === referCurveId) {
             this.$message({
               type: 'error',
               message: '不可重复选择'
@@ -121,18 +120,18 @@
             return false
           }
         }
-        this.curveHomologyList.push({
+        this.curveReferList.push({
           curveId: this.temp.curveId, // 依赖曲线ID
-          homologyCurveId: homologyCurveId, // 依赖曲线ID
-          homologyProductName: label // 同调曲线名称
+          referCurveId: referCurveId, // 依赖曲线ID
+          referProductName: label // 同调曲线名称
         })
       },
 
-      obtainCurveHomology() {
+      obtainCurveRefer() {
         var data = {
           curveId: this.temp.curveId,
           approveStatus: this.temp.approveStatus,
-          curveHomologyList: this.curveHomologyList
+          curveReferList: this.curveReferList
         }
         return data
       }

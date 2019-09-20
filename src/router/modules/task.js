@@ -53,6 +53,10 @@ const taskRouter = {
       path: 'curve-set-homology-task',
       component: () => import('@/views/curve/set/curve-set-homology-task.vue'),
       name: 'CurveSetHomologyTask'
+    }, {
+      path: 'curve-set-refer-task',
+      component: () => import('@/views/curve/set/curve-set-refer-task.vue'),
+      name: 'CurveSetReferTask'
     }
   ]
 }
