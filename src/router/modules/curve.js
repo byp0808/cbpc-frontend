@@ -29,6 +29,11 @@ const curveRouter = {
       name: 'CurveSetHomology',
       meta: { title: '设置同调曲线', noCache: true }
     }, {
+      path: 'curve-set-refer',
+      component: () => import('@/views/curve/set/curve-set-refer.vue'),
+      name: 'CurveSetHomology',
+      meta: { title: '设置参考曲线', noCache: true }
+    }, {
       path: 'curve-all-task',
       component: () => import('@/views/curve-task/AllTaskList'),
       name: 'CurveAllTask',

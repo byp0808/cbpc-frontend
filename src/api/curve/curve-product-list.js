@@ -162,6 +162,7 @@ export function querycurveHomology(data){
   })
 }
 
+// 同调曲线保存并发起流程
 export function storageHomology(data){
   return request({
     url: `${basic_api_curve}/curveHomology/storageHomology`,
@@ -169,10 +170,54 @@ export function storageHomology(data){
     data
   })
 }
-
+// 同调曲线流程审批
 export function finishHomology(data) {
   return request({
     url: `${basic_api_curve}/curveHomology/finishHomology`,
+    method: 'post',
+    data
+  })
+}
+
+
+// 查询参考曲线dto列表
+export function queryCurveReferDto(){
+  return request({
+    url: `${basic_api_curve}/curveRefer/queryCurveReferDto`,
+    method: 'post'
+  })
+}
+
+// 删除参考曲线dto列表
+export function delCurveReferDto(data){
+  return request({
+    url: `${basic_api_curve}/curveRefer/delCurveReferDto`,
+    method: 'post',
+    data
+  })
+}
+
+// 查询参考曲线列表
+export function queryCurveRefer(data){
+  return request({
+    url: `${basic_api_curve}/curveRefer/queryCurveRefer`,
+    method: 'post',
+    data
+  })
+}
+
+// 参考曲线保存并发起流程
+export function storageRefer(data){
+  return request({
+    url: `${basic_api_curve}/curveRefer/storageRefer`,
+    method: 'post',
+    data
+  })
+}
+// 参考曲线流程审批
+export function finishRefer(data) {
+  return request({
+    url: `${basic_api_curve}/curveRefer/finishRefer`,
     method: 'post',
     data
   })
