@@ -197,8 +197,8 @@
         </el-col>
       </el-row>
       <div class="text-center margin-top">
-        <el-button type="primary" @click="back">上一步</el-button>
-        <el-button type="primary" @click="next">下一步</el-button>
+        <!--<el-button type="primary" @click="back">上一步</el-button>-->
+        <!--<el-button type="primary" @click="next">下一步</el-button>-->
         <el-button type="primary" @click="saveWay">保存</el-button>
       </div>
     </el-card>
