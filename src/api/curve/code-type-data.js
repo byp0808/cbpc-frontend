@@ -54,10 +54,10 @@ export const CODE_TYPE_CALENDAR = [
 
 // 币种
 export const CURRENCY = [
-  { value: '01', label: '中国镜内银行间市场日历' },
-  { value: '02', label: '香港日历' },
-  { value: '03', label: '巴黎日历' },
-  { value: '04', label: '纽约日历' }
+  { value: '01', label: '人民币' },
+  { value: '02', label: '美元' },
+  { value: '03', label: '英镑' },
+  { value: '04', label: '日元' }
 ]
 
 // 利率类型

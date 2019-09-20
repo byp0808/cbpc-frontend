@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button>
-      <el-button type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
+      <el-button type="primary" @click="toAddCurveProduct('COPY')" v-if="false">复制新增</el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
     </div>
     <el-table
@@ -274,6 +274,13 @@ export default {
       // 如果就曲线样本，则跳转筛选器
       var data = this.$refs.refCurveProductForm.save()
       console.info('saveProduct.data:' + JSON.stringify(data))
+      if (!data.product) {
+        this.$message({
+          type: 'error',
+          message: '基础产品必选!'
+        })
+        return false
+      }
 
       // 产品选择框隐藏
       this.addCurveProductFormVisible = false
