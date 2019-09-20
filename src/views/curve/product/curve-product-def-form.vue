@@ -397,6 +397,27 @@ export default {
     optioins: optioins,
     stepOnclick(index) {
       console.info('stepOnclick:' + index)
+      if ( index > 0 ){
+        if (!this.productId) {
+          this.$message({
+            message: '请先保存基本信息！',
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
+
+      var sort = this.productInfo.sort;
+      if (sort < index) {
+        this.$message({
+          message: '请先保存上一步骤信息！',
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
+
       this.stepActive = index
     },
     next() {
@@ -432,6 +453,7 @@ export default {
           type: 'error',
           showClose: true
         })
+        return false
       }
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -465,6 +487,10 @@ export default {
     async saveOrder() {
       const { result } = await this.$refs.refCurveProductDefOrderForm.saveOrder()
       console.info('保存批次信息，返回:' + result)
+      // 如果当前步骤号为2-曲线内容，关键期限保存成功后，更新步骤号为3
+      if (this.productInfo.sort <= 3) {
+        this.productInfo.sort = 4
+      }
       if (result) {
         this.stepActive++
       }
@@ -479,12 +505,19 @@ export default {
       var productInfo = this.getProductInfo()
       var curveConstructType = this.$refs.curveConstructType.getCurveConstructType()
       var data = _.assign(productInfo, curveConstructType)
+      if (data.sort == 1) {
+        data.sort = 2
+      }
       // 调用保存方法
       var sendData = {
         ccdcCurvePrdInfo: data
       }
       storageCurveInfo(sendData).then(response => {
         this.stepActive++
+        // 如果当前步骤号为1-只保存基本信息，保存成功后，步骤号为2
+        if (data.sort == 1) {
+          this.productInfo.sort = 2
+        }
         this.$message({
           message: '操作成功！',
           type: 'success',
@@ -532,16 +565,25 @@ export default {
             }
           }
         }
+      } else {
+        this.$message({
+          message: '关键期限不可以为空',
+          type: 'error',
+          showClose: true
+        })
+        return false
       }
 
       var data = {
         curvePrdKdList: curvePrdKdList,
         curvePrdNkList: curvePrdNkList
       }
-      debugger
       defCurvePeriod(data).then(response => {
-        debugger
         this.stepActive++
+        // 如果当前步骤号为2-曲线内容，关键期限保存成功后，更新步骤号为3
+        if (this.productInfo.sort <= 2) {
+          this.productInfo.sort = 3
+        }
         this.$message({
           message: '操作成功！',
           type: 'success',
