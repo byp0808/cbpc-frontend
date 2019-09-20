@@ -41,10 +41,10 @@ export default {
   },
   computed: {
     dateTypeOptions() {
-      return optioins('COMPUTE_HISINDEX')
+      return optioins(this,'COMPUTE_HISINDEX')
     },
     termTypeOptions() {
-      return optioins('COMPUTE_HIS_DATE')
+      return optioins(this,'COMPUTE_HIS_DATE')
     }
   },
   beforeMount() {

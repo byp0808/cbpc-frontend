@@ -39,7 +39,7 @@ export default {
   computed: {
     productLineList() {
       // 加载产品线
-      return optioins('PRODUCT_LINE')
+      return optioins(this, 'PRODUCT_LINE')
     }
   },
   watch: {
@@ -67,15 +67,17 @@ export default {
   methods: {
     // 获取产品组
     getProductGroup(productLine) {
+      console.info('===getProductGroup productLine:' + productLine)
       if (!productLine) productLine = this.productLine
-      this.productGroupList = optioins('PRODUCT_GROUP', productLine)
+      this.productGroupList = optioins(this, 'PRODUCT_GROUP', productLine)
     },
     // 获取基础产品
     getProduct(productLine, productGroup) {
+      console.info('===getProduct productLine:' + productLine + ',productGroup:' + productGroup)
       if (!productLine) productLine = this.productLine
       if (!productGroup) productGroup = this.productGroup
 
-      this.productList = optioins('BASE_PRD_CODE', productGroup);
+      this.productList = optioins(this, 'BASE_PRD_CODE', productGroup)
     },
     // 保存产品
     save() {

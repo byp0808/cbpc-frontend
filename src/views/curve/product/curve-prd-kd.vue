@@ -43,7 +43,7 @@
                      style="width: 400px; margin-left:50px;">
                 <el-select v-model="curvePrdKdForm.standSlip" filterable placeholder="请选择关键期限">
                     <el-option
-                            v-for="item in optioins('STAND_SLIP')"
+                            v-for="item in optioins(this, 'STAND_SLIP')"
                             :key="item.value"
                             :label="item.label"
                             :value="item.value"
@@ -147,7 +147,7 @@
   import {queryCurvePrdKd, delCurveProduct,queryCurvePrdNk} from '@/api/curve/curve-product-list.js'
 
   export default {
-    name: 'CurvePrdKdTable',
+    name: 'CurvePrdKd',
     components: {Pagination},
     directives: {waves},
     props: ['productId','disabled'],
@@ -206,15 +206,18 @@
       }
 
     },
-    created() {
+    beforeMount() {
+      console.info('beforeMount.加载数据')
       this.getCurvePrdKdList();
       this.getCurvePrdNkList();
     },
     methods: {
       optioins: optioins,
       getCurvePrdKdList(){
+        console.info('methods.getCurvePrdKdList')
         var curveId = this.productId;
         queryCurvePrdKd({curveId:curveId}).then(response => {
+          console.info('====queryCurvePrdKd:')
           this.curvePrdKdList = response.dataList
           setTimeout(() => {
             this.listLoading = false
@@ -222,6 +225,7 @@
         })
       },
       getCurvePrdNkList(){
+        console.info('methods.getCurvePrdNkList')
         var curveId = this.productId;
         queryCurvePrdNk({curveId:curveId}).then(response => {
           this.curvePrdNkList = response.dataList
@@ -232,10 +236,10 @@
       },
       handleCurvePrdKdFilter() {
           this.curvePrdKdList = [
-            {standSlip:'1d', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'2d', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'1M', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'1Y', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''}
+            {standSlip:'0.01', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'0.08', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'0.25', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
+            {standSlip:'0.5', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''}
           ]
       },
       handleCurvePrdNkFilter() {

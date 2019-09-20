@@ -24,7 +24,7 @@
             <el-form-item label="曲线基础产品">
               <el-select v-model="productInfo.basePrdCode" filterable disabled="disabled" placeholder="请选择曲线">
                 <el-option
-                  v-for="item in optioins('BASE_PRD_CODE')"
+                  v-for="item in optioins(this,'BASE_PRD_CODE')"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -312,28 +312,28 @@ export default {
   computed: {
     // 市场选项
     marketOptions() {
-      return optioins('CODE_TYPE_MARKET')
+      return optioins(this, 'MARKET')
     },
     calendarOptions() {
-      return optioins('CODE_TYPE_CALENDAR')
+      return optioins(this, 'CALENDAR')
     },
     currencyOptions() {
-      return optioins('CURRENCY')
+      return optioins(this, 'CURRENCY')
     },
     rateTypeOptions() {
-      return optioins('RATE_TYPE')
+      return optioins(this, 'RATE_TYPE')
     },
     referRateOptions() {
-      return optioins('REFER_RATE')
+      return optioins(this, 'REFER_RATE')
     },
     curveBuildTypeOptions() {
-      return optioins('CURVE_BUILD_TYPE')
+      return optioins(this, 'CURVE_BUILD_TYPE')
     },
     curvePriceFrOptions() {
-      return optioins('CURVE_PRICE_FR')
+      return optioins(this, 'CURVE_PRICE_FR')
     },
     prdStatusOptions() {
-      return optioins('CURVE_PRODCUT_SATAUS')
+      return optioins(this, 'CURVE_PRODCUT_SATAUS')
     },
     productInfo: {
       get() {

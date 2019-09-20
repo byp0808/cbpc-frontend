@@ -17,17 +17,17 @@
       <el-table-column prop="productName" label="产品名称" width="140" show-overflow-tooltip />
       <el-table-column prop="productLine" label="产品线" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.productLine | showCodeLabel('PRODUCT_LINE') }}
+          {{ scope.row.productLine }}
         </template>
       </el-table-column>
       <el-table-column prop="productGroup" label="产品组" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.productGroup | showCodeLabel('PRODUCT_GROUP') }}
+          {{ scope.row.productGroup }}
         </template>
       </el-table-column>
       <el-table-column prop="basePrdCode" label="基础产品" width="140" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.basePrdCode | showCodeLabel('BASE_PRD_CODE') }}
+          {{ $t('dicts.BASE_PRD_CODE' + '.' + (scope.row.basePrdCode)) }}
         </template>
       </el-table-column>
       <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip >
@@ -42,12 +42,12 @@
       </el-table-column>
       <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip >
         <template slot-scope="scope">
-          {{ scope.row.prdStatus | showCodeLabel('CURVE_PRODCUT_SATAUS') }}
+          {{ scope.row.prdStatus ? $t('dicts.CURVE_PRODUCT_STATUS' + '.' + (scope.row.prdStatus)) : '' }}
         </template>
       </el-table-column>
       <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip >
         <template slot-scope="scope">
-          {{ scope.row.approveStatus | showCodeLabel('APPROVE_SATAUS') }}
+          {{ scope.row.approveStatus ? $t('dicts.APPROVE_STATUS' + '.' + (scope.row.approveStatus)) : ''}}
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />

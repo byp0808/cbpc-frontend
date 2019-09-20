@@ -147,7 +147,7 @@
             </el-table-column>
             <el-table-column prop="curveBuildStatus" label="所需状态" width="80" show-overflow-tooltip>
               <template slot-scope="scope">
-                {{ scope.row.curveBuildStatus | showCodeLabel('CURVE_BUILD_STATUS') }}
+                {{ scope.row.curveBuildStatus ? $t('dicts.CURVE_BUILD_STATUS' + '.' + (scope.row.curveBuildStatus)) : '' }}
               </template>
             </el-table-column>
             <el-table-column prop="" label="操作" width="60" show-overflow-tooltip>
@@ -187,15 +187,11 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
-import { showCodeLabel } from '@/api/curve/code-type.js'
 import { getCurveOrderList } from '@/api/curve/curve-product-list.js'
 import { queryPrdOrderKts } from '@/api/curve/curve-product-order.js'
 export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
-  },
-  filters: {
-    showCodeLabel: showCodeLabel
   },
   props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds'],
   data() {
@@ -223,39 +219,39 @@ export default {
   computed: {
     // 该批次所需模型
     modelOption() {
-      return optioins('MODEL')
+      return optioins(this,'MODEL')
     },
     // 该批次所需编制方式
     buildTypeOption() {
-      return optioins('BUILD_TYPE')
+      return optioins(this,'BUILD_TYPE')
     },
     // 该批次所需计算方式
     computedTypeOption() {
-      return optioins('COMPUTED_TYPE')
+      return optioins(this,'COMPUTED_TYPE')
     },
     // 该批次所需发布方式
     publishTypeOption() {
-      return optioins('PUBLISH_TYPE')
+      return optioins(this,'PUBLISH_TYPE')
     },
     // 曲线发布类型
     curvePubTypeOption() {
-      return optioins('CURVEPUB_TYPE')
+      return optioins(this,'CURVEPUB_TYPE')
     },
     // 是否发布曲线样本券
     publishSampleFlagOption() {
-      return optioins('Y_OR_N')
+      return optioins(this,'Y_OR_N')
     },
     // 发布步长
     publishStepSizeOption() {
-      return optioins('PUBLISH_STEP_SIZE')
+      return optioins(this,'PUBLISH_STEP_SIZE')
     },
     // 付息频率
     interestDueFreqOption() {
-      return optioins('INTEREST_DUE_FREQ')
+      return optioins(this,'INTEREST_DUE_FREQ')
     },
     // 自动编制规则
     autoRuleOptions() {
-      return optioins('AUTO_RULE')
+      return optioins(this,'AUTO_RULE')
     }
   },
   beforeMount() {
