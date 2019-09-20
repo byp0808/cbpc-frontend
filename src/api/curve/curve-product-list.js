@@ -169,3 +169,11 @@ export function storageHomology(data){
     data
   })
 }
+
+export function finishHomology(data) {
+  return request({
+    url: `${basic_api_curve}/curveHomology/finishHomology`,
+    method: 'post',
+    data
+  })
+}

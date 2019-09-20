@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :order-id="item.orderId" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -283,7 +283,7 @@ export default {
       const { dataList } = response
       for (var i = 0; i < dataList.length; i++) {
         var item = dataList[i]
-        this.autoRuleCurveOptions.push({ value: item.curveId, label: item.productName, orderId: item.orderId })
+        this.autoRuleCurveOptions.push({ value: item.curveId, label: item.productName, curveOrderId: item.curveOrderId })
       }
     })
 
@@ -337,13 +337,12 @@ export default {
       console.info('========tosetrule==========')
       this.addAutoRuleFormVisible = true
       // init auto kt
-      this.preview()
+      this.preview('toSetRule')
     },
     toAddCurve() {
       console.info('toAddCurve:')
       var value = this.autoRuleCurve
       var label = this.$refs.autoRuleCurve.selectedLabel
-      var orderId = this.$refs.autoRuleCurve.selected.$attrs.orderId
       if (!value) {
         this.$message({
           type: 'error',
@@ -359,13 +358,15 @@ export default {
         })
         return false
       }
+      var curveOrderId = this.$refs.autoRuleCurve.selected.$attrs.curveOrderId
+
       this.curvePrdOrderAutoList.push({
         curveOrderId: this.orderData.curveOrderId, // 曲线批次ID
         curveOrderName: this.orderData.orderName, // 曲线批次ID，批次名称
         curveWeight: '', // 权重
         curveId: value, // 依赖曲线ID
         productName: label, // 依赖曲线名称
-        depCurveOrderId: orderId, // 依赖曲线对应批次ID
+        depCurveOrderId: curveOrderId, // 依赖曲线对应批次ID
         orderName: '', // 批次名称
         curveBuildStatus: '' // 曲线编制状态
       })
@@ -391,7 +392,7 @@ export default {
       return ids
     },
     // 预览
-    preview() {
+    preview(from) {
       console.info('preview')
 
       this.curvePrdOrderAutoKtList = []
@@ -409,13 +410,15 @@ export default {
           }
         }
 
-        // 增加当前产品关键期限
-        if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
-          for (var i = 0; i < this.curvePrdKdList.length; i++) {
-            const item = this.curvePrdKdList[i]
+        if ('toSetRule' != from) {
+          // 增加当前产品关键期限
+          if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
+            for (var i = 0; i < this.curvePrdKdList.length; i++) {
+              const item = this.curvePrdKdList[i]
 
-            if (standSlipArray.indexOf(item.standSlip) < 0) {
-              this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
+              if (standSlipArray.indexOf(item.standSlip) < 0) {
+                this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
+              }
             }
           }
         }

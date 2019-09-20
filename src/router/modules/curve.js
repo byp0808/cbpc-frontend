@@ -19,11 +19,6 @@ const curveRouter = {
       name: 'CurveProduct',
       meta: { title: '曲线产品', noCache: true, roles: ['CurveProduct'] }
     }, {
-      path: 'curve-product-def',
-      component: () => import('@/views/curve/product/curve-product-def-form.vue'),
-      name: 'CurveProductDef',
-      meta: { title: '曲线产品定义', noCache: true, roles: ['CurveProductDef'] }
-    }, {
       path: 'curve-set-hisindex',
       component: () => import('@/views/curve/set/curve-set-hisindex.vue'),
       name: 'CurveSetHisIndex',
@@ -33,6 +28,16 @@ const curveRouter = {
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
       name: 'CurveSetHomology',
       meta: { title: '设置同调曲线', noCache: true }
+    }, {
+      path: 'curve-all-task',
+      component: () => import('@/views/curve-task/AllTaskList'),
+      name: 'CurveAllTask',
+      meta: { title: '曲线任务列表', noCache: true }
+    }, {
+      path: 'curve-my-task',
+      component: () => import('@/views/curve-task/MyTaskList'),
+      name: 'CurveMyTask',
+      meta: { title: '我的曲线任务', noCache: true }
     }
   ]
 }
