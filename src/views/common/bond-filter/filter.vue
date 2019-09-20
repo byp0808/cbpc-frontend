@@ -2,12 +2,12 @@
   <div class="margin-top">
     <el-card class="box-card">
       <!--{{filterId}}-->
-      <el-select v-model="bondTempSelect.tempNo" placeholder="请选择" :disabled="disabled">
+      <el-select v-model="bondTempSelect.tempId" placeholder="请选择" :disabled="disabled">
         <el-option
           v-for="temp in bondTempSelect.bondTemps"
-          :key="temp.tempNo"
+          :key="temp.tempId"
           :label="temp.tempName"
-          :value="temp.tempNo"
+          :value="temp.tempId"
         />
       </el-select>
       <el-button type="primary" :disabled="disabled" @click="applicationTemp">应用模板</el-button>
@@ -255,7 +255,7 @@ export default {
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_path}/bond-filter/batch-in`,
       bondTempSelect: {
         bondTemps: [],
-        tempNo: ''
+        tempId: ''
       },
       blackList: [],
       whiteList: [],
@@ -326,7 +326,7 @@ export default {
       })
     },
     applicationTemp() {
-      if (!this.bondTempSelect.tempNo) {
+      if (!this.bondTempSelect.tempId) {
         this.$message({
           type: 'warning',
           message: '请选择具体的模板!'
@@ -338,7 +338,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        queryTempInfo(this.bondTempSelect.tempNo).then(response => {
+        queryTempInfo(this.bondTempSelect.tempId).then(response => {
           const { black, white, rules } = response
           this.blackList = black
           this.whiteList = white
@@ -362,7 +362,7 @@ export default {
         return false
       }
       const data = {
-        tempNo: this.bondTempSelect.tempNo,
+        tempId: this.bondTempSelect.tempId,
         rules: this.ruleList,
         blwls: this.$lodash.concat(this.whiteList, this.blackList)
       }
@@ -377,7 +377,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.bondTempSelect.tempNo = ''
+        this.bondTempSelect.tempId = ''
         this.blackList = []
         this.whiteList = []
         this.ruleList = []
@@ -489,7 +489,7 @@ export default {
     },
     getData() {
       return {
-        tempNo: this.bondTempSelect.tempNo,
+        tempId: this.bondTempSelect.tempId,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
         rules: this.ruleList
       }
@@ -497,11 +497,11 @@ export default {
     loading() {
       if (this.filterId) {
         queryFilterInfoById(this.filterId).then(response => {
-          const { black, white, rules, tempNo } = response
+          const { black, white, rules, tempId } = response
           this.blackList = black
           this.whiteList = white
           this.ruleList = rules
-          this.bondTempSelect.tempNo = tempNo
+          this.bondTempSelect.tempId = tempId
 
           this.screenBonds()
         })

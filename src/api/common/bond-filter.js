@@ -11,11 +11,11 @@ export function queryTempList(data) {
 }
 
 // 查询模板列表
-export function queryTempInfo(tempNo) {
+export function queryTempInfo(tempId) {
   return request({
     url: `${basic_api_market}/bond-filter/tpl-view`,
     method: 'get',
-    params: { tempNo }
+    params: { tempId }
   })
 }
 

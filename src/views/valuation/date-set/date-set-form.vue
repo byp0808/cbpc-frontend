@@ -29,7 +29,6 @@
                   filterable
                   placeholder="请选择首次估值日"
                   :disabled="disabled"
-                  @change="typeChange"
                 >
                   <el-option
                     v-for="item in firstDateTypes"
@@ -125,9 +124,6 @@ export default {
           showClose: true
         })
       })
-    },
-    typeChange(val) {
-      console.log(val)
     }
   }
 }
