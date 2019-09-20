@@ -192,6 +192,10 @@ aside {
   z-index: 1000 !important;
 }
 
+.red {
+  color: #ff0000;
+}
+
 //新增 样式 leewd
 //模块标题
 .model-title {
@@ -256,4 +260,42 @@ aside {
 .el-card__body .el-card.is-always-shadow {
   box-shadow: unset;
   -webkit-box-shadow: unset;
+}
+
+//列表加亮
+.el-table {
+  .row-red {
+    border-bottom-color: #ff0000;
+  }
+  .col-red {
+    border-right-color: #ff0000;
+  }
+
+  &.no-hover-row {
+    .el-table__body {
+      tr {
+        &:hover, &.current-row {
+          > td {
+            background-color: transparent;
+          }
+        }
+
+        .high-light {
+          background-color: #ff0000 !important;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
+
+//卡片调整
+.el-card__body {
+  .curve-image & {
+    padding: 5px;
+  }
+
+  .curve-list & {
+    padding: 10px;
+  }
 }

@@ -9,13 +9,15 @@ const commonsRouter = {
   name: 'Commons',
   meta: {
     title: '公共',
-    icon: 'common'
+    icon: 'component',
+    roles: ['Commons']
   },
   children: [
     {
       path: 'bond-filter',
       component: () => import('@/views/common/bond-filter/filter.vue'),
       name: 'BondFilter',
+      hidden: true,
       meta: { title: '债券筛选器', noCache: true }
     }
   ]

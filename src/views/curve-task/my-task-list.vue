@@ -172,6 +172,7 @@ export default {
       })
     },
     openBuild(item) {
+      openWindow('http://localhost:9527/#/curve-market', '曲线行情', 540, 540)
       openWindow('http://localhost:9527/#/build-curve', '编制曲线方案', 540, 540)
     }
   }
