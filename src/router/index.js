@@ -11,7 +11,7 @@ import Layout from '@/layout'
 // import chartsRouter from './modules/charts'
 // import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
-// import commonsRouter from './modules/common'
+import commonsRouter from './modules/common'
 import valuationRouter from './modules/valuation'
 import curveRouter from './modules/curve'
 import taskRouter from './modules/task'
@@ -133,6 +133,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  commonsRouter,
   valuationRouter,
   curveRouter,
   taskRouter,
