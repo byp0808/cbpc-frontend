@@ -20,7 +20,7 @@
           <el-form-item label="市场隐含评级">
             <el-select v-model="normalInfo.marketGrade" placeholder="请选择">
               <el-option
-                v-for="(name, key) in $t('dict.MARKET_GRADE')"
+                v-for="(name, key) in $dict('MARKET_GRADE')"
                 :key="key"
                 :label="name"
                 :value="key"
@@ -41,7 +41,7 @@
               <el-form-item label="调整方式">
                 <el-select v-model="normalInfo.cdsPremAdjType" placeholder="请选择">
                   <el-option
-                    v-for="(name, key) in $t('dict.ADJ_TYPE')"
+                    v-for="(name, key) in $dict('ADJ_TYPE')"
                     :key="key"
                     :label="name"
                     :value="key"
@@ -114,7 +114,7 @@
           <el-form-item label="含权推荐方向">
             <el-select v-model="normalInfo.recoDire" placeholder="请选择">
               <el-option
-                v-for="(name, key) in $t('dict.RECO_DIRE')"
+                v-for="(name, key) in $dict('RECO_DIRE')"
                 :key="key"
                 :label="name"
                 :value="key"
@@ -158,14 +158,14 @@ export default {
   },
   mounted() {
     const that = this
-    const curveList = new Promise((resolve, reject) => {
-      getCurveList().then(response => {
-        const { dataList } = response
-        that.curveList = dataList
-        resolve()
-      })
+    getCurveList().then(response => {
+      const { dataList } = response
+      that.curveList = dataList
+      // resolve()
     })
-    console.log(curveList)
+    // const curveList = new Promise((resolve, reject) => {
+    //
+    // })
   }
 }
 </script>

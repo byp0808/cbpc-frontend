@@ -2,7 +2,7 @@ export default [
   {
     url: '/curveProduct/curve',
     type: 'post',
-    response: _ => {
+    response: config => {
       return {
         flag: 0,
         data: {

@@ -7,7 +7,7 @@
             <el-form-item label="估值场景">
               <el-select v-model="schemeInfo.valuScene" placeholder="请选择">
                 <el-option
-                  v-for="(name, key) in $t('dict.VAL_SCENE')"
+                  v-for="(name, key) in $dict('VAL_SCENE')"
                   :key="key"
                   :label="name"
                   :value="key"
