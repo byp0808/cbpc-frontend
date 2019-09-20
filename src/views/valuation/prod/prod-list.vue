@@ -37,11 +37,19 @@
       <el-table-column
         prop="busiStatus"
         label="产品状态"
-      />
+      >
+        <template slot-scope="{row}">
+          {{$dft('BUSI_STATUS', row.busiStatus)}}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="approveStatus"
         label="审批状态"
-      />
+      >
+        <template slot-scope="{row}">
+          {{$dft('APPROVE_STATUS', row.approveStatus)}}
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
       >
