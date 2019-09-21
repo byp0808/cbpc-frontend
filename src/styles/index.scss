@@ -299,3 +299,15 @@ aside {
     padding: 10px;
   }
 }
+
+// table
+.el-table {
+  .table-expand {
+    label {
+      color: #99a9bf;
+      font: {
+        weight: 400;
+      };
+    }
+  }
+}

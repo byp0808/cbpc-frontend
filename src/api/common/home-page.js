@@ -54,3 +54,12 @@ export function queryAboutInfo(data) {
     data
   })
 }
+
+// 阅读消息
+export function readMsg(data) {
+  return request({
+    url: `${basic_api_market}/msg/read`,
+    method: 'post',
+    data
+  })
+}

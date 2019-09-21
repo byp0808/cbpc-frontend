@@ -1,5 +1,6 @@
 import { queryTaskList } from '@/api/common/task.js'
 import { queryMsgList } from '@/api/common/home-page.js'
+import _ from 'lodash'
 export default {
   namespaced: true,
   state: {
@@ -28,6 +29,10 @@ export default {
     setMessage(state, { msgList, page }) {
       state.message.page = page
       state.message.msgList = msgList
+    },
+    updateMsgStatus(status, row) {
+      const index = _.findIndex(status.message.msgList, { id: row.id })
+      status.message.msgList[index] = row
     }
   },
   actions: {

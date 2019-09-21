@@ -35,31 +35,63 @@
       <el-col :span="10">
         <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
-            <h3>{{$t("mymessage")}}</h3>
+            <h3>我的消息</h3>
           </div>
           <el-table
             :data="msg.msgList"
             style="width: 100%"
+            @expand-change="readMsg"
+            ref="msgTable"
           >
+            <el-table-column type="expand" class="expend">
+              <template slot-scope="{ $index }">
+                <el-form label-position="left" class="table-expand">
+                  <el-form-item label="标题">
+                    <span>{{ msg.msgList[$index].msgTitle }}</span>
+                  </el-form-item>
+                  <el-form-item label="消息内容">
+                    <span>{{ msg.msgList[$index].msgContent }}</span>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
             <el-table-column
               prop="msgTitle"
               label="标题"
-            />
+              :show-overflow-tooltip="true"
+            >
+            </el-table-column>
             <el-table-column
               prop="msgTypeSub"
               label="类型"
-            />
+              width="65"
+            >
+              <template slot-scope="{ row }">
+                {{$dft("MSG_TYPE", row.msgTypeSub)}}
+              </template>
+            </el-table-column>
             <el-table-column
               prop="msgContent"
               label="内容"
+              :show-overflow-tooltip="true"
             />
             <el-table-column
               prop="msgFrom"
               label="发布人"
             />
             <el-table-column
+              prop="status"
+              label="状态"
+              :show-overflow-tooltip="true"
+            >
+              <template slot-scope="{ row }">
+                {{$dft("MSG_STATUS", row.status)}}
+              </template>
+            </el-table-column>
+            <el-table-column
               prop="sendTime"
               label="发布时间"
+              :show-overflow-tooltip="true"
             />
           </el-table>
           <el-pagination
@@ -159,7 +191,7 @@
 <script>
 // import VCalendar from 'v-calendar'
 import { mapGetters } from 'vuex'
-import { queryCalendarList, saveMyCalendar } from '@/api/common/home-page.js'
+import { queryCalendarList, saveMyCalendar, readMsg } from '@/api/common/home-page.js'
 // import adminDashboard from './admin'
 // import editorDashboard from './editor'
 export default {
@@ -180,6 +212,10 @@ export default {
             dates: new Date()
           }
         ]
+      },
+      message: {
+        visible: false,
+        detail: {}
       }
       // currentRole: 'adminDashboard'
     }
@@ -253,11 +289,6 @@ export default {
     },
     queryTaskList() {
       this.$store.dispatch('homePage/queryTaskList')
-      // queryTaskList().then(response => {
-      //   const { datalist, page } = response
-      //   this.todoInfo.dataList = datalist
-      //   this.todoInfo.page = page
-      // })
     },
     toApproval(businessNo, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
@@ -269,6 +300,17 @@ export default {
         return this.calendar.sys[index].name
       }
       return code
+    },
+    readMsg(row, expandedRows) {
+      if (expandedRows.length > 1) {
+        this.$refs.msgTable.toggleRowExpansion(expandedRows[0], false)
+      }
+      if (row.status === '1') {
+        readMsg({ id: row.id }).then(response => {
+          this.$store.commit('homePage/updateMsgStatus', response)
+          this.$refs.msgTable.toggleRowExpansion(response, true)
+        })
+      }
     },
     getSubName(code) {
       const name = this.getCalendarName(code)
