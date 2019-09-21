@@ -24,12 +24,12 @@
                 <el-input v-model="recMandatoryInfo.lastUpdBy" disabled />
               </el-form-item>
               <el-form-item label="强制推荐方向：">
-                <el-select v-model="recMandatoryInfo.recoDirection" filterable placeholder="请选择强制推荐方向" :disabled="disabled">
+                <el-select v-model="recMandatoryInfo.recoDirection" filterable placeholder="请选择强制推荐方向" style="width: 100%" :disabled="disabled">
                   <el-option
-                    v-for="item in directions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                    v-for="(name, key) in $dict('RECO_DIRECTION')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
@@ -69,16 +69,10 @@ export default {
   components: {
     BondFilter
   },
+  // eslint-disable-next-line vue/require-prop-types
   props: ['businessId', 'disabled'],
   data() {
     return {
-      directions: [{
-        id: '01',
-        name: '方向长'
-      }, {
-        id: '02',
-        name: '方向短'
-      }]
     }
   },
   computed: {

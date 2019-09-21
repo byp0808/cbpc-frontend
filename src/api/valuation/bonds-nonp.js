@@ -26,7 +26,7 @@ export function saveBondsNonp(data) {
 
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/bonds-nonp/roam-task`,
+    url: `${basic_api_valuation}/bonds-nonp/roam-task`,
     method: 'post',
     data
   })

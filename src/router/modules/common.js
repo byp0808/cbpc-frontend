@@ -9,16 +9,18 @@ const commonsRouter = {
   name: 'Commons',
   meta: {
     title: '公共',
-    icon: 'component',
-    roles: ['Commons']
+    icon: 'component'
   },
   children: [
     {
-      path: 'bond-filter',
-      component: () => import('@/views/common/bond-filter/filter.vue'),
-      name: 'BondFilter',
-      hidden: true,
-      meta: { title: '债券筛选器', noCache: true }
+      path: 'order-info-list',
+      component: () => import('@/views/common/order-info/order-info-list.vue'),
+      name: 'OrderInfoList',
+      meta: { title: '编制批次', noCache: true, roles: ['OrderInfoList'] }
+    }, {
+      path: 'order-info-form',
+      component: () => import('@/views/common/order-info/order-info-form.vue'),
+      name: 'OrderInfoForm'
     }
   ]
 }

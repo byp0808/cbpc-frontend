@@ -10,6 +10,10 @@ const taskRouter = {
   hidden: true,
   children: [
     {
+      path: 'order-info-task',
+      component: () => import('@/views/common/order-info/order-info-task.vue'),
+      name: 'OrderInfoTask'
+    }, {
       path: 'rec-curve-task',
       component: () => import('@/views/valuation/rec-cure/rec-curve-task.vue'),
       name: 'RecCurveTask'

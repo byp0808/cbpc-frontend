@@ -57,7 +57,7 @@ export function queryCurveList() {
 // 提交任务
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/valuation-curve/roam-task`,
+    url: `${basic_api_valuation}/valuation-curve/roam-task`,
     method: 'post',
     data
   })

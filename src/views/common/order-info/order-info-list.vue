@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增首次估值日设置</el-button>
+      <el-button type="primary" @click="toAdd">新增批次</el-button>
     </div>
     <el-table
-      ref="refDateSetTable"
-      :data="dateSetList"
+      ref="refOrderInfoTable"
+      :data="orderInfoList"
       tooltip-effect="dark"
       style="width: 100%"
     >
@@ -14,41 +14,56 @@
         width="55"
       />
       <el-table-column
-        prop="id"
-        label="规则ID"
+        prop="orderNo"
+        label="批次编号"
         show-overflow-tooltip
-        width="160"
       />
       <el-table-column
-        prop="ruleName"
-        label="规则名称"
+        prop="orderName"
+        label="批次名称"
         show-overflow-tooltip
-        width="140"
       />
       <el-table-column
-        prop="ruleDesc"
-        label="规则说明"
-        width="400"
+        prop="basePrd"
+        label="所属基础产品"
         show-overflow-tooltip
       >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ ruleDetail(scope.row.filterId) }}</span>
+        <template slot-scope="{row}">
+          {{ $dft('BASE_PRD_CODE', row.basePrd) }}
         </template>
       </el-table-column>
       <el-table-column
-        prop="firstDateType"
-        label="首次估值日"
-        width="160"
+        prop="marketId"
+        label="所属市场"
         show-overflow-tooltip
       >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ dateSetFormat(scope.row) }}</span>
+        <template slot-scope="{row}">
+          {{ $dft('MARKET', row.marketId) }}
         </template>
       </el-table-column>
+      <el-table-column
+        prop="timeZone"
+        label="所属时区"
+        show-overflow-tooltip
+      >
+        <template slot-scope="{row}">
+          {{ $dft('TIME_ZONE', row.approveStatus) }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="compTime"
+        label="批次计算时间"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        prop="remindTime"
+        label="批次提醒时间"
+        show-overflow-tooltip
+      />
       <el-table-column
         prop="approveStatus"
         label="审核状态"
-        width="120"
+        width="100"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -58,7 +73,7 @@
       <el-table-column
         prop="address"
         label="操作"
-        width="240"
+        width="200"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -67,7 +82,7 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            设置
+            调整
           </el-button>
           <el-button
             type="text"
@@ -104,15 +119,14 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="dateSetFormVisible" width="92%" title="首次估值日设置" :visible.sync="dateSetFormVisible">
-      <DateSetForm
-        ref="DateSetForm"
-        :date-set-data="dateSetData"
-        :business-id="dateSetId"
+    <el-dialog v-if="orderInfoFormVisible" width="92%" title="编制批次设置" :visible.sync="orderInfoFormVisible">
+      <OrderInfoForm
+        ref="OrderInfoForm"
+        :business-id="orderInfoId"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dateSetFormVisible = false">取 消</el-button>
+        <el-button @click="orderInfoFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
@@ -120,20 +134,18 @@
 </template>
 
 <script>
-import DateSetForm from '@/views/valuation/date-set/date-set-form.vue'
-import { queryDateSetList, deleteDateSet, switchStatus } from '@/api/valuation/date-set.js'
+import OrderInfoForm from '@/views/common/order-info/order-info-form.vue'
+import { queryOrderInfoList, deleteOrderInfo, switchStatus } from '@/api/common/order-info.js'
 export default {
-  name: 'DateSetList',
+  name: 'OrderInfoList',
   components: {
-    DateSetForm
+    OrderInfoForm
   },
   data() {
     return {
-      dateSetFormVisible: false,
-      dateSetId: '',
-      dateSetList: [],
-      bondFilterList: [],
-      dateSetData: {},
+      orderInfoFormVisible: false,
+      orderInfoId: '',
+      orderInfoList: [],
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -150,31 +162,6 @@ export default {
             return '停用中'
         }
       }
-    },
-    dateSetFormat() {
-      return function(row) {
-        let type = ''
-        if (row.firstDateType !== '01') {
-          type += this.$dft('FIRST_DATE_TYPE', row.firstDateType) + '+' + row.delayDays + '天'
-        } else {
-          type = '起息日'
-        }
-
-        return type
-      }
-    },
-    ruleDetail() {
-      return function(filterId) {
-        const ruleList = this.$lodash.get(this.bondFilterList, filterId)
-        let ruleDetail = ''
-        this.$lodash.forEach(ruleList, function(value, key) {
-          ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-          if (key < ruleList.length - 1) {
-            ruleDetail += ', '
-          }
-        })
-        return ruleDetail
-      }
     }
   },
   beforeMount() {
@@ -182,22 +169,25 @@ export default {
   },
   methods: {
     loadTable() {
-      queryDateSetList({ page: this.page }).then(response => {
-        const { dateSets, ruleDetail, page } = response
+      queryOrderInfoList({ page: this.page }).then(response => {
+        const { dataList, page } = response
         this.page = page
-        this.dateSetList = dateSets
-        this.bondFilterList = ruleDetail
+        this.orderInfoList = dataList
       })
     },
     save() {
-      this.$refs.DateSetForm.save()
+      this.$refs.OrderInfoForm.save()
+    },
+    cancel() {
+      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.orderInfoFormVisible = false
     },
     toDetail(id) {
-      this.dateSetId = id
-      this.dateSetFormVisible = true
+      this.orderInfoId = id
+      this.orderInfoFormVisible = true
     },
     toDelete(id) {
-      deleteDateSet(id).then(response => {
+      deleteOrderInfo(id).then(response => {
         this.$message({
           message: '删除成功！',
           type: 'success',
@@ -207,11 +197,11 @@ export default {
       })
     },
     toAdd() {
-      this.$store.commit('dateSet/setDateSetInfo', {})
-      this.dateSetFormVisible = true
+      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.orderInfoFormVisible = true
     },
     saveCallBack() {
-      this.dateSetFormVisible = false
+      this.orderInfoFormVisible = false
       this.loadTable()
     },
     changeStatus(status, id) {
