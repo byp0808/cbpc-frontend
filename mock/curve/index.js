@@ -1,6 +1,6 @@
 export default [
   {
-    url: '/curveProduct/curve',
+    url: '/curveProduct123/curve',
     type: 'post',
     response: config => {
       return {
