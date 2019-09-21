@@ -38,10 +38,10 @@
             <h3>我的消息</h3>
           </div>
           <el-table
+            ref="msgTable"
             :data="msg.msgList"
             style="width: 100%"
             @expand-change="readMsg"
-            ref="msgTable"
           >
             <el-table-column type="expand" class="expend">
               <template slot-scope="{ $index }">
@@ -59,15 +59,14 @@
               prop="msgTitle"
               label="标题"
               :show-overflow-tooltip="true"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="msgTypeSub"
               label="类型"
-              width="65"
+              width="70"
             >
               <template slot-scope="{ row }">
-                {{$dft("MSG_TYPE", row.msgTypeSub)}}
+                <el-tag size="mini" type="">{{ $dft("MSG_TYPE", row.msgTypeSub) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column
@@ -85,7 +84,7 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="{ row }">
-                {{$dft("MSG_STATUS", row.status)}}
+                {{ $dft("MSG_STATUS", row.status) }}
               </template>
             </el-table-column>
             <el-table-column
