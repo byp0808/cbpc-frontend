@@ -78,7 +78,11 @@
         label="审核状态"
         width="100"
         show-overflow-tooltip
-      />
+      >
+        <template slot-scope="{row}">
+          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="address"
         label="操作"

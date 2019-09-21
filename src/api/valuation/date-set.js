@@ -26,7 +26,7 @@ export function saveDateSet(data) {
 
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/date-set/roam-task`,
+    url: `${basic_api_valuation}/date-set/roam-task`,
     method: 'post',
     data
   })

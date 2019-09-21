@@ -48,7 +48,7 @@ export function queryRecMandatory(data) {
 // 提交任务
 export function taskSubmit(data) {
   return request({
-    url: `/pi-valuation/valuation-force/roam-task`,
+    url: `${basic_api_valuation}/valuation-force/roam-task`,
     method: 'post',
     data
   })

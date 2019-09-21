@@ -31,10 +31,10 @@
                   :disabled="disabled"
                 >
                   <el-option
-                    v-for="item in firstDateTypes"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                    v-for="(name, key) in $dict('FIRST_DATE_TYPE')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
@@ -77,6 +77,7 @@ export default {
   components: {
     BondFilter
   },
+  // eslint-disable-next-line vue/require-prop-types
   props: ['businessId', 'disabled'],
   data() {
     return {
