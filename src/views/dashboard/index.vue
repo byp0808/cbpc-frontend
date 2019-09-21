@@ -84,7 +84,8 @@
               :show-overflow-tooltip="true"
             >
               <template slot-scope="{ row }">
-                {{ $dft("MSG_STATUS", row.status) }}
+                <el-tag v-if="row.status === '1'" size="mini" type="danger">{{ $dft("MSG_STATUS", row.status) }}</el-tag>
+                <el-tag v-if="row.status === '2'" size="mini" type="success">{{ $dft("MSG_STATUS", row.status) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column
