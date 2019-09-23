@@ -24,6 +24,7 @@
               <el-form-item label="批次计算时间">
                 <el-time-picker
                   v-model="orderInfoForm.compTime"
+                  value-format="HH:mm:ss"
                   arrow-control
                   :disabled="disabled"
                   placeholder="请选择批次计算时间"
@@ -52,6 +53,7 @@
               <el-form-item label="批次提醒时间">
                 <el-time-picker
                   v-model="orderInfoForm.remindTime"
+                  value-format="HH:mm:ss"
                   arrow-control
                   :disabled="disabled"
                   placeholder="请选择批次提醒时间"

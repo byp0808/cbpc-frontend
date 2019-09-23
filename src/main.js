@@ -58,6 +58,23 @@ Object.defineProperty(Vue.prototype, '$moment', { value: moment })
 Object.defineProperty(Vue.prototype, '$dict', { value: dict })
 Object.defineProperty(Vue.prototype, '$dft', { value: dft })
 
+Vue.prototype.resetSetItem = function(key, newVal) {
+  if (key === 'watchStorage') {
+    // 创建一个StorageEvent事件
+    const newStorageEvent = document.createEvent('StorageEvent')
+    const storage = {
+      setItem: function(k, val) {
+        localStorage.setItem(k, val)
+        // 初始化创建的事件
+        newStorageEvent.initStorageEvent('storage', false, false, k, null, val, null, null)
+        // 派发对象
+        window.dispatchEvent(newStorageEvent)
+      }
+    }
+    return storage.setItem(key, newVal)
+  }
+}
+
 Vue.config.productionTip = false
 
 // ------------------------------------------------------------------------------------------------------------------->
