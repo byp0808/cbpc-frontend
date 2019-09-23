@@ -431,13 +431,13 @@ export default {
         this.productInfo.createCalendar = this.productInfo.createCalendars.join(',')
       }
       if (!this.productInfo.maturityFlag) {
-        this.productInfo.maturityFlag = '1'
+        this.productInfo.maturityFlag = 'Y'
       }
       if (!this.productInfo.spotFlag) {
-        this.productInfo.spotFlag = '1'
+        this.productInfo.spotFlag = 'Y'
       }
       if (!this.productInfo.forwardFlag) {
-        this.productInfo.forwardFlag = '1'
+        this.productInfo.forwardFlag = 'Y'
       }
       if (!this.productInfo.validFlag) {
         this.productInfo.validFlag = 'N'

@@ -3,20 +3,17 @@
     <el-form ref="productInfo" :model="productInfo" label-width="300px">
       <el-form-item label="到期曲线编制许可">
         <el-radio-group v-model="productInfo.maturityFlag" :disabled="disabled">
-          <el-radio :key="1" label="1">构建</el-radio>
-          <el-radio :key="2" label="2">不构建</el-radio>
+          <el-radio v-for="(name, key) in $dict('Y_OR_N')" :key="key" :label="key">{{name}}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="即期曲线编制许可">
         <el-radio-group v-model="productInfo.spotFlag" :disabled="disabled">
-          <el-radio :key="1" label="1">构建</el-radio>
-          <el-radio :key="2" label="2">不构建</el-radio>
+          <el-radio v-for="(name, key) in $dict('Y_OR_N')" :key="key" :label="key">{{name}}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="远期曲线编制许可">
         <el-radio-group v-model="productInfo.forwardFlag" :disabled="disabled">
-          <el-radio :key="1" label="1">构建</el-radio>
-          <el-radio :key="2" label="2">不构建</el-radio>
+          <el-radio v-for="(name, key) in $dict('Y_OR_N')" :key="key" :label="key">{{name}}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
