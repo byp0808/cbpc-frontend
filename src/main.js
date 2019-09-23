@@ -78,7 +78,7 @@ Vue.prototype.resetSetItem = function(key, newVal) {
 Vue.config.productionTip = false
 
 // ------------------------------------------------------------------------------------------------------------------->
-const cloudOn = false
+const cloudOn = true
 if (process.env.NODE_ENV === 'production') {
   // do nothing
   mockXHR()
