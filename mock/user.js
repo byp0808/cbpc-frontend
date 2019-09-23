@@ -30,6 +30,7 @@ export default [
     type: 'post',
     response: config => {
       const { username } = config.body
+      console.log(username)
       const token = tokens[username]
 
       // mock error
