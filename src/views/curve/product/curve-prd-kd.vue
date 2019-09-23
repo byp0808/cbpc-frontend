@@ -27,7 +27,7 @@
             </el-table-column>
             <el-table-column label="操作时间" width="150px" align="center">
                 <template slot-scope="scope">
-                    <span>{{ scope.row.operateTs | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                    <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD hh:mm') }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
@@ -106,6 +106,9 @@
             <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter" :disabled="disabled">
                 应用模板
             </el-button>
+            <el-button v-waves class="filter-item" type="primary" @click="toAddCurvePrdNk" :disabled="disabled" >
+                添加远期N/K
+            </el-button>
         </div>
 
         <el-table :data="curvePrdNkList" border highlight-current-row style="width: 820px;">
@@ -121,7 +124,7 @@
             </el-table-column>
             <el-table-column label="操作时间" width="150px" align="center">
                 <template slot-scope="scope">
-                    <span>{{ scope.row.operateTs | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                    <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD hh:mm') }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="备注" width="270px" align="center">
@@ -131,10 +134,42 @@
             </el-table-column>
             <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
+                    <el-button type="text" size="big" @click="handleEditNK(scope.$index, curvePrdNkList)" :disabled="disabled">修改</el-button>
                     <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdNkList)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
+
+        <el-dialog title="远期NK" v-if="curvePrdNkFormVisible" :visible.sync="curvePrdNkFormVisible">
+            <el-col :span="20" :offset="2">
+                <el-form ref="curvePrdNkForm" :model="curvePrdNkFormTmp" :rules="curvePrdNkRules" label-position="left" label-width="60px">
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="N值" prop="nvalue" >
+                                <el-input type="number" v-model="curvePrdNkFormTmp.nvalue" :disabled="disabled" />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11" :offset="2" prop="kvalue" >
+                            <el-form-item label="K值">
+                                <el-input type="number" v-model="curvePrdNkFormTmp.kvalue" :disabled="disabled" />
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-form-item label="备注" prop="remark" >
+                        <el-input type="textarea" v-model="curvePrdNkFormTmp.remark"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="curvePrdNkFormVisible = false">
+                    取消
+                </el-button>
+                <el-button type="primary" @click="addCurvePrdNk('curvePrdNkForm')">
+                    确认
+                </el-button>
+            </div>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -144,7 +179,7 @@
   import {parseTime} from '@/utils'
   import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-  import {queryCurvePrdKd, delCurveProduct,queryCurvePrdNk} from '@/api/curve/curve-product-list.js'
+  import {queryCurvePrdKd, delCurveProduct,queryCurvePrdNk, prdKdModsList, forwardFlagModsList, getPrdKdListByModId, getCurvePrdNkListByModId} from '@/api/curve/curve-product-list.js'
 
   export default {
     name: 'CurvePrdKd',
@@ -170,18 +205,6 @@
         forwardFlagMod:null,
         sampleIntervalDown: null,
         sampleIntervalUp: null,
-        prdKdMods: [
-          {label:'模板一',key:'0001'},
-          {label:'模板二',key:'0002'},
-          {label:'模板三',key:'0003'},
-          {label:'模板四',key:'0004'},
-        ],
-        forwardFlagMods: [
-          {label:'模板一',key:'0001'},
-          {label:'模板二',key:'0002'},
-          {label:'模板三',key:'0003'},
-          {label:'模板四',key:'0004'},
-        ],
         temp: {
           id: undefined,
           sampleIntervalUp: '',
@@ -202,9 +225,36 @@
         },
         // 新增关键期限
         curvePrdKdFormVisible: false,
-        curvePrdKdForm: {}
+        curvePrdKdForm: {},
+        // 新增远期NK
+        curvePrdNkFormVisible: false,
+        curvePrdNkForm: {},
+        curvePrdNkForm_index: null, //索引，用于编辑时获取行
+        curvePrdNkRules: {
+          nvalue: [
+            {required: true, message: 'N值不可为空', trigger: 'change'}
+          ],
+          kvalue: [
+            {required: true, message: 'K值不可为空', trigger: 'change'}
+          ],
+          remark: [
+            { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
+          ]
+        },
+        curvePrdNkFormTmp: {
+          nvalue: null,
+          kvalue: null,
+          remark: ''
+        }
       }
-
+    },
+    computed:{
+      prdKdMods() {
+        return prdKdModsList()
+      },
+      forwardFlagMods() {
+        return forwardFlagModsList()
+      }
     },
     beforeMount() {
       console.info('beforeMount.加载数据')
@@ -218,7 +268,9 @@
         var curveId = this.productId;
         queryCurvePrdKd({curveId:curveId}).then(response => {
           console.info('====queryCurvePrdKd:')
-          this.curvePrdKdList = response.dataList
+          if (response && response.dataList) {
+            this.curvePrdKdList = response.dataList
+          }
           setTimeout(() => {
             this.listLoading = false
           }, 1.5 * 1000)
@@ -228,22 +280,37 @@
         console.info('methods.getCurvePrdNkList')
         var curveId = this.productId;
         queryCurvePrdNk({curveId:curveId}).then(response => {
-          this.curvePrdNkList = response.dataList
+          if (response && response.dataList) {
+            this.curvePrdNkList = response.dataList
+          }
           setTimeout(() => {
             this.listLoading = false
           }, 1.5 * 1000)
         })
       },
+      // 应用关键期限模板
       handleCurvePrdKdFilter() {
-          this.curvePrdKdList = [
-            {standSlip:'0.01', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'0.08', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'0.25', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''},
-            {standSlip:'0.5', sampleIntervalUp:'', sampleIntervalDown:'', operateTs:''}
-          ]
+        var prdKdMod = this.prdKdMod
+        if (!prdKdMod) {
+          this.$message({
+            type: 'error',
+            message: '请选择一个模板'
+          })
+          return false
+        }
+        this.curvePrdKdList = getPrdKdListByModId(prdKdMod)
       },
+      // 应用远期NK值模板
       handleCurvePrdNkFilter() {
-
+        var forwardFlagMod = this.forwardFlagMod
+        if (!forwardFlagMod) {
+          this.$message({
+            type: 'error',
+            message: '请选择一个模板'
+          })
+          return false
+        }
+        this.curvePrdNkList = getCurvePrdNkListByModId(forwardFlagMod)
       },
       handleEdit(index, rows) {
         // copy obj
@@ -263,6 +330,21 @@
       },
       handleDelete(index, rows) {
         rows.splice(index, 1);
+      },
+      // NK编辑
+      handleEditNK(index, rows) {
+        console.info('handleEditNK。编辑NK:' + index)
+        var item = rows[index]
+        this.curvePrdNkForm = item
+        this.curvePrdNkForm_index = index
+        this.curvePrdNkFormTmp.nvalue = Number(item.nvalue)
+        this.curvePrdNkFormTmp.kvalue = Number(item.kvalue)
+        this.curvePrdNkFormTmp.remark = item.remark
+
+        this.curvePrdNkFormVisible = true
+        this.$nextTick(() => {
+          this.$refs['curvePrdNkForm'].clearValidate()
+        })
       },
       storageCurvePrdKd(formName){
         // 按单位转换数值
@@ -333,7 +415,6 @@
           }
         }
 
-
         // 添加数据
         if (!this.curvePrdKdList || this.curvePrdKdList.length == 0) {
           this.curvePrdKdList = []
@@ -370,6 +451,55 @@
         }
 
         this.curvePrdKdFormVisible = false
+      },
+      // 打开添加远期NK页面
+      toAddCurvePrdNk() {
+        this.curvePrdNkFormVisible = true
+
+        this.curvePrdNkForm = {}
+        this.curvePrdNkForm_index = null
+
+        this.curvePrdNkFormTmp.nvalue = null
+        this.curvePrdNkFormTmp.kvalue = null
+        this.curvePrdNkFormTmp.remark = ''
+      },
+      // 添加远期NK
+      addCurvePrdNk(formName) {
+        console.info('curve-prd-kd.vue.addCurvePrdNk')
+        // 验证表单
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            // 验证N、K值，必须有一个为0
+            if (0 != this.curvePrdNkFormTmp.nvalue && 0 != this.curvePrdNkFormTmp.kvalue) {
+              this.$message({
+                type: 'error',
+                message: 'NK值必须有一个为0'
+              })
+              return false
+            }
+            var index = this.curvePrdNkForm_index
+            if (index || index === 0) {
+              this.curvePrdNkForm.nvalue = this.curvePrdNkFormTmp.nvalue
+              this.curvePrdNkForm.kvalue = this.curvePrdNkFormTmp.kvalue
+              this.curvePrdNkForm.remark = this.curvePrdNkFormTmp.remark
+              this.curvePrdNkForm.operateTs = new Date()
+            } else {
+              // 添加
+              this.curvePrdNkList.push(
+                  {
+                    nvalue: this.curvePrdNkFormTmp.nvalue,
+                    kvalue: this.curvePrdNkFormTmp.kvalue,
+                    remark: this.curvePrdNkFormTmp.remark,
+                    operateTs: new Date()
+                  }
+              )
+            }
+            this.curvePrdNkFormVisible = false
+          } else {
+            console.log('error add!!')
+            return false
+          }
+        })
       }
     }
   }

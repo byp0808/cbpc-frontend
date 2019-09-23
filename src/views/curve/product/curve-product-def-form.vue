@@ -298,8 +298,8 @@ export default {
         curveEndTime: [
           { validator: checkCurveEndTime, trigger: 'change' }
         ],
-        remark:[
-          { min: 0, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+        remark: [
+          { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
         ]
       },
       pickerOptions: {
