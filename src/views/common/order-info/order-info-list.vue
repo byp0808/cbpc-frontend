@@ -24,17 +24,8 @@
         show-overflow-tooltip
       />
       <el-table-column
-        prop="basePrd"
-        label="所属基础产品"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('BASE_PRD_CODE', row.basePrd) }}
-        </template>
-      </el-table-column>
-      <el-table-column
         prop="marketId"
-        label="所属市场"
+        label="市场"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -43,7 +34,7 @@
       </el-table-column>
       <el-table-column
         prop="timeZone"
-        label="所属时区"
+        label="时区"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -52,12 +43,35 @@
       </el-table-column>
       <el-table-column
         prop="compTime"
-        label="批次计算时间"
+        label="计算时间点"
         show-overflow-tooltip
       />
       <el-table-column
         prop="remindTime"
-        label="批次提醒时间"
+        label="发布提醒时间点"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        prop="basePrd"
+        label="基础产品"
+        show-overflow-tooltip
+      >
+        <template slot-scope="{row}">
+          {{ $dft('BASE_PRD_CODE', row.basePrd) }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="orderFlag"
+        label="批次时间说明"
+        show-overflow-tooltip
+      >
+        <template slot-scope="{row}">
+          {{ $dft('ORDER_FLAG', row.orderFlag) }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="orderMark"
+        label="批次说明"
         show-overflow-tooltip
       />
       <el-table-column
