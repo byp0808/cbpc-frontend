@@ -5,7 +5,7 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
-path { fill: inherit !important }
+path:not([class^=highcharts]) { fill: inherit !important }
 
 body {
   height: 100%;

@@ -1,20 +1,92 @@
 <template>
-  <el-table :data="data" size="mini" border>
-    <template v-for="col in columns">
-      <slot :name="col.slot">
-        <component
-          :is="col.component"
-          v-if="col.component"
-          :column="col"
-        />
-        <el-table-column v-else v-bind="col" />
-      </slot>
-    </template>
-  </el-table>
+  <div>
+    <el-table
+      :data="data"
+      size="mini"
+      border
+      class="no-hover-row"
+      :header-cell-class-name="headerHighLight"
+      :cell-class-name="rowInterval"
+      @cell-click="cellClick"
+      @cell-dblclick="cellDbClick"
+    >
+      <template v-for="col in columns">
+        <slot :name="col.slot">
+          <component
+            :is="col.component"
+            v-if="col.component"
+            :column="col"
+          />
+          <el-table-column v-else v-bind="col" align="center" :class-name="col.className" />
+        </slot>
+      </template>
+    </el-table>
+    <el-dialog title="价格选择辅助决策指标" :visible.sync="dialogFlag" @open="openDialog" @close="closeDialog">
+      <el-form ref="compute" :model="compute" label-width="120px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="待偿期" prop="term">
+              <el-input v-model="compute.term" readonly />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="值类型" prop="type">
+              <el-input v-model="compute.type" readonly />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="选择格" prop="num">
+              <el-input v-model="compute.num" readonly />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="均值" prop="avg">
+              <el-input v-model="compute.avg" v-focus readonly @keyup.49.native="saveData('avg')" @dblclick.native="saveData('avg')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="中位数" prop="mid">
+              <el-input v-model="compute.mid" readonly @keyup.50.native="saveData('mid')" @dblclick.native="saveData('mid')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="众数" prop="plu">
+              <el-input v-model="compute.plu" readonly @keyup.51.native="saveData('plu')" @dblclick.native="saveData('plu')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="最大值" prop="max">
+              <el-input v-model="compute.max" readonly @keyup.52.native="saveData('max')" @dblclick.native="saveData('max')" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="最小值" prop="min">
+              <el-input v-model="compute.min" readonly @keyup.53.native="saveData('min')" @dblclick.native="saveData('min')" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
+let time = null
+let time_dia = null
 export default {
+  directives: {
+    focus(el, _, { context }) {
+      context.$nextTick(() => {
+        el.querySelector('input').focus()
+      })
+    }
+  },
   props: {
     columns: {
       type: Array,
@@ -23,6 +95,123 @@ export default {
     data: {
       type: Array,
       default: () => []
+    },
+    selectable: {
+      type: Array,
+      default: () => []
+    },
+    interval: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      highLight: this.data.map(v => Array(Object.keys(v).length).fill(false)),
+      selected: [],
+      selectedType: '',
+      selectedTerm: '',
+      compute: {},
+      dialogFlag: false
+    }
+  },
+  computed: {
+    headerHighLight() {
+      const s = this.selectable
+      return function({ column }) {
+        return s.indexOf(column.label) !== -1 ? 'red' : ''
+      }
+    },
+    rowInterval() {
+      const i = this.interval
+      const h = this.highLight
+      return function({ rowIndex, columnIndex }) {
+        if (h[rowIndex][columnIndex]) {
+          return 'high-light'
+        } else if (i[rowIndex] !== i[rowIndex + 1]) {
+          return 'row-red'
+        } else {
+          return ''
+        }
+      }
+    }
+  },
+  methods: {
+    cellClick(row, column) {
+      if (this.selectable.indexOf(column.label) === -1) {
+        return
+      }
+      if (this.selectedType !== '' && this.selectedType !== column.type) {
+        return
+      }
+      this.selectedType = column.type
+      const flag = this.highLight[row.index][column.index]
+      this.highLight[row.index][column.index] = !flag
+      clearTimeout(time)
+      time = setTimeout(() => {
+        // 高亮
+        // 价格计算 {term: 0, value: 0, bond: 0, slip: 0}
+        if (flag) {
+          this.$lodash.pullAllWith(this.selected, [{ term: row.term, label: column.label, row }], this.$lodash.isEqual)
+        } else {
+          this.selected.push({ term: row.term, label: column.label, row })
+        }
+        // if (_.find(this.highLight, { row: row.index, col: column.index })) {
+        //   _.pullAllWith(this.highLight, [{ row: row.index, col: column.index }], _.isEqual)
+        //   _.pullAllWith(this.selected, [{ term: row.term, label: column.label, row }], _.isEqual)
+        // } else {
+        //   this.selected.push({ term: row.term, label: column.label, row })
+        //   this.highLight.push({ row: row.index, col: column.index })
+        // }
+      }, 300)
+      // 价格辅助Dialog
+      clearTimeout(time_dia)
+      time_dia = setTimeout(() => {
+        if (this.selected.filter(value => value.term === row.term).length > 0) {
+          this.selectedTerm = row.term
+          this.dialogFlag = true
+        }
+      }, 800)
+    },
+    cellDbClick(row, column) {
+      if (this.selectable.indexOf(column.label) === -1) {
+        return
+      }
+      clearTimeout(time)
+      clearTimeout(time_dia)
+      const flag = this.highLight[row.index][column.index]
+      this.interval.map((v, i) => {
+        if (v === this.interval[row.index]) {
+          this.highLight[i] = Array(this.highLight[i].length).fill(false)
+        }
+      })
+      this.highLight[row.index][column.index] = !flag
+      // if (_.find(this.highLight, { row: row.index, col: column.index })) {
+      //   _.pullAllWith(this.highLight, [{ row: row.index, col: column.index }], _.isEqual)
+      // } else {
+      //   this.highLight.push({ row: row.index, col: column.index })
+      // }
+      const item = Object.assign({}, { term: row.term, label: column.label, value: row[column.label], row })
+      this.resetSetItem('watchStorage', JSON.stringify(item))
+    },
+    openDialog() {
+      const arr = this.selected.filter(value => value.term === this.selectedTerm)
+      const compute = {}
+      this.$emit('open', { arr, term: this.selectedTerm, type: this.selectedType, result: compute })
+      this.compute = compute
+    },
+    closeDialog() {
+      this.compute = {}
+      this.selectedType = ''
+      this.selectedTerm = ''
+    },
+    saveData(v) {
+      const value = this.compute[v]
+      const arr = this.selected.filter(value => value.term === this.selectedTerm)
+      this.dialogFlag = false
+      const label = arr.map(e => e.label).filter((t, i, a) => a.indexOf(t, 0) === i).join(',')
+      const item = Object.assign({}, arr[0], { label, value })
+      this.resetSetItem('watchStorage', JSON.stringify(item))
     }
   }
 }
