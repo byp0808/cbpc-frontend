@@ -2,7 +2,7 @@
   <div class="app-container">
     <RuleSetForm
       ref="refRuleSetForm"
-      :disable="disabled"
+      :disabled="disabled"
       :business-id="businessNo"
     />
     <div class="button-box-fixed">
@@ -15,7 +15,7 @@
 
 <script>
 import RuleSetForm from '@/views/valuation/task-allocation/rule-set-form.vue'
-import { taskSubmit } from '@/api/valuation/rec-curve.js'
+import { ruleSetTaskSubmit } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'RuleSetTask',
   components: {
@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     taskSubmit(status) {
-      taskSubmit({
+      ruleSetTaskSubmit({
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',

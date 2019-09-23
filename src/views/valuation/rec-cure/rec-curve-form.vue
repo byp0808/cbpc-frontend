@@ -4,35 +4,52 @@
       <div slot="header" class="clearfix card-head">
         <h3 style="margin: 0">基本信息</h3>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="recCurveInfo" :model="recCurveInfo" label-width="150px">
+      <el-form ref="recCurveInfo" status-icon :model="recCurveInfo" label-width="150px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
               <el-form-item label="规则ID">
                 <el-input v-model="recCurveInfo.id" disabled />
               </el-form-item>
               <el-form-item label="最后操作人">
                 <el-input v-model="recCurveInfo.lastUpdBy" disabled />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="recCurveInfo" :model="recCurveInfo" label-width="150px">
-              <el-form-item label="曲线规则名称">
-                <el-input v-model="recCurveInfo.ruleName" :disabled="disabled" />
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item
+                label="曲线规则名称"
+                prop="ruleName"
+                :rules="[
+                  { required: true, message: '请输入曲线规则名称', trigger: 'blur' },
+                ]"
+              >
+                <el-input
+                  v-model="recCurveInfo.ruleName"
+                  :disabled="disabled"
+                  placeholder="请输入曲线规则名称"
+                />
               </el-form-item>
               <el-form-item label="最后操作时间">
                 <el-input v-model="recCurveInfo.lastUpdTs" disabled />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <el-form ref="recCurveInfo" :model="recCurveInfo" label-width="150px">
-            <el-form-item label="估值曲线">
-              <el-select v-model="recCurveInfo.curveId" placeholder="请选择估值曲线" style="width: 100%" :disabled="disabled">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item
+              label="估值曲线"
+              prop="curveId"
+              :rules="[
+                { required: true, message: '请选择估值曲线', trigger: 'change' },
+              ]"
+            >
+              <el-select
+                v-model="recCurveInfo.curveId"
+                placeholder="请选择估值曲线"
+                style="width: 100%"
+                :disabled="disabled"
+              >
                 <el-option
                   v-for="curve in curveList"
                   :key="curve.curveId"
@@ -41,13 +58,17 @@
                 />
               </el-select>
             </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-      <el-form ref="recCurveInfo" :model="recCurveInfo" label-width="150px">
-        <el-form-item label="备注">
-          <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" />
-        </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="16">
+            <div class="grid-content bg-purple">
+              <el-form-item label="备注">
+                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" />
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
     <el-card class="box-card margin-top">
@@ -106,13 +127,19 @@ export default {
         recCurve: this.recCurveInfo,
         bondFilterInfo: bondFilterInfo
       }
-      saveRecCurve(data).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs.recCurveInfo.validate((valid) => {
+        if (valid) {
+          saveRecCurve(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          this.$message.warning('表单校验不通过，请检查！')
+        }
       })
     }
   }

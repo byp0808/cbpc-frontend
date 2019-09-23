@@ -43,6 +43,11 @@ const curveRouter = {
       component: () => import('@/views/curve-task/my-task-list'),
       name: 'CurveMyTask',
       meta: { title: '我的曲线任务', noCache: true }
+    }, {
+      path: 'curve-kdtemp-list',
+      component: () => import('@/views/curve/timetemp/curve-kdtemp-list.vue'),
+      name: 'CurveKdTempList',
+      meta: { title: '关键期限模板', noCache: true }
     }
   ]
 }

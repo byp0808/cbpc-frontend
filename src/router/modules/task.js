@@ -22,9 +22,9 @@ const taskRouter = {
       component: () => import('@/views/curve/sample/curve-sample-task.vue'),
       name: 'CurveSampleTask'
     }, {
-      path: 'curve-relaion-task',
+      path: 'curve-relation-task',
       component: () => import('@/views/valuation/curve-relation/curve-relation-task.vue'),
-      name: 'curveRelaionTask'
+      name: 'CurveRelationTask'
     }, {
       path: 'valuation-prod-task',
       component: () => import('@/views/valuation/prod/prod-task.vue'),
@@ -48,7 +48,7 @@ const taskRouter = {
     }, {
       path: 'rule-set-task',
       component: () => import('@/views/valuation/task-allocation/rule-set-task.vue'),
-      name: 'c'
+      name: 'RuleSetTask'
     }, {
       path: 'personnel-set-task',
       component: () => import('@/views/valuation/task-allocation/personnel-set-task.vue'),

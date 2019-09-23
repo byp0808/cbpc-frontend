@@ -1,78 +1,30 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增批次</el-button>
+      <el-button type="primary" @click="toAdd">新增规则</el-button>
     </div>
     <el-table
-      ref="refOrderInfoTable"
-      :data="orderInfoList"
+      ref="refKdTempTable"
+      :data="kdTempList"
       tooltip-effect="dark"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
         width="55"
       />
       <el-table-column
-        prop="orderNo"
-        label="批次编号"
+        prop="tempName"
+        label="规则名称"
         show-overflow-tooltip
+        width="330"
       />
       <el-table-column
-        prop="orderName"
-        label="批次名称"
+        prop="standSlip"
+        label="规则详细"
         show-overflow-tooltip
-      />
-      <el-table-column
-        prop="marketId"
-        label="市场"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('MARKET', row.marketId) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="timeZone"
-        label="时区"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('TIME_ZONE', row.timeZone) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="compTime"
-        label="计算时间点"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="remindTime"
-        label="发布提醒时间点"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="basePrd"
-        label="基础产品"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('BASE_PRD_CODE', row.basePrd) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="orderFlag"
-        label="批次时间说明"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('ORDER_FLAG', row.orderFlag) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="orderMark"
-        label="批次说明"
-        show-overflow-tooltip
+        width="600"
       />
       <el-table-column
         prop="approveStatus"
@@ -96,7 +48,7 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            调整
+            设置
           </el-button>
           <el-button
             type="text"
@@ -113,14 +65,6 @@
           >
             {{ statusText(scope.row.busiStatus) }}
           </el-button>
-          <el-button
-            v-if="scope.row.relationId"
-            type="text"
-            size="small"
-            @click.native.prevent="toDetail(scope.row.relationId)"
-          >
-            草稿
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -133,37 +77,40 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="orderInfoFormVisible" width="92%" title="编制批次设置" :visible.sync="orderInfoFormVisible">
-      <OrderInfoForm
-        ref="OrderInfoForm"
-        :business-id="orderInfoId"
+    <el-dialog v-if="kdTempFormVisible" width="70%" title="关键期限模板设置" :visible.sync="kdTempFormVisible">
+      <kdTempForm
+        ref="KdTempForm"
+        :kd-temp-data="kdTempData"
+        :business-id="kdTempId"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="orderInfoFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="kdTempFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save('KdTempForm')">保 存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import OrderInfoForm from '@/views/common/order-info/order-info-form.vue'
-import { queryOrderInfoList, deleteOrderInfo, switchStatus } from '@/api/common/order-info.js'
+import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
+import { querykdTempList, deletekdTemp, switchStatus } from '@/api/curve/curve-kdtemp-list.js'
 export default {
-  name: 'OrderInfoList',
+  name: 'KdTempList',
   components: {
-    OrderInfoForm
+    KdTempForm
   },
   data() {
     return {
-      orderInfoFormVisible: false,
-      orderInfoId: '',
-      orderInfoList: [],
+      kdTempFormVisible: false,
+      kdTempId: '',
+      kdTempList: [],
+      kdTempData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      multipleSelection: []
     }
   },
   computed: {
@@ -183,39 +130,48 @@ export default {
   },
   methods: {
     loadTable() {
-      queryOrderInfoList({ page: this.page }).then(response => {
+      querykdTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.page = page
-        this.orderInfoList = dataList
+        this.kdTempList = dataList
       })
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     save() {
-      this.$refs.OrderInfoForm.save()
+      this.$refs.KdTempForm.save()
     },
     cancel() {
-      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
-      this.orderInfoFormVisible = false
+      this.$store.commit('kdTemp/setkdTempInfo', {})
+      this.kdTempFormVisible = false
     },
     toDetail(id) {
-      this.orderInfoId = id
-      this.orderInfoFormVisible = true
+      this.kdTempId = id
+      this.kdTempFormVisible = true
     },
     toDelete(id) {
-      deleteOrderInfo(id).then(response => {
-        this.$message({
-          message: '删除成功！',
-          type: 'success',
-          showClose: true
-        })
+      // console.log(id)
+      this.$confirm('是否删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }).then(async() => {
+        await deletekdTemp(id)
         this.loadTable()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     toAdd() {
-      this.$store.commit('bondsNonp/setBondsNonpInfo', {})
-      this.orderInfoFormVisible = true
+      this.$store.commit('kdTemp/setkdTempInfo', {})
+      this.kdTempFormVisible = true
     },
     saveCallBack() {
-      this.orderInfoFormVisible = false
+      this.kdTempFormVisible = false
       this.loadTable()
     },
     changeStatus(status, id) {

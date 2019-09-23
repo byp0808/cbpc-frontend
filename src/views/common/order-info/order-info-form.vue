@@ -4,14 +4,14 @@
       <div slot="header" class="clearfix card-head">
         <h3 style="margin: 0">基本信息</h3>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="orderInfoForm" :model="orderInfoForm" label-width="150px">
+      <el-form ref="orderInfoForm" status-icon :model="orderInfoForm" :rules="rules" label-width="150px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
               <el-form-item label="ID">
                 <el-input v-model="orderInfoForm.id" disabled />
               </el-form-item>
-              <el-form-item label="所属基础产品">
+              <el-form-item label="所属基础产品" prop="basePrd">
                 <el-select v-model="orderInfoForm.basePrd" :disabled="disabled" placeholder="请选择所属基础产品" style="width: 100%">
                   <el-option
                     v-for="(name, key) in $dict('BASE_PRD_CODE')"
@@ -21,7 +21,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="批次计算时间">
+              <el-form-item label="批次计算时间" prop="compTime">
                 <el-time-picker
                   v-model="orderInfoForm.compTime"
                   value-format="HH:mm:ss"
@@ -31,16 +31,14 @@
                   style="width: 100%"
                 />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="orderInfoForm" :model="orderInfoForm" label-width="150px">
-              <el-form-item label="批次编号">
-                <el-input v-model="orderInfoForm.orderNo" :disabled="disabled" />
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="批次编号" prop="orderNo">
+                <el-input v-model="orderInfoForm.orderNo" disabled />
               </el-form-item>
-              <el-form-item label="所属市场">
+              <el-form-item label="所属市场" prop="marketId">
                 <el-select v-model="orderInfoForm.marketId" :disabled="disabled" placeholder="请选择所属市场" style="width: 100%">
                   <el-option
                     v-for="(name, key) in $dict('MARKET')"
@@ -50,7 +48,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="批次提醒时间">
+              <el-form-item label="批次提醒时间" prop="remindTime">
                 <el-time-picker
                   v-model="orderInfoForm.remindTime"
                   value-format="HH:mm:ss"
@@ -60,16 +58,14 @@
                   style="width: 100%"
                 />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="orderInfoForm" :model="orderInfoForm" label-width="150px">
-              <el-form-item label="批次名称">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="批次名称" prop="orderName">
                 <el-input v-model="orderInfoForm.orderName" :disabled="disabled" placeholder="请输入批次名称" />
               </el-form-item>
-              <el-form-item label="所属时区">
+              <el-form-item label="所属时区" prop="timeZone">
                 <el-select v-model="orderInfoForm.timeZone" :disabled="disabled" placeholder="请选择所属时区" style="width: 100%">
                   <el-option
                     v-for="(name, key) in $dict('TIME_ZONE')"
@@ -79,7 +75,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="批次标识">
+              <el-form-item label="批次标识" prop="orderFlag">
                 <el-select v-model="orderInfoForm.orderFlag" :disabled="disabled" placeholder="请选择批次标识" style="width: 100%">
                   <el-option
                     v-for="(name, key) in $dict('ORDER_FLAG')"
@@ -89,14 +85,18 @@
                   />
                 </el-select>
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-      </el-row>
-      <el-form ref="orderInfoForm" :model="orderInfoForm" label-width="150px">
-        <el-form-item label="批次说明">
-          <el-input v-model="orderInfoForm.orderMark" type="textarea" :disabled="disabled" placeholder="请输入批次说明" />
-        </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="16">
+            <div class="grid-content bg-purple">
+              <el-form-item label="批次说明">
+                <el-input v-model="orderInfoForm.orderMark" type="textarea" :disabled="disabled" placeholder="请输入批次说明" />
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
   </div>
@@ -110,7 +110,31 @@ export default {
   components: {},
   props: ['businessId', 'disabled'],
   data() {
-    return {}
+    return {
+      rules: {
+        basePrd: [
+          { required: true, message: '请选择所属基础产品', trigger: 'change' }
+        ],
+        compTime: [
+          { required: true, message: '请选择批次计算时间', trigger: 'change' }
+        ],
+        marketId: [
+          { required: true, message: '请选择所属市场', trigger: 'change' }
+        ],
+        remindTime: [
+          { required: true, message: '请选择批次提醒时间', trigger: 'change' }
+        ],
+        orderName: [
+          { required: true, message: '请输入批次名称', trigger: 'blur' }
+        ],
+        timeZone: [
+          { required: true, message: '请选择所属时区', trigger: 'change' }
+        ],
+        orderFlag: [
+          { required: true, message: '请选择批次标识', trigger: 'change' }
+        ]
+      }
+    }
   },
   computed: {
     orderInfoForm: {
@@ -132,13 +156,19 @@ export default {
   methods: {
     save() {
       const data = this.orderInfoForm
-      saveOrderInfo(data).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs.orderInfoForm.validate((valid) => {
+        if (valid) {
+          saveOrderInfo(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          this.$message.warning('表单校验不通过，请检查！')
+        }
       })
     }
   }

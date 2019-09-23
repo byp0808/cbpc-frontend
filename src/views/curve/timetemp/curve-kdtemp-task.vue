@@ -1,24 +1,25 @@
 <template>
   <div class="app-container">
-    <PersonnelSetForm
-      ref="refPersonnelSetForm"
+    <BondsNonpForm
+      ref="refApprovalDialog"
+      :business-id="businessNo"
       :disabled="disabled"
-      :task-range-id="businessNo"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
-      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
+      <el-button type="primary" @click="taskSubmit('02')">审批通过</el-button>
+      <el-button type="primary" @click="taskSubmit('03')">审批拒绝</el-button>
       <el-button>取 消</el-button>
     </div>
   </div>
 </template>
+
 <script>
-import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form.vue'
-import { personnelSetTaskSubmit } from '@/api/valuation/task-allocation.js'
+import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
+import { taskSubmit } from '@/api/valuation/bonds-nonp.js'
 export default {
-  name: 'PersonnelSetTask',
+  name: 'BondsNonpTask',
   components: {
-    PersonnelSetForm
+    BondsNonpForm
   },
   data() {
     return {
@@ -34,7 +35,7 @@ export default {
   },
   methods: {
     taskSubmit(status) {
-      personnelSetTaskSubmit({
+      taskSubmit({
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',

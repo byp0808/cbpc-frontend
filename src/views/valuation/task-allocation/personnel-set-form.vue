@@ -4,10 +4,10 @@
       <el-form-item label="1.选择任务范围">
         <el-select v-model="ruleInfo.taskRangeId" filterable placeholder="请选择任务范围" :disabled="disabled">
           <el-option
-            v-for="item in taskRangeList"
-            :key="item.id"
-            :label="item.taskRangeName"
-            :value="item.id"
+            v-for="range in taskRangeList"
+            :key="range.id"
+            :label="range.taskRangeName"
+            :value="range.id"
           />
         </el-select>
       </el-form-item>
@@ -19,7 +19,7 @@
         :rules="{ required: true, message: '人员不能为空', trigger: 'blur'}"
       >
         <el-col :span="10">
-          <el-select v-model="personnel.userId" filterable placeholder="请选择人员">
+          <el-select v-model="personnel.userId" filterable placeholder="请选择人员" :disabled="disabled">
             <el-option
               v-for="item in personnelList"
               :key="item.id"
@@ -29,12 +29,12 @@
           </el-select>
         </el-col>
         <el-col :span="10">
-          <el-input v-model="personnel.distRatio" placeholder="请输入分配比例" />
+          <el-input v-model="personnel.distRatio" placeholder="请输入分配比例" :disabled="disabled" />
         </el-col>
         <el-button @click.prevent="removePersonnel(personnel)">删除</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="addPersonnel">添加人员</el-button>
+        <el-button type="primary" :disabled="disabled" @click="addPersonnel">添加人员</el-button>
       </el-form-item>
       <el-form-item label="最后操作人">
         <el-col :span="11">
@@ -51,16 +51,14 @@
 </template>
 
 <script>
-import { addTaskAllocation, queryTaskRangeList } from '@/api/valuation/task-allocation.js'
+import { addTaskAllocation, queryTaskRangeSelects, taskAllocation } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetForm',
   props: ['taskRangeId', 'disabled'],
   data() {
     return {
       // 任务范围列表
-      taskRangeList: [
-        { id: '', taskRangeName: '' }
-      ],
+      taskRangeList: [{ id: '', taskRangeName: '' }],
       // 人员列表
       personnelList: [
         { id: '01', name: '张三' },
@@ -76,10 +74,14 @@ export default {
     }
   },
   beforeMount() {
-    queryTaskRangeList().then(response => {
-      const { taskRangeList } = response
-      this.taskRangeList = taskRangeList
+    if (this.taskRangeId) {
       this.ruleInfo.taskRangeId = this.taskRangeId
+      taskAllocation(this.taskRangeId).then(response => {
+        this.ruleInfo.distRuleList = response
+      })
+    }
+    queryTaskRangeSelects().then(response => {
+      this.taskRangeList = response
     })
   },
   methods: {

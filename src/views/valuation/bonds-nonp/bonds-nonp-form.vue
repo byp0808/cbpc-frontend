@@ -4,10 +4,10 @@
       <div slot="header" class="clearfix card-head">
         <h3 style="margin: 0">基本信息</h3>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="bondsNonpInfo" :model="bondsNonpInfo" label-width="150px">
+      <el-form ref="bondsNonpInfo" status-icon :model="bondsNonpInfo" :rules="rules" label-width="150px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
               <el-form-item label="ID">
                 <el-input v-model="bondsNonpInfo.id" disabled />
               </el-form-item>
@@ -30,41 +30,52 @@
                   <el-button slot="append" icon="el-icon-search" @click="queryBondsAttr()" />
                 </el-input>
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="bondsNonpInfo" :model="bondsNonpInfo" label-width="150px">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
               <el-form-item label="最后操作人">
                 <el-input v-model="bondsNonpInfo.lastUpdBy" disabled />
               </el-form-item>
               <el-form-item label="资产简称">
                 <el-input v-model="bondsNonpInfo.bondsShortName" disabled />
               </el-form-item>
-              <el-form-item label="有效期（天）">
-                <el-input v-model="bondsNonpInfo.indate" :disabled="disabled" placeholder="请输入有效期" />
+              <el-form-item
+                label="有效期（天）"
+                prop="indate"
+                :rules="[
+                  { required: true, message: '请输入有效期', trigger: 'blur' },
+                  { type: 'number', message: '请输入一个整数', trigger: 'blur' }
+                ]"
+              >
+                <el-input
+                  v-model.number="bondsNonpInfo.indate"
+                  :disabled="disabled"
+                  placeholder="请输入有效期"
+                />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content bg-purple">
-            <el-form ref="bondsNonpInfo" :model="bondsNonpInfo" label-width="150px">
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
               <el-form-item label="最后操作时间">
                 <el-input v-model="bondsNonpInfo.lastUpdTs" disabled />
               </el-form-item>
               <el-form-item label="发行人">
                 <el-input v-model="bondsNonpInfo.bondsIssuer" disabled />
               </el-form-item>
-            </el-form>
-          </div>
-        </el-col>
-      </el-row>
-      <el-form ref="bondsNonpInfo" :model="bondsNonpInfo" label-width="150px">
-        <el-form-item label="不参与原因">
-          <el-input v-model="bondsNonpInfo.cause" type="textarea" :disabled="disabled" placeholder="请输入不参与原因" />
-        </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="16">
+            <div class="grid-content bg-purple">
+              <el-form-item label="不参与原因">
+                <el-input v-model="bondsNonpInfo.cause" type="textarea" :disabled="disabled" placeholder="请输入不参与原因" />
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
   </div>
@@ -76,6 +87,7 @@ import { saveBondsNonp, queryBondsNonp, queryBondsById } from '@/api/valuation/b
 export default {
   name: 'BondsNonpForm',
   components: {},
+  // eslint-disable-next-line vue/require-prop-types
   props: ['businessId', 'disabled'],
   data() {
     return {}
@@ -100,13 +112,19 @@ export default {
   methods: {
     save() {
       const data = this.bondsNonpInfo
-      saveBondsNonp(data).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs.bondsNonpInfo.validate((valid) => {
+        if (valid) {
+          saveBondsNonp(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          this.$message.warning('表单校验不通过，请检查！')
+        }
       })
     },
     queryBondsAttr() {
