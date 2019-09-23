@@ -137,16 +137,6 @@ export const asyncRoutes = [
   valuationRouter,
   curveRouter,
   taskRouter,
-  {
-    path: '/build-curve',
-    component: () => import('@/views/build-curve/'),
-    hidden: true
-  },
-  {
-    path: '/curve-market',
-    component: () => import('@/views/build-curve/market'),
-    hidden: true
-  },
   // {
   //   path: '/permission',
   //   component: Layout,
