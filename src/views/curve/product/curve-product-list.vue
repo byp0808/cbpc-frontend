@@ -26,8 +26,8 @@
         </template>
       </el-table-column>
       <el-table-column prop="basePrdCode" label="基础产品" width="140" show-overflow-tooltip>
-        <template slot-scope="scope">
-          {{ $t('dicts.BASE_PRD_CODE' + '.' + (scope.row.basePrdCode)) }}
+        <template slot-scope="{ row }">
+          {{ $dft("BASE_PRD_CODE", row.basePrdCode) }}
         </template>
       </el-table-column>
       <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip >
@@ -41,13 +41,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip >
-        <template slot-scope="scope">
-          {{ scope.row.prdStatus ? $t('dicts.CURVE_PRODUCT_STATUS' + '.' + (scope.row.prdStatus)) : '' }}
+        <template slot-scope="{ row }">
+          {{ $dft("CURVE_PRODUCT_STATUS", row.prdStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip >
-        <template slot-scope="scope">
-          {{ scope.row.approveStatus ? $t('dicts.APPROVE_STATUS' + '.' + (scope.row.approveStatus)) : ''}}
+        <template slot-scope="{ row }">
+          {{ $dft("APPROVE_STATUS", row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />
@@ -84,7 +84,7 @@
       :page-sizes="[10, 20, 30, 40, 50]"
       :page-size="productList.page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="productList.page.totalPage"
+      :total="productList.page.totalRecord"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
