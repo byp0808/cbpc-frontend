@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin: 10px">
-      <el-button type="primary" class="float-left" @click="personnelFormVisible=true">新增人员设置</el-button>
+      <el-button type="primary" class="float-left" @click="add">新增人员设置</el-button>
     </div>
     <div>
       <el-table ref="multipleTable" :data="personnelList" tooltip-effect="dark">
@@ -146,7 +146,12 @@ export default {
     },
     edit(id) {
       this.taskRangeId = id
-      this.disabled = true
+      this.disabled = false
+      this.personnelFormVisible = true
+    },
+    add() {
+      this.taskRangeId = ''
+      this.disabled = false
       this.personnelFormVisible = true
     },
     saveCallBack() {

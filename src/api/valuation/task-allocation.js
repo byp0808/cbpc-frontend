@@ -63,6 +63,17 @@ export function taskAllocationList(data) {
     }
   )
 }
+// 获取人员任务分配
+export function taskAllocation(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/task-allocation`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+
 // 停用/启用 人员任务分配规则
 export function editTaskAllocation(data) {
   return request(
@@ -93,4 +104,31 @@ export function addTaskAllocation(data) {
       data: data
     }
   )
+}
+
+// 获取任务范围下拉列表
+export function queryTaskRangeSelects() {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/task-range-selects`,
+      method: 'post',
+      data: {}
+    }
+  )
+}
+// 提交人员分配任务
+export function personnelSetTaskSubmit(data) {
+  return request({
+    url: `/pi-valuation/valuation-task/personnel-task`,
+    method: 'post',
+    data
+  })
+}
+// 提交任务范围任务
+export function ruleSetTaskSubmit(data) {
+  return request({
+    url: `/pi-valuation/valuation-task/range-task`,
+    method: 'post',
+    data
+  })
 }

@@ -52,12 +52,13 @@
       />
     </div>
     <div>
-      <el-dialog lock-scroll="false" width="30%" title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible">
+      <el-dialog title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible">
         <AddRulesForm
           ref="recAddRulesForm"
+          :disabled="disabled"
           :relation-id="relationId"
-          :target-value="targetValue"
-          :relative-value="relativeValue"
+          :is-copy="isCopy"
+          @saveCallBack="saveCallBack"
         />
         <div slot="footer" class="dialog-footer">
           <el-button @click="addRulesVisible = false">取 消</el-button>
@@ -80,14 +81,13 @@ export default {
   data() {
     return {
       addRulesVisible: false,
+      disabled: false,
       // 曲线关系列表
       curveRelationList: [],
       // 曲线列表
       curveList: [],
+      isCopy: false,
       relationId: '',
-      multipleSelection: [],
-      targetValue: '',
-      relativeValue: '',
       radio: '',
       page: {
         pageNumber: 1,
@@ -111,19 +111,15 @@ export default {
       const { dataList, page } = response
       this.curveRelationList = dataList
       this.page = page
-      // 加载曲线列表
-      getCurveList().then(response => {
-        const { dataList } = response
-        this.curveList = dataList
-      })
+    })
+    // 加载曲线列表
+    getCurveList().then(response => {
+      this.curveList = response
     })
   },
   methods: {
     clickRow(row) {
       this.radio = row.id
-      this.$store.commit('valuationCurveRelation/setCopyRelation',
-        { targetValue: row.curveId,
-          relativeValue: row.relativeCurveId })
     },
     load() {
       queryCurveRelationList({ page: this.page }).then(response => {
@@ -134,12 +130,11 @@ export default {
     },
     // 保存 曲线关系规则
     save() {
-      if (this.$refs.recAddRulesForm.verify() === true) {
-        this.$refs.recAddRulesForm.save().then(
-          this.load()
-        )
-        this.addRulesVisible = false
-      }
+      this.$refs.recAddRulesForm.save()
+    },
+    saveCallBack() {
+      this.addRulesVisible = false
+      this.load()
     },
     // 删除曲线规则
     delCurveRelation(id) {
@@ -148,8 +143,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delCurveRelation({ id: id, busiStatus: '05' })
-        this.load()
+        delCurveRelation({ id: id, busiStatus: '05' }).then(response => {
+          this.load()
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -164,8 +160,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '02' }).then(
+        editCurveRelationBusiStatus({ id: id, busiStatus: '02' }).then(response => {
           this.load()
+        }
         )
       }).catch(() => {
         this.$message({
@@ -181,8 +178,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        editCurveRelationBusiStatus({ id: id, busiStatus: '03' })
-        this.load()
+        editCurveRelationBusiStatus({ id: id, busiStatus: '03' }).then(response => {
+          this.load()
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -197,9 +195,9 @@ export default {
       })
     },
     add() {
+      this.disabled = false
       this.relationId = ''
-      this.targetValue = ''
-      this.relativeValue = ''
+      this.isCopy = false
       this.addRulesVisible = true
     },
     copyAdd() {
@@ -209,16 +207,16 @@ export default {
           message: '请选中要复制的曲线关系规则'
         })
       } else {
-        this.relationId = ''
-        this.targetValue = this.$store.state.valuationCurveRelation.targetValue
-        this.relativeValue = this.$store.state.valuationCurveRelation.relativeValue
+        this.disabled = false
+        this.isCopy = true
+        this.relationId = this.radio
         this.addRulesVisible = true
       }
     },
-    edit(id, targetValue, relativeValue) {
+    edit(id) {
+      this.disabled = false
       this.relationId = id
-      this.targetValue = targetValue
-      this.relativeValue = relativeValue
+      this.isCopy = false
       this.addRulesVisible = true
     },
     handleSizeChange(pageSize) {

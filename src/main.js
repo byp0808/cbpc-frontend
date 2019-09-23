@@ -61,7 +61,7 @@ Object.defineProperty(Vue.prototype, '$dft', { value: dft })
 Vue.config.productionTip = false
 
 // ------------------------------------------------------------------------------------------------------------------->
-const cloudOn = true
+const cloudOn = false
 if (process.env.NODE_ENV === 'production') {
   // do nothing
   mockXHR()

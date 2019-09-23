@@ -59,8 +59,7 @@ export default {
   beforeMount() {
     if (this.businessId) {
       queryTaskRange(this.businessId).then(response => {
-        const { data } = response
-        this.ruleInfo = data
+        this.ruleInfo = response
       })
     }
   },
