@@ -47,7 +47,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
-          {{ $dft('TIME_ZONE', row.approveStatus) }}
+          {{ $dft('TIME_ZONE', row.timeZone) }}
         </template>
       </el-table-column>
       <el-table-column
