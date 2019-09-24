@@ -51,6 +51,7 @@
             设置
           </el-button>
           <el-button
+            v-if="checkStatus(scope.row.approveStatus)"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -61,7 +62,6 @@
             v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
             type="text"
             size="small"
-            @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
           >
             {{ statusText(scope.row.busiStatus) }}
           </el-button>
@@ -94,7 +94,7 @@
 
 <script>
 import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
-import { querykdTempList, deletekdTemp, switchStatus } from '@/api/curve/curve-kdtemp-list.js'
+import { querykdTempList, deletekdTemp } from '@/api/curve/curve-kdtemp-list.js'
 export default {
   name: 'KdTempList',
   components: {
@@ -136,11 +136,18 @@ export default {
         this.kdTempList = dataList
       })
     },
+    checkStatus(approveStatus) {
+      if (approveStatus === '01') {
+        return false
+      }
+      return true
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-    save() {
-      this.$refs.KdTempForm.save()
+    save(formName) {
+      this.kdTempId = ''
+      this.$refs.KdTempForm.save(formName)
     },
     cancel() {
       this.$store.commit('kdTemp/setkdTempInfo', {})
@@ -167,23 +174,14 @@ export default {
       })
     },
     toAdd() {
+      // console.log('toAdd')
+      this.kdTempId = ''
       this.$store.commit('kdTemp/setkdTempInfo', {})
       this.kdTempFormVisible = true
     },
     saveCallBack() {
       this.kdTempFormVisible = false
       this.loadTable()
-    },
-    changeStatus(status, id) {
-      if (status === '02') {
-        switchStatus({ id: id, busiStatus: '03' }).then(response => {
-          this.loadTable()
-        })
-      } else if (status === '03') {
-        switchStatus({ id: id, busiStatus: '02' }).then(response => {
-          this.loadTable()
-        })
-      }
     },
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'

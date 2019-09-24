@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <BondsNonpForm
+    <KdTempForm
       ref="refApprovalDialog"
       :business-id="businessNo"
       :disabled="disabled"
@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
-import { taskSubmit } from '@/api/valuation/bonds-nonp.js'
+import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
+import { taskSubmit } from '@/api/curve/curve-kdtemp-list.js'
 export default {
-  name: 'BondsNonpTask',
+  name: 'KdTempTask',
   components: {
-    BondsNonpForm
+    KdTempForm
   },
   data() {
     return {
