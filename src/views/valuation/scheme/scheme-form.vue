@@ -55,6 +55,7 @@ export default {
     return {
       valWays: [],
       schemeInfo: {
+        curveId: 'curve2',
         valuScene: '01',
         marketGrade: '',
         cdsPremAdjType: '01',
