@@ -18,17 +18,17 @@
       <el-table-column prop="prdName" label="产品名称" width="140" show-overflow-tooltip />
       <el-table-column prop="prdLineId" label="产品线" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.prdLineId | showCodeLabel('PRODUCT_LINE') }}
+          {{ $dft("PRODUCT_LINE", scope.row.prdLineId) }}
         </template>
       </el-table-column>
       <el-table-column prop="prdGrpId" label="产品组" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.prdGrpId | showCodeLabel('PRODUCT_GROUP') }}
+          {{ $dft("PRODUCT_GROUP", scope.row.prdGrpId) }}
         </template>
       </el-table-column>
       <el-table-column prop="prdBaseId" label="基础产品" width="140" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.prdBaseId | showCodeLabel('BASE_PRD_CODE') }}
+          {{ $dft("BASE_PRD_CODE", scope.row.prdBaseId) }}
         </template>
       </el-table-column>
       <el-table-column prop="prdStartDate" label="产品上市日期" width="120" show-overflow-tooltip>
@@ -43,12 +43,12 @@
       </el-table-column>
       <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.prdStatus | showCodeLabel('CURVE_PRODCUT_SATAUS') }}
+          {{ $dft("CURVE_PRODCUT_SATAUS", scope.row.prdStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.approveStatus | showCodeLabel('APPROVE_SATAUS') }}
+          {{ $dft("APPROVE_SATAUS", scope.row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
@@ -171,7 +171,7 @@ import { delCurveSample } from '@/api/curve/curve-sample.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
-  name: 'CurveList', // 曲线样本券列表
+  name: 'ProdList', // 产品列表
   components: {
     CurveProductForm,
     CurveSampleForm,
@@ -230,7 +230,6 @@ export default {
     },
     queryProductList() {
       queryALlProductList({ page: this.productList.page }).then(response => {
-        console.info('queryProductList.queryProductList...')
         const { dataList, page } = response
         this.productList.dataList = dataList
         this.productList.page = page
@@ -352,6 +351,12 @@ export default {
     confirmCurveInfoCallBack() {
       console.info('confirmCurveInfoCallBack')
       this.addCurveProductDefFormVisible = false
+      this.queryProductList()
+    },
+    // 产品宝确认回调
+    confirmValuationInfoCallBack() {
+      console.info('confirmValuationInfoCallBack')
+      this.addValuationProductDefFormVisible = false
       this.queryProductList()
     }
   }
