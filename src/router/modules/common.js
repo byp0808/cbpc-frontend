@@ -17,10 +17,23 @@ const commonsRouter = {
       component: () => import('@/views/common/order-info/order-info-list.vue'),
       name: 'OrderInfoList',
       meta: { title: '编制批次', noCache: true, roles: ['OrderInfoList'] }
-    }, {
+    },
+    {
       path: 'order-info-form',
       component: () => import('@/views/common/order-info/order-info-form.vue'),
       name: 'OrderInfoForm'
+    },
+    {
+      path: 'prod-view',
+      component: () => import('@/views/common/product/prod-view.vue'),
+      name: 'ProdView',
+      meta: { title: '查询产品', noCache: true }
+    },
+    {
+      path: 'tmpl-filter',
+      component: () => import('@/views/common/bond-filter/templates.vue'),
+      name: 'TmplFilter',
+      meta: { title: '债券筛选器模板', noCache: true }
     }
   ]
 }
