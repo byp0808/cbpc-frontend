@@ -14,14 +14,14 @@
             </el-select>
           </el-form-item>
           <el-form-item class="placeholder" label="推荐曲线">
-            <span>{{recCurveName}}</span>
+            <span>{{getCurveName(recCurveName)}}</span>
           </el-form-item>
         </div>
       </el-col>
       <el-col :span="8">
         <div class="grid-content bg-purple-dark">
           <el-form-item label="市场隐含评级">
-            <el-select v-model="normalInfo.marketGrade" placeholder="请选择">
+            <el-select v-model="normalInfo.marketGrade" placeholder="请选择" @change="marketGradeChange">
               <el-option
                 v-for="(name, key) in $dict('MARKET_GRADE')"
                 :key="key"
@@ -45,78 +45,78 @@
       </el-col>
     </el-row>
     <el-row :gutter="10">
-      <el-col :span="18">
-        <el-card class="box-card margin-top">
-          <div slot="header" class="clearfix card-head">
-            <h3>目标信用点差调整</h3>
-          </div>
-          <el-form-item label="调整方式" class="display-inline">
-            <el-select with="80%" size="small"  v-model="normalInfo.cdsPremAdjType" placeholder="请选择">
-              <el-option
-                v-for="(name, key) in $dict('ADJ_TYPE')"
-                :key="key"
-                :label="name"
-                :value="key"
-              />
-            </el-select>
+      <el-card class="box-card margin-top">
+        <div slot="header" class="clearfix card-head">
+          <h3>目标信用点差调整</h3>
+        </div>
+        <el-form-item label="调整方式" class="display-inline">
+          <el-select with="80%" size="small"  v-model="normalInfo.cdsPremAdjType" placeholder="请选择">
+            <el-option
+              v-for="(name, key) in $dict('ADJ_TYPE')"
+              :key="key"
+              :label="name"
+              :value="key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="normalInfo.cdsPremAdjType === '01'" class="display-inline" label="调整值">
+          <el-input-number size="small" v-model="normalInfo.cdsAdjValue" :min="1"/>
+        </el-form-item>
+        <template v-else-if="normalInfo.cdsPremAdjType === '02'">
+          <el-form-item label="初始点差" class="display-inline">
+            <el-input-number size="small" v-model="normalInfo.cdsSpread" :min="1" :max="10" @change="handleChange" />
           </el-form-item>
-          <el-form-item v-if="normalInfo.cdsPremAdjType === '01'" class="display-inline" label="调整值">
-            <el-input-number size="small" v-model="normalInfo.cdsAdjValue" :min="1"/>
+          <el-form-item label="最终点差" class="display-inline">
+            <el-input-number size="small" v-model="normalInfo.cdsTarget" :min="1" :max="10" @change="handleChange" />
           </el-form-item>
-          <template v-else-if="normalInfo.cdsPremAdjType === '02'">
-            <el-form-item label="初始点差" class="display-inline">
-              <el-input-number size="small" v-model="normalInfo.cdsSpread" :min="1" :max="10" @change="handleChange" />
+          <el-form-item label="调整幅度" class="display-inline">
+            <el-input-number size="small" v-model="normalInfo.cdsAdjValue" :min="1" :max="10" @change="handleChange" />
+          </el-form-item>
+        </template>
+        <el-row>
+          <el-form-item label="相对点差" size="small" class="display-inline">
+            <el-input-number v-model="normalInfo.relaSpread" :min="1" :max="10" @change="handleChange" />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item class="display-inline">
+            <el-button size="small" type="primary">选择市场价格</el-button>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="代偿期短">
+              <el-input v-model="input" placeholder="请输入内容" />
             </el-form-item>
-            <el-form-item label="最终点差" class="display-inline">
-              <el-input-number size="small" v-model="normalInfo.cdsTarget" :min="1" :max="10" @change="handleChange" />
+            <el-form-item label="全价">
+              <el-input v-model="input" placeholder="请输入内容" />
             </el-form-item>
-            <el-form-item label="调整幅度" class="display-inline">
-              <el-input-number size="small" v-model="normalInfo.cdsAdjValue" :min="1" :max="10" @change="handleChange" />
+            <el-form-item label="净价">
+              <el-input v-model="input" placeholder="请输入内容" />
             </el-form-item>
-          </template>
-          <el-row>
-            <el-form-item label="相对点差" size="small" class="display-inline">
-              <el-input-number v-model="normalInfo.relaSpread" :min="1" :max="10" @change="handleChange" />
+            <el-form-item label="收益率">
+              <el-input v-model="input" placeholder="请输入内容" />
             </el-form-item>
-          </el-row>
-          <el-row>
-            <el-form-item class="display-inline">
-              <el-button size="small" type="primary">选择市场价格</el-button>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="代偿期长">
+              <el-input v-model="input" placeholder="请输入内容" />
             </el-form-item>
-          </el-row>
-          <el-row>
-            <el-col :span="6">
-              <el-form-item label="代偿期短">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="全价">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="净价">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="收益率">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <el-form-item label="代偿期长">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="全价">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="净价">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="收益率">
-                <el-input v-model="input" placeholder="请输入内容" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
+            <el-form-item label="全价">
+              <el-input v-model="input" placeholder="请输入内容" />
+            </el-form-item>
+            <el-form-item label="净价">
+              <el-input v-model="input" placeholder="请输入内容" />
+            </el-form-item>
+            <el-form-item label="收益率">
+              <el-input v-model="input" placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-row>
+    <el-row :gutter="10">
+      <el-col :span="16">
         <el-card class="box-card margin-top">
           <div slot="header" class="clearfix card-head">
             <h3>其他点差</h3>
@@ -127,7 +127,21 @@
           <el-form-item label="目标其他点差">
             <el-input-number size="small" v-model="normalInfo.otAdjValue" :min="1" :max="10" @change="handleChange" />
           </el-form-item>
-          <el-form-item  label="">
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="box-card margin-top">
+          <el-form-item label="含权推荐方向">
+            <el-select v-model="normalInfo.recoDire" placeholder="请选择">
+              <el-option
+                v-for="(name, key) in $dict('RECO_DIRE')"
+                :key="key"
+                :label="name"
+                :value="key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="">
             <el-upload
               class="upload-demo"
               action="https://jsonplaceholder.typicode.com/posts/"
@@ -143,25 +157,13 @@
             </el-upload>
           </el-form-item>
         </el-card>
-        <el-card class="box-card margin-top">
-          <el-form-item label="含权推荐方向">
-            <el-select v-model="normalInfo.recoDire" placeholder="请选择">
-              <el-option
-                v-for="(name, key) in $dict('RECO_DIRE')"
-                :key="key"
-                :label="name"
-                :value="key"
-              />
-            </el-select>
-          </el-form-item>
-        </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { getCurveList } from '@/api/valuation/scheme.js'
+import { getCurveList, findCurveByMarketGrade } from '@/api/valuation/scheme.js'
 export default {
   name: 'ValuationSchemeNormal',
   props: {
@@ -175,7 +177,7 @@ export default {
   data() {
     return {
       isCover: true,
-      recCurveName: '推荐曲线',
+      recCurveName: this.schemeInfo.curveId,
       stockMarketGrade: '存量隐含评级',
       input: '',
       normalInfo: {
@@ -193,6 +195,14 @@ export default {
       curveList: []
     }
   },
+  computed: {
+    getCurveName() {
+      return function(curveId) {
+        const index = this.$lodash.findIndex(this.curveList, { id: curveId })
+        return index > -1 ? this.curveList[index].name : ''
+      }
+    }
+  },
   mounted() {
     const that = this
     getCurveList().then(response => {
@@ -203,6 +213,11 @@ export default {
   methods: {
     getData() {
       return this.normalInfo
+    },
+    marketGradeChange(value) {
+      findCurveByMarketGrade(value).then(respnse => {
+        this.normalInfo.curveId = respnse
+      })
     }
   }
 }
