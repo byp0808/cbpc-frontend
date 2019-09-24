@@ -61,6 +61,10 @@ const taskRouter = {
       path: 'curve-set-refer-task',
       component: () => import('@/views/curve/set/curve-set-refer-task.vue'),
       name: 'CurveSetReferTask'
+    }, {
+      path: 'curve-kdtemp-task',
+      component: () => import('@/views/curve/timetemp/curve-kdtemp-task.vue'),
+      name: 'KdTempTask'
     }
   ]
 }
