@@ -6,3 +6,6 @@ export const basic_api_valuation = '/pi-valuation'
 
 // 曲线服务基础路径
 export const basic_api_curve = '/pi-curve'
+
+// sys
+export const basic_api_portal = '/pi-sys'
