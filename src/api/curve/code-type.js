@@ -61,7 +61,7 @@ export function getCodeTypeList($this,codeType) {
   let dicts = []
 
   // 产品线，产品组有上下级关系，特殊处理
-  if (codeType != 'PRODUCT_GROUP' && codeType!= 'BASE_PRD_CODE') {
+  if (codeType != 'PRODUCT_GROUP' && codeType!= 'BASE_PRD_CODE' && codeType != 'MODEL') {
     if (typeof($this.$t) == "function") {
       dicts = $this.$t('dicts.' + codeType)
     } else if ( typeof($this) == "function" ) {
