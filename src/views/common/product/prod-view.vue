@@ -8,7 +8,7 @@
     </div>
     <el-table
       ref="multipleTable"
-      :data="productList.dataList"
+      :data="productList.dataList.filter(data => !input || data.prdId.toLowerCase().includes(input.toLowerCase()) ||data.prdName.toLowerCase().includes(input.toLowerCase())) "
       tooltip-effect="dark"
       style="width: 100%"
       @selection-change="handleSelectionChange"
