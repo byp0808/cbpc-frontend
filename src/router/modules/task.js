@@ -65,6 +65,10 @@ const taskRouter = {
       path: 'curve-kdtemp-task',
       component: () => import('@/views/curve/timetemp/curve-kdtemp-task.vue'),
       name: 'KdTempTask'
+    }, {
+      path: 'curve-nktemp-task',
+      component: () => import('@/views/curve/timetemp/curve-nktemp-task.vue'),
+      name: 'NkTempTask'
     }
   ]
 }

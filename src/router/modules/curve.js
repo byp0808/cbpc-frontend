@@ -28,7 +28,7 @@ const curveRouter = {
       component: () => import('@/views/curve/compute/curve-compute-index.vue'),
       name: 'CurveComputeIndex',
       meta: { title: '产品收益率计算', noCache: true }
-    },, {
+    }, {
       path: 'curve-set-homology',
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
       name: 'CurveSetHomology',
@@ -53,6 +53,11 @@ const curveRouter = {
       component: () => import('@/views/curve/timetemp/curve-kdtemp-list.vue'),
       name: 'CurveKdTempList',
       meta: { title: '关键期限模板', noCache: true }
+    }, {
+      path: 'curve-nktemp-list',
+      component: () => import('@/views/curve/timetemp/curve-nktemp-list.vue'),
+      name: 'CurveNkTempList',
+      meta: { title: '远期期限模板', noCache: true }
     }
   ]
 }

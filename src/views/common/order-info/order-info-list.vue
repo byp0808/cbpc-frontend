@@ -57,7 +57,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
-          {{ $dft('BASE_PRD_CODE', row.basePrd) }}
+          {{ $dft('TASK_BASE_PRD', row.basePrd) }}
         </template>
       </el-table-column>
       <el-table-column

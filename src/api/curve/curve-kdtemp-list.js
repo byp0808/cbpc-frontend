@@ -16,6 +16,7 @@ export function queryKdTemp(data) {
     data
   })
 }
+
 export function savekdTemp(data) {
   return request({
     url: `${basic_api_market}/curve-temp/kdsave`,
@@ -37,5 +38,17 @@ export function deletekdTemp(id) {
     url: `${basic_api_market}/curve-temp/kddrop/` + id,
     method: 'get',
     params: { id: id }
+  })
+}
+
+export function checkTempName(data) {
+  if (data.id) {
+    return
+  }
+  data.tempType = 'kd'
+  return request({
+    url: `${basic_api_market}/curve-temp/check-name`,
+    method: 'post',
+    data
   })
 }

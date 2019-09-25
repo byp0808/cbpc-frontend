@@ -76,9 +76,9 @@ export default {
 
       kdTempInfoRules: {
         tempName: [
-          { required: true, message: '请输入产品名称', trigger: 'blur' },
+          { required: true, message: '请输入规则名称', trigger: 'blur' },
           { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' }
-          // { validator: checkTempName, trigger: 'blur' }
+          // { validator: checkExist, trigger: 'blur' }
         ]
       },
 
