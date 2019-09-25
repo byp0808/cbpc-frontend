@@ -6,8 +6,9 @@
             </el-button>
         </div>
 
-        <el-table :data="curveHomologyDtoList" border highlight-current-row style="width: 1040px;">
-            <el-table-column label="曲线名称" width="370px">
+
+        <el-table :data="curveHomologyDtoList" tooltip-effect="dark" style="width: 100%">
+            <el-table-column label="曲线名称" width="400px">
                 <template slot-scope="scope">
                     <span>{{ scope.row.productName }}</span>
                 </template>
@@ -17,7 +18,7 @@
                     <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">详情</span>
                 </template>
             </el-table-column>
-            <el-table-column label="复核状态" width="149px" align="center">
+            <el-table-column label="复核状态" width="150px" align="center">
                 <template slot-scope="scope">
                     <span>{{ scope.row.approveStatus }}</span>
                 </template>
@@ -33,7 +34,15 @@
                 </template>
             </el-table-column>
         </el-table>
-
+        <el-pagination
+          :current-page="page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
         <el-dialog :visible.sync="dialogFormVisible" width="50%">
             <Homology
                     ref="homology"
@@ -58,6 +67,7 @@
     delcurveHomologyDto
   } from '@/api/curve/curve-product-list.js'
   import Homology from '@/views/curve/set/homology.vue'
+
   export default {
     name: "CurvecurveHomology",
     components: {
@@ -73,6 +83,10 @@
           lastUpdTs: ''
         },
         dialogFormVisible: false,
+        page: {
+          pageNumber: 1,
+          pageSize: 10
+        }
       }
     },
     created() {
@@ -81,7 +95,7 @@
     methods: {
       // 查询dto列表
       getCurveHomologyDtoList() {
-        querycurveHomologyDto().then(response => {
+        querycurveHomologyDto({ page: this.page }).then(response => {
           this.curveHomologyDtoList = response.dataList
           setTimeout(1.5 * 1000)
         })
@@ -89,7 +103,7 @@
 
       // 新建规则
       curveHomologyCreate() {
-        this.temp=[]
+        this.temp = []
         this.dialogFormVisible = true
       },
       // dto列表修改操作
@@ -111,7 +125,7 @@
       storageCurveHomology() {
         debugger
         var data = this.$refs.homology.obtainCurveHomology()
-        if(!data.curveHomologyList){
+        if (!data.curveHomologyList) {
           alert("请选择同调曲线！")
           return
         }
@@ -124,6 +138,14 @@
             showClose: true
           })
         })
+      },
+      handleSizeChange(pageSize) {
+        this.page.pageSize = pageSize
+        this.getCurveHomologyDtoList()
+      },
+      handleCurrentChange(currentPage) {
+        this.page.pageNumber = currentPage
+        this.getCurveHomologyDtoList()
       }
     }
   }

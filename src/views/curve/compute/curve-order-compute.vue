@@ -10,9 +10,10 @@
         <el-progress
           :text-inside="true"
           :stroke-width="26"
-          :percentage="50"
+          :percentage="percentage"
           status="success"
           :show-text="true"
+          style="color:black"
         />
       </div>
       <i class="el-icon-caret-right" />
@@ -89,23 +90,38 @@
       </el-table-column>
       <el-table-column prop="curveName" label="责任人" width="140" show-overflow-tooltip />
     </el-table>
+    <el-pagination
+      :current-page="page.pageNumber"
+      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-size="page.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="page.totalRecord"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 <script>
 // eslint-disable-next-line no-unused-vars
 import { getOrderList } from '@/api/curve/curve-product-order.js'
+import { calculatCompletionRate, queryCurveOrderComputeList } from '@/api/curve/curve-order-compute.js'
 
 export default {
   // eslint-disable-next-line vue/require-prop-types
   props: ['orderId', 'orderInfo'],
   data() {
     return {
+      percentage: 0,
       queryForm: {
         curveName: '',
         buildType: '1',
         buildStatus: ''
       },
-      curveOrderList: []
+      curveOrderList: [],
+      page: {
+        pageNumber: 1,
+        pageSize: 10
+      }
     }
   },
   computed: {},
@@ -115,6 +131,10 @@ export default {
 
     // 初始化批次计算列表
     this.initOrderTable()
+  },
+  created() {
+    this.getCurveOrderComputeList()
+    this.calculatCompletionRate()
   },
   methods: {
     // 初始化批次计算列表
@@ -126,7 +146,40 @@ export default {
     },
     // 查询
     query() {
-
+      this.getCurveOrderComputeList()
+    },
+    getCurveOrderComputeList() {
+      var data = {
+        productName: this.queryForm.curveName,
+        cureveBuildStatus: this.queryForm.buildStatus,
+        buildType: this.queryForm.buildType,
+        page: this.page
+      }
+      queryCurveOrderComputeList(data).then(response => {
+        this.curveOrderList = response.dataList
+        setTimeout(1.5 * 1000)
+      })
+    },
+    // 计算曲线收益完成率
+    calculatCompletionRate() {
+      var data = {
+        productName: this.queryForm.curveName,
+        cureveBuildStatus: this.queryForm.buildStatus,
+        buildType: this.queryForm.buildType,
+        page: this.page
+      }
+      calculatCompletionRate(data).then(response => {
+        this.percentage = response
+        setTimeout(1.5 * 1000)
+      })
+    },
+    handleSizeChange(pageSize) {
+      this.page.pageSize = pageSize
+      this.getCurveOrderComputeList()
+    },
+    handleCurrentChange(currentPage) {
+      this.page.pageNumber = currentPage
+      this.getCurveOrderComputeList()
     }
   }
 }

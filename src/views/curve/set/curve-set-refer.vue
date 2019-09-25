@@ -6,7 +6,7 @@
             </el-button>
         </div>
 
-        <el-table :data="curveReferDtoList" border highlight-current-row style="width: 1040px;">
+        <el-table :data="curveReferDtoList" tooltip-effect="dark" style="width: 100%">
             <el-table-column label="曲线名称" width="370px">
                 <template slot-scope="scope">
                     <span>{{ scope.row.productName }}</span>
@@ -33,6 +33,15 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
 
         <el-dialog :visible.sync="dialogFormVisible" width="50%">
             <Refer
@@ -73,6 +82,10 @@
           lastUpdTs: ''
         },
         dialogFormVisible: false,
+        page: {
+          pageNumber: 1,
+          pageSize: 10
+        }
       }
     },
     created() {
@@ -81,7 +94,7 @@
     methods: {
       // 查询dto列表
       getCurveReferDtoList() {
-        queryCurveReferDto().then(response => {
+        queryCurveReferDto({ page: this.page }).then(response => {
           this.curveReferDtoList = response.dataList
           setTimeout(1.5 * 1000)
         })
@@ -124,6 +137,14 @@
             showClose: true
           })
         })
+      },
+      handleSizeChange(pageSize) {
+        this.page.pageSize = pageSize
+        this.getCurveReferDtoList()
+      },
+      handleCurrentChange(currentPage) {
+        this.page.pageNumber = currentPage
+        this.getCurveReferDtoList()
       }
     }
   }
