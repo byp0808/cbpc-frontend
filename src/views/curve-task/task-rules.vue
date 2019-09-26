@@ -124,24 +124,15 @@
 
 <script>
 import { queryCurveTaskRules, selectCurve, selectCurveOrder, selectPerson, updateTaskRules } from '@/api/curve/curve'
-import { basic_api_curve } from '@/api/common/common'
+import { basic_api_curve } from '@/api/base-api'
 import Pagination from '@/components/Pagination'
 import { downloadFile, uploadFile } from '@/utils/request-client'
-import uuid from 'uuid/v4'
 
 export default {
   name: 'TaskRules',
   components: { Pagination },
   data() {
     return {
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_curve}/curve/importCurveTasks`,
-      com: {
-        com: {
-          version: '1.0.0',
-          globalReqNumber: uuid(),
-          sysIsEncrypted: '01'
-        }
-      },
       task: {
         search_productName_LIKE: '',
         search_curveId_EQ: '',
