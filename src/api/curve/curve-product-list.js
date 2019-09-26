@@ -136,10 +136,11 @@ export function defCurvePeriod(data) {
 }
 
 // 查询同调曲线dto列表
-export function querycurveHomologyDto(){
+export function querycurveHomologyDto(data){
   return request({
     url: `${basic_api_curve}/curveHomology/queryCurveHomologyDto`,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 
@@ -180,10 +181,11 @@ export function finishHomology(data) {
 
 
 // 查询参考曲线dto列表
-export function queryCurveReferDto(){
+export function queryCurveReferDto(data){
   return request({
     url: `${basic_api_curve}/curveRefer/queryCurveReferDto`,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <KdTempForm
+    <NkTempForm
       ref="refApprovalDialog"
       :business-id="businessNo"
       :disabled="disabled"
@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
-import { taskSubmit } from '@/api/curve/curve-kdtemp-list.js'
+import NkTempForm from '@/views/curve/timetemp/curve-nktemp-form.vue'
+import { taskSubmit } from '@/api/curve/curve-nktemp-list.js'
 export default {
-  name: 'KdTempTask',
+  name: 'NkTempTask',
   components: {
-    KdTempForm
+    NkTempForm
   },
   data() {
     return {

@@ -8,7 +8,7 @@
  * @param one
  * @returns {*}
  */
-export function showCodeLabel(value, codeType,$t) {
+export function showCodeLabel(value, codeType, $t) {
   const typeList = getCodeTypeList($t, codeType)
   var label = ''
   if (typeList && typeList.length > 0) {
@@ -29,9 +29,9 @@ export function showCodeLabel(value, codeType,$t) {
 /**
  * 获取码值列表
  */
-export function optioins($this,codeType, parent) {
+export function optioins($this, codeType, parent) {
   // console.info('codeType:' + codeType + ',parent:' + parent)
-  var typeList = getCodeTypeList($this,codeType)
+  var typeList = getCodeTypeList($this, codeType)
   var options = []
   if (typeList && typeList.length > 0) {
     // 根据parnt获取值
@@ -54,24 +54,24 @@ export function optioins($this,codeType, parent) {
  * 前期为临时数据，后期需要改为从缓存、实时接口中获取数据
  */
 import * as CODE_TYPES from '@/api/curve/code-type-data.js'
-export function getCodeTypeList($this,codeType) {
+export function getCodeTypeList($this, codeType) {
   // console.info('getCodeTypeList....CODE_TYPE【' + codeType + '】')
   // 从缓存中获取数据字典
   // const dictElement = $this.$store.state.app.dict[codeType]
   let dicts = []
 
   // 产品线，产品组有上下级关系，特殊处理
-  if (codeType != 'PRODUCT_GROUP' && codeType!= 'BASE_PRD_CODE') {
-    if (typeof($this.$t) == "function") {
+  if (codeType !== 'PRODUCT_GROUP' && codeType !== 'BASE_PRD_CODE' && codeType !== 'MODEL') {
+    if ( typeof($this.$t) === 'function') {
       dicts = $this.$t('dicts.' + codeType)
-    } else if ( typeof($this) == "function" ) {
+    } else if (typeof($this) === 'function') {
       dicts = this.$i18n.t('dicts.' + codeType)
     }
   }
 
   var options = []
-  if (typeof(dicts) != 'string') {
-    for(var key in dicts) {
+  if ( typeof(dicts) !== 'string') {
+    for (var key in dicts) {
       options.push({ value: key, label: dicts[key] })
     }
   }

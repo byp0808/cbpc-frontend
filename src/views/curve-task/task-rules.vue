@@ -1,0 +1,278 @@
+<template>
+  <div class="margin-top">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>曲线任务分配规则</span>
+      </div>
+      <el-form ref="task" :model="task" label-width="120px">
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="曲线名称" prop="search_productName_LIKE">
+              <el-autocomplete
+                v-model="task.search_productName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch"
+                placeholder="请输入曲线名称"
+                @select="handleSelect"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="批次" prop="search_curveOrderId_EQ">
+              <el-select v-model="task.search_curveOrderId_EQ">
+                <el-option
+                  v-for="item in order.options"
+                  :key="item.curveOrderId"
+                  :label="item.curveOrderId"
+                  :value="item.curveOrderId"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="责任人" prop="search_assignName_LIKE">
+              <el-autocomplete
+                v-model="task.search_assignName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="queryPersonSearch"
+                placeholder="请输入责任人"
+                :trigger-on-focus="false"
+                @select="handlePersonSelect"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :offset="12">
+            <el-button type="primary" icon="el-icon-refresh" @click="getList">查询</el-button>
+            <el-button type="primary" @click="download">下载分配规则</el-button>
+            <el-upload
+              style="display: inline-block;"
+              action=""
+              :multiple="false"
+              name="attach"
+              :http-request="upload"
+              :show-file-list="false"
+              :accept="'excel'"
+            >
+              <el-button type="primary">导入分配规则</el-button>
+            </el-upload>
+            <el-button type="primary" @click="openDialog(null, true)">批量保存</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+    <el-card class="box-card">
+      <el-table v-loading="listLoading" :data="list" size="mini" border fit highlight-current-row style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="39" />
+        <el-table-column label="曲线名称" width="200">
+          <template slot-scope="{ row }">
+            <span>{{ row.productName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="曲线产品状态">
+          <template slot-scope="{ row }">
+            <span>{{ $dft('CURVE_PRODUCT_STATUS', row.prdStatus) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="批次">
+          <template slot-scope="{ row }">
+            <span>{{ row.curveOrderName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="批次状态">
+          <template slot-scope="{ row }">
+            <span>{{ makeValid(row.validFlag) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="责任人">
+          <template slot-scope="{ row }">
+            <span>{{ row.assignName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="操作" width="180">
+          <template slot-scope="{ row }">
+            <el-button type="primary" size="mini" @click="openDialog(row)">
+              保存
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" @pagination="getList" />
+    </el-card>
+    <el-dialog title="分配责任人" :visible.sync="dialogFormVisible">
+      <el-form :model="person">
+        <el-form-item label="责任人" prop="username">
+          <el-autocomplete
+            v-model="person.username"
+            class="inline-input"
+            :value-key="'label'"
+            :fetch-suggestions="queryPersonSearch"
+            placeholder="请输入责任人"
+            :trigger-on-focus="false"
+            @select="handlePersonSelect2"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="distribute">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { queryCurveTaskRules, selectCurve, selectCurveOrder, selectPerson, updateTaskRules } from '@/api/curve/curve'
+import { basic_api_curve } from '@/api/base-api'
+import Pagination from '@/components/Pagination'
+import { downloadFile, uploadFile } from '@/utils/request-client'
+
+export default {
+  name: 'TaskRules',
+  components: { Pagination },
+  data() {
+    return {
+      task: {
+        search_productName_LIKE: '',
+        search_curveId_EQ: '',
+        search_curveOrderId_EQ: '',
+        search_assignName_LIKE: '',
+        search_assign_EQ: ''
+      },
+      order: {
+        options: []
+      },
+      person: {
+        username: '',
+        userId: ''
+      },
+      list: [],
+      total: 0,
+      listLoading: true,
+      listQuery: {
+        pageNumber: 1,
+        pageSize: 20
+      },
+      selection: [],
+      isMultiple: false,
+      multipleSelection: [],
+      dialogFormVisible: false,
+      curveList: [],
+      personList: []
+    }
+  },
+  created() {
+    this.getList()
+  },
+  mounted() {
+    this.getCurveList()
+  },
+  methods: {
+    getList() {
+      this.listLoading = true
+      queryCurveTaskRules(Object.assign(this.task, { page: this.listQuery })).then(response => {
+        this.list = response.dataList
+        this.total = response.page.totalRecord
+        this.listLoading = false
+      })
+    },
+    makeValid(value) {
+      const dict = { Y: '启用', N: '禁用' }
+      return dict[value]
+    },
+    getCurveList() {
+      selectCurve({ page: { pageNumber: 1, pageSize: 10 }}).then(response => {
+        this.curveList = response.dataList.map(i => {
+          return { value: i.curveId, label: i.productName }
+        })
+      })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    querySearch(queryString, cb) {
+      const data = queryString ? { search_productName_LIKE: queryString } : {}
+      selectCurve(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
+        const results = response.dataList.map(i => {
+          return { value: i.curveId, label: i.productName }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
+    },
+    handleSelect(item) {
+      this.task.search_curveId_EQ = item.value
+      selectCurveOrder({ curveId: item.value }).then(response => {
+        this.order.options = response
+      })
+    },
+    queryPersonSearch(queryString, cb) {
+      const data = queryString ? { userName: queryString } : {}
+      selectPerson(data).then(response => {
+        const results = response.map(i => {
+          return { value: i.userId, label: i.userName }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
+    },
+    handlePersonSelect(item) {
+      this.task.search_assign_EQ = item.value
+    },
+    handlePersonSelect2(item) {
+      this.person.userId = item.value
+    },
+    openDialog(item, val) {
+      this.isMultiple = val || false
+      if (!this.isMultiple) this.selection = item
+      if (this.isMultiple && this.multipleSelection.length < 1) {
+        this.$message({
+          message: '你没有选中任何记录，请先选择',
+          center: true,
+          type: 'warning'
+        })
+        return
+      }
+      this.dialogFormVisible = true
+    },
+    distribute() {
+      const data = []
+      if (this.isMultiple) {
+        this.multipleSelection.map(i => {
+          data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
+        })
+      } else {
+        const i = Object.assign({}, this.selection, { assign: this.person.userId, assignName: this.person.username })
+        data.push(i)
+      }
+      updateTaskRules(data).then(() => {
+        this.getList()
+      })
+      this.dialogFormVisible = false
+    },
+    download() {
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks')
+    },
+    upload(param) {
+      const data = new FormData()
+      data.append('files', param.file)
+      uploadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/importCurveTasks', data)
+        .then(() => {
+          this.$message({
+            showClose: true,
+            message: '上传成功。',
+            type: 'success'
+          })
+        })
+        .catch(() => {
+          this.$message.error('上传失败，请联系管理员')
+        })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

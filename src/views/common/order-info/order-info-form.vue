@@ -14,7 +14,7 @@
               <el-form-item label="所属基础产品" prop="basePrd">
                 <el-select v-model="orderInfoForm.basePrd" :disabled="disabled" placeholder="请选择所属基础产品" style="width: 100%">
                   <el-option
-                    v-for="(name, key) in $dict('BASE_PRD_CODE')"
+                    v-for="(name, key) in $dict('TASK_BASE_PRD')"
                     :key="key"
                     :label="name"
                     :value="key"
