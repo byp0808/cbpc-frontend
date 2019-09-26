@@ -258,8 +258,8 @@
 import { basic_path } from '@/api/common/common.js'
 import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById } from '@/api/common/bond-filter.js'
 export default {
-  name: 'BondFilter',
-  props: ['filterId', 'disabled'],
+  name: 'FlowFilter',
+  //   props: ['filterId', 'disabled'],
   data() {
     return {
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_path}/bond-filter/batch-in`,

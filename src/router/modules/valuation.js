@@ -85,6 +85,11 @@ const valuationRouter = {
       component: () => import('@/views/valuation/scheme/scheme-form.vue'),
       name: 'ValuationSchemeForm',
       meta: { title: '估值方案', noCache: true }
+    }, {
+      path: '/flow-recommend',
+      component: () => import('@/views/valuation/flow-difference/flow-recommend.vue'),
+      name: 'FlowDifference',
+      meta: { title: '调整流动性点差', noCache: true }
     }
   ]
 }
