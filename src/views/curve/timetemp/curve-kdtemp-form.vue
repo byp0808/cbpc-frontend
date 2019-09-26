@@ -58,12 +58,12 @@ export default {
   data() {
     const generateData = _ => {
       const data = this.$dict('KD_TYPE')
-      console.log(data)
+      // console.log(data, typeof (data))
       const unpick = []
-      for (var i in data) {
+      for (var key in data) {
         unpick.push({
-          key: data[i],
-          lable: data[i]
+          key: data[key],
+          lable: data[key]
         })
       }
       return unpick
@@ -76,9 +76,16 @@ export default {
 
       kdTempInfoRules: {
         tempName: [
-          { required: true, message: '请输入产品名称', trigger: 'blur' },
+          { required: true, message: '请输入规则名称', trigger: 'blur' },
           { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' }
+          // { validator: checkExist, trigger: 'blur' }
         ]
+      },
+
+      reqData: {
+        id: '',
+        tempType: 'kd',
+        rules: []
       }
     }
   },
@@ -94,8 +101,15 @@ export default {
   },
   beforeMount() {
     if (this.businessId) {
-      queryKdTemp(this.businessId).then(response => {
+      this.reqData.id = this.businessId
+      this.reqData.tempType = 'kd'
+      this.reqData.rules = this.kdrule.unpick
+      const data = this.reqData
+      queryKdTemp(data).then(response => {
         this.$store.commit('kdTemp/setkdTempInfo', response)
+        const { picked } = response
+        this.kdrule.picked = picked
+        // console.log(this.kdrule.picked)
       })
     }
   },
@@ -105,15 +119,17 @@ export default {
         if (valid) {
           const data = this.kdTempInfo
           var standSlip = []
-          for (var i in this.kdrule.picked) {
-            if (this.kdrule.picked[i] === '0') {
-              standSlip += this.kdrule.picked[i] + 'd;'
+          var picked = this.kdrule.picked.sort(this.sortNum)
+          // console.log(picked)
+          for (var i in picked) {
+            if (picked[i] === '0') {
+              standSlip += picked[i] + 'd;'
             } else {
-              standSlip += this.kdrule.picked[i] + 'Y;'
+              standSlip += picked[i] + 'Y;'
             }
           }
           data.standSlip = standSlip
-          console.log(this.kdrule.picked)
+          // console.log(this.kdrule.picked)
           savekdTemp(data).then(response => {
             this.$emit('saveCallBack')
             this.$message({
@@ -127,6 +143,9 @@ export default {
           return false
         }
       })
+    },
+    sortNum(a, b) {
+      return a - b
     }
   }
 }

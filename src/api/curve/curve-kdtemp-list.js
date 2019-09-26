@@ -11,11 +11,12 @@ export function querykdTempList(data) {
 
 export function queryKdTemp(data) {
   return request({
-    url: `${basic_api_market}/bonds-nonp/get-one`,
+    url: `${basic_api_market}/curve-temp/get-one`,
     method: 'post',
     data
   })
 }
+
 export function savekdTemp(data) {
   return request({
     url: `${basic_api_market}/curve-temp/kdsave`,
@@ -26,7 +27,7 @@ export function savekdTemp(data) {
 
 export function taskSubmit(data) {
   return request({
-    url: `${basic_api_market}/bonds-nonp/roam-task`,
+    url: `${basic_api_market}/curve-temp/kdcheck`,
     method: 'post',
     data
   })
@@ -40,17 +41,13 @@ export function deletekdTemp(id) {
   })
 }
 
-export function switchStatus(data) {
+export function checkTempName(data) {
+  if (data.id) {
+    return
+  }
+  data.tempType = 'kd'
   return request({
-    url: `${basic_api_market}/bonds-nonp/switch`,
-    method: 'post',
-    data
-  })
-}
-
-export function queryBondsById(data) {
-  return request({
-    url: `${basic_api_market}/bonds-nonp/bonds-attr`,
+    url: `${basic_api_market}/curve-temp/check-name`,
     method: 'post',
     data
   })

@@ -84,7 +84,7 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 } else {
   sessionStorage.setItem('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjgyMDEzNTAsInVzZXJJZCI6ImFkbWluIiwib3JnSWQiOiIwMDAwMSIsInVzZXJuYW1lIjoi566h55CG5ZGYIn0.nDO2L6DjpiTZO6hCmLuL1BbZi-GNnej1Cqvp-wIi2bM')
-  // mockXHR()
+  mockXHR()
 }
 
 const token = sessionStorage.getItem('token')
@@ -116,7 +116,7 @@ if (cloudOn) {
       VAL_SCENE: { '01': '正常', '02': '清算', '03': '成本' },
       MARKET_GRADE: { '01': 'AAA', '02': 'AAA-', '03': 'AA', '04': 'A' },
       ADJ_TYPE: { '01': '常规调整', '02': '多次调整' },
-      RECO_DIRE: { '': '不进行含权推荐', '01': '推荐长', '02': '推荐短' }
+      RECO_DIRE: { '01': '不进行含权推荐', '02': '推荐长', '03': '推荐短' }
     }})
     resolve()
   })
