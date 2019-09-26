@@ -50,6 +50,11 @@ const taskRouter = {
       component: () => import('@/views/valuation/task-allocation/rule-set-task.vue'),
       name: 'RuleSetTask'
     }, {
+      path: 'flow-task',
+      component: () => import('@/views/valuation/flow-difference/flow-task.vue'),
+      name: 'FlowTask'
+    },
+    {
       path: 'personnel-set-task',
       component: () => import('@/views/valuation/task-allocation/personnel-set-task.vue'),
       name: 'PersonnelSetTask'

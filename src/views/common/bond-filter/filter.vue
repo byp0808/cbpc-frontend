@@ -260,6 +260,16 @@ import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFil
 export default {
   name: 'BondFilter',
   props: ['filterId', 'disabled'],
+  // props: {
+  //   filterId: {
+  //     type: String,
+  //     default: ''
+  //   },
+  //   disabled: {
+  //     type: Boolean,
+  //     default: false
+  //   }
+  // },
   data() {
     return {
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_path}/bond-filter/batch-in`,
