@@ -9,9 +9,9 @@
           :value="temp.id"
         />
       </el-select>
-      <el-button type="primary" @click="applicationTemp">应用模板</el-button>
-      <el-button type="primary" @click="screenBonds">债券筛选</el-button>
-      <el-button type="danger" @click="empty">清空所有条件</el-button>
+      <el-button type="primary" :disabled="disabled" @click="applicationTemp">应用模板</el-button>
+      <el-button type="primary" :disabled="disabled" @click="screenBonds">债券筛选</el-button>
+      <el-button type="danger" :disabled="disabled" @click="empty">清空所有条件</el-button>
     </el-card>
     <el-row :gutter="10">
       <el-col :span="8">
@@ -19,7 +19,7 @@
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
               <span>规则指标</span>
-              <el-button type="primary" @click="toRules">设置</el-button>
+              <el-button type="primary" :disabled="disabled" @click="toRules">设置</el-button>
               <el-dialog v-if="ruleFilterVisible" width="50%" title="设置规则指标" :visible.sync="ruleFilterVisible" append-to-body>
                 <el-card class="box-card margin-top">
                   <el-table
@@ -80,6 +80,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="setRuleValue(scope.$index, ruleList)"
                   >
                     设置
@@ -87,6 +88,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="emptyRuleValue(scope.$index, ruleList)"
                   >
                     清空
@@ -120,6 +122,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListResult)"
                   >
                     移入黑名单
@@ -143,7 +146,7 @@
                 :on-success="uploadBlackList"
                 :show-file-list="false"
               >
-                <el-button size="mini" type="primary">批量添加</el-button>
+                <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
               </el-upload>
               <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
@@ -173,6 +176,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="delRow(scope.$index, blackList)"
                   >
                     移出黑名单
@@ -192,7 +196,7 @@
                 :on-success="uploadWhiteList"
                 :show-file-list="false"
               >
-                <el-button size="mini" type="primary">批量添加</el-button>
+                <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
               </el-upload>
               <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
@@ -217,6 +221,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="delRow(scope.$index, whiteList)"
                   >
                     移出白名单
@@ -252,7 +257,7 @@
                   <el-button
                     type="text"
                     size="small"
-                    :disabled="test()"
+                    :disabled="disabled"
                     @click.native.prevent="mvToWhiteList(scope.$index, bondListAll)"
                   >
                     移入白名单
@@ -260,6 +265,7 @@
                   <el-button
                     type="text"
                     size="small"
+                    :disabled="disabled"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListAll)"
                   >
                     移入黑名单
@@ -275,11 +281,11 @@
 </template>
 
 <script>
-import { basic_path } from '@/api/common/common.js'
+import { basic_api_market } from '@/api/base-api.js'
 import { addTempList, queryTempList, queryTempInfo, queryBondsAll, queryBondsResult } from '@/api/common/bond-filter-tmpl.js'
 export default {
   name: 'TmpBondFilter',
-  props: ['filterId'],
+  props: ['filterId', 'disabled'],
   data() {
     return {
       ruleFilterVisible: false,
@@ -287,7 +293,7 @@ export default {
       ruleTags: [],
       othRuleList: [{ id: 1, ruleValue: '标签一' }, { id: 2, ruleValue: '标签二' }, { id: 3, ruleValue: '标签三' }, { id: 4, ruleValue: '标签4' }, { id: 5, ruleValue: '标签5' }],
       allRuleList: [],
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_path}/bond-filter/batch-in`,
+      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/bond-filter/batch-in`,
       bondTempSelect: {
         bondTemps: [],
         tempNo: ''

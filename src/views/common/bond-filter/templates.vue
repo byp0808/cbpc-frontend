@@ -6,7 +6,7 @@
     </div>
     <el-table
       ref="refTblBondFilter"
-      :data="bondTempFilters"
+      :data="bondTempFilters.dataList"
       tooltip-effect="dark"
       style="width: 100%"
       @selection-change="handleSelectionChange"
@@ -16,12 +16,7 @@
         width="55"
       />
       <el-table-column
-        prop="id"
-        label="模板ID"
-        width="100"
-      />
-      <el-table-column
-        prop="filterName"
+        prop="tempName"
         label="模板名称"
         width="100"
       />
@@ -45,7 +40,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="blacklist"
+        prop="black"
         label="黑名单"
         width="120"
         show-overflow-tooltip
@@ -59,7 +54,11 @@
         label="状态"
         width="120"
         show-overflow-tooltip
-      />
+      >
+        <template slot-scope="scope">
+          {{ $dft("APPROVE_SATAUS", scope.row.status) }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="address"
         label="操作"
@@ -70,31 +69,41 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDetail(scope.row.tempId, true)"
+          >
+            查看
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="toDetail(scope.row.tempId, false)"
           >
             编辑
           </el-button>
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDelete(scope.row.tempId,scope.row.tempName)"
           >
             删除
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="mvToBlackList(scope.$index, bondListAll)"
-          >
-            停用
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      :current-page="bondTempFilters.page.pageNumber"
+      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-size="bondTempFilters.page.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="bondTempFilters.page.totalRecord"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
     <el-dialog v-if="bondFilterVisible" width="92%" title="新增债券筛选器模板" :visible.sync="bondFilterVisible">
       <TmpBondFilter
         ref="refTmpBondFilter"
-        :filter-id="tempNo"
+        :filter-id="tempId"
+        :disabled="disabled"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="bondFilterVisible = false">取 消</el-button>
@@ -106,7 +115,7 @@
 
 <script>
 import TmpBondFilter from '@/views/common/bond-filter/filter-tmpl.vue'
-import { queryAllTempLists } from '@/api/common/bond-filter-tmpl.js'
+import { queryAllTempLists, deleteByTempId } from '@/api/common/bond-filter-tmpl.js'
 export default {
   name: 'TEMPLATES',
   components: {
@@ -115,12 +124,17 @@ export default {
   data() {
     return {
       bondFilterVisible: false,
-      tempNo: '',
-      filterName: '',
-      bondTempFilters: [],
-      blackList: [],
-      whiteList: [],
-      ruleList: []
+      tempId: '',
+      disabled: '',
+      tempName: '',
+      bondTempFilters: {
+        dataList: [],
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
+      }
     }
   },
   computed: {
@@ -129,17 +143,31 @@ export default {
     this.loadTable()
   },
   methods: {
+    handleSizeChange(pageSize) {
+      this.bondTempFilters.page.pageSize = pageSize
+      this.loadTable()
+    },
+    handleCurrentChange(currentPage) {
+      this.bondTempFilters.page.pageNumber = currentPage
+      this.loadTable()
+    },
+
     loadTable() {
-      queryAllTempLists().then(response => {
-        const { datalist } = response
-        this.bondTempFilters = datalist
+      queryAllTempLists({ page: this.bondTempFilters.page }).then(response => {
+        const { dataList, page } = response
+        this.bondTempFilters.dataList = dataList
+        this.bondTempFilters.page = page
       })
     },
     save() {
+      if (this.disabled) {
+        this.bondFilterVisible = false
+        return
+      }
       this.$prompt('请输入模板名称', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputValue: this.filterName
+        inputValue: this.tempName
       }).then(({ value }) => {
         this.$refs.refTmpBondFilter.save(value)
       }).catch(() => {
@@ -149,8 +177,28 @@ export default {
         })
       })
     },
+    toDelete(tempId, tempName) {
+      this.$prompt('确定删除如下模板信息', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: tempName
+      }).then(async() => {
+        await deleteByTempId(tempId)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.loadTable()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '删除失败'
+        })
+      })
+    },
     ruleDetail(index) {
-      const list = this.bondTempFilters[index].rules
+      console.log(this.bondTempFilters.dataList[index].rules)
+      const list = this.bondTempFilters.dataList[index].rules
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
         ruleDetail += value.ruleCode + ' = ' + value.ruleValue
@@ -161,7 +209,7 @@ export default {
       return ruleDetail
     },
     whiteDetail(index) {
-      const list = this.bondTempFilters[index].white
+      const list = this.bondTempFilters.dataList[index].white
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
         ruleDetail += value.bondNo
@@ -172,7 +220,7 @@ export default {
       return ruleDetail
     },
     blackDetail(index) {
-      const list = this.bondTempFilters[index].black
+      const list = this.bondTempFilters.dataList[index].black
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
         ruleDetail += value.bondNo
@@ -182,16 +230,17 @@ export default {
       })
       return ruleDetail
     },
-    toDetail(id) {
-      console.log('toDetail' + id)
-      this.tempNo = id
+    toDetail(id, disabled) {
+      console.log('toDetail' + id + disabled)
+      this.tempId = id
+      this.disabled = disabled
       this.bondFilterVisible = true
     },
     toAdd() {
       this.bondFilterVisible = true
     },
     toAddNew() {
-      this.tempNo = null
+      this.tempId = null
       this.$refs.refTblBondFilter.clearSelection()
       this.bondFilterVisible = true
     },
@@ -200,13 +249,14 @@ export default {
       this.loadTable()
     },
     handleSelectionChange(row) {
-      this.tempNo = row.map(i => {
-        return i.filterId
+      this.tempId = row.map(i => {
+        return i.tempId
       })
-      this.filterName = row.map(i => {
-        return i.filterName
+      this.tempName = row.map(i => {
+        return i.tempName
       })
-      console.log(this.filterName)
+      console.log(this.tempId)
+      console.log(this.tempName)
     }
   }
 }

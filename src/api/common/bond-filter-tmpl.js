@@ -1,10 +1,10 @@
-import request from '@/utils/request-client'
-import { basic_path } from '@/api/common/common.js'
+import request from '@/utils/app-request'
+import { basic_api_market } from '@/api/base-api.js'
 
 // 查询模板列表
 export function queryTempList(data) {
   return request({
-    url: `${basic_path}/tmpl-filter/tpl-list`,
+    url: `${basic_api_market}/tmpl-filter/tpl-list`,
     method: 'get',
     params: {}
   })
@@ -13,7 +13,7 @@ export function queryTempList(data) {
 // 查询模板列表
 export function queryTempInfo(data) {
   return request({
-    url: `${basic_path}/tmpl-filter/tpl-view`,
+    url: `${basic_api_market}/tmpl-filter/tpl-view`,
     method: 'post',
     data: data
   })
@@ -22,7 +22,7 @@ export function queryTempInfo(data) {
 // 查询所有的债券
 export function queryBondsAll(bondName) {
   return request({
-    url: `${basic_path}/tmpl-filter/bond-query`,
+    url: `${basic_api_market}/tmpl-filter/bond-query`,
     method: 'get',
     params: { bondName }
   })
@@ -31,7 +31,7 @@ export function queryBondsAll(bondName) {
 // 查询债券筛选结果
 export function queryBondsResult(data) {
   return request({
-    url: `${basic_path}/tmpl-filter/filter-result`,
+    url: `${basic_api_market}/tmpl-filter/filter-result`,
     method: 'post',
     data
   })
@@ -40,7 +40,7 @@ export function queryBondsResult(data) {
 // 根据筛选器Id 查筛选器详细信息
 export function queryFilterInfoById(filterId) {
   return request({
-    url: `${basic_path}/tmpl-filter/stored-filter`,
+    url: `${basic_api_market}/tmpl-filter/stored-filter`,
     method: 'get',
     params: { filterId }
   })
@@ -49,17 +49,26 @@ export function queryFilterInfoById(filterId) {
 // 保存模板
 export function addTempList(data) {
   return request({
-    url: `${basic_path}/tmpl-filter/save-filter`,
+    url: `${basic_api_market}/tmpl-filter/save-filter`,
     method: 'post',
     data
   })
 }
 
 // 查询所有模板信息
-export function queryAllTempLists() {
+export function queryAllTempLists(data) {
   return request({
-    url: `${basic_path}/tmpl-filter/all-list`,
+    url: `${basic_api_market}/tmpl-filter/all-list`,
     method: 'post',
-    params: {}
+    data
+  })
+}
+
+// 查询所有模板信息
+export function deleteByTempId(data) {
+  return request({
+    url: `${basic_api_market}/tmpl-filter/delete-filter`,
+    method: 'post',
+    data
   })
 }

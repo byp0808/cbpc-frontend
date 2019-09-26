@@ -236,7 +236,7 @@ export default {
       })
     },
     queryLikedProductList() {
-      queryProdByID({ page: this.productList.page, PRD_NAME: this.input }).then(response => {
+      queryProdByID({ page: this.productList.page, TEMP_NAME: this.input }).then(response => {
         console.info('queryProductList.queryProductList...')
         const { dataList, page } = response
         this.productList.dataList = dataList
