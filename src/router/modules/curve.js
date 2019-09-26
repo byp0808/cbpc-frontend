@@ -39,6 +39,11 @@ const curveRouter = {
       name: 'CurveSetHomology',
       meta: { title: '设置参考曲线', noCache: true }
     }, {
+      path: 'curve-task-rules',
+      component: () => import('@/views/curve-task/task-rules'),
+      name: 'CurveTaskRules',
+      meta: { title: '分配曲线规则', noCache: true }
+    }, {
       path: 'curve-all-task',
       component: () => import('@/views/curve-task/all-task-list'),
       name: 'CurveAllTask',
