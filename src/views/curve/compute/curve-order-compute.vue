@@ -55,6 +55,9 @@
         <el-form-item>
           <el-button type="primary" @click="query">查询</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="check">复核</el-button>
+        </el-form-item>
       </el-form>
     </el-row>
 
@@ -104,7 +107,7 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { getOrderList } from '@/api/curve/curve-product-order.js'
-import { calculatCompletionRate, queryCurveOrderComputeList } from '@/api/curve/curve-order-compute.js'
+import { calculatCompletionRate, queryCurveOrderComputeList, deployCurve } from '@/api/curve/curve-order-compute.js'
 
 export default {
   // eslint-disable-next-line vue/require-prop-types
@@ -169,7 +172,8 @@ export default {
         page: this.page
       }
       calculatCompletionRate(data).then(response => {
-        this.percentage = response
+        // eslint-disable-next-line no-new-wrappers
+        this.percentage = new Number(response)
         setTimeout(1.5 * 1000)
       })
     },
@@ -180,6 +184,66 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.getCurveOrderComputeList()
+    },
+    // 曲线发布
+    toAddCurveProduct() {
+      // 获取已经勾选的行
+      // eslint-disable-next-line no-unused-vars
+      var selection = this.$refs.refCurveOrderList.selection
+      if (selection.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择需要发布的曲线'
+        })
+        return false
+      }
+      for (var i = 0; i < selection.length; i++) {
+        // eslint-disable-next-line eqeqeq
+        if (selection[i].cureveBuildStatus != '6') {
+          this.$message({
+            type: 'error',
+            message: '请选择已复核过的曲线进行发布'
+          })
+          return false
+        }
+      }
+      // 曲线发布
+      var data = {
+        action: '7',
+        computes: selection
+      }
+      deployCurve(data).then(response => {
+        this.$message({
+          type: 'success',
+          message: '曲线发布成功！'
+        })
+        setTimeout(1.5 * 1000)
+      })
+    },
+    // 批量复核
+    check() {
+      // 获取已经勾选的行
+      // eslint-disable-next-line no-unused-vars
+      var selection = this.$refs.refCurveOrderList.selection
+      if (selection.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择需要复核的曲线'
+        })
+        return false
+      }
+      // 曲线复核
+      var data = {
+        action: '6',
+        computes: selection
+      }
+      deployCurve(data).then(response => {
+        this.$message({
+          type: 'success',
+          message: '曲线复核成功！'
+        })
+        setTimeout(1.5 * 1000)
+      })
     }
   }
 }
