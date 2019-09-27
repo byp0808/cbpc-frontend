@@ -26,22 +26,16 @@
         </el-row>
       </el-form>
     </div>
-    <!-- <el-card class="box-card margin-top">
-      <div slot="header" class="clearfix card-head">
-        <h3 style="margin: 0">债券筛选器</h3>
-      </div> -->
     <BondFilter
       ref="refBondFilter"
       :filter-id="detailInfo.bondFilterId"
       :disabled="disabled"
     />
-    <!-- </el-card> -->
   </div>
 </template>
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-// import { saveRecCurve, queryCurveList, queryRecCurve } from '@/api/valuation/rec-curve.js'
 import { saveData, signleData } from '@/api/valuation/flow.js'
 export default {
   name: 'RecCurveForm',
@@ -49,34 +43,11 @@ export default {
     BondFilter
   },
   props: ['businessId', 'disabled', 'detailInfo'],
-  //   props: {
-  //     'bussinessId': {
-  //       type: String,
-  //       default: ''
-  //     },
-  //     'disabled': {
-  //       type: Boolean,
-  //       default: false
-  //     }
-  //   },
   data() {
     return {
-      curveList: [],
-      recCurveInfo: {}
+      assetsGroupInfo: {}
     }
   },
-  //   beforeMount() {
-  //     if (this.businessId) {
-  //       queryRecCurve(this.businessId).then(reponse => {
-  //         this.$store.commit('recCurve/setRecCurveInfo', reponse)
-  //         // this.$store.commit('bondFilter/setBondFilterId', reponse.bondFilterId)
-  //       })
-  //     }
-  //     queryCurveList().then(response => {
-  //       const { dataList } = response
-  //       this.curveList = dataList
-  //     })
-  //   },
   beforeMount() {
     console.log('pp', this.businessId)
     if (this.businessId) {
@@ -87,6 +58,9 @@ export default {
       this.businessId = ''
       this.detailInfo = ''
     }
+  },
+  mounted() {
+    this.assetsGroupInfo = {}
   },
   methods: {
     save() {

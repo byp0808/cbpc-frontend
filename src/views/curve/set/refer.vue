@@ -123,7 +123,7 @@
         this.curveReferList.push({
           curveId: this.temp.curveId, // 依赖曲线ID
           referCurveId: referCurveId, // 依赖曲线ID
-          referProductName: label // 同调曲线名称
+          productName: label // 同调曲线名称
         })
       },
 

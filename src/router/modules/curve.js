@@ -63,6 +63,11 @@ const curveRouter = {
       component: () => import('@/views/curve/timetemp/curve-nktemp-list.vue'),
       name: 'CurveNkTempList',
       meta: { title: '远期期限模板', noCache: true }
+    }, {
+      path: 'curve-seach-case',
+      component: () => import('@/views/curve/product/curve-seach-case.vue'),
+      name: 'CurveSeachCase',
+      meta: { title: '查询曲线方案', noCache: true }
     }
   ]
 }

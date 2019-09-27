@@ -68,7 +68,7 @@
               style="margin-top:10px"
               align="center"
               :current-page="page.pageNumber"
-              :page-sizes="[10, 20, 30, 40, 50]"
+              :page-sizes="[5, 10, 15, 30, 50]"
               :page-size="page.pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="page.totalRecord"
@@ -88,55 +88,52 @@
               fit
             >
               <el-table-column
+                prop="paramType"
                 label="类型"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
+                prop="marketGrad"
                 label="市场隐含评级"
+                align="center"
+                width="120px"
+              />
+              <el-table-column
+                label="期限区间"
                 align="center"
                 width="120px"
               >
                 <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
+                  <span style="margin-left: 10px">{{ joinSpreadParam(scope.row) }}</span>
                 </template>
               </el-table-column>
               <el-table-column
-                label="期限区间"
-                align="center"
-              >
-                <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
+                prop="spreadValue"
                 label="点差"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span>{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
                 label="状态"
                 align="center"
+                width="100px"
               >
                 <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
+                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
+                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
+                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
                 </template>
               </el-table-column>
               <el-table-column
                 label="操作"
                 align="center"
+                width="150px"
               >
                 <template slot-scope="scope">
                   <el-button
                     type="primary"
                     size="small"
-                    @click.native.prevent="toDetail(scope.row.id)"
+                    :disabled="scope.row.approveStatus === '01'?true:false"
+                    @click.native.prevent="editSpreadParam(scope.row.id)"
                   >
                     编辑
                   </el-button>
@@ -150,6 +147,17 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              style="margin-top:10px"
+              align="center"
+              :current-page="spreadParamPage.pageNumber"
+              :page-sizes="[5, 10, 15, 30, 50]"
+              :page-size="spreadParamPage.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="spreadParamPage.totalRecord"
+              @size-change="spreadParamHSChange"
+              @current-change="spreadParamHCChange"
+            />
           </el-col>
         </el-row>
       </div>
@@ -239,38 +247,7 @@
         </el-row>
       </div>
     </div>
-    <el-dialog :visible.sync="assetDialog" title="资产组设置" width="1100px" class="dialog-box">
-      <!-- <div>
-        <el-form label-width="150px">
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <div class="grid-content bg-purple">
-                <el-form-item label="规则ID">
-                  <el-input v-model="recCurveInfo.id" disabled />
-                </el-form-item>
-                <el-form-item label="资产规则">
-                  <el-input v-model="recCurveInfo.lastUpdBy" />
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div class="grid-content bg-purple">
-                <el-form-item label="最后操作人">
-                  <el-input v-model="recCurveInfo.lastUpdTs" disabled />
-                </el-form-item>
-                <el-form-item label="最后操作时间">
-                  <el-input v-model="recCurveInfo.lastUpdTs" disabled />
-                </el-form-item>
-              </div>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
-      <flow-filter
-        ref="refBondFilter"
-        :filter-id="recCurveInfo.bondFilterId"
-        :disabled="disabled"
-      /> -->
+    <el-dialog v-if="assetDialog" :visible.sync="assetDialog" title="资产组设置" width="1100px" class="dialog-box">
       <FlowForm
         ref="refAssetForm"
         :rec-curve-data="recCurveData"
@@ -283,81 +260,29 @@
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="paramsDialog" title="点差参数设置" width="800px">
-      <div>
-        <el-form label-width="150px">
-          <el-row>
-            <el-col :span="10">
-              <div class="grid-content bg-purple">
-                <el-form-item label="规则ID">
-                  <el-input v-model="recCurveInfo.id" disabled />
-                </el-form-item>
-                <el-form-item label="类型">
-                  <el-input v-model="recCurveInfo.lastUpdBy" />
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col :span="10">
-              <div class="grid-content bg-purple">
-                <el-form-item label="最后操作人">
-                  <el-input v-model="recCurveInfo.lastUpdTs" disabled />
-                </el-form-item>
-                <el-form-item label="最后操作时间">
-                  <el-input v-model="recCurveInfo.lastUpdTs" disabled />
-                </el-form-item>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12" :offset="6">
-              <el-form-item label="市场隐含评级">
-                <el-select v-model="cityLevel" placeholder="请选择活动区域">
-                  <el-option v-for="item in cityLevelList" :key="item.value" :label="item.value" :value="item.label" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12" :offset="6">
-              <el-form-item label="推进待偿期区间">
-                <div class="input-box">
-                  <div class="first">
-                    <el-input v-model="recCurveInfo.lastUpdTs" />
-                  </div>
-                  <div>
-                    <el-input v-model="recCurveInfo.lastUpdTs" />
-                  </div>
-                </div>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12" :offset="6">
-              <el-form-item label="点差">
-                <el-input v-model="recCurveInfo.lastUpdTs" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-
-      </div>
-
+    <el-dialog v-if="paramsDialog" :visible.sync="paramsDialog" title="点差参数设置" width="800px">
+      <SpreadParamForm
+        ref="refSpreadParamForm"
+        :business-id="spreadParamId"
+        @saveCallBack="spreadParamSaveCallBack"
+      />
       <div slot="footer" class="dialog-footer">
         <el-button @click="assetDialog = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button type="primary" @click="spreadParamSave">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-// import FlowFilter from '@/views/common/bond-filter/filter.vue'
+import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
-import { getAssetData, deleteAssetData, signleData } from '@/api/valuation/flow.js'
+import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam } from '@/api/valuation/flow.js'
 export default {
   name: 'FlowDifference',
   components: {
-    FlowForm
+    FlowForm,
+    SpreadParamForm
   },
   data() {
     return {
@@ -366,43 +291,41 @@ export default {
       addRuleList: [],
       recCurveData: {},
       flowId: '',
+      spreadParamId: '',
       detailInfo: {},
       assetDialog: false,
       paramsDialog: false,
       disabled: false,
-      recCurveInfo: {},
       page: {
         pageNumber: 1,
         pageSize: 10,
         totalRecord: 0
       },
-      cityLevel: '',
-      cityLevelList: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        }, {
-          value: '选项2',
-          label: '双皮奶'
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }
-      ]
+      spreadParamPage: {
+        pageNumber: 1,
+        pageSize: 10,
+        totalRecord: 0
+      }
     }
   },
   beforeMount() {
     this.assetTable()
+    this.spreadParamTable()
   },
   methods: {
     assetTable() {
       getAssetData({ page: this.page }).then(response => {
-        // const { assetList, ruleDetail, page } = response
-        // this.assetList = assetList
-        // this.bondFilterList = ruleDetail
-        this.page = response.pageInfo
-        this.assetList = response.assetsGroupList
-        this.bondFilterList = response.ruleDetail
+        const { assetsGroupList, ruleDetail, pageInfo } = response
+        this.page = pageInfo
+        this.assetList = assetsGroupList
+        this.bondFilterList = ruleDetail
+      })
+    },
+    spreadParamTable() {
+      spreadParamList({ page: this.spreadParamPage }).then(response => {
+        const { dataList, page } = response
+        this.addParamsList = dataList
+        this.spreadParamPage = page
       })
     },
     addAsset() {
@@ -412,6 +335,7 @@ export default {
       this.assetDialog = true
     },
     addParams() {
+      this.spreadParamId = ''
       this.paramsDialog = true
     },
     handleSizeChange(pageSize) {
@@ -421,6 +345,14 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.assetTable()
+    },
+    spreadParamHSChange(pageSize) {
+      this.spreadParamPage.pageSize = pageSize
+      this.spreadParamTable()
+    },
+    spreadParamHCChange(currentPage) {
+      this.spreadParamPage.pageNumber = currentPage
+      this.spreadParamTable()
     },
     saveCallBack() {
       this.assetDialog = false
@@ -433,6 +365,10 @@ export default {
         this.detailInfo = res
       })
     },
+    editSpreadParam(id) {
+      this.spreadParamId = id
+      this.paramsDialog = true
+    },
     deleteRow(id) {
       deleteAssetData(id).then(response => {
         this.$message({
@@ -441,6 +377,16 @@ export default {
           showClose: true
         })
         this.assetTable()
+      })
+    },
+    deleteParams(id) {
+      deleteSpreadParam(id).then(response => {
+        this.$message({
+          message: '删除成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.spreadParamTable()
       })
     },
     ruleDetail(bondFilterId) {
@@ -456,6 +402,17 @@ export default {
     },
     save() {
       this.$refs.refAssetForm.save()
+    },
+    spreadParamSave() {
+      this.$refs.refSpreadParamForm.save()
+    },
+    spreadParamSaveCallBack() {
+      this.paramsDialog = false
+      this.spreadParamTable()
+    },
+    joinSpreadParam(row) {
+      var result = '( ' + row.rangeStart + ', ' + row.rangeEnd + 'y ]'
+      return result
     }
   }
 }
@@ -466,12 +423,6 @@ export default {
         margin-bottom: 50px;
     }
 }
- .input-box {
-        display: flex!important;
-        .first {
-            margin-right: 10px;
-        }
-    }
     .btn-box {
         display: flex;
     }

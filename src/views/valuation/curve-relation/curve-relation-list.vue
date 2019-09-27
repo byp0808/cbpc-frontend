@@ -54,6 +54,7 @@
     <div>
       <el-dialog title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible">
         <AddRulesForm
+          v-if="addRulesVisible"
           ref="recAddRulesForm"
           :disabled="disabled"
           :relation-id="relationId"

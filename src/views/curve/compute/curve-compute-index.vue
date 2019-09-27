@@ -48,6 +48,8 @@ export default {
       console.info('orderTabClick.tab:' + tab + ',tab.index:' + tab.index)
       this.selectOrder = this.orderList[tab.index]
       this.selectOrderId = this.selectOrder.id
+
+      this.$refs.refCurveOrderCompute.query()
     }
   }
 }

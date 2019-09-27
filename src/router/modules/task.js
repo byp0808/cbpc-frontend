@@ -74,6 +74,10 @@ const taskRouter = {
       path: 'curve-nktemp-task',
       component: () => import('@/views/curve/timetemp/curve-nktemp-task.vue'),
       name: 'NkTempTask'
+    }, {
+      path: 'spread-param-task',
+      component: () => import('@/views/valuation/flow-difference/spread-param-task.vue'),
+      name: 'SpreadParamTask'
     }
   ]
 }

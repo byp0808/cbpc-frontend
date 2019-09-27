@@ -33,7 +33,8 @@ export const PRODUCT_GROUP = [
 export const BASE_PRD_CODE = [
   { value: '0017', label: '收益率曲线', parent: 'CB' },
   { value: '0018', label: '收益率曲线样本券', parent: 'CB' },
-  { value: '0019', label: '市场利率曲线', parent: 'CB' }
+  { value: '0019', label: '市场利率曲线', parent: 'CB' },
+  { value: '0001', label: '中债估值', parent: 'CBPB' }
 ]
 
 // 市场

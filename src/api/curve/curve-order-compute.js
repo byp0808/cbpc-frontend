@@ -25,3 +25,21 @@ export function calculatCompletionRate(data) {
     data
   })
 }
+
+// 曲线发布
+export function deployCurve(data) {
+  return request({
+    url: `${basic_api_curve}/curveOrderCompute/deployCurve`,
+    method: 'post',
+    data
+  })
+}
+
+// 人工计算曲线收益率
+export function toCompletotionRate(data) {
+  return request({
+    url: `${basic_api_curve}/curveOrderCompute/computeByCurveTaskId`,
+    method: 'post',
+    data
+  })
+}
