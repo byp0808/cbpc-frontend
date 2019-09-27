@@ -174,51 +174,41 @@
               fit
             >
               <el-table-column
+                prop="id"
                 label="点差规则ID"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
+                prop="ruleName"
                 label="规则名称"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
+                prop="assetsGroupName"
                 label="资产规则"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
                 label="点差规则"
                 align="center"
               >
-                <template slot-scope="scope">
-                  <span>{{ scope.row.id }}</span>
+                <template>
+                  <span>表格映射</span>
                 </template>
               </el-table-column>
               <el-table-column
+                prop="spreadType"
                 label="点差类型"
                 align="center"
-              >
-                <template slot-scope="scope">
-                  <span>{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
+              />
               <el-table-column
                 label="状态"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <span>{{ scope.row.id }}</span>
+                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
+                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
+                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -277,7 +267,7 @@
 <script>
 import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
-import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam } from '@/api/valuation/flow.js'
+import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam, someBadList } from '@/api/valuation/flow.js'
 export default {
   name: 'FlowDifference',
   components: {
@@ -311,6 +301,7 @@ export default {
   beforeMount() {
     this.assetTable()
     this.spreadParamTable()
+    this.someBadRuleList()
   },
   methods: {
     assetTable() {
@@ -326,6 +317,13 @@ export default {
         const { dataList, page } = response
         this.addParamsList = dataList
         this.spreadParamPage = page
+      })
+    },
+    someBadRuleList() {
+      someBadList({ page: this.page }).then(response => {
+        const { dataList, page } = response
+        this.addRuleList = dataList
+        this.page = page
       })
     },
     addAsset() {
@@ -418,12 +416,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.flow-box {
+  .flow-box {
     .top-box {
-        margin-bottom: 50px;
+      margin-bottom: 50px;
     }
-}
-    .btn-box {
-        display: flex;
-    }
+  }
+  .btn-box {
+    display: flex;
+  }
 </style>
