@@ -83,6 +83,7 @@
 
 <script>
 import { savenkTemp, queryNkTemp } from '@/api/curve/curve-nktemp-list.js'
+import { checkTempName } from '@/api/curve/curve-kdtemp-list.js'
 
 export default {
   name: 'NkTempForm',
@@ -93,8 +94,8 @@ export default {
       nkTempInfoRules: {
         tempName: [
           { required: true, message: '请输入规则名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' }
-          // { validator: checkTempName, trigger: 'blur' }
+          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { validator: this.checkTempName, trigger: 'blur' }
         ]
       },
       addDetail: {},
@@ -158,6 +159,14 @@ export default {
         })
         return false
       }
+      // 判断NK 是否互斥
+      if (Number(this.addDetail.nvalue) + Number(this.addDetail.kvalue) !== Math.abs(Number(this.addDetail.nvalue) - Number(this.addDetail.kvalue))) {
+        this.$message({
+          message: 'NK值需互斥,一方有值,另一方为0',
+          type: 'error'
+        })
+        return false
+      }
       // 判断NK重复
       var reflag = false
       for (const item of this.newsList) {
@@ -174,9 +183,27 @@ export default {
         return false
       }
       if (this.addDetail.nvalue && this.addDetail.kvalue) {
+        var nvalue = Number(this.addDetail.nvalue).toFixed(1)
+        var kvalue = Number(this.addDetail.kvalue).toFixed(1)
         this.newsList.push({
-          nvalue: this.addDetail.nvalue,
-          kvalue: this.addDetail.kvalue
+          nvalue: nvalue,
+          kvalue: kvalue
+        })
+      }
+    },
+    checkTempName(rule, value, callback) {
+      if (this.businessId) {
+        callback()
+      } else {
+        var data = {}
+        data.tempType = 'nk'
+        data.tempName = value
+        checkTempName(data).then(response => {
+          if (response) {
+            callback(new Error('模板名称重复'))
+          } else {
+            callback()
+          }
         })
       }
     }
