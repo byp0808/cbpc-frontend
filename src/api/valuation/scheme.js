@@ -22,3 +22,25 @@ export function findCurveByMarketGrade(data) {
     }
   )
 }
+
+// 点差试算
+export function spreadTrial(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/spread-trial`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+
+// 方案保存
+export function save(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/save`,
+      method: 'post',
+      data: data
+    }
+  )
+}

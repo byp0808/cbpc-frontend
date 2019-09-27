@@ -29,8 +29,9 @@
         <div v-else-if="schemeInfo.valuScene === '02'">
           <el-row>
             <el-col :span="5">
-              <el-form-item label="回收率">
-                <el-input v-model="name"></el-input>
+              <el-form-item class="display-inline" label="回收率">
+                <el-input-number size="small" v-model="name" :min="1" :max="10" />
+                <span class="unit">%</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -46,6 +47,7 @@
 <script>
 import SchemeNormal from '@/views/valuation/scheme/scheme-normal.vue'
 import { queryDictList } from '@/api/common/common.js'
+import { save } from '@/api/valuation/scheme.js'
 export default {
   name: 'ValuationSchemeForm',
   components: {
@@ -55,10 +57,12 @@ export default {
     return {
       valWays: [],
       schemeInfo: {
+        bondId: '12344345',
         curveId: 'curve2',
         valuScene: '01',
         marketGrade: '',
         cdsPremAdjType: '01',
+        cdsPremAdjWay: '01',
         recoDire: ''
       },
       isCover: true
@@ -80,7 +84,16 @@ export default {
   },
   methods: {
     save() {
-      console.log(this.$refs.SchemeNormal.getData())
+      const schemeInfo = this.$refs.SchemeNormal.getData()
+      schemeInfo.valuationScheme.valuScene = this.schemeInfo.valuScene
+      schemeInfo.valuationScheme.bondId = this.schemeInfo.bondId
+      save(schemeInfo).then(response => {
+        this.$message({
+          showClose: true,
+          message: `保存成功`,
+          type: 'success'
+        })
+      })
     }
   }
 }
