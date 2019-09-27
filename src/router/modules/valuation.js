@@ -90,6 +90,11 @@ const valuationRouter = {
       component: () => import('@/views/valuation/flow-difference/flow-recommend.vue'),
       name: 'FlowDifference',
       meta: { title: '调整流动性点差', noCache: true }
+    }, {
+      path: 'scheme-task-allot',
+      component: () => import('@/views/valuation/scheme/scheme-task-allot.vue'),
+      name: 'SchemeTaskAllotList',
+      meta: { title: '估值任务分配', noCache: true, roles: ['SchemeTaskAllotList'] }
     }
   ]
 }

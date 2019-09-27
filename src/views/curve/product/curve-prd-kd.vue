@@ -469,26 +469,51 @@
         // 验证表单
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            var nvalue = (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
+            var kvalue = (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
             // 验证N、K值，必须有一个为0
-            if (0 != this.curvePrdNkFormTmp.nvalue && 0 != this.curvePrdNkFormTmp.kvalue) {
+            if (0 != nvalue && 0 != kvalue) {
               this.$message({
                 type: 'error',
                 message: 'NK值必须有一个为0'
               })
               return false
             }
+            // N,K值,均不能大于49
+            if(nvalue > 49 || kvalue > 49){
+              this.$message({
+                type: 'error',
+                message: 'NK值不可大于49'
+              })
+              return false
+            }
+            // NK值对,不可重复
+            debugger
+            for(var i=0; i<this.curvePrdNkList.length; i++){
+              if(nvalue == this.curvePrdNkList[i].nvalue &&
+                kvalue == this.curvePrdNkList[i].kvalue){
+                this.$message({
+                  type: 'error',
+                  message: 'NK值对,不可重复'
+                })
+                return false
+              }
+            }
             var index = this.curvePrdNkForm_index
             if (index || index === 0) {
-              this.curvePrdNkForm.nvalue = this.curvePrdNkFormTmp.nvalue
-              this.curvePrdNkForm.kvalue = this.curvePrdNkFormTmp.kvalue
+              // n,k值保留一位小数
+              var nvalue = new Number(this.curvePrdNkFormTmp.nvalue)
+              var kvalue = new Number(this.curvePrdNkFormTmp.kvalue)
+              this.curvePrdNkForm.nvalue = nvalue.toFixed(1)
+              this.curvePrdNkForm.kvalue = kvalue.toFixed(1)
               this.curvePrdNkForm.remark = this.curvePrdNkFormTmp.remark
               this.curvePrdNkForm.operateTs = new Date()
             } else {
               // 添加
               this.curvePrdNkList.push(
                   {
-                    nvalue: this.curvePrdNkFormTmp.nvalue,
-                    kvalue: this.curvePrdNkFormTmp.kvalue,
+                    nvalue: (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1),
+                    kvalue: (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1),
                     remark: this.curvePrdNkFormTmp.remark,
                     operateTs: new Date()
                   }

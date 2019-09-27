@@ -124,7 +124,7 @@
         this.curveHomologyList.push({
           curveId: this.temp.curveId, // 依赖曲线ID
           homologyCurveId: homologyCurveId, // 依赖曲线ID
-          homologyProductName: label // 同调曲线名称
+          productName: label // 同调曲线名称
         })
       },
 
