@@ -34,3 +34,12 @@ export function deployCurve(data) {
     data
   })
 }
+
+// 人工计算曲线收益率
+export function toCompletotionRate(data) {
+  return request({
+    url: `${basic_api_curve}/curveOrderCompute/computeByCurveTaskId`,
+    method: 'post',
+    data
+  })
+}

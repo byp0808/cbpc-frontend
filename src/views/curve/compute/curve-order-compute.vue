@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-button type="primary" @click="toAddCurveProduct('ADD')">开始计算</el-button>
-      <i class="el-icon-caret-right" />
-      <i class="el-icon-caret-right" />
-      <i class="el-icon-caret-right" />
+      <el-button type="primary" @click="toCompute()">开始计算</el-button>
+      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right"></i>
       完成曲线计算率
       <div class="bar" style="display: inline-block;width:100px">
         <el-progress
@@ -16,15 +16,15 @@
           style="color:black"
         />
       </div>
-      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right"></i>
       <el-button type="primary" @click="toAddCurveProduct('ADD')">查看质检报告</el-button>
-      <i class="el-icon-caret-right" />
-      <i class="el-icon-caret-right" />
-      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right"></i>
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线发布</el-button>
-      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right"></i>
       <el-button type="primary" @click="toAddCurveProduct('ADD')">检查曲线样本券</el-button>
-      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right"></i>
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线样本券发布</el-button>
     </el-row>
     <el-row style="margin: 20px 0;">
@@ -71,27 +71,22 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="curvePrdCode" label="曲线编码" width="140" />
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
-      <el-table-column prop="productLine" label="曲线类型" width="150" show-overflow-tooltip>
+      <el-table-column prop="curveBuildType" label="曲线类型" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.productLine }}
+          到期
         </template>
       </el-table-column>
-      <el-table-column prop="productLine" label="曲线编制方式" width="150`" show-overflow-tooltip>
-        <template slot-scope="scope">
-          {{ scope.row.productLine }}
+      <el-table-column prop="buildType" label="曲线编制方式" width="150`" show-overflow-tooltip>
+        <template slot-scope="{ row }">
+          {{ $dft("BUILD_TYPE", row.buildType) }}
         </template>
       </el-table-column>
-      <el-table-column prop="productLine" label="曲线编制方式" width="150" show-overflow-tooltip>
-        <template slot-scope="scope">
-          {{ scope.row.productLine }}
+      <el-table-column prop="buildStatus" label="曲线编制状态" width="150" show-overflow-tooltip>
+        <template slot-scope="{ row }">
+          {{ $dft("CURVE_BUILD_STATUS", row.buildStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="productLine" label="曲线编制状态" width="150" show-overflow-tooltip>
-        <template slot-scope="scope">
-          {{ scope.row.productLine }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="curveName" label="责任人" width="140" show-overflow-tooltip />
+      <el-table-column prop="assign" label="责任人" width="140" show-overflow-tooltip />
     </el-table>
     <el-pagination
       :current-page="page.pageNumber"
@@ -105,15 +100,14 @@
   </div>
 </template>
 <script>
-// eslint-disable-next-line no-unused-vars
-import { getOrderList } from '@/api/curve/curve-product-order.js'
-import { calculatCompletionRate, queryCurveOrderComputeList, deployCurve } from '@/api/curve/curve-order-compute.js'
+import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployCurve } from '@/api/curve/curve-order-compute.js'
 
 export default {
   // eslint-disable-next-line vue/require-prop-types
   props: ['orderId', 'orderInfo'],
   data() {
     return {
+      multipleSelection: [],
       percentage: 0,
       queryForm: {
         curveName: '',
@@ -144,18 +138,20 @@ export default {
     initOrderTable() {
 
     },
-    handleSelectionChange() {
-
+    handleSelectionChange(items) {
+      this.multipleSelection = items
     },
     // 查询
     query() {
       this.getCurveOrderComputeList()
+      this.calculatCompletionRate()
     },
     getCurveOrderComputeList() {
       var data = {
-        productName: this.queryForm.curveName,
-        cureveBuildStatus: this.queryForm.buildStatus,
+        curveName: this.queryForm.curveName,
+        buildStatus: this.queryForm.buildStatus,
         buildType: this.queryForm.buildType,
+        orderId: this.orderId,
         page: this.page
       }
       queryCurveOrderComputeList(data).then(response => {
@@ -165,15 +161,15 @@ export default {
     },
     // 计算曲线收益完成率
     calculatCompletionRate() {
+      console.info('==calculatCompletionRate===')
       var data = {
-        productName: this.queryForm.curveName,
-        cureveBuildStatus: this.queryForm.buildStatus,
-        buildType: this.queryForm.buildType,
+        orderId: this.orderId,
         page: this.page
       }
       calculatCompletionRate(data).then(response => {
-        // eslint-disable-next-line no-new-wrappers
-        this.percentage = new Number(response)
+        if (typeof(response) != 'undefined') {
+          this.percentage = Number(response)
+        }
         setTimeout(1.5 * 1000)
       })
     },
@@ -184,6 +180,45 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.getCurveOrderComputeList()
+    },
+    // 计算
+    toCompute() {
+      var items = this.multipleSelection
+      if (!items || items.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择记录'
+        })
+        return false
+      }
+      var curveTaskId = [];
+      for (let i = 0; i < items.length ; i++) {
+        curveTaskId.push(items[i].curveTaskId)
+      }
+      var data = {
+        curveTaskId: curveTaskId.join(','),
+        orderId: this.orderId
+      }
+
+      toCompletotionRate(data).then(response => {
+        var result = response
+        if (result.showMessage) {
+          this.$message({
+            message: '操作成功！' + result.showMessage,
+            type: 'success',
+            showClose: true
+          })
+        }else {
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
+        }
+
+        this.getCurveOrderComputeList()
+        this.calculatCompletionRate()
+      })
     },
     // 曲线发布
     toAddCurveProduct() {
