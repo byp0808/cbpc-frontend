@@ -76,7 +76,7 @@ const curveRouter = {
     }, {
       path: 'curve-sampleticket-list',
       component: () => import('@/views/curve/report/curve-sampleticket-list.vue'),
-      name: 'CurveSeachCase',
+      name: 'CurveSampleTicketList',
       meta: { title: '查询曲线样本券', noCache: true }
     }
   ]
