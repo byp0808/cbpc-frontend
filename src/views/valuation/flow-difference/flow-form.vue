@@ -49,7 +49,6 @@ export default {
     }
   },
   beforeMount() {
-    console.log('pp', this.businessId)
     if (this.businessId) {
       signleData(this.businessId).then(response => {
         this.assetsGroupInfo = response
