@@ -234,7 +234,7 @@ export default {
       }
       for (var i = 0; i < selection.length; i++) {
         // eslint-disable-next-line eqeqeq
-        if (selection[i].cureveBuildStatus != '6') {
+        if (selection[i].buildStatus != '6') {
           this.$message({
             type: 'error',
             message: '请选择已复核过的曲线进行发布'
@@ -267,9 +267,10 @@ export default {
         })
         return false
       }
+      debugger
       for (var i = 0; i < selection.length; i++) {
         // eslint-disable-next-line eqeqeq
-        if (selection[i].cureveBuildStatus != '4') {
+        if (selection[i].buildStatus != '4') {
           this.$message({
             type: 'error',
             message: '请选择已计算过的曲线进行复核'
