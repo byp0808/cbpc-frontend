@@ -29,6 +29,11 @@ const curveRouter = {
       name: 'CurveComputeIndex',
       meta: { title: '产品收益率计算', noCache: true }
     }, {
+      path: 'curve-order-check-index',
+      component: () => import('@/views/curve/check/curve-order-check-index.vue'),
+      name: 'CurveOrderCheckIndex',
+      meta: { title: '质检报告', noCache: true }
+    }, {
       path: 'curve-set-homology',
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
       name: 'CurveSetHomology',
@@ -64,10 +69,15 @@ const curveRouter = {
       name: 'CurveNkTempList',
       meta: { title: '远期期限模板', noCache: true }
     }, {
-      path: 'curve-seach-case',
-      component: () => import('@/views/curve/product/curve-seach-case.vue'),
-      name: 'CurveSeachCase',
+      path: 'curve-search-case',
+      component: () => import('@/views/curve/report/curve-search-solutions.vue'),
+      name: 'CurveSearchCase',
       meta: { title: '查询曲线方案', noCache: true }
+    }, {
+      path: 'curve-sampleticket-list',
+      component: () => import('@/views/curve/report/curve-sampleticket-list.vue'),
+      name: 'CurveSampleTicketList',
+      meta: { title: '查询曲线样本券', noCache: true }
     }
   ]
 }
