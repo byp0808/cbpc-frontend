@@ -1,7 +1,5 @@
 import request from '@/utils/app-request'
-
-const basic_api_curve = '/pi-curve'
-const basic_api_portal = '/pi-sys'
+import { basic_api_curve, basic_api_portal } from '@/api/base-api'
 
 // 筛选曲线产品
 export function selectCurve(data) {
