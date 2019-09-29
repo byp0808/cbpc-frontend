@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <!-- <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button> -->
-      <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
+      <!-- <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button> -->
 
       <div class="block">
         <span class="demonstration">开始日期及批次</span>
@@ -165,12 +165,12 @@
   </div>
 </template>
 
- <script>
+<script>
 // import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 // import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 // import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
-import { delCurveProduct } from '@/api/curve/curve-product-list.js'// queryCurveProductList,
-import { delCurveSample } from '@/api/curve/curve-sample.js'
+// import { delCurveProduct } from '@/api/curve/curve-product-list.js'// queryCurveProductList,
+// import { delCurveSample } from '@/api/curve/curve-sample.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
@@ -668,150 +668,7 @@ export default {
     }
   },
   computed: {
-  //   curveProductList() {
-  //     const dataList = queryCurveProductList()
-  //     if (dataList && dataList.data) {
-  //       return dataList.data
-  //     }
-  //     return dataList
-  //   }
-  // },
-  // beforeMount() {
-  //   this.queryCurveProductList()
-  // },
-  // methods: {
-  //   handleFilter() {
-  //     this.productList.page.pageNumber = 1
-  //     this.queryCurveProductList()
-  //   },
-  //   handleSizeChange(pageSize) {
-  //     this.productList.page.pageSize = pageSize
-  //     this.queryCurveProductList()
-  //   },
-  //   handleCurrentChange(currentPage) {
-  //     this.productList.page.pageNumber = currentPage
-  //     this.queryCurveProductList()
-  //   },
-  //   handleSelectionChange(items) {
-  //     console.info('handleSelectionChange' + JSON.stringify(items))
-  //     this.multipleSelection = items
-  //   },
-  //   queryCurveProductList() {
-  //     queryCurveProductList({ page: this.productList.page }).then(response => {
-  //       console.info('queryCurveProductList.queryCurveProductList...')
-  //       const { dataList, page } = response
-  //       this.productList.dataList = dataList
-  //       this.productList.page = page
-  //     })
-  //   },
-    // 打开新增产品页面
-    toAddCurveProduct(opType, prdType, rowId) {
-      this.saveCureSampleBtnVisible = true
-      // 产品ID
-      this.productId = ''
-      // 操作类型
-      this.opType = opType
 
-      if (opType === 'COPY') {
-        if (this.multipleSelection.length !== 1) {
-          this.$message({
-            type: 'error',
-            message: '仅能选择一条记录'
-          })
-          return false
-        }
-        var item = this.multipleSelection[0]
-        if (item.prdType === 'CURVE_SAMPLE') {
-          // 产品ID
-          this.productId = item.rowNo
-          this.addCurveSampleFormVisible = true
-        } else {
-          // 产品ID
-          this.productId = item.rowNo
-          this.addCurveProductDefFormVisible = true
-        }
-      } else if (opType === 'EDIT' || opType === 'VIEW') {
-        if (prdType === 'CURVE_SAMPLE') {
-          // 产品ID
-          this.productId = rowId
-          this.addCurveSampleFormVisible = true
-        } else {
-          // 产品ID
-          this.productId = rowId
-          this.addCurveProductDefFormVisible = true
-        }
-      } else if (opType === 'ADD') {
-        this.addCurveProductFormVisible = true
-      }
-    },
-    // 删除
-    handleDelete({ $index, row }) {
-      this.$confirm('是否删除?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(async() => {
-        if (row.prdType !== 'CURVE_SAMPLE') {
-          await delCurveProduct(row.rowNo)
-          this.queryCurveProductList()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        } else {
-          await delCurveSample(row.rowNo)
-          this.queryCurveProductList()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        }
-      }).catch(err => { console.error(err) })
-    },
-    // 保存产品
-    saveProduct() {
-      // 如果就曲线样本，则跳转筛选器
-      var data = this.$refs.refCurveProductForm.save()
-      console.info('saveProduct.data:' + JSON.stringify(data))
-      if (!data.product) {
-        this.$message({
-          type: 'error',
-          message: '基础产品必选!'
-        })
-        return false
-      }
-
-      // 产品选择框隐藏
-      this.addCurveProductFormVisible = false
-
-      // 基础产品
-      this.basePrdCode = data.product
-
-      // 收益率曲线样本券，打开筛选器
-      if (data.product === '0018') {
-        this.addCurveSampleFormVisible = true
-      } else {
-        // 显示曲线产品定义框
-        this.addCurveProductDefFormVisible = true
-      }
-    },
-    // 保存曲线样本券
-    saveCureSample() {
-      console.info('saveCureSample:')
-      this.$refs.refCurveSampleForm.save()
-    },
-    // 保存曲线样本券回调
-    saveCureSampleCallBack() {
-      console.info('saveCureSampleCallBack')
-      this.addCurveSampleFormVisible = false
-      this.queryCurveProductList()
-    },
-    // 产品宝确认回调
-    confirmCurveInfoCallBack() {
-      console.info('confirmCurveInfoCallBack')
-      this.addCurveProductDefFormVisible = false
-      this.queryCurveProductList()
-    }
   }
 }
 </script>
