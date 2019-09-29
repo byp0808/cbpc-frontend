@@ -321,3 +321,42 @@ aside {
     color: #C0C4CC;
   }
 }
+
+.unit {
+  padding: {
+    left: 10px;
+  }
+  color: #C0C4CC;
+  font: {
+    size: 12px;
+  };
+}
+
+label {
+  font: {
+    weight: unset;
+  };
+}
+
+.no-border {
+  input {
+    border: 0;
+    background: {
+      color: transparent;
+    };
+    &:focus {
+      border: 1px solid #1890ff;
+    }
+  }
+  border: 0;
+}
+
+// table 边框错位
+.el-table {
+  th {
+    &.gutter {
+      display: table-cell !important;
+    }
+  }
+}
+

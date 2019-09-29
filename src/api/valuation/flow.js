@@ -22,7 +22,7 @@ export function saveData(data) { // 保存资产组列表数据
     data
   })
 }
-export function signleData(data) { // 编辑资产组列表数据
+export function signleData(data) { // 获取单个资产组
   return request({
     url: `${basic_api_valuation}/some-bad/assets-group`,
     method: 'post',
@@ -68,6 +68,13 @@ export function deleteSpreadParam(data) { // 删除点差参数
 export function spreadParamTaskSubmit(data) { // 点差参数 审核通过/不通过
   return request({
     url: `${basic_api_valuation}/some-bad/spread-param-task`,
+    method: 'post',
+    data
+  })
+}
+export function someBadList(data) { // 获取点差规则列表
+  return request({
+    url: `${basic_api_valuation}/some-bad/some-bad-list`,
     method: 'post',
     data
   })

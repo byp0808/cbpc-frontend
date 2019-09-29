@@ -42,10 +42,6 @@ export function deletekdTemp(id) {
 }
 
 export function checkTempName(data) {
-  if (data.id) {
-    return
-  }
-  data.tempType = 'kd'
   return request({
     url: `${basic_api_market}/curve-temp/check-name`,
     method: 'post',

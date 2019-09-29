@@ -1,25 +1,25 @@
 <template>
   <div class="big-container">
     <div>
-      <el-form ref="detailInfo" label-width="150px" status-icon :model="detailInfo">
+      <el-form ref="detailInfo" label-width="150px" status-icon :model="assetsGroupInfo">
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="规则ID">
-                <el-input v-model="detailInfo.id" disabled />
+                <el-input v-model="assetsGroupInfo.id" disabled />
               </el-form-item>
               <el-form-item label="资产规则">
-                <el-input v-model="detailInfo.ruleState" :disabled="disabled" />
+                <el-input v-model="assetsGroupInfo.ruleState" :disabled="disabled" />
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="最后操作人">
-                <el-input v-model="detailInfo.createdBy" disabled />
+                <el-input v-model="assetsGroupInfo.createdBy" disabled />
               </el-form-item>
               <el-form-item label="最后操作时间">
-                <el-input v-model="detailInfo.lastUpdTs" disabled />
+                <el-input v-model="assetsGroupInfo.lastUpdTs" disabled />
               </el-form-item>
             </div>
           </el-col>
@@ -52,7 +52,7 @@ export default {
     console.log('pp', this.businessId)
     if (this.businessId) {
       signleData(this.businessId).then(response => {
-        this.detailInfo = response
+        this.assetsGroupInfo = response
       })
     } else {
       this.businessId = ''
@@ -65,7 +65,7 @@ export default {
   methods: {
     save() {
       const bondFilterInfo = this.$refs.refBondFilter.getData()
-      const info = { id: this.businessId, ruleState: this.detailInfo.ruleState }
+      const info = { id: this.assetsGroupInfo.businessId, ruleState: this.assetsGroupInfo.ruleState }
       const data = {
         assetsGroup: info,
         bondFilterInfo: bondFilterInfo

@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { savekdTemp, queryKdTemp } from '@/api/curve/curve-kdtemp-list.js'
+import { savekdTemp, queryKdTemp, checkTempName } from '@/api/curve/curve-kdtemp-list.js'
 
 export default {
   name: 'KdTempForm',
@@ -77,8 +77,8 @@ export default {
       kdTempInfoRules: {
         tempName: [
           { required: true, message: '请输入规则名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' }
-          // { validator: checkExist, trigger: 'blur' }
+          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { validator: this.checkTempName, trigger: 'blur' }
         ]
       },
 
@@ -118,7 +118,7 @@ export default {
       this.$refs.KdTempForm.validate((valid) => {
         if (valid) {
           const data = this.kdTempInfo
-          var standSlip = []
+          var standSlip = ''
           var picked = this.kdrule.picked.sort(this.sortNum)
           // console.log(picked)
           for (var i in picked) {
@@ -127,6 +127,13 @@ export default {
             } else {
               standSlip += picked[i] + 'Y;'
             }
+          }
+          if (!standSlip) {
+            this.$message({
+              message: '规则不能为空',
+              type: 'error'
+            })
+            return false
           }
           data.standSlip = standSlip
           // console.log(this.kdrule.picked)
@@ -146,6 +153,23 @@ export default {
     },
     sortNum(a, b) {
       return a - b
+    },
+    checkTempName(rule, value, callback) {
+      if (this.businessId) {
+        callback()
+      } else {
+        var data = {}
+        data.tempType = 'kd'
+        data.tempName = value
+        checkTempName(data).then(response => {
+          // console.log(response)
+          if (response) {
+            callback(new Error('模板名称重复'))
+          } else {
+            callback()
+          }
+        })
+      }
     }
   }
 }
