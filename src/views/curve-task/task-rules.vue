@@ -44,7 +44,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" :offset="12">
-            <el-button type="primary" icon="el-icon-refresh" @click="getList">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button type="primary" @click="download">下载分配规则</el-button>
             <el-upload
               style="display: inline-block;"
@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import { queryCurveTaskRules, selectCurve, selectCurveOrder, selectPerson, updateTaskRules } from '@/api/curve/curve'
+import { queryCurveTaskRules, selectCurve, selectCurveOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
 import { basic_api_curve } from '@/api/base-api'
 import Pagination from '@/components/Pagination'
 import { downloadFile, uploadFile } from '@/utils/request-client'

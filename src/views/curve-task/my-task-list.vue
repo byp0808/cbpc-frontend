@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { selectCurve, selectCurveTask, refundCurveTask } from '@/api/curve/curve'
+import { selectCurve, selectCurveTask, refundCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 import openWindow from '@/utils/open-window'
 import DictColumn from './components/DictColumn'
