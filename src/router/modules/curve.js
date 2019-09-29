@@ -29,6 +29,11 @@ const curveRouter = {
       name: 'CurveComputeIndex',
       meta: { title: '产品收益率计算', noCache: true }
     }, {
+      path: 'curve-order-check-index',
+      component: () => import('@/views/curve/check/curve-order-check-index.vue'),
+      name: 'CurveOrderCheckIndex',
+      meta: { title: '质检报告', noCache: true }
+    }, {
       path: 'curve-set-homology',
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
       name: 'CurveSetHomology',
