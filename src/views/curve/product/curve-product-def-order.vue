@@ -222,6 +222,7 @@ export default {
         computedType: '2', // 计算方式
         publishType: '2', // 编制方式
         publishSampleFlag: 'N', // 是否发布样本券
+        validFlag: 'Y', // 默认生效
         abc: ''
       }
       this.productOrderList.push(item)
