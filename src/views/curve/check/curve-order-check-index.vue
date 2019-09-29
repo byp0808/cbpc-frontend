@@ -19,14 +19,13 @@
         <el-button type="primary" @click="indexQuery">查询</el-button>
       </el-form-item>
     </el-form>
-
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="总览" name="zl"></el-tab-pane>
-        <el-tab-pane label="全面性检查" name="qmxjc"></el-tab-pane>
-        <el-tab-pane label="波动偏差" name="bdpc"></el-tab-pane>
-        <el-tab-pane label="曲线跨线" name="qxkx"></el-tab-pane>
-        <el-tab-pane label="曲线倒挂" name="qxdg"></el-tab-pane>
-        <el-tab-pane label="容错" name="rc"></el-tab-pane>
+      <el-tab-pane label="总览" name="zl"></el-tab-pane>
+      <el-tab-pane label="全面性检查" name="qmxjc"></el-tab-pane>
+      <el-tab-pane label="波动偏差" name="bdpc"></el-tab-pane>
+      <el-tab-pane label="曲线跨线" name="qxkx"></el-tab-pane>
+      <el-tab-pane label="曲线倒挂" name="qxdg"></el-tab-pane>
+      <el-tab-pane label="容错" name="rc"></el-tab-pane>
     </el-tabs>
     <el-card v-if="activeName === 'zl'" class="box-card">
       <div slot="header" class="clearfix card-head">
@@ -79,12 +78,12 @@ export default {
         taskDay: null,
         orderId: ''
       },
-      activeName:'zl'
+      activeName: 'zl'
     }
   },
   computed: {
   },
-  watch:{
+  watch: {
 
   },
   beforeMount() {
@@ -98,7 +97,7 @@ export default {
       orderId = 'ORDER_ID_1'
     }
     this.queryForm.taskDay = taskDay
-    this.queryForm.orderId = orderId;
+    this.queryForm.orderId = orderId
     // 加载批次
     this.orderList = getOrderList()
   },
