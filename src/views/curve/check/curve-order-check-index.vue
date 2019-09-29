@@ -79,7 +79,7 @@ export default {
         taskDay: null,
         orderId: ''
       },
-      activeName:''
+      activeName:'zl'
     }
   },
   computed: {
@@ -89,14 +89,16 @@ export default {
   },
   beforeMount() {
     console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
-    if (!this.taskDay) {
-      this.taskDay = new Date()
+    var taskDay = this.taskDay
+    var orderId = this.orderId
+    if (!taskDay) {
+      taskDay = new Date()
     }
-    if (!this.orderId) {
-      this.orderId = 'ORDER_ID_1'
+    if (!orderId) {
+      orderId = 'ORDER_ID_1'
     }
-    this.queryForm.taskDay = this.taskDay
-    this.queryForm.orderId = this.orderId;
+    this.queryForm.taskDay = taskDay
+    this.queryForm.orderId = orderId;
     // 加载批次
     this.orderList = getOrderList()
   },
