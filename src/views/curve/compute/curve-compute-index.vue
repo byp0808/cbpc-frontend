@@ -49,7 +49,9 @@ export default {
       this.selectOrder = this.orderList[tab.index]
       this.selectOrderId = this.selectOrder.id
 
-      this.$refs.refCurveOrderCompute.query()
+      this.$nextTick(() => {
+        this.$refs.refCurveOrderCompute.query()
+      })
     }
   }
 }

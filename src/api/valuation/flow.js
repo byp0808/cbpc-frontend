@@ -79,4 +79,44 @@ export function someBadList(data) { // 获取点差规则列表
     data
   })
 }
+export function someBad(data) { // 获取点差规则
+  return request({
+    url: `${basic_api_valuation}/some-bad/some-bad`,
+    method: 'post',
+    data
+  })
+}
+export function saveSomeBad(data) { // 保存/编辑 点差规则
+  return request({
+    url: `${basic_api_valuation}/some-bad/save-some-bad`,
+    method: 'post',
+    data
+  })
+}
+export function assetsGroups() { // 获取启用状态的资产组列表
+  return request({
+    url: `${basic_api_valuation}/some-bad/assets-groups`,
+    method: 'post'
+  })
+}
+export function spreadParams() { // 获取启用状态的点差参数列表
+  return request({
+    url: `${basic_api_valuation}/some-bad/spread-params`,
+    method: 'post'
+  })
+}
+export function delSomeBad(data) { // 删除点差规则
+  return request({
+    url: `${basic_api_valuation}/some-bad/del-some-bad`,
+    method: 'post',
+    data
+  })
+}
+export function someBadTask(data) { // 点差规则 通过/不通过
+  return request({
+    url: `${basic_api_valuation}/some-bad/some-bad-task`,
+    method: 'post',
+    data
+  })
+}
 
