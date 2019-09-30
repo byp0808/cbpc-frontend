@@ -1,7 +1,7 @@
 <template>
   <div class="big-container">
     <div>
-      <el-form ref="detailInfo" label-width="150px" status-icon :model="assetsGroupInfo">
+      <el-form ref="assetsGroupInfo" label-width="150px" status-icon :model="assetsGroupInfo">
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="grid-content bg-purple">
@@ -28,7 +28,7 @@
     </div>
     <BondFilter
       ref="refBondFilter"
-      :filter-id="detailInfo.bondFilterId"
+      :filter-id="assetsGroupInfo.bondFilterId"
       :disabled="disabled"
     />
   </div>
@@ -42,7 +42,7 @@ export default {
   components: {
     BondFilter
   },
-  props: ['businessId', 'disabled', 'detailInfo'],
+  props: ['businessId', 'disabled'],
   data() {
     return {
       assetsGroupInfo: {}
@@ -55,7 +55,7 @@ export default {
       })
     } else {
       this.businessId = ''
-      this.detailInfo = ''
+      this.assetsGroupInfo = ''
     }
   },
   mounted() {

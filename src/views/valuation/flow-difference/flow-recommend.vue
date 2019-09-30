@@ -243,7 +243,6 @@
         ref="refAssetForm"
         :rec-curve-data="recCurveData"
         :business-id="flowId"
-        :detail-info="detailInfo"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">

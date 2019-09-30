@@ -31,7 +31,7 @@
         <el-col :span="10">
           <div class="grid-content bg-purple">
             <el-form-item label="最后操作人">
-              <el-input v-model="spreadRule.lastUpdTs" disabled />
+              <el-input v-model="spreadRule.lastUpdBy" disabled />
             </el-form-item>
             <el-form-item label="最后操作时间">
               <el-input v-model="spreadRule.lastUpdTs" disabled />
@@ -97,30 +97,31 @@ export default {
     }
   },
   beforeMount() {
-    if (this.businessId) {
-      someBad(this.businessId).then(response => {
-        const { spreadRule, spreadParamList } = response
-        this.spreadRule = spreadRule
-        this.spreadParamSelects = spreadParamList
-        // 使点差参数列表处于选中状态
-        if (this.spreadParamSelects) {
-          this.spreadParamSelects.forEach(row => {
-            const index = this.$lodash.findIndex(this.allSpreadParamList, { id: row.id })
-            this.$refs.multipleTable.toggleRowSelection(this.allSpreadParamList[index], true)
-          })
-        }
-      })
-    }
     assetsGroups().then(response => {
       this.assetsList = response
     })
     spreadParams().then(response => {
       this.allSpreadParamList = response
+    }).then(res => {
+      if (this.businessId) {
+        someBad(this.businessId).then(response => {
+          const { spreadRule, spreadParamList } = response
+          this.spreadRule = spreadRule
+          this.spreadParamSelects = spreadParamList
+          // 使点差参数列表处于选中状态
+          if (this.spreadParamSelects) {
+            this.spreadParamSelects.forEach(row => {
+              const index = this.$lodash.findIndex(this.allSpreadParamList, { id: row.id })
+              this.$refs.multipleTable.toggleRowSelection(this.allSpreadParamList[index], true)
+            })
+          }
+        })
+      }
     })
   },
   methods: {
     save() {
-      saveSomeBad({ spreadRule: this.spreadRule, spreadParamList: this.spreadRuleParamSelects }).then(response => {
+      saveSomeBad({ spreadRule: this.spreadRule, spreadParamList: this.spreadParamSelects }).then(response => {
         this.$emit('saveCallBack')
         this.$message({
           message: '保存成功！',
@@ -130,7 +131,7 @@ export default {
       })
     },
     handleSelectionChange(val) {
-      this.spreadRuleParamSelects = val
+      this.spreadParamSelects = val
     },
     joinSpreadParam(row) {
       var result = '( ' + row.rangeStart + ', ' + row.rangeEnd + 'y ]'
