@@ -14,6 +14,16 @@ const marketRouter = {
   },
   children: [
     {
+      path: 'primary-market-list',
+      component: () => import('@/views/market/primary/primary-market-list.vue'),
+      name: 'PrimaryMarketList',
+      meta: { title: '一级发行', noCache: true, roles: ['OrderInfoList'] }
+    }, {
+      path: 'order-info-form',
+      component: () => import('@/views/common/order-info/order-info-form.vue'),
+      name: 'OrderInfoForm'
+    },
+    {
       path: 'para-info',
       component: () => import('@/views/market/para/para-info.vue'),
       name: 'ParaInfo',
