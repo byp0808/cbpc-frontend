@@ -56,6 +56,7 @@
                     <el-button
                       type="danger"
                       size="mini"
+                      :disabled="scope.row.approveStatus === '01'?true:false"
                       @click.native.prevent="deleteRow(scope.row.id)"
                     >
                       删除
@@ -164,7 +165,7 @@
       <div class="bottom-box">
         <el-row>
           <el-col :span="24">
-            <el-button type="primary" style="margin-bottom:10px">新增点差规则</el-button>
+            <el-button type="primary" style="margin-bottom:10px" @click="addSpreadRule">新增点差规则</el-button>
             <el-table
               :data="addRuleList"
               tooltip-effect="dark"
@@ -174,12 +175,12 @@
               fit
             >
               <el-table-column
-                prop="id"
+                prop="spreadRule.id"
                 label="点差规则ID"
                 align="center"
               />
               <el-table-column
-                prop="ruleName"
+                prop="spreadRule.ruleName"
                 label="规则名称"
                 align="center"
               />
@@ -197,7 +198,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="spreadType"
+                prop="spreadRule.spreadType"
                 label="点差类型"
                 align="center"
               />
@@ -206,9 +207,9 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
-                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
-                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '01'" style="margin-left: 10px">待复核</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -219,14 +220,14 @@
                   <el-button
                     type="primary"
                     size="small"
-                    @click.native.prevent="toDetail(scope.row.id)"
+                    @click.native.prevent="editSpreadRule(scope.row.spreadRule.id)"
                   >
                     编辑
                   </el-button>
                   <el-button
                     type="danger"
                     size="small"
-                    @click.native.prevent="deleteRule(scope.row.id)"
+                    @click.native.prevent="deleteRule(scope.row.spreadRule.id)"
                   >
                     删除
                   </el-button>
@@ -261,18 +262,31 @@
         <el-button type="primary" @click="spreadParamSave">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog v-if="spreadRuleDialog" :visible.sync="spreadRuleDialog" title="点差规则设置" width="800px">
+      <SpreadRuleForm
+        ref="refSpreadRuleForm"
+        :business-id="spreadRuleId"
+        @saveCallBack="spreadRuleSaveCallBack"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="spreadRuleSave">保存并应用</el-button>
+        <el-button @click="spreadRuleDialog = false">返回</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form.vue'
+import SpreadRuleForm from '@/views/valuation/flow-difference/spread-rule-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
-import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam, someBadList } from '@/api/valuation/flow.js'
+import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam, someBadList, delSomeBad } from '@/api/valuation/flow.js'
 export default {
   name: 'FlowDifference',
   components: {
     FlowForm,
-    SpreadParamForm
+    SpreadParamForm,
+    SpreadRuleForm
   },
   data() {
     return {
@@ -282,9 +296,11 @@ export default {
       recCurveData: {},
       flowId: '',
       spreadParamId: '',
+      spreadRuleId: '',
       detailInfo: {},
       assetDialog: false,
       paramsDialog: false,
+      spreadRuleDialog: false,
       disabled: false,
       page: {
         pageNumber: 1,
@@ -387,6 +403,16 @@ export default {
         this.spreadParamTable()
       })
     },
+    deleteRule(id) {
+      delSomeBad(id).then(response => {
+        this.$message({
+          message: '删除成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.someBadRuleList()
+      })
+    },
     ruleDetail(bondFilterId) {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
@@ -407,6 +433,21 @@ export default {
     spreadParamSaveCallBack() {
       this.paramsDialog = false
       this.spreadParamTable()
+    },
+    addSpreadRule() {
+      this.spreadRuleId = ''
+      this.spreadRuleDialog = true
+    },
+    editSpreadRule(id) {
+      this.spreadRuleId = id
+      this.spreadRuleDialog = true
+    },
+    spreadRuleSave() {
+      this.$refs.refSpreadRuleForm.save()
+    },
+    spreadRuleSaveCallBack() {
+      this.spreadRuleDialog = false
+      this.someBadRuleList()
     },
     joinSpreadParam(row) {
       var result = '( ' + row.rangeStart + ', ' + row.rangeEnd + 'y ]'
