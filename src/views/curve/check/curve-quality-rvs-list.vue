@@ -168,8 +168,13 @@ export default {
         var income = []
         var lastinCome = []
         for (var i = 0; i < dataList.length; i++) {
-          income.push([dataList[i].keyTerm, dataList[i].keyTermYield])
-          lastinCome.push([dataList[i].keyTerm, dataList[i].tgtKeyTermYield])
+          // eslint-disable-next-line no-new-wrappers
+          var x = Number(dataList[i].keyTerm)
+          // eslint-disable-next-line no-new-wrappers
+          var y = Number(dataList[i].keyTermYield)
+          income.push([x, y])
+          // eslint-disable-next-line no-new-wrappers
+          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
         }
         // 本次收益率
         this.chartOptions.series[0].data = income
