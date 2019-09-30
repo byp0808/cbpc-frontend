@@ -141,6 +141,7 @@
                   <el-button
                     type="danger"
                     size="small"
+                    :disabled="scope.row.approveStatus === '01'?true:false"
                     @click.native.prevent="deleteParams(scope.row.id)"
                   >
                     删除
@@ -220,6 +221,7 @@
                   <el-button
                     type="primary"
                     size="small"
+                    :disabled="scope.row.spreadRule.approveStatus === '01'?true:false"
                     @click.native.prevent="editSpreadRule(scope.row.spreadRule.id)"
                   >
                     编辑
@@ -227,6 +229,7 @@
                   <el-button
                     type="danger"
                     size="small"
+                    :disabled="scope.row.spreadRule.approveStatus === '01'?true:false"
                     @click.native.prevent="deleteRule(scope.row.spreadRule.id)"
                   >
                     删除
@@ -234,6 +237,17 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              style="margin-top:10px"
+              align="center"
+              :current-page="spreadRulePage.pageNumber"
+              :page-sizes="[5, 10, 15, 30, 50]"
+              :page-size="spreadRulePage.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="spreadRulePage.totalRecord"
+              @size-change="spreadRuleHSChange"
+              @current-change="spreadRuleHCChange"
+            />
           </el-col>
         </el-row>
       </div>
@@ -279,7 +293,7 @@
 import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form.vue'
 import SpreadRuleForm from '@/views/valuation/flow-difference/spread-rule-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
-import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam, someBadList, delSomeBad } from '@/api/valuation/flow.js'
+import { getAssetData, deleteAssetData, spreadParamList, deleteSpreadParam, someBadList, delSomeBad } from '@/api/valuation/flow.js'
 export default {
   name: 'FlowDifference',
   components: {
@@ -307,6 +321,11 @@ export default {
         totalRecord: 0
       },
       spreadParamPage: {
+        pageNumber: 1,
+        pageSize: 10,
+        totalRecord: 0
+      },
+      spreadRulePage: {
         pageNumber: 1,
         pageSize: 10,
         totalRecord: 0
@@ -338,7 +357,7 @@ export default {
       someBadList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.addRuleList = dataList
-        this.page = page
+        this.spreadRulePage = page
       })
     },
     addAsset() {
@@ -367,6 +386,14 @@ export default {
       this.spreadParamPage.pageNumber = currentPage
       this.spreadParamTable()
     },
+    spreadRuleHSChange(pageSize) {
+      this.spreadRulePage.pageSize = pageSize
+      this.someBadRuleList()
+    },
+    spreadRuleHCChange(currentPage) {
+      this.spreadRulePage.pageNumber = currentPage
+      this.someBadRuleList()
+    },
     saveCallBack() {
       this.assetDialog = false
       this.assetTable()
@@ -374,9 +401,6 @@ export default {
     modifyAsset(id) {
       this.flowId = id
       this.assetDialog = true
-      signleData(id).then(res => {
-        this.detailInfo = res
-      })
     },
     editSpreadParam(id) {
       this.spreadParamId = id
