@@ -100,8 +100,11 @@ export default {
       }
 
       getCurveSample(this.productId).then(reponse => {
-        if (reponse && '02' === reponse.approveStatus) {
-          this.curveSelectDisable = true
+        // 审批通过拒绝，不允许个性曲线产品
+        if (reponse) {
+          if ('02' === reponse.approveStatus || '03' === reponse.approveStatus) {
+            this.curveSelectDisable = true
+          }
         }
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
       })
