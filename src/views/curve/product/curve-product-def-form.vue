@@ -377,7 +377,7 @@ export default {
     if (this.basePrdCode) {
       this.productInfo.basePrdCode = this.basePrdCode
     }
-    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime();
+    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime()
     this.curveEndTime = this.productInfo.curveEndTime
 
     var id = ''
@@ -416,7 +416,7 @@ export default {
         }
       }
 
-      var sort = this.productInfo.sort;
+      var sort = this.productInfo.sort
       if (sort < index) {
         this.$message({
           message: '请先保存上一步骤信息！',
@@ -547,25 +547,25 @@ export default {
           var item = curvePrdKdList[i]
           if ( !item.sampleIntervalDown && item.sampleIntervalDown != 0 ||  !item.sampleIntervalUp && item.sampleIntervalUp != 0) {
             this.$message({
-              message: '第' + (i+1) +'条关键期限，样本区间上、下限不能为空！',
+              message: '第' + (i + 1) + '条关键期限,样本区间上、下限不能为空！',
               type: 'error',
               showClose: true
             })
             return false
           } else if (item.sampleIntervalDown >= item.sampleIntervalUp) {
             this.$message({
-              message: '第' + (i+1) +'条关键期限,样本区间下限必须小于区间上限！',
+              message: '第' + (i + 1) + '条关键期限,样本区间下限必须小于区间上限！',
               type: 'error',
               showClose: true
             })
             return false
           }
           // 判断是否有区间交集
-          if ( i + 1 < curvePrdKdList.length) {
-            var nextItem = curvePrdKdList[i+1]
-            if (item.sampleIntervalUp > nextItem.sampleIntervalDown ) {
+          if (i + 1 < curvePrdKdList.length) {
+            var nextItem = curvePrdKdList[i + 1]
+            if (item.sampleIntervalUp > nextItem.sampleIntervalDown) {
               this.$message({
-                message: '关键期限，第' + (i+1) +'条区间上限，不能大于' + (i+2) + '条区间下限',
+                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于' + (i + 2) + '条区间下限',
                 type: 'error',
                 showClose: true
               })
