@@ -9,7 +9,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="disabled" placeholder="请选择曲线">
+                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="curveSelectDisable" placeholder="请选择曲线">
                   <el-option
                     v-for="item in curveList"
                     :key="item.value"
@@ -67,6 +67,7 @@ export default {
   data() {
     return {
       disabled: '',
+      curveSelectDisable: false,
       curveList: [],
       allCurveList: []
     }
@@ -91,19 +92,25 @@ export default {
     this.allCurveList = this.curveList;
 
     if (this.productId) {
-      getCurveSample(this.productId).then(reponse => {
-        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
-      })
-
       if (this.opType === 'VIEW') {
         this.disabled = true
+        this.curveSelectDisable = true
       } else {
         this.disabled = false
       }
+
+      getCurveSample(this.productId).then(reponse => {
+        if (reponse && '02' === reponse.approveStatus) {
+          this.curveSelectDisable = true
+        }
+        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
+      })
+
     } else if (this.businessId) {
       getCurveSample(this.businessId).then(reponse => {
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
       })
+      this.curveSelectDisable = true
     } else {
       this.disabled = false
       if (this.basePrdCode) {
