@@ -242,6 +242,9 @@ export default {
         this.uploadList = res[0].manualList
         this.params.page = res[0].page
         console.log('res', res[0])
+      }).catch(error => {
+        console.log(error)
+        this.tabLoading = false
       })
     },
     tabName(param) {

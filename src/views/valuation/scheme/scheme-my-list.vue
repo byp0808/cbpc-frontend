@@ -201,6 +201,9 @@ export default {
         this.uploadList = res[0].manualList
         this.params.page = res[0].page
         console.log('res', res[0].datalist)
+      }).catch(error => {
+        console.log(error)
+        this.tableLoading = false
       })
       getAllTableList({ tab: '02' }).then(res => {
         this.tabList = res
