@@ -136,7 +136,7 @@ export default {
       }
       var refBondFilterInfo = this.$refs.refBondFilter.getData()
       console.log(refBondFilterInfo)
-      if (!refBondFilterInfo.tempNo) {
+      if (!refBondFilterInfo.tempId) {
         this.$message({
           message: '请选择应用模板，并应用',
           type: 'warning',
@@ -159,6 +159,8 @@ export default {
         this.curveSample.id = ''
         this.curveSample.filterId = ''
       }
+      // 20190930 筛选器模板编号字段修改，这里不影响后续逻辑，特按tempNo走
+      refBondFilterInfo.tempNo = refBondFilterInfo.tempId
       var data = _.assign({ curveSample: this.curveSample }, refBondFilterInfo)
       // 保存
       saveCurveSample(data).then(response => {
