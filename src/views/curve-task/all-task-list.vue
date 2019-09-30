@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import { selectCurve, selectCurveTask, updateCurveTask, selectPerson, chaimCurveTask } from '@/api/curve/curve'
+import { selectCurve, selectCurveTask, updateCurveTask, selectPerson, chaimCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 import DictColumn from './components/DictColumn'
 export default {
@@ -146,7 +146,6 @@ export default {
     getList() {
       this.listLoading = true
       selectCurveTask({ data: this.task, page: this.listQuery }).then(response => {
-        console.log(response)
         this.list = response.dataList
         this.total = response.page.totalRecord
         this.listLoading = false

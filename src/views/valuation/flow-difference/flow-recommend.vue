@@ -56,6 +56,7 @@
                     <el-button
                       type="danger"
                       size="mini"
+                      :disabled="scope.row.approveStatus === '01'?true:false"
                       @click.native.prevent="deleteRow(scope.row.id)"
                     >
                       删除
@@ -140,6 +141,7 @@
                   <el-button
                     type="danger"
                     size="small"
+                    :disabled="scope.row.approveStatus === '01'?true:false"
                     @click.native.prevent="deleteParams(scope.row.id)"
                   >
                     删除
@@ -164,7 +166,7 @@
       <div class="bottom-box">
         <el-row>
           <el-col :span="24">
-            <el-button type="primary" style="margin-bottom:10px">新增点差规则</el-button>
+            <el-button type="primary" style="margin-bottom:10px" @click="addSpreadRule">新增点差规则</el-button>
             <el-table
               :data="addRuleList"
               tooltip-effect="dark"
@@ -174,12 +176,12 @@
               fit
             >
               <el-table-column
-                prop="id"
+                prop="spreadRule.id"
                 label="点差规则ID"
                 align="center"
               />
               <el-table-column
-                prop="ruleName"
+                prop="spreadRule.ruleName"
                 label="规则名称"
                 align="center"
               />
@@ -197,7 +199,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="spreadType"
+                prop="spreadRule.spreadType"
                 label="点差类型"
                 align="center"
               />
@@ -206,9 +208,9 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
-                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
-                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '01'" style="margin-left: 10px">待复核</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
+                  <span v-if="scope.row.spreadRule.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -219,20 +221,33 @@
                   <el-button
                     type="primary"
                     size="small"
-                    @click.native.prevent="toDetail(scope.row.id)"
+                    :disabled="scope.row.spreadRule.approveStatus === '01'?true:false"
+                    @click.native.prevent="editSpreadRule(scope.row.spreadRule.id)"
                   >
                     编辑
                   </el-button>
                   <el-button
                     type="danger"
                     size="small"
-                    @click.native.prevent="deleteRule(scope.row.id)"
+                    :disabled="scope.row.spreadRule.approveStatus === '01'?true:false"
+                    @click.native.prevent="deleteRule(scope.row.spreadRule.id)"
                   >
                     删除
                   </el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+              style="margin-top:10px"
+              align="center"
+              :current-page="spreadRulePage.pageNumber"
+              :page-sizes="[5, 10, 15, 30, 50]"
+              :page-size="spreadRulePage.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="spreadRulePage.totalRecord"
+              @size-change="spreadRuleHSChange"
+              @current-change="spreadRuleHCChange"
+            />
           </el-col>
         </el-row>
       </div>
@@ -242,7 +257,6 @@
         ref="refAssetForm"
         :rec-curve-data="recCurveData"
         :business-id="flowId"
-        :detail-info="detailInfo"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -261,18 +275,31 @@
         <el-button type="primary" @click="spreadParamSave">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog v-if="spreadRuleDialog" :visible.sync="spreadRuleDialog" title="点差规则设置" width="800px">
+      <SpreadRuleForm
+        ref="refSpreadRuleForm"
+        :business-id="spreadRuleId"
+        @saveCallBack="spreadRuleSaveCallBack"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="spreadRuleSave">保存并应用</el-button>
+        <el-button @click="spreadRuleDialog = false">返回</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form.vue'
+import SpreadRuleForm from '@/views/valuation/flow-difference/spread-rule-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
-import { getAssetData, deleteAssetData, signleData, spreadParamList, deleteSpreadParam, someBadList } from '@/api/valuation/flow.js'
+import { getAssetData, deleteAssetData, spreadParamList, deleteSpreadParam, someBadList, delSomeBad } from '@/api/valuation/flow.js'
 export default {
   name: 'FlowDifference',
   components: {
     FlowForm,
-    SpreadParamForm
+    SpreadParamForm,
+    SpreadRuleForm
   },
   data() {
     return {
@@ -282,9 +309,11 @@ export default {
       recCurveData: {},
       flowId: '',
       spreadParamId: '',
+      spreadRuleId: '',
       detailInfo: {},
       assetDialog: false,
       paramsDialog: false,
+      spreadRuleDialog: false,
       disabled: false,
       page: {
         pageNumber: 1,
@@ -292,6 +321,11 @@ export default {
         totalRecord: 0
       },
       spreadParamPage: {
+        pageNumber: 1,
+        pageSize: 10,
+        totalRecord: 0
+      },
+      spreadRulePage: {
         pageNumber: 1,
         pageSize: 10,
         totalRecord: 0
@@ -323,7 +357,7 @@ export default {
       someBadList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.addRuleList = dataList
-        this.page = page
+        this.spreadRulePage = page
       })
     },
     addAsset() {
@@ -352,6 +386,14 @@ export default {
       this.spreadParamPage.pageNumber = currentPage
       this.spreadParamTable()
     },
+    spreadRuleHSChange(pageSize) {
+      this.spreadRulePage.pageSize = pageSize
+      this.someBadRuleList()
+    },
+    spreadRuleHCChange(currentPage) {
+      this.spreadRulePage.pageNumber = currentPage
+      this.someBadRuleList()
+    },
     saveCallBack() {
       this.assetDialog = false
       this.assetTable()
@@ -359,9 +401,6 @@ export default {
     modifyAsset(id) {
       this.flowId = id
       this.assetDialog = true
-      signleData(id).then(res => {
-        this.detailInfo = res
-      })
     },
     editSpreadParam(id) {
       this.spreadParamId = id
@@ -387,6 +426,16 @@ export default {
         this.spreadParamTable()
       })
     },
+    deleteRule(id) {
+      delSomeBad(id).then(response => {
+        this.$message({
+          message: '删除成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.someBadRuleList()
+      })
+    },
     ruleDetail(bondFilterId) {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
@@ -407,6 +456,21 @@ export default {
     spreadParamSaveCallBack() {
       this.paramsDialog = false
       this.spreadParamTable()
+    },
+    addSpreadRule() {
+      this.spreadRuleId = ''
+      this.spreadRuleDialog = true
+    },
+    editSpreadRule(id) {
+      this.spreadRuleId = id
+      this.spreadRuleDialog = true
+    },
+    spreadRuleSave() {
+      this.$refs.refSpreadRuleForm.save()
+    },
+    spreadRuleSaveCallBack() {
+      this.spreadRuleDialog = false
+      this.someBadRuleList()
     },
     joinSpreadParam(row) {
       var result = '( ' + row.rangeStart + ', ' + row.rangeEnd + 'y ]'

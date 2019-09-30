@@ -27,9 +27,9 @@ export function calculatCompletionRate(data) {
 }
 
 // 曲线发布
-export function deployCurve(data) {
+export function deployAndCheckCurve(data) {
   return request({
-    url: `${basic_api_curve}/curveOrderCompute/deployCurve`,
+    url: `${basic_api_curve}/curveOrderCompute/deployAndCheckCurve`,
     method: 'post',
     data
   })

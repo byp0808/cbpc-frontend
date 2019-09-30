@@ -2,14 +2,14 @@
   <div class="app-container">
     <el-col :span="2" style="width: 80px;">
       <el-tabs tab-position="left" style="height: 200px;" @tab-click="orderTabClick">
-        <el-tab-pane v-for="(item, index) in orderList" :key="item.id" :label="item.orderName"></el-tab-pane>
+        <el-tab-pane v-for="(item) in orderList" :key="item.id" :label="item.orderName" />
       </el-tabs>
     </el-col>
     <el-col :span="20" style="margin: 20px 0;">
       <CurveOrderCompute
         ref="refCurveOrderCompute"
         :order-id="selectOrder.id"
-        :orderInfo="selectOrder"
+        :order-info="selectOrder"
       />
     </el-col>
   </div>
@@ -41,7 +41,6 @@ export default {
       // 默认显示第一条
       this.selectOrder = this.orderList[0]
     }
-
   },
   methods: {
     orderTabClick(tab, event) {
@@ -49,7 +48,9 @@ export default {
       this.selectOrder = this.orderList[tab.index]
       this.selectOrderId = this.selectOrder.id
 
-      this.$refs.refCurveOrderCompute.query()
+      this.$nextTick(() => {
+        this.$refs.refCurveOrderCompute.query()
+      })
     }
   }
 }
