@@ -2,9 +2,9 @@
   <div class="app-container">
     <el-row>
       <el-button type="primary" @click="toCompute()">开始计算</el-button>
-      <i class="el-icon-caret-right"></i>
-      <i class="el-icon-caret-right"></i>
-      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right" />
       完成曲线计算率
       <div class="bar" style="display: inline-block;width:100px">
         <el-progress
@@ -16,15 +16,15 @@
           style="color:black"
         />
       </div>
-      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">查看质检报告</el-button>
-      <i class="el-icon-caret-right"></i>
-      <i class="el-icon-caret-right"></i>
-      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right" />
+      <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线发布</el-button>
-      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">检查曲线样本券</el-button>
-      <i class="el-icon-caret-right"></i>
+      <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线样本券发布</el-button>
     </el-row>
     <el-row style="margin: 20px 0;">
@@ -72,7 +72,7 @@
       <el-table-column prop="curvePrdCode" label="曲线编码" width="140" />
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
       <el-table-column prop="curveBuildType" label="曲线类型" width="150" show-overflow-tooltip>
-        <template slot-scope="scope">
+        <template>
           到期
         </template>
       </el-table-column>
