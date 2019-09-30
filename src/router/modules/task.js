@@ -78,6 +78,10 @@ const taskRouter = {
       path: 'spread-param-task',
       component: () => import('@/views/valuation/flow-difference/spread-param-task.vue'),
       name: 'SpreadParamTask'
+    }, {
+      path: 'spread-rule-task',
+      component: () => import('@/views/valuation/flow-difference/spread-rule-task.vue'),
+      name: 'SpreadRuleTask'
     }
   ]
 }

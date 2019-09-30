@@ -58,6 +58,24 @@ export function numberFormatter(num, digits) {
 export function toThousandFilter(num) {
   return (+num || 0).toString().replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ','))
 }
+export function priorityFilter(params) {
+  switch (params) {
+    case 'H': return '高'
+    case 'M': return '中'
+    case 'L': return '低'
+  }
+}
+export function taskStatus(params) {
+  switch (params) {
+    case '01': return '待分配'
+    case '02': return '待估值'
+    case '03': return '已调整'
+    case '04': return '已确认'
+    case '05': return '待复核'
+    case '06': return '已复核'
+    case '07': return '已发布'
+  }
+}
 
 /**
  * Upper case first char
