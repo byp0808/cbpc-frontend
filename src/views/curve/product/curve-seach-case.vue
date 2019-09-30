@@ -4,7 +4,7 @@
       <!-- <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button> -->
       <!-- <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button> -->
 
-      <div class="block">
+      <div class="block" style="margin-bottom:10px">
         <span class="demonstration">开始日期及批次</span>
         <el-date-picker
           v-model="dateBegin"
@@ -17,25 +17,36 @@
           type="date"
           placeholder="选择日期"
         />
+        <span class="demonstration">批次</span>
+        <el-select v-model="value1" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label1"
+            :value="item.value"
+          />
+        </el-select>
       </div>
       <span class="demonstration">对应收益曲线</span>
-      <el-select v-model="value1" placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value1"
-          :label="item.label"
-          :value1="item.value1"
-        />
-      </el-select>
-      <span class="demonstration">编制方法</span>
       <el-select v-model="value2" placeholder="请选择">
         <el-option
           v-for="item in options"
-          :key="item.value2"
-          :label="item.label"
-          :value2="item.value2"
+          :key="item.value"
+          :label="item.label2"
+          :value="item.value"
         />
       </el-select>
+      <span class="demonstration">编制方法</span>
+      <el-select v-model="value3" placeholder="请选择">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label3"
+          :value="item.value"
+        />
+      </el-select>
+      <span class="demonstration">操作人</span>
+      <el-input v-model="input" size="medium" style="width:15%" />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
     </div>
     <el-table
@@ -192,6 +203,8 @@ export default {
       dateEnd: '', // 日期选择
       value1: '', // 收益率曲线
       value2: '', // 编制方法
+      value3: '', // 编制方法
+      input: '',
       productList: {
         dataList: [{
           productName: '1',
@@ -650,19 +663,29 @@ export default {
       },
       options: [{
         value: '选项1',
-        label: '黄金糕'
+        label1: '1',
+        label2: '黄金糕',
+        label3: '金糕'
       }, {
         value: '选项2',
-        label: '双皮奶'
+        label1: '2',
+        label2: '双皮奶',
+        label3: '皮奶'
       }, {
         value: '选项3',
-        label: '蚵仔煎'
+        label1: '3',
+        label2: '生煎',
+        label3: '生煎'
       }, {
         value: '选项4',
-        label: '龙须面'
+        label1: '4',
+        label2: '龙须面',
+        label3: '须面'
       }, {
         value: '选项5',
-        label: '北京烤鸭'
+        label1: '5',
+        label2: '北京烤鸭',
+        label3: '北烤鸭'
       }]
 
     }
