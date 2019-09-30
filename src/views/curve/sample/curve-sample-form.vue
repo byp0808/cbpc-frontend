@@ -9,7 +9,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="curveSelectDisable" placeholder="请选择曲线">
+                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="disabled" placeholder="请选择曲线">
                   <el-option
                     v-for="item in curveList"
                     :key="item.value"
@@ -67,7 +67,6 @@ export default {
   data() {
     return {
       disabled: '',
-      curveSelectDisable: false,
       curveList: [],
       allCurveList: []
     }
@@ -92,28 +91,19 @@ export default {
     this.allCurveList = this.curveList;
 
     if (this.productId) {
-      if (this.opType === 'VIEW') {
-        this.disabled = true
-        this.curveSelectDisable = true
-      } else {
-        this.disabled = false
-      }
-
       getCurveSample(this.productId).then(reponse => {
-        // 审批通过拒绝，不允许个性曲线产品
-        if (reponse) {
-          if ('02' === reponse.approveStatus || '03' === reponse.approveStatus) {
-            this.curveSelectDisable = true
-          }
-        }
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
       })
 
+      if (this.opType === 'VIEW') {
+        this.disabled = true
+      } else {
+        this.disabled = false
+      }
     } else if (this.businessId) {
       getCurveSample(this.businessId).then(reponse => {
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
       })
-      this.curveSelectDisable = true
     } else {
       this.disabled = false
       if (this.basePrdCode) {
@@ -146,7 +136,7 @@ export default {
       }
       var refBondFilterInfo = this.$refs.refBondFilter.getData()
       console.log(refBondFilterInfo)
-      if (!refBondFilterInfo.tempId) {
+      if (!refBondFilterInfo.tempNo) {
         this.$message({
           message: '请选择应用模板，并应用',
           type: 'warning',
@@ -169,8 +159,6 @@ export default {
         this.curveSample.id = ''
         this.curveSample.filterId = ''
       }
-      // 20190930 筛选器模板编号字段修改，这里不影响后续逻辑，特按tempNo走
-      refBondFilterInfo.tempNo = refBondFilterInfo.tempId
       var data = _.assign({ curveSample: this.curveSample }, refBondFilterInfo)
       // 保存
       saveCurveSample(data).then(response => {

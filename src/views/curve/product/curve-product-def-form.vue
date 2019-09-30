@@ -426,18 +426,6 @@ export default {
         return
       }
 
-      // 如果是修改已审批通过的产品，则只允许先保存第一步，再操作后续步骤
-      if (this.opType === 'EDIT' && '02' === this.productInfo.approveStatus) {
-        if (index > 0) {
-          this.$message({
-            message: '请先保存基本信息！',
-            type: 'error',
-            showClose: true
-          })
-          return
-        }
-      }
-
       this.stepActive = index
     },
     next() {
