@@ -358,6 +358,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.queryBondsList()
         queryTempInfo(this.bondTempSelect.tempId).then(response => {
           const { black, white, rules } = response
           this.blackList = black
@@ -365,7 +366,6 @@ export default {
           this.ruleList = rules
           this.bondListResult = []
         })
-        this.queryBondsList()
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -387,8 +387,8 @@ export default {
         blwls: this.$lodash.concat(this.whiteList, this.blackList)
       }
       queryBondsResult(data).then(response => {
-        const { datalist } = response
-        this.bondListResult = datalist
+        const { dataList } = response
+        this.bondListResult = dataList
       })
     },
     empty() {
@@ -416,8 +416,8 @@ export default {
     },
     queryBondsList() {
       queryBondsAll().then(response => {
-        const { datalist } = response
-        this.bondListAll = datalist
+        const { dataList } = response
+        this.bondListAll = dataList
       })
     },
     mvToBlackList(index, rows) {
@@ -433,7 +433,9 @@ export default {
       const blackInfo = {
         bondSource: '其他',
         bondName: row.bondName,
-        bondNo: row.bondNo
+        csin: row.csin,
+        marketId: row.marketId,
+        catelog: 'B'
       }
       if (this.bwListCheck(this.whiteList, row) >= 0) {
         this.$message({
@@ -460,7 +462,9 @@ export default {
       const whiteInfo = {
         bondSource: '其他',
         bondName: row.bondName,
-        bondNo: row.bondNo
+        csin: row.csin,
+        marketId: row.marketId,
+        catelog: 'W'
       }
       if (this.bwListCheck(this.blackList, row) >= 0) {
         this.$message({
@@ -505,7 +509,7 @@ export default {
       }
     },
     bwListCheck(dataList, data) {
-      return this.$lodash.findIndex(dataList, { bondNo: data.bondNo })
+      return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.marketId })
     },
     getData() {
       return {
