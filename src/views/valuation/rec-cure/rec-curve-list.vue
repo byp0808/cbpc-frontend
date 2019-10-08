@@ -205,6 +205,7 @@ export default {
       })
     },
     toAdd() {
+      this.recCureId = ''
       this.$store.commit('recCurve/setRecCurveInfo', {})
       this.recCurveFormVisible = true
     },

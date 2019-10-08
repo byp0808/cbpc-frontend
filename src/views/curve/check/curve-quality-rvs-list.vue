@@ -3,13 +3,6 @@
     <div class="flex-item">
       <el-card class="flex-children curve-build">
         <div style="margin-bottom: 20px">
-          <el-date-picker v-model="rvsQcRptList.compDate" type="date" placeholder="选择日期" value-format="yyyyMMdd" format="yyyy-MM-dd" />
-          <el-select v-model="rvsQcRptList.curveId" placeholder="请选择">
-            <el-option label="B0002" value="B0002" />
-          </el-select>
-          <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-        </div>
-        <div style="margin-bottom: 20px">
           <el-select v-model="rvsQcRptList.curveId" @change="handleOptionChange">
             <el-option v-for="item in curveList.dataList" :key="item.curveId" :label="item.productName" :value="item.curveId" />
           </el-select>
@@ -28,12 +21,12 @@
           </el-table-column>
           <el-table-column label="本批次收益率" width="200" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.keyTermYield }}
+              {{ scope.row.yieldChg }}
             </template>
           </el-table-column>
           <el-table-column label="上一批次收益率" width="200" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.tgtKeyTermYield }}
+              {{ scope.row.tgtYieldChg }}
             </template>
           </el-table-column>
         </el-table>
@@ -57,21 +50,18 @@
 <script>
 import { Chart } from 'highcharts-vue'
 import { qryCurveRvsQcList, qryCurveRvsQcRpt } from '@/api/curve/curve-quality.js'
-import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
   name: 'CurveRvsQcRpt',
   // eslint-disable-next-line vue/no-unused-components
   components: { Chart },
-  filters: {
-    showCodeLabel: showCodeLabel
-  },
+  props: ['taskDay', 'orderId'],
   data() {
     return {
       rvsQcRptList: {
         compDate: '',
         curveId: '',
-        batchId: 'B0002',
+        batchId: '',
         dataList: [{
           keyTerm: 0.08,
           keyTermYield: 0.1,
@@ -160,28 +150,37 @@ export default {
       this.qryCurveRvsQcRpt()
     },
     qryCurveRvsQcRpt() {
+      this.rvsQcRptList.compDate = this.taskDay
+      this.rvsQcRptList.batchId = this.orderId
       qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
         console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
         const { dataList, page } = response
         this.rvsQcRptList.dataList = dataList
         this.rvsQcRptList.page = page
-      })
-    },
-    qryCurveRvsQcList() {
-      qryCurveRvsQcList(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
-        const { datalist } = response
-        this.curveList.dataList = datalist
         var income = []
         var lastinCome = []
-        for (var i = 0; i < datalist.length; i++) {
-          income.push([datalist[i].keyTerm, datalist[i].keyTermYield])
-          lastinCome.push([datalist[i].keyTerm, datalist[i].tgtKeyTermYield])
+        for (var i = 0; i < dataList.length; i++) {
+          // eslint-disable-next-line no-new-wrappers
+          var x = Number(dataList[i].keyTerm)
+          // eslint-disable-next-line no-new-wrappers
+          var y = Number(dataList[i].keyTermYield)
+          income.push([x, y])
+          // eslint-disable-next-line no-new-wrappers
+          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
         }
         // 本次收益率
         this.chartOptions.series[0].data = income
         // 上一批次收益率
         this.chartOptions.series[1].data = lastinCome
+      })
+    },
+    qryCurveRvsQcList() {
+      this.rvsQcRptList.compDate = this.taskDay
+      this.rvsQcRptList.batchId = this.orderId
+      qryCurveRvsQcList(this.rvsQcRptList).then(response => {
+        console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
+        const { datalist } = response
+        this.curveList.dataList = datalist
       })
     }
   }

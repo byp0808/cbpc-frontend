@@ -107,6 +107,8 @@ export default {
       queryBondsNonp(this.businessId).then(response => {
         this.$store.commit('bondsNonp/setBondsNonpInfo', response)
       })
+    } else {
+      this.bondsNonpInfo = {}
     }
   },
   methods: {

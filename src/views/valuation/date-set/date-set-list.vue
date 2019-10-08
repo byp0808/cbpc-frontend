@@ -207,6 +207,7 @@ export default {
       })
     },
     toAdd() {
+      this.dateSetId = ''
       this.$store.commit('dateSet/setDateSetInfo', {})
       this.dateSetFormVisible = true
     },

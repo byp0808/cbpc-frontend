@@ -151,6 +151,8 @@ export default {
       queryOrderInfo(this.businessId).then(response => {
         this.$store.commit('orderInfo/setOrderInfo', response)
       })
+    } else {
+      this.orderInfoForm = {}
     }
   },
   methods: {

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button>
-      <el-button type="primary" v-if="false" @click="toAddCurveProduct('COPY')">复制新增</el-button>
+      <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
     </div>
     <el-table
@@ -35,7 +35,7 @@
           {{ scope.row.curveStartTime == null ? '' : $moment(scope.row.curveStartTime).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
-      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip >
+      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.curveEndTime == null ? '' : $moment(scope.row.curveEndTime).format('YYYY-MM-DD') }}
         </template>
@@ -88,7 +88,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog :lock-scroll="lockScroll" width="40%" v-if="addCurveProductFormVisible" title="新增产品"  :visible.sync="addCurveProductFormVisible">
+    <el-dialog v-if="addCurveProductFormVisible" :lock-scroll="lockScroll" width="40%" title="新增产品" :visible.sync="addCurveProductFormVisible">
       <CurveProductForm
         ref="refCurveProductForm"
       />

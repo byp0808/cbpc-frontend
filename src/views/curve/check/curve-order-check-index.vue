@@ -6,17 +6,22 @@
           v-model="queryForm.taskDay"
           align="right"
           type="date"
+          format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
         />
       </el-form-item>
       <el-form-item label="批次">
         <el-select v-model="queryForm.orderId" placeholder="活动区域" :disabled="disabled">
-          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.orderName" />
+          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="indexQuery">查询</el-button>
+      </el-form-item>
+      <el-form-item class="icon-btn">
+        <i class="el-icon-download" title="下载" @click="download" />
+        <i class="el-icon-setting" title="偏差值设置" @click="orderSet" />
       </el-form-item>
     </el-form>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
@@ -31,37 +36,49 @@
       <div slot="header" class="clearfix card-head">
         <h3>总览</h3>
       </div>
-      <CurveQualityOverallList ref="refCurveQualityOverallList" />
+      <CurveQualityOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qmxjc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>全面性检查</h3>
       </div>
-      <CurveComprehensiveQcRpt ref="refCurveComprehensiveQcRpt" />
+      <CurveComprehensiveQcRpt ref="qmxjc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'bdpc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>波动偏差</h3>
       </div>
-      <CurveShkQcRpt ref="refCurveShkQcRpt" />
+      <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qxkx'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
-      <CurveCrsQcRpt ref="refCurveCrsQcRpt" />
+      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qxdg'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线倒挂</h3>
       </div>
-      <CurveRvsQcRpt ref="refCurveRvsQcRpt" />
+      <CurveRvsQcRpt ref="qxdg" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
+      <CurveFTQcRpt ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
+
+    <el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置曲线质检波动偏差值" :visible.sync="orderSetFormVisible">
+      <CurveOrderCheckSetForm
+        ref="refCurveOrderCheckSetForm"
+        :order-list="orderList"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="orderSetFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveOrderSet">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -71,7 +88,11 @@ import CurveComprehensiveQcRpt from '@/views/curve/check/curve-quality-comprehen
 import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
 import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
 import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
+import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
 import { getOrderList } from '@/api/curve/curve-product-order.js'
+import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
+import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
+
 export default {
   name: 'CurveOrderCheckIndex',
   components: {
@@ -79,24 +100,38 @@ export default {
     CurveComprehensiveQcRpt,
     CurveShkQcRpt,
     CurveRvsQcRpt,
-    CurveCrsQcRpt
+    CurveCrsQcRpt,
+    CurveFTQcRpt,
+    CurveOrderCheckSetForm
   },
   props: ['orderId', 'taskDay'],
   data() {
     return {
+      lockScroll: true,
       disabled: false,
+      orderSetFormVisible: false, // 曲线质检波动偏差值设置界面
       orderList: [], // 批次列表
       queryForm: {
         taskDay: null,
         orderId: ''
       },
+      dwnlForm: {
+        compDate: '20190918',
+        batchId: 'B0002'
+      },
       activeName: 'zl'
     }
   },
   computed: {
+    taskDayStr() {
+      var date = this.queryForm.taskDay
+      if (date) {
+        return this.$moment(date).format('YYYY-MM-DD')
+      }
+      return ''
+    }
   },
   watch: {
-
   },
   beforeMount() {
     console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
@@ -117,15 +152,53 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
+    // 下载
+    download() {
+      console.info('download')
+      dwnlCurveQcRpt(this.dwnlForm)
+    },
+    // 曲线质检波动偏差值设置
+    orderSet() {
+      console.info('orderSet')
+      this.orderSetFormVisible = true
+    },
+    // 设置保存
+    saveOrderSet() {
+      console.info('saveOrderSet')
+      this.orderSetFormVisible = false
+    },
     // 主页面查询方法
-    // 根据
+    // 根据 activeName 调用各个页面查询方法
     indexQuery() {
-
+      console.info('indexQuery.activeName:' + this.activeName)
+      this.$refs[this.activeName].handleFilter()
+      // 总览 zl
+      // if (this.activeName === 'zl') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qmxjc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'bdpc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxkx') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxdg') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'rc') {
+      //   this.$refs.zl.handleFilter()
+      // }
     }
   }
 }
 </script>
 
 <style>
-
+  .icon-btn{
+    float: right;
+  }
+  .icon-btn .el-form-item__content{
+    font-size: 24px;
+  }
+  .icon-btn i:hover{
+    cursor: pointer;
+  }
 </style>

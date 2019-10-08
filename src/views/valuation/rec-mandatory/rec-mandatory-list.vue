@@ -194,6 +194,7 @@ export default {
       })
     },
     toAdd() {
+      this.mandatoryId = ''
       this.$store.commit('recMandatory/setRecMandatoryInfo', {})
       this.recCurveFormVisible = true
     },

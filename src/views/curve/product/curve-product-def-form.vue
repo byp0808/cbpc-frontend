@@ -49,20 +49,20 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" @change="selectTrigger('market')" :disabled="disabled" >
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" :disabled="disabled" @change="selectTrigger('market')">
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col><el-col :span="8">
             <el-form-item label="产品状态" prop="prdStatus">
-              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" :disabled="disabled" >
+              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" :disabled="disabled">
                 <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线评级">
-<!--              <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
+              <!-- <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
               <el-select v-model="productInfo.productGrade" placeholder="请选择">
                 <el-option
                   v-for="(name, key) in $dict('MARKET_GRADE')"
@@ -377,7 +377,7 @@ export default {
     if (this.basePrdCode) {
       this.productInfo.basePrdCode = this.basePrdCode
     }
-    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime();
+    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime()
     this.curveEndTime = this.productInfo.curveEndTime
 
     var id = ''
@@ -416,7 +416,7 @@ export default {
         }
       }
 
-      var sort = this.productInfo.sort;
+      var sort = this.productInfo.sort
       if (sort < index) {
         this.$message({
           message: '请先保存上一步骤信息！',
@@ -424,18 +424,6 @@ export default {
           showClose: true
         })
         return
-      }
-
-      // 如果是修改已审批通过的产品，则只允许先保存第一步，再操作后续步骤
-      if (this.opType === 'EDIT' && '02' === this.productInfo.approveStatus) {
-        if (index > 0) {
-          this.$message({
-            message: '请先保存基本信息！',
-            type: 'error',
-            showClose: true
-          })
-          return
-        }
       }
 
       this.stepActive = index
@@ -559,25 +547,25 @@ export default {
           var item = curvePrdKdList[i]
           if ( !item.sampleIntervalDown && item.sampleIntervalDown != 0 ||  !item.sampleIntervalUp && item.sampleIntervalUp != 0) {
             this.$message({
-              message: '第' + (i+1) +'条关键期限，样本区间上、下限不能为空！',
+              message: '第' + (i + 1) + '条关键期限,样本区间上、下限不能为空！',
               type: 'error',
               showClose: true
             })
             return false
           } else if (item.sampleIntervalDown >= item.sampleIntervalUp) {
             this.$message({
-              message: '第' + (i+1) +'条关键期限,样本区间下限必须小于区间上限！',
+              message: '第' + (i + 1) + '条关键期限,样本区间下限必须小于区间上限！',
               type: 'error',
               showClose: true
             })
             return false
           }
           // 判断是否有区间交集
-          if ( i + 1 < curvePrdKdList.length) {
-            var nextItem = curvePrdKdList[i+1]
-            if (item.sampleIntervalUp > nextItem.sampleIntervalDown ) {
+          if (i + 1 < curvePrdKdList.length) {
+            var nextItem = curvePrdKdList[i + 1]
+            if (item.sampleIntervalUp > nextItem.sampleIntervalDown) {
               this.$message({
-                message: '关键期限，第' + (i+1) +'条区间上限，不能大于' + (i+2) + '条区间下限',
+                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于' + (i + 2) + '条区间下限',
                 type: 'error',
                 showClose: true
               })

@@ -6,21 +6,21 @@
       </el-tabs>
     </el-col>
     <el-col :span="20" style="margin: 20px 0;">
-      <CurveOrderCompute
-        ref="refCurveOrderCompute"
+      <curveTimeCompute
+        ref="refcurveTimeCompute"
         :order-id="selectOrder.id"
-        :order-info="selectOrder"
+        :order-nfo="selectOrder"
       />
     </el-col>
   </div>
 </template>
 <script>
-import { getOrderList } from '@/api/curve/curve-product-order.js'
-import CurveOrderCompute from '@/views/curve/compute/curve-order-compute.vue'
+import { getOrderList } from '@/api/curve/curve-time-order.js'
+import curveTimeCompute from '@/views/curve/compute/curve-time-compute.vue'
 
 export default {
   components: {
-    CurveOrderCompute
+    curveTimeCompute
   },
   data() {
     return {
@@ -48,9 +48,7 @@ export default {
       this.selectOrder = this.orderList[tab.index]
       this.selectOrderId = this.selectOrder.id
 
-      this.$nextTick(() => {
-        this.$refs.refCurveOrderCompute.query()
-      })
+      this.$refs.refcurveTimeCompute.query()
     }
   }
 }

@@ -4,13 +4,13 @@
       <el-row>
         <el-col :span="11">
           <el-button type="primary" @click="allotTask">任务分配</el-button>
-          <el-button type="primary">任务认领</el-button>
+          <el-button type="primary" @click="getTask">任务认领</el-button>
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
         <el-col :span="11" :offset="2" class="scroll-box">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
-          <el-button type="primary">添加任务</el-button>
+          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" clearable style="width:200px" />
+          <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
           <el-button type="primary">下载估值方案</el-button>
@@ -27,7 +27,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
-        <asset-list :all-list="allList" />
+        <asset-list :all-list="allList" @selectionList="selectionList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -41,7 +41,7 @@
         />
       </div>
       <div v-if="activeElement === '04'" v-loading="tabLoading">
-        <people-upload :all-list="uploadList" />
+        <people-upload :all-list="uploadList" @selectionList="selectionList" />
         <el-pagination
           align="center"
           :current-page="params.page.pageNumber"
@@ -59,8 +59,8 @@
       <div>
         <el-form style="margin-left:50px">
           <el-form-item label="任务分配人">
-            <el-select v-model="peopleName" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
+              <el-option v-for="(item, index) in nameList" :key="index" :label="item.userName" :value="item.userId" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -88,17 +88,19 @@
         </el-row>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="volumeAddDialog" title="批量添加任务">
+    <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="选择批次">
-            <el-select v-model="volumeAdd.batch" filterable clearable placeholder="请选择批次" @change="batchChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+        <el-form style="margin-left:50px" :label-position="labelPosition">
+          <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
+            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @change="batchChange">
+              <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
-          <el-form-item label="选择文件">
+          <el-form-item v-if="isBatch" label="选择文件">
             <el-upload
               class="upload-demo"
+              action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed"
               :http-request="memSuccess"
@@ -106,10 +108,11 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
-            <el-select v-model="volumeAdd.season" filterable clearable placeholder="请选择批次" @change="batchChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择原因" @change="batchChange">
+              <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -134,6 +137,8 @@
           <el-form-item label="选择文件">
             <el-upload
               class="upload-demo"
+              action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed1"
               :http-request="memSuccess1"
@@ -141,6 +146,7 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
           </el-form-item>
         </el-form>
         <el-row>
@@ -159,7 +165,8 @@
 <script>
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
+import { basic_api_valuation } from '../../../api/base-api'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -169,6 +176,8 @@ export default {
   data() {
     return {
       activeElement: '01',
+      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      labelPosition: 'right',
       allocationDialog: false,
       noValuationDialog: false,
       volumeAddDialog: false,
@@ -176,8 +185,20 @@ export default {
       tabLoading: false,
       fileLoading: false,
       methodUpload: false,
+      isBatch: false,
+      taskTitle: '',
+      excelFile: '',
       peopleName: '',
       allList: [],
+      selection: [],
+      causeList: [],
+      nameModel: {},
+      batchList: [
+        {
+          batchId: '2222',
+          name: '批次2'
+        }
+      ],
       uploadList: [],
       tabList: [
         // {
@@ -199,20 +220,14 @@ export default {
         endTime: ''
       },
       volumeAdd: {
-        season: '其他',
-        batch: '',
-        excelFile: ''
+        cause: '08',
+        batchId: '2222'
       },
       upLoadValution: {
         batch: '',
         excelFile1: ''
       },
-      nameList: [
-        {
-          name: '美术课件',
-          value: '1'
-        }
-      ],
+      nameList: [],
       bondId: '',
       valuationAllTask: [],
       valuationMyTask: [],
@@ -247,6 +262,20 @@ export default {
         this.tabLoading = false
       })
     },
+    selectionList(data) {
+      this.selection = data
+    },
+    getTask() {
+      console.log('data', this.selection)
+      if (this.selection.length === 0) {
+        return this.$message('请选择任务')
+      } else {
+        getTask(this.selection).then(res => {
+          this.loadTable_all()
+        })
+      }
+    },
+
     tabName(param) {
       switch (param) {
         case '01': return '正常'
@@ -267,8 +296,61 @@ export default {
     },
     batchChange(e) {
       console.log('er', e)
+      this.volumeAdd.batchId = e
+    },
+    resetTaskDialog() {
+      this.volumeAdd.batchId = ''
+      this.volumeAdd.attach = ''
     },
     saveBatch() {
+      if (!this.volumeAdd.batchId) {
+        return this.$message.info('请选择批次')
+      }
+      if (this.isBatch) {
+        if (!this.excelFile) {
+          return this.$message('别着急, 您的文件还没有上传哦')
+        }
+        const fd = new FormData()
+        fd.append('attach', this.excelFile)
+        fd.append('batchId', this.volumeAdd.batchId)
+        fd.append('cause', this.volumeAdd.cause)
+        console.log('fd', fd.getAll('attach'))
+        addBatchTask({
+          attach: this.excelFile,
+          batchId: this.volumeAdd.batchId,
+          cause: this.volumeAdd.cause
+        }).then(res => {
+          this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
+          this.loadTable_all()
+        })
+      } else {
+        if (!this.bondId) {
+          this.$message.error('请输入资产编码')
+          return
+        }
+        delete this.volumeAdd.attach
+        this.volumeAdd.csin = this.bondId
+        addOneTask(this.volumeAdd).then(res => {
+          this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
+          this.loadTable_all()
+        })
+      }
+    },
+    addTask() {
+      this.isBatch = false
+      this.volumeAddDialog = true
+      this.taskTitle = '添加任务'
+      this.resetTaskDialog()
+    },
+    downLoadMode() {
 
     },
     saveValuation() {
@@ -280,7 +362,7 @@ export default {
     memSuccess(item) {
       console.log('item', item)
       this.$message.success(`文件: ${item.file.name} 上传成功`)
-      this.volumeAdd.excelFile = item.file
+      this.excelFile = item.file
     },
     memSuccess1(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
@@ -291,9 +373,18 @@ export default {
     },
     allotTask() {
       this.allocationDialog = true
+      getUserName('00001').then(res => {
+        this.nameList = res
+      })
     },
     saveName() {
-
+      this.nameModel.ids = this.selection
+      saveTask(this.nameModel).then(res => {
+        this.$message({
+          message: '任务分配成功',
+          type: 'success'
+        })
+      })
     },
     claimTask: function() {
 
@@ -302,11 +393,11 @@ export default {
       this.valuation.starTime = new Date()
       this.noValuationDialog = true
     },
-    addTask: function() {
-
-    },
     batchAddTask() {
+      this.isBatch = true
       this.volumeAddDialog = true
+      this.taskTitle = '批量添加任务'
+      this.resetTaskDialog()
     },
     uploadScheme() {
       this.uploadMethodDialog = true
@@ -346,5 +437,10 @@ export default {
  .assset {
      font-weight: 700;
      font-size: 16px;
+ }
+ .downLoad {
+   margin-left: 70px;
+   color: #09f;
+   margin-top: -10px;
  }
 </style>
