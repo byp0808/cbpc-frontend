@@ -99,6 +99,8 @@ export default {
         this.$store.commit('recMandatory/setRecMandatoryInfo', reponse)
         // this.$store.commit('bondFilter/setBondFilterId', reponse.bondFilterId)
       })
+    } else {
+      this.recMandatoryInfo = {}
     }
   },
   methods: {

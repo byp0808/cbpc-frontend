@@ -59,8 +59,8 @@
       <div>
         <el-form style="margin-left:50px">
           <el-form-item label="任务分配人">
-            <el-select v-model="nameModel.peopleName" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.userId" />
+            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
+              <el-option v-for="(item, index) in nameList" :key="index" :label="item.userName" :value="item.userId" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -100,6 +100,7 @@
             <el-upload
               class="upload-demo"
               action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed"
               :http-request="memSuccess"
@@ -137,6 +138,7 @@
             <el-upload
               class="upload-demo"
               action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed1"
               :http-request="memSuccess1"
@@ -163,7 +165,7 @@
 <script>
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
 export default {
   name: 'SchemeAllList',
@@ -218,7 +220,8 @@ export default {
         endTime: ''
       },
       volumeAdd: {
-        cause: '08'
+        cause: '08',
+        batchId: '2222'
       },
       upLoadValution: {
         batch: '',
@@ -264,9 +267,13 @@ export default {
     },
     getTask() {
       console.log('data', this.selection)
-      getTask(this.selection).then(res => {
-        this.loadTable_all()
-      })
+      if (this.selection.length === 0) {
+        return this.$message('请选择任务')
+      } else {
+        getTask(this.selection).then(res => {
+          this.loadTable_all()
+        })
+      }
     },
 
     tabName(param) {
@@ -289,13 +296,16 @@ export default {
     },
     batchChange(e) {
       console.log('er', e)
+      this.volumeAdd.batchId = e
     },
     resetTaskDialog() {
       this.volumeAdd.batchId = ''
       this.volumeAdd.attach = ''
     },
     saveBatch() {
-      this.resetTaskDialog()
+      if (!this.volumeAdd.batchId) {
+        return this.$message.info('请选择批次')
+      }
       if (this.isBatch) {
         if (!this.excelFile) {
           return this.$message('别着急, 您的文件还没有上传哦')
@@ -304,8 +314,13 @@ export default {
         fd.append('attach', this.excelFile)
         fd.append('batchId', this.volumeAdd.batchId)
         fd.append('cause', this.volumeAdd.cause)
+        console.log('fd', fd)
         addBatchTask(fd).then(res => {
           this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
           this.loadTable_all()
         })
       } else {
@@ -313,9 +328,14 @@ export default {
           this.$message.error('请输入资产编码')
           return
         }
+        delete this.volumeAdd.attach
         this.volumeAdd.csin = this.bondId
         addOneTask(this.volumeAdd).then(res => {
           this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
           this.loadTable_all()
         })
       }
@@ -324,6 +344,7 @@ export default {
       this.isBatch = false
       this.volumeAddDialog = true
       this.taskTitle = '添加任务'
+      this.resetTaskDialog()
     },
     downLoadMode() {
 
@@ -349,12 +370,17 @@ export default {
     allotTask() {
       this.allocationDialog = true
       getUserName('00001').then(res => {
-        console.log('m', res)
         this.nameList = res
       })
     },
     saveName() {
-
+      this.nameModel.ids = this.selection
+      saveTask(this.nameModel).then(res => {
+        this.$message({
+          message: '任务分配成功',
+          type: 'success'
+        })
+      })
     },
     claimTask: function() {
 
@@ -367,6 +393,7 @@ export default {
       this.isBatch = true
       this.volumeAddDialog = true
       this.taskTitle = '批量添加任务'
+      this.resetTaskDialog()
     },
     uploadScheme() {
       this.uploadMethodDialog = true

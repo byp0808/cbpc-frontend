@@ -114,6 +114,8 @@ export default {
         this.$store.commit('recCurve/setRecCurveInfo', reponse)
         // this.$store.commit('bondFilter/setBondFilterId', reponse.bondFilterId)
       })
+    } else {
+      this.recCurveInfo = {}
     }
     queryCurveList().then(response => {
       const { dataList } = response
