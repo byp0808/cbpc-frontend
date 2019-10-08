@@ -60,13 +60,13 @@
     </transition>
     <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
+        <el-form ref="ruleForm" style="margin-left:50px" :model="volumeAdd" :rules="rules">
+          <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'" prop="batchId">
             <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="isBatch" label="选择文件">
+          <el-form-item v-if="isBatch" label="选择文件" prop="dataFile">
             <el-upload
               class="upload-demo"
               action=""
@@ -82,7 +82,7 @@
               <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
               模板文件下载</div>
           </el-form-item>
-          <el-form-item label="选择调整原因">
+          <el-form-item label="选择调整原因" prop="cause">
             <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
               <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
@@ -162,6 +162,11 @@ export default {
       volumeAdd: {
         cause: '08',
         batchId: '2222'
+      },
+      rules: {
+        batchId: [{ required: true, message: '请选择批次', trigger: 'change' }],
+        cause: [{ required: true, message: '请选择调整原因', trigger: 'change' }],
+        dataFile: [{ required: true, message: '请选择上传文件', trigger: 'blur' }]
       },
       batchList: [
         {
@@ -292,40 +297,46 @@ export default {
     },
     resetTaskDialog() {
       this.volumeAdd.batchId = ''
-      this.volumeAdd.attach = ''
+      this.volumeAdd.dataFile = ''
+      this.volumeAdd.cause = '08'
     },
     saveBatch() {
-      if (this.isBatch) {
-        if (!this.excelFile) {
-          return this.$message('别着急, 您的文件还没有上传哦')
+      this.$refs.ruleForm.validate(val => {
+        if (val) {
+          if (this.isBatch) {
+            if (!this.excelFile) {
+              return this.$message('别着急, 您的文件还没有上传哦')
+            }
+            var fd = new FormData()
+            fd.append('dataFile', this.excelFile)
+            fd.append('batchId', this.volumeAdd.batchId)
+            fd.append('cause', this.volumeAdd.cause)
+            addBatchTask(fd).then(res => {
+              this.volumeAddDialog = false
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.loadTable()
+            })
+          } else {
+            if (!this.bondId) {
+              this.$message.error('请输入资产编码')
+              return
+            }
+            delete this.volumeAdd.dataFile
+            this.volumeAdd.csin = this.bondId
+            addOneTask(this.volumeAdd).then(res => {
+              this.volumeAddDialog = false
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.loadTable()
+            })
+          }
         }
-        var fd = new FormData()
-        fd.append('attach', this.excelFile)
-        fd.append('batchId', this.volumeAdd.batchId)
-        fd.append('cause', this.volumeAdd.cause)
-        addBatchTask(fd).then(res => {
-          this.volumeAddDialog = false
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          })
-          this.loadTable()
-        })
-      } else {
-        if (!this.bondId) {
-          this.$message.error('请输入资产编码')
-          return
-        }
-        this.volumeAdd.csin = this.bondId
-        addOneTask(this.volumeAdd).then(res => {
-          this.volumeAddDialog = false
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          })
-          this.loadTable()
-        })
-      }
+      })
     },
     handleExceed() {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
