@@ -13,7 +13,7 @@
       </el-form-item>
       <el-form-item label="批次">
         <el-select v-model="queryForm.orderId" placeholder="活动区域" :disabled="disabled">
-          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.orderName" />
+          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
