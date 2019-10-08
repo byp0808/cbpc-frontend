@@ -315,11 +315,7 @@ export default {
         fd.append('batchId', this.volumeAdd.batchId)
         fd.append('cause', this.volumeAdd.cause)
         console.log('fd', fd.getAll('attach'))
-        addBatchTask({
-          attach: this.excelFile,
-          batchId: this.volumeAdd.batchId,
-          cause: this.volumeAdd.cause
-        }).then(res => {
+        addBatchTask(fd).then(res => {
           this.volumeAddDialog = false
           this.$message({
             message: '添加成功',

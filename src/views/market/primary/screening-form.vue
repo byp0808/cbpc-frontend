@@ -6,13 +6,13 @@
         <div class="grid-content bg-purple">
           <el-form-item label="" align="left">
             <el-row :gutter="22">
-              <el-col :span="8">
+              <el-col :span="6">
                 <el-radio v-model="radio" label="1">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="18">
                 <el-date-picker
                   v-model="screeningForm.singleDate"
-                  type="date"
+                  type="datetime"
                   placeholder="选择日期"
                   :disabled="disable_1"
                 />
@@ -21,13 +21,13 @@
           </el-form-item>
           <el-form-item>
             <el-row :gutter="22">
-              <el-col :span="8">
+              <el-col :span="6">
                 <el-radio v-model="radio" label="2">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="18">
                 <el-date-picker
                   v-model="screeningForm.dateRange"
-                  type="daterange"
+                  type="datetimerange"
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
@@ -38,7 +38,7 @@
           </el-form-item>
           <el-form-item label="" prop="screeningSort">
             <el-row :gutter="22">
-              <el-col :span="8" align="right">排序</el-col>
+              <el-col :span="6" align="right">排序</el-col>
               <el-col :span="12">
                 <el-select v-model="screeningForm.screeningSort" placeholder="请选择" style="width: 200px">
                   <el-option label="升序" value="1" />
@@ -60,7 +60,7 @@
 export default {
   name: 'ScreeningForm',
   components: {},
-  props: ['businessId', 'disabled'],
+  // props: ['businessId', 'disabled'],
   data() {
     return {
       dateDisabled: false,
@@ -82,6 +82,9 @@ export default {
   },
   watch: {
     radio: 'radioChange'
+  },
+  beforeMount() {
+    // this.screeningForm.screeningSort = '1'
   },
   methods: {
     screening() {
@@ -107,8 +110,11 @@ export default {
 </script>
 
 <style scoped>
-  .el-form-item {
-    margin-left: 0px;
+  /*.el-form-item {*/
+  /*  margin-left: 0px;*/
+  /*}*/
+  .el-form-item[data-v-d31eec1e] {
+    margin-left: -50px;
   }
 </style>
 
