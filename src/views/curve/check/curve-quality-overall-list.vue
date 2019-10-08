@@ -34,7 +34,7 @@
       </el-table-column>
       <el-table-column prop="rateType" label="利率类型" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.rateType }}
+          {{ $dft("RATE_TYPE", scope.row.rateType) }}
         </template>
       </el-table-column>
       <el-table-column prop="interestDueFreq" label="付息频率" width="100" show-overflow-tooltip>
