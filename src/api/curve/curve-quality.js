@@ -64,3 +64,12 @@ export function qryCurveCrsQcRpt(data) {
     data: data
   })
 }
+
+// 查询曲线产品容错质检报告
+export function qryCurveFTQcRpt(data) {
+  return request({
+    url: `${basic_api_curve}` + '/cql/quality/qryCurveFTQcRpt',
+    method: 'post',
+    data: data
+  })
+}
