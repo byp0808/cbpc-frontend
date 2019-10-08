@@ -48,7 +48,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>波动偏差</h3>
       </div>
-      <CurveShkQcRpt ref="refCurveShkQcRpt" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qxkx'" class="box-card ">
       <div slot="header" class="clearfix card-head">
