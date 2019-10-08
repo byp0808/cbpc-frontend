@@ -43,12 +43,12 @@
       </el-table-column>
       <el-table-column prop="prdStatus" label="产品状态" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ $dft("CURVE_PRODCUT_SATAUS", scope.row.prdStatus) }}
+          {{ $dft("CURVE_PRODUCT_STATUS", scope.row.prdStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="approveStatus" label="审批状态" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ $dft("APPROVE_SATAUS", scope.row.approveStatus) }}
+          {{ $dft("APPROVE_STATUS", scope.row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
