@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="card" @tab-click="handleSelect">
+    <el-tabs v-model="activeName" type="card">
       <el-tab-pane label="所有人" name="01">
         <all-list />
       </el-tab-pane>

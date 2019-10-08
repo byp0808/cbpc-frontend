@@ -5,13 +5,13 @@
         <el-col :span="11" class="scroll-box">
           <el-button type="primary">方案调整</el-button>
           <el-button type="primary">批量调整</el-button>
-          <el-button type="primary">任务退回</el-button>
+          <el-button type="primary" @click="backTask">任务退回</el-button>
           <el-button type="primary">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :span="11" :offset="2" class="scroll-box">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
-          <el-button type="primary">添加任务</el-button>
+          <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <!-- <el-button type="primary" @click="downloadScheme">盯市券点差调整</el-button> -->
@@ -30,7 +30,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tableLoading">
-        <asset-list :all-list="myList" />
+        <asset-list :all-list="myList" @selectionList="selectionList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -44,7 +44,7 @@
         />
       </div>
       <div v-if="activeElement === '04'" v-loading="tableLoading">
-        <people-upload :all-list="uploadList" />
+        <people-upload :all-list="uploadList" @selectionList="selectionList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -58,15 +58,15 @@
         />
       </div>
     </transition>
-    <el-dialog :visible.sync="volumeAddDialog" title="批量添加任务">
+    <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
         <el-form style="margin-left:50px">
-          <el-form-item label="选择批次">
-            <el-select v-model="volumeAdd.batch" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+          <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
+            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+              <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
-          <el-form-item label="选择文件">
+          <el-form-item v-if="isBatch" label="选择文件">
             <el-upload
               class="upload-demo"
               drag
@@ -76,10 +76,11 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
-            <el-select v-model="volumeAdd.season" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+              <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -111,6 +112,7 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
           </el-form-item>
         </el-form>
         <el-row>
@@ -129,7 +131,7 @@
 <script>
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList } from '@/api/valuation/task.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask } from '@/api/valuation/task.js'
 export default {
   name: 'SchemeMyList',
   components: {
@@ -143,13 +145,22 @@ export default {
       volumeAddDialog: false,
       uploadMethodDialog: false,
       tableLoading: false,
+      isBatch: false,
       myList: [],
+      taskTitle: '',
       uploadList: [],
+      selection: [],
+      extends: '',
       volumeAdd: {
-        season: '其他',
-        batch: '',
-        excelFile: ''
+        cause: '08'
       },
+      batchList: [
+        {
+          batchId: '2222',
+          name: '批次2'
+        }
+      ],
+      excelFile: '',
       tabList: [
         // {
         //   label: '正常',
@@ -209,6 +220,10 @@ export default {
         this.tabList = res
       })
     },
+    selectionList(data) {
+      this.selection = data
+      console.log('00', data)
+    },
     tabName(param) {
       switch (param) {
         case '01': return '正常'
@@ -233,7 +248,20 @@ export default {
       this.params.page.pageNumber = currentPage
       this.loadTable()
     },
+    backTask() {
+      returnTask(this.selection).then(res => {
+        this.loadTable()
+      })
+    },
+    addTask() {
+      this.isBatch = false
+      this.volumeAddDialog = true
+      this.taskTitle = '添加任务'
+    },
     nameChange() {
+
+    },
+    downLoadMode() {
 
     },
     batchChange() {
@@ -243,14 +271,37 @@ export default {
 
     },
     saveBatch() {
-
+      this.resetTaskDialog()
+      if (this.isBatch) {
+        if (!this.excelFile) {
+          return this.$message('别着急, 您的文件还没有上传哦')
+        }
+        var fd = new FormData()
+        fd.append('attach', this.excelFile)
+        fd.append('batchId', this.volumeAdd.batchId)
+        fd.append('cause', this.volumeAdd.cause)
+        addBatchTask(fd).then(res => {
+          this.volumeAddDialog = false
+          this.loadTable()
+        })
+      } else {
+        if (!this.bondId) {
+          this.$message.error('请输入资产编码')
+          return
+        }
+        this.volumeAdd.csin = this.bondId
+        addOneTask(this.volumeAdd).then(res => {
+          this.volumeAddDialog = false
+          this.loadTable()
+        })
+      }
     },
     handleExceed() {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
     },
     memSuccess(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
-      this.volumeAdd.excelFile = item.file
+      this.excelFile = item.file
     },
     memSuccess1(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
@@ -265,11 +316,10 @@ export default {
     claimTask: function() {
 
     },
-    addTask: function() {
-
-    },
     batchAddTask() {
+      this.isBatch = true
       this.volumeAddDialog = true
+      this.taskTitle = '批量添加任务'
     },
     uploadScheme() {
       this.uploadMethodDialog = true
@@ -304,5 +354,10 @@ export default {
  }
  .card {
      height: 100%;
+ }
+ .downLoad {
+   margin-left: 70px;
+   color: #09f;
+   margin-top: -10px;
  }
 </style>

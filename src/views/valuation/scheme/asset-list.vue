@@ -164,8 +164,11 @@ export default {
 
     // },
     handleSelectionChange(val) {
-      this.selectionList = val
-      console.log('22', val)
+      val.map(v => {
+        this.selectionList.push(v.bondsId)
+      })
+      this.selectionList = Array.from(new Set(this.selectionList))
+      this.$emit('selectionList', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize
