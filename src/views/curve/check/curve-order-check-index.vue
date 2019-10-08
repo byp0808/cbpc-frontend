@@ -60,7 +60,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>曲线倒挂</h3>
       </div>
-      <CurveRvsQcRpt ref="qxdg" />
+      <CurveRvsQcRpt ref="qxdg" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
