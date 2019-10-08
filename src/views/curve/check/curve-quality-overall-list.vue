@@ -1,12 +1,5 @@
 <template>
   <div class="app-container">
-    <div style="margin-bottom: 20px">
-      <el-date-picker v-model="overallList.compDate" type="date" placeholder="选择日期" value-format="yyyyMMdd" format="yyyy-MM-dd" />
-      <el-select placeholder="B0002">
-        <el-option label="B0002" value="B0002" />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-    </div>
     <el-table
       ref="multipleTable"
       :data="overallList.dataList"
@@ -14,17 +7,17 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column prop="curveId" label="曲线编号" width="100" show-overflow-tooltip>
+      <el-table-column prop="curveId" label="曲线编号" width="120" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.curveId }}
         </template>
       </el-table-column>
-      <el-table-column prop="productName" label="曲线名称" width="100" show-overflow-tooltip>
+      <el-table-column prop="productName" label="曲线名称" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productName }}
         </template>
       </el-table-column>
-      <el-table-column prop="curvePubType" label="曲线类型" width="100" show-overflow-tooltip>
+      <el-table-column prop="curvePubType" label="曲线类型" width="80" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.curvePubType }}
         </template>
@@ -46,12 +39,12 @@
       </el-table-column>
       <el-table-column prop="interestDueFreq" label="付息频率" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.interestDueFreq }}
+          {{ $dft("INTEREST_DUE_FREQ", scope.row.interestDueFreq) }}
         </template>
       </el-table-column>
-      <el-table-column prop="curveBuildStatus" label="曲线编制状态" width="100" show-overflow-tooltip>
+      <el-table-column prop="curveBuildStatus" label="曲线编制状态" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.curveBuildStatus }}
+          {{ $dft("CURVE_BUILD_STATUS", scope.row.curveBuildStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="assignName" label="责任人" width="100" show-overflow-tooltip>
@@ -59,7 +52,7 @@
           {{ scope.row.assignName }}
         </template>
       </el-table-column>
-      <el-table-column prop="reason" label="原因" width="100" show-overflow-tooltip>
+      <el-table-column prop="reason" label="原因" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.reason }}
         </template>
@@ -129,21 +122,15 @@
 
 <script>
 import { qryCurveOverallQcRpt, qryCurveOverallNum } from '@/api/curve/curve-quality.js'
-// import { delCurveSample } from '@/api/curve/curve-sample.js'
-import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
   name: 'CurveQualityOverallList', // 质检总览
-  components: {
-  },
-  filters: {
-    showCodeLabel: showCodeLabel
-  },
+  props: ['taskDay', 'orderId'],
   data() {
     return {
       overallList: {
         compDate: '',
-        batchId: 'B0002',
+        batchId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -154,18 +141,6 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
-  },
-  computed: {
-    // qryCurveOverallQcRpt() {
-    //   const dataList = qryCurveOverallQcRpt(this.requestData)
-    //   if (dataList && dataList.data) {
-    //     return dataList.data
-    //   }
-    //   return dataList
-    // }
-  },
-  beforeMount() {
-    // this.qryCurveOverallQcRpt()
   },
   methods: {
     handleFilter() {
@@ -188,6 +163,8 @@ export default {
       this.multipleSelection = items
     },
     qryCurveOverallQcRpt() {
+      this.overallList.compDate = this.taskDay
+      this.overallList.batchId = this.orderId
       qryCurveOverallQcRpt(this.overallList).then(response => {
         console.info('qryCurveOverallQcRpt.qryCurveOverallQcRpt...')
         const { dataList, page } = response
@@ -196,6 +173,8 @@ export default {
       })
     },
     qryCurveOverallNum() {
+      this.overallList.compDate = this.taskDay
+      this.overallList.batchId = this.orderId
       qryCurveOverallNum(this.overallList).then(response => {
         console.info('qryCurveOverallNum.qryCurveOverallNum...')
         this.overallNum = response
