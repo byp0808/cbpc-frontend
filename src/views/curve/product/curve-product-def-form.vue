@@ -49,20 +49,20 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="市场" prop="markets">
-              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" @change="selectTrigger('market')" :disabled="disabled" >
+              <el-select v-model="productInfo.markets" multiple placeholder="请选择市场" :disabled="disabled" @change="selectTrigger('market')">
                 <el-option v-for="item in marketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col><el-col :span="8">
             <el-form-item label="产品状态" prop="prdStatus">
-              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" :disabled="disabled" >
+              <el-select v-model="productInfo.prdStatus" placeholder="请选择产品状态" :disabled="disabled">
                 <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线评级">
-<!--              <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
+              <!-- <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
               <el-select v-model="productInfo.productGrade" placeholder="请选择">
                 <el-option
                   v-for="(name, key) in $dict('MARKET_GRADE')"
