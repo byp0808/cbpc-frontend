@@ -28,12 +28,12 @@
           </el-table-column>
           <el-table-column label="本批次收益率" width="200" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.keyTermYield }}
+              {{ scope.row.yieldChg }}
             </template>
           </el-table-column>
           <el-table-column label="上一批次收益率" width="200" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.tgtKeyTermYield }}
+              {{ scope.row.tgtYieldChg }}
             </template>
           </el-table-column>
         </el-table>

@@ -107,8 +107,8 @@ export default {
       qryCurveFTQcRpt(this.curveFTQcRpt).then(response => {
         console.info('qryCurveFTQcRpt.qryCurveFTQcRpt...')
         const { dataList, page } = response
-        this.shkQcRptList.dataList = dataList
-        this.shkQcRptList.page = page
+        this.curveFTQcRpt.dataList = dataList
+        this.curveFTQcRpt.page = page
       })
     }
   }
