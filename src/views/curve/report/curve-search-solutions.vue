@@ -29,7 +29,19 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
+            <el-form-item label="批次" prop="search_buildType_EQ">
+              <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-autocomplete
                 v-model="plan.search_productName_LIKE"
@@ -41,7 +53,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="编制方法" prop="search_buildType_EQ">
               <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
                 <el-option
@@ -53,7 +65,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="操作人" prop="search_assignName_LIKE">
               <el-autocomplete
                 v-model="plan.search_assignName_LIKE"
@@ -66,7 +78,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8" :push="2">
+          <el-col :span="6" :push="2">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
           </el-col>
