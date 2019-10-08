@@ -7,15 +7,10 @@ export function upload({ url, data }) {
     baseURL: process.env.VUE_APP_BASE_API,
     withCredentials: true
   })
-  const fd = new FormData()
-  fd.append('data', data)
-  fd.append('com', {
-    version: '1.0.0',
-    globalReqNumber: uuid(),
-    sysIsEncrypted: '01'
-  })
-
-  return instance.post(url, fd, { transformRequest: [function(data, headers) {
+  data.append('com.version', '1.0.0')
+  data.append('com.globalReqNumber', uuid())
+  data.append('com.sysIsEncrypted', '01')
+  return instance.post(url, data, { transformRequest: [function(data, headers) {
     if (headers['Content-Type'] === 'multipart/form-data') {
       return data
     } else {
