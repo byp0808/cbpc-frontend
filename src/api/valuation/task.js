@@ -1,5 +1,7 @@
 import request from '@/utils/app-request'
 import { basic_api_valuation, basic_api_portal } from '@/api/base-api.js'
+import { upload } from '@/utils/file-request.js'
+// import uuid from "uuid/v4";
 
 export function getAllTableList(data) {
   return request(
@@ -38,11 +40,13 @@ export function addOneTask(data) { // 添加单个任务
   )
 }
 export function addBatchTask(data) { // 添加批量任务
-  return request(
+  return upload(
     {
       url: `${basic_api_valuation}/task/batch-add`,
-      method: 'post',
       data: data
+      // processData: false,
+      // contentType: false,
+      // withCredentials: true
     }
   )
 }
