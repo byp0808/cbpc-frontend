@@ -87,12 +87,9 @@ export default service
 
 // 上传文件
 export function uploadFile(url, formData) {
-  const _com = {
-    version: '1.0.0',
-    globalReqNumber: uuid(),
-    sysIsEncrypted: '01'
-  }
-  formData.append('com', _com)
+  formData.append('com.version', '1.0.0')
+  formData.append('com.globalReqNumber', uuid())
+  formData.append('com.sysIsEncrypted', '01')
   return axios.post(url, formData, { transformRequest: [function(data, headers) {
     if (headers['Content-Type'] === 'multipart/form-data') {
       return data

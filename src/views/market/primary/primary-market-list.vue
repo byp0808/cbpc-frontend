@@ -16,7 +16,7 @@
       :data="marketList"
       tooltip-effect="dark"
       style="width: 100%"
-      @header-click="headerScreening"
+      @header-contextmenu="headerScreening"
       @cell-dblclick="cellDblclick"
     >
       <el-table-column v-for="item in tableHeader" :key="item.id" :prop="item.key" :label="item.label" align="center">
@@ -40,28 +40,28 @@
         v-if="formType===1"
         ref="ScreeningForm"
         :business-id="orderInfoId"
-        @dateCallBack="dateCallBack"
+        @dateCallBack="screeningCallBack"
       />
       <!--数字类型-->
       <ScreeningNumForm
         v-if="formType===2"
         ref="ScreeningNumForm"
         :business-id="orderInfoId"
-        @dateCallBack="dateCallBack"
+        @dateCallBack="screeningCallBack"
       />
       <!--字符类型-->
       <ScreeningStringForm
         v-if="formType===3"
         ref="ScreeningStringForm"
         :business-id="orderInfoId"
-        @dateCallBack="dateCallBack"
+        @dateCallBack="screeningCallBack"
       />
       <!--可选类-->
       <ScreeningCheckboxForm
         v-if="formType===4"
         ref="ScreeningCheckboxForm"
         :business-id="orderInfoId"
-        @dateCallBack="dateCallBack"
+        @dateCallBack="screeningCallBack"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
@@ -113,7 +113,7 @@ export default {
       marketList: [],
       currentPageList: [],
       currentPageMarketList: [],
-      currentHeader: { id: '0', key: 'orderNo', label: '批次', THType: '1' },
+      currentHeader: {},
       tableHeader: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
         { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
@@ -154,7 +154,8 @@ export default {
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      screeningFormList: []
     }
   },
   computed: {
@@ -164,8 +165,8 @@ export default {
     this.loadTable()
   },
   methods: {
-    cellDblclick(row, column, cell, event) {
-      var title = column.property
+    cellDblclick(row, column) {
+      const title = column.property
       console.info(row[title])
       if (!row[title].isNull) {
         console.info('进来啦')
@@ -173,6 +174,7 @@ export default {
       }
     },
     isLight(row, header) {
+      // 判断是否高亮
       // console.info('行')
       // console.info(row)
       // console.info('头')
@@ -196,7 +198,11 @@ export default {
     },
     toUse() {
       // 应用模板
-      var val = this.moduleId
+      const val = this.moduleId
+      if (val === '') {
+        this.$message('请选择模板！')
+        return
+      }
       switch (val) {
         case '1':
           this.tableHeader = this.module_1
@@ -209,10 +215,17 @@ export default {
           break
       }
     },
-    headerScreening(column, event) {
-      // 表头点击事件
+    headerScreening(column) {
+      // 表头右击事件
+      // 取消浏览器默认右击事件
+      window.event.returnValue = false
+      // 清空筛选表单数据
+      this.screeningFormReset()
       console.info(column.property)
-      var type = column.property
+      console.info(column)
+      const type = column.property
+      this.currentHeader.key = type
+      this.currentHeader.label = column.label
       switch (type) {
         case 'orderNo':
           this.formType = 1
@@ -249,15 +262,19 @@ export default {
     },
     updateCell() {
       // 确定修改方法
-      var data = this.updateForm.updateContent
+      const data = this.updateForm.updateContent
       alert('确定修改')
       alert(data)
       this.updateForm.updateContent = ''
       this.updateFormVisible = false
     },
     cancel() {
-      // 取消筛选方法
+      // 取消筛选
+      // 清楚筛选表单信息
       this.screeningFormReset()
+      // 清楚当前需筛选的表头信息
+      this.currentHeader = {}
+      // 关闭弹窗
       this.screeningFormVisible = false
     },
     updateCancel() {
@@ -265,11 +282,23 @@ export default {
       this.updateForm = ''
       this.updateFormVisible = false
     },
-    dateCallBack() {
+    screeningCallBack() {
       // 确定筛选返回函数
       console.info('父组件')
-      var screeningDate = this.$store.state.screeningDate.screeningForm
-      console.info(screeningDate)
+      const screeningForm = this.$store.state.screeningDate.screeningForm
+      // 判断该字段是否已进行筛选
+      const index = this.isScreeningByheader(this.screeningFormList)
+      if (index != null && index !== '') {
+        this.screeningFormList[index].screeningForm = screeningForm
+      } else {
+        const screening = {}
+        screening.headerKey = this.currentHeader.key
+        screening.headerLabel = this.currentHeader.label
+        screening.screeningForm = screeningForm
+        this.screeningFormList.push(screening)
+      }
+      console.info('搜索条件集合')
+      console.info(this.screeningFormList)
       // switch (this.formType) {
       //   case 1:
       //     console.info(this.$refs.ScreeningForm.getForm())
@@ -284,13 +313,25 @@ export default {
       //     screeningDate = this.$refs.ScreeningStringForm.getForm()
       //     break
       // }
-      if (screeningDate.dateSort != null) {
-        console.info(screeningDate.dateSort)
-      }
+      // if (screeningForm.dateSort != null) {
+      //   console.info(screeningForm.dateSort)
+      // }
+      // 清楚筛选表单信息
+      this.screeningFormReset()
+      // 清楚当前需筛选的表头信息
+      this.currentHeader = {}
+      // 关闭弹窗
       this.screeningFormVisible = false
       this.loadTable()
     },
-
+    isScreeningByheader(val) {
+      for (let i = 0; i < val.length; i++) {
+        console.info(i)
+        if (val[i].headerKey === this.currentHeader.key) {
+          return i
+        }
+      }
+    },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
       this.loadTable()

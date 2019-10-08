@@ -61,7 +61,7 @@
     <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
         <el-form ref="ruleForm" style="margin-left:50px" :model="volumeAdd" :rules="rules">
-          <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'" prop="batchId">
+          <el-form-item label="选择批次" :label-width="isBatch ? '': '105px'" prop="batchId">
             <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
@@ -133,6 +133,31 @@
         </el-row>
       </div>
     </el-dialog>
+    <el-dialog title="提示" :visible.sync="remaindDialog">
+      <div class="content">{{ message }}</div>
+      <el-row>
+        <el-col :span="8" :offset="17">
+          <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
+            <el-button @click="cancle">否</el-button>
+            <el-button type="primary" @click="saveFirst">是</el-button>
+          </div>
+        </el-col>
+        <el-col :span="14" :offset="10" style="margin-top:10px">
+          <div v-if="code === 'YBL100001003' " class="dialog-footer">
+            <el-button @click="cancle">不迁移</el-button>
+            <el-button type="primary" @click="saveFirst('01')">迁移并保留</el-button>
+            <el-button type="primary" @click="saveFirst('02')">迁移不保留</el-button>
+          </div>
+        </el-col>
+        <el-col :span="8" :offset="17">
+          <div v-if="code === 'YBL100001004' " class="dialog-footer">
+            <el-button @click="cancle">取消</el-button>
+            <el-button v-if="isBatch" type="primary" @click="saveBatchFirst('01')">忽略并导入</el-button>
+            <el-button v-else type="primary" @click="saveFirst('01')">忽略并导入</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,6 +165,8 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask } from '@/api/valuation/task.js'
+// import { uploadFile } from '@/utils/request-client'
+// import { basic_api_valuation } from '@/api/base-api'
 export default {
   name: 'SchemeMyList',
   components: {
@@ -154,6 +181,9 @@ export default {
       uploadMethodDialog: false,
       tableLoading: false,
       isBatch: false,
+      remaindDialog: false,
+      message: '',
+      code: '',
       myList: [],
       taskTitle: '',
       uploadList: [],
@@ -161,12 +191,13 @@ export default {
       extends: '',
       volumeAdd: {
         cause: '08',
-        batchId: '2222'
+        batchId: '2222',
+        dataFile: ''
       },
       rules: {
         batchId: [{ required: true, message: '请选择批次', trigger: 'change' }],
-        cause: [{ required: true, message: '请选择调整原因', trigger: 'change' }],
-        dataFile: [{ required: true, message: '请选择上传文件', trigger: 'blur' }]
+        cause: [{ required: true, message: '请选择调整原因', trigger: 'change' }]
+        // dataFile: [{ required: true, message: '请选择上传文件', trigger: 'blur' }]
       },
       batchList: [
         {
@@ -300,24 +331,63 @@ export default {
       this.volumeAdd.dataFile = ''
       this.volumeAdd.cause = '08'
     },
+    saveBatchFirst(type) {
+      this.volumeAdd.busiCode = type
+      const fd = new FormData()
+      fd.append('dataFile', this.volumeAdd.dataFile)
+      fd.append('batchId', this.volumeAdd.batchId)
+      fd.append('cause', this.volumeAdd.cause)
+      addBatchTask(fd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable()
+      })
+    },
+    saveFirst(type) {
+      console.log('ty', type)
+      this.volumeAdd.busiCode = type
+      addOneTask(this.volumeAdd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable()
+      })
+    },
+    cancle() {
+      this.remaindDialog = false
+      this.volumeAddDialog = false
+    },
     saveBatch() {
       this.$refs.ruleForm.validate(val => {
         if (val) {
           if (this.isBatch) {
-            if (!this.excelFile) {
+            if (!this.volumeAdd.dataFile) {
               return this.$message('别着急, 您的文件还没有上传哦')
             }
             var fd = new FormData()
-            fd.append('dataFile', this.excelFile)
+            fd.append('dataFile', this.volumeAdd.dataFile)
             fd.append('batchId', this.volumeAdd.batchId)
             fd.append('cause', this.volumeAdd.cause)
             addBatchTask(fd).then(res => {
-              this.volumeAddDialog = false
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-              this.loadTable()
+              if (res.code === 'YBL100001004') {
+                this.remaindDialog = true
+                this.code = res.code
+                this.message = res.message
+              } else {
+                this.volumeAddDialog = false
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                })
+                this.loadTable()
+              }
             })
           } else {
             if (!this.bondId) {
@@ -327,12 +397,19 @@ export default {
             delete this.volumeAdd.dataFile
             this.volumeAdd.csin = this.bondId
             addOneTask(this.volumeAdd).then(res => {
-              this.volumeAddDialog = false
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-              this.loadTable()
+              if (res.code) {
+                // this.volumeAddDialog = false
+                this.remaindDialog = true
+                this.code = res.code
+                this.message = res.msg
+              } else {
+                this.volumeAddDialog = false
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                })
+                this.loadTable()
+              }
             })
           }
         }
@@ -343,7 +420,7 @@ export default {
     },
     memSuccess(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
-      this.excelFile = item.file
+      this.volumeAdd.dataFile = item.file
       console.log('file', item.file)
     },
     memSuccess1(item) {
@@ -398,6 +475,10 @@ export default {
  }
  .card {
      height: 100%;
+ }
+  .content {
+   font-size: 18px;
+   margin-top: -15px;
  }
  .downLoad {
    margin-left: 70px;
