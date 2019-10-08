@@ -133,6 +133,30 @@
         </el-row>
       </div>
     </el-dialog>
+    <el-dialog title="提示" :visible.sync="remaindDialog">
+      <div class="content">{{ message }}</div>
+      <el-row>
+        <el-col :span="8" :offset="17">
+          <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
+            <el-button @click="cancle">否</el-button>
+            <el-button type="primary" @click="saveFirst">是</el-button>
+          </div>
+        </el-col>
+        <el-col :span="14" :offset="10" style="margin-top:10px">
+          <div v-if="code === 'YBL100001003' " class="dialog-footer">
+            <el-button @click="cancle">不迁移</el-button>
+            <el-button type="primary" @click="saveFirst">迁移并保留</el-button>
+            <el-button type="primary" @click="saveSecond">迁移不保留</el-button>
+          </div>
+        </el-col>
+        <el-col :span="8" :offset="17">
+          <div v-if="code === 'YBL100001004' " class="dialog-footer">
+            <el-button @click="cancle">取消</el-button>
+            <el-button type="primary" @click="saveFirst">忽略并导入</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,6 +164,8 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask } from '@/api/valuation/task.js'
+// import { uploadFile } from '@/utils/request-client'
+// import { basic_api_valuation } from '@/api/base-api'
 export default {
   name: 'SchemeMyList',
   components: {
@@ -154,6 +180,9 @@ export default {
       uploadMethodDialog: false,
       tableLoading: false,
       isBatch: false,
+      remaindDialog: false,
+      message: '',
+      code: '',
       myList: [],
       taskTitle: '',
       uploadList: [],
@@ -300,6 +329,34 @@ export default {
       this.volumeAdd.dataFile = ''
       this.volumeAdd.cause = '08'
     },
+    saveFirst() {
+      this.volumeAdd.busiCode = '01'
+      addOneTask(this.volumeAdd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable()
+      })
+    },
+    saveSecond() {
+      this.volumeAdd.busiCode = '02'
+      addOneTask(this.volumeAdd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable()
+      })
+    },
+    cancle() {
+      this.remaindDialog = false
+      this.volumeAddDialog = false
+    },
     saveBatch() {
       this.$refs.ruleForm.validate(val => {
         if (val) {
@@ -327,12 +384,19 @@ export default {
             delete this.volumeAdd.dataFile
             this.volumeAdd.csin = this.bondId
             addOneTask(this.volumeAdd).then(res => {
-              this.volumeAddDialog = false
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-              this.loadTable()
+              if (res.code) {
+                // this.volumeAddDialog = false
+                this.remaindDialog = true
+                this.code = res.code
+                this.message = res.msg
+              } else {
+                this.volumeAddDialog = false
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                })
+                this.loadTable()
+              }
             })
           }
         }
@@ -398,6 +462,10 @@ export default {
  }
  .card {
      height: 100%;
+ }
+  .content {
+   font-size: 18px;
+   margin-top: -15px;
  }
  .downLoad {
    margin-left: 70px;
