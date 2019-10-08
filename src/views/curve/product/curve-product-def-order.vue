@@ -165,7 +165,7 @@ export default {
       for (const index in this.multipleSelection) {
         const item = this.multipleSelection[index]
         const newTabName = item.id
-        if (index == 0) {
+        if (index === 0) {
           firstTab = newTabName
         }
         // 判断是否存在newTabName

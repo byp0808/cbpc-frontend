@@ -6,6 +6,7 @@
           v-model="queryForm.taskDay"
           align="right"
           type="date"
+          format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
         />
@@ -35,37 +36,37 @@
       <div slot="header" class="clearfix card-head">
         <h3>总览</h3>
       </div>
-      <CurveQualityOverallList ref="refCurveQualityOverallList" />
+      <CurveQualityOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qmxjc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>全面性检查</h3>
       </div>
-      <CurveComprehensiveQcRpt ref="refCurveComprehensiveQcRpt" />
+      <CurveComprehensiveQcRpt ref="qmxjc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'bdpc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>波动偏差</h3>
       </div>
-      <CurveShkQcRpt ref="refCurveShkQcRpt" />
+      <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qxkx'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
-      <CurveCrsQcRpt ref="refCurveCrsQcRpt" />
+      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'qxdg'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线倒挂</h3>
       </div>
-      <CurveRvsQcRpt ref="refCurveRvsQcRpt" />
+      <CurveRvsQcRpt ref="qxdg" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
-      <CurveFTQcRpt ref="refCurveFTQcRpt" />
+      <CurveFTQcRpt ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
 
     <el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置曲线质检波动偏差值" :visible.sync="orderSetFormVisible">
@@ -122,6 +123,13 @@ export default {
     }
   },
   computed: {
+    taskDayStr() {
+      var date = this.queryForm.taskDay
+      if (date) {
+        return this.$moment(date).format('YYYY-MM-DD')
+      }
+      return ''
+    }
   },
   watch: {
   },
@@ -160,8 +168,24 @@ export default {
       this.orderSetFormVisible = false
     },
     // 主页面查询方法
-    // 根据
+    // 根据 activeName 调用各个页面查询方法
     indexQuery() {
+      console.info('indexQuery.activeName:' + this.activeName)
+      this.$refs[this.activeName].handleFilter()
+      // 总览 zl
+      // if (this.activeName === 'zl') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qmxjc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'bdpc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxkx') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxdg') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'rc') {
+      //   this.$refs.zl.handleFilter()
+      // }
     }
   }
 }

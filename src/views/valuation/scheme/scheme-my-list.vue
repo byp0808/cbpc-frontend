@@ -69,6 +69,8 @@
           <el-form-item v-if="isBatch" label="选择文件">
             <el-upload
               class="upload-demo"
+              action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed"
               :http-request="memSuccess"
@@ -105,6 +107,8 @@
           <el-form-item label="选择文件">
             <el-upload
               class="upload-demo"
+              action=""
+              :limit="1"
               drag
               :on-exceed="handleExceed1"
               :http-request="memSuccess1"
@@ -152,7 +156,8 @@ export default {
       selection: [],
       extends: '',
       volumeAdd: {
-        cause: '08'
+        cause: '08',
+        batchId: '2222'
       },
       batchList: [
         {
@@ -249,6 +254,9 @@ export default {
       this.loadTable()
     },
     backTask() {
+      if (this.selection.length === 0) {
+        return this.$message('请选择任务')
+      }
       returnTask(this.selection).then(res => {
         this.loadTable()
       })
@@ -257,6 +265,7 @@ export default {
       this.isBatch = false
       this.volumeAddDialog = true
       this.taskTitle = '添加任务'
+      this.resetTaskDialog()
     },
     nameChange() {
 
@@ -270,8 +279,11 @@ export default {
     saveValuation() {
 
     },
+    resetTaskDialog() {
+      this.volumeAdd.batchId = ''
+      this.volumeAdd.attach = ''
+    },
     saveBatch() {
-      this.resetTaskDialog()
       if (this.isBatch) {
         if (!this.excelFile) {
           return this.$message('别着急, 您的文件还没有上传哦')
@@ -282,6 +294,10 @@ export default {
         fd.append('cause', this.volumeAdd.cause)
         addBatchTask(fd).then(res => {
           this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
           this.loadTable()
         })
       } else {
@@ -292,6 +308,10 @@ export default {
         this.volumeAdd.csin = this.bondId
         addOneTask(this.volumeAdd).then(res => {
           this.volumeAddDialog = false
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
           this.loadTable()
         })
       }
@@ -320,6 +340,7 @@ export default {
       this.isBatch = true
       this.volumeAddDialog = true
       this.taskTitle = '批量添加任务'
+      this.resetTaskDialog()
     },
     uploadScheme() {
       this.uploadMethodDialog = true

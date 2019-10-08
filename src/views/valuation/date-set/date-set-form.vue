@@ -107,6 +107,8 @@ export default {
       queryDateSet(this.businessId).then(reponse => {
         this.$store.commit('dateSet/setDateSetInfo', reponse)
       })
+    } else {
+      this.dateSetInfo = {}
     }
   },
   methods: {

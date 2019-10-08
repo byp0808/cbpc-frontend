@@ -241,6 +241,7 @@ export default {
       })
     },
     toAdd() {
+      this.bondsNonpId = ''
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
       this.bondsNonpFormVisible = true
     },

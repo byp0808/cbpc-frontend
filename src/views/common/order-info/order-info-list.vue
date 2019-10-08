@@ -212,6 +212,7 @@ export default {
     },
     toAdd() {
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
+      this.orderInfoId = ''
       this.orderInfoFormVisible = true
     },
     saveCallBack() {

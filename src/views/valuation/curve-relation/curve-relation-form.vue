@@ -79,6 +79,8 @@ export default {
           this.curveRelationInfo.Id = ''
         }
       })
+    } else {
+      this.curveRelationInfo = {}
     }
   },
   methods: {
