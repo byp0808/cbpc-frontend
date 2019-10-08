@@ -71,22 +71,27 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="curvePrdCode" label="曲线编码" width="140" />
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
-      <el-table-column prop="curveBuildType" label="曲线类型" width="150" show-overflow-tooltip>
+      <el-table-column prop="curveBuildType" label="样本卷编制状态" width="150" show-overflow-tooltip>
         <template>
           到期
         </template>
       </el-table-column>
-      <el-table-column prop="buildType" label="曲线编制方式" width="150`" show-overflow-tooltip>
+      <el-table-column prop="buildType" label="样本卷总数" width="150`" show-overflow-tooltip>
         <template slot-scope="{ row }">
           {{ $dft("BUILD_TYPE", row.buildType) }}
         </template>
       </el-table-column>
-      <el-table-column prop="buildStatus" label="曲线编制状态" width="150" show-overflow-tooltip>
+      <el-table-column prop="buildStatus" label="较上一批次变动" width="150" show-overflow-tooltip>
         <template slot-scope="{ row }">
           {{ $dft("CURVE_BUILD_STATUS", row.buildStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="assign" label="责任人" width="140" show-overflow-tooltip />
+      <el-table-column prop="buildStatus" label="较上一日终变动" width="150" show-overflow-tooltip>
+        <template slot-scope="{ row }">
+          {{ $dft("CURVE_BUILD_STATUS", row.buildStatus) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="assign" label="发布需忽略样本卷" width="140" show-overflow-tooltip />
     </el-table>
     <el-pagination
       :current-page="page.pageNumber"
@@ -100,7 +105,7 @@
   </div>
 </template>
 <script>
-import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployAndCheckCurve } from '@/api/curve/curve-order-compute.js'
+import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployCurve } from '@/api/curve/curve-order-compute.js'
 
 export default {
   // eslint-disable-next-line vue/require-prop-types
@@ -234,7 +239,7 @@ export default {
       }
       for (var i = 0; i < selection.length; i++) {
         // eslint-disable-next-line eqeqeq
-        if (selection[i].buildStatus != '6') {
+        if (selection[i].cureveBuildStatus != '6') {
           this.$message({
             type: 'error',
             message: '请选择已复核过的曲线进行发布'
@@ -247,7 +252,7 @@ export default {
         action: '7',
         computes: selection
       }
-      deployAndCheckCurve(data).then(response => {
+      deployCurve(data).then(response => {
         this.$message({
           type: 'success',
           message: '曲线发布成功！'
@@ -267,23 +272,12 @@ export default {
         })
         return false
       }
-      debugger
-      for (var i = 0; i < selection.length; i++) {
-        // eslint-disable-next-line eqeqeq
-        if (selection[i].buildStatus != '4') {
-          this.$message({
-            type: 'error',
-            message: '请选择已计算过的曲线进行复核'
-          })
-          return false
-        }
-      }
       // 曲线复核
       var data = {
         action: '6',
         computes: selection
       }
-      deployAndCheckCurve(data).then(response => {
+      deployCurve(data).then(response => {
         this.$message({
           type: 'success',
           message: '曲线复核成功！'

@@ -5,36 +5,41 @@
         <el-col :span="6">
           <div class="grid-content bg-purple-dark">
             <el-form-item label="开始时间及批次">
-              <el-date-picker v-model="sampleBondsParam.startDate" type="date" placeholder="选择日期" style="width:200px" />
+              <el-date-picker v-model="startDate" type="date" placeholder="选择日期" style="width:200px" />
             </el-form-item>
           </div>
         </el-col>
         <el-col :span="6">
           <div class="grid-content bg-purple-dark">
             <el-form-item label="结束时间及批次">
-              <el-date-picker v-model="sampleBondsParam.endDate" type="date" placeholder="选择日期" style="width:200px" />
+              <el-date-picker v-model="endDate" type="date" placeholder="选择日期" style="width:200px" />
             </el-form-item>
           </div>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="批次">
+            <el-select v-model="buildMethod" placeholder="请选择批次">
+              <el-option v-for="item in buildMethodList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
         </el-col>
         <el-col :span="6">
           <div class="grid-content bg-purple-dark">
             <el-form-item label="债券代码">
-              <el-input v-model="sampleBondsParam.bondsId" placeholder="请输入内容" />
-            </el-form-item>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="grid-content bg-purple-dark">
-            <el-form-item label="债券简称">
-              <el-input v-model="sampleBondsParam.bondsName" placeholder="请输入内容" />
+              <el-input v-model="bondsId" placeholder="请输入内容" />
             </el-form-item>
           </div>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="6">
+          <el-form-item label="债券简称">
+            <el-input v-model="bondsName" placeholder="请输入内容" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
           <el-form-item label="编制方法">
-            <el-select v-model="sampleBondsParam.buildMethod" placeholder="请选择编制方法">
+            <el-select v-model="buildMethod" placeholder="请选择编制方法">
               <el-option v-for="item in buildMethodList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -42,7 +47,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="操作人">
-            <el-select v-model="sampleBondsParam.operMan" placeholder="请选择操作人">
+            <el-select v-model="operMan" placeholder="请选择操作人">
               <el-option v-for="item in operManList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
 
@@ -119,14 +124,13 @@ export default {
   },
   data() {
     return {
-      sampleBondsParam: {
-        startDate: '',
-        endDate: '',
-        bondsId: '',
-        bondsName: '',
-        buildMethod: '',
-        operMan: ''
-      },
+      startDate: '',
+      endDate: '',
+      bondsId: '',
+      bondsIdList: [],
+      bondsName: '',
+      buildMethod: '',
+      operMan: '',
       sampleBondsList: {
         dataList: [],
         page: {
@@ -149,6 +153,27 @@ export default {
       return ''
     }
   },
+  watch: {
+    startDate(newValue, oldValue) {
+      console.info('productLine.newValue:' + newValue + ',oldValue:' + oldValue)
+      this.bondsId = ''
+      // 获取批次号
+      this.getBondsId(newValue)
+
+      if (this.bondsIdList.length > 0) {
+        this.bondsId = this.bondsIdList[0].value
+      }
+    },
+    endDate(newValue, oldValue) {
+      console.info('productGroup.newValue:' + newValue + ',oldValue:' + oldValue)
+      // 获取批次号
+      this.getBondsId(newValue)
+
+      if (this.bondsIdList.length > 0) {
+        this.bondsId = this.bondsIdList[0].value
+      }
+    }
+  },
   beforeMount() {
     this.queryCurveSampleBondsList()
   },
@@ -169,8 +194,11 @@ export default {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
+    getBondsId(newValue) {
+      this.bondsIdList = [{ value: 'a', label: '123' }]
+    },
     queryCurveSampleBondsList() {
-      queryCurveSampleBondsList({ page: this.sampleBondsList.page, sampleBondsParam: this.sampleBondsParam }).then(response => {
+      queryCurveSampleBondsList({ page: this.sampleBondsList.page, sampleBondsParam: this.$data }).then(response => {
         console.info('queryCurveSampleBondsList.queryCurveSampleBondsList...')
 
         const { dataList, page } = response
