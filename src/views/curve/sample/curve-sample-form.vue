@@ -39,12 +39,15 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-form ref="recCurveForm" :model="curveSample" label-width="150px" hidden>
-        <el-form-item label="备注">
-          <el-input v-model="curveSample.remark" type="textarea" />
-        </el-form-item>
-      </el-form>
-
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form ref="recCurveForm" label-width="150px">
+            <el-form-item label="备注">
+              <el-input type="textarea" v-model="curveSample.remark" :disabled="disabled"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
     </el-card>
     <BondFilter
       ref="refBondFilter"
@@ -137,6 +140,16 @@ export default {
       if (!this.curveSample.curvePrdCode || this.curvePrdCode === '') {
         this.$message({
           message: '请选择一条曲线',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+
+      if (this.curveSample.remark && this.curveSample.remark.length > 200) {
+        this.$message({
+          message: '备注不能超过200个字符',
           type: 'warning',
           showClose: true,
           duration: 2000
