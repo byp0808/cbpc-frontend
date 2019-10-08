@@ -63,8 +63,14 @@
         <el-row :gutter="20">
           <el-col :span="16">
             <div class="grid-content bg-purple">
-              <el-form-item label="备注">
-                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" />
+              <el-form-item
+                label="备注"
+                prop="remark"
+                :rules="[
+                  { required: true, message: '请输入备注', trigger: 'blur' },
+                ]"
+              >
+                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" placeholder="请输入曲线规则名称" />
               </el-form-item>
             </div>
           </el-col>

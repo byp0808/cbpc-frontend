@@ -65,12 +65,13 @@
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
+      <CurveFTQcRpt ref="refCurveFTQcRpt" />
     </el-card>
 
     <el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置曲线质检波动偏差值" :visible.sync="orderSetFormVisible">
       <CurveOrderCheckSetForm
-              ref="refCurveOrderCheckSetForm"
-              :orderList="orderList"
+        ref="refCurveOrderCheckSetForm"
+        :order-list="orderList"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="orderSetFormVisible = false">取 消</el-button>
@@ -86,6 +87,7 @@ import CurveComprehensiveQcRpt from '@/views/curve/check/curve-quality-comprehen
 import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
 import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
 import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
+import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
 import { getOrderList } from '@/api/curve/curve-product-order.js'
 import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
 
@@ -97,6 +99,7 @@ export default {
     CurveShkQcRpt,
     CurveRvsQcRpt,
     CurveCrsQcRpt,
+    CurveFTQcRpt,
     CurveOrderCheckSetForm
   },
   props: ['orderId', 'taskDay'],
