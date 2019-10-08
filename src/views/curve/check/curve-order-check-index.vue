@@ -89,6 +89,7 @@ import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
 import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
 import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
 import { getOrderList } from '@/api/curve/curve-product-order.js'
+import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
 
 export default {
@@ -112,6 +113,10 @@ export default {
       queryForm: {
         taskDay: null,
         orderId: ''
+      },
+      dwnlForm: {
+        compDate: '20190918',
+        batchId: 'B0002'
       },
       activeName: 'zl'
     }
@@ -142,6 +147,7 @@ export default {
     // 下载
     download() {
       console.info('download')
+      dwnlCurveQcRpt(this.dwnlForm)
     },
     // 曲线质检波动偏差值设置
     orderSet() {
