@@ -165,6 +165,21 @@ export default {
         const { dataList, page } = response
         this.rvsQcRptList.dataList = dataList
         this.rvsQcRptList.page = page
+        var income = []
+        var lastinCome = []
+        for (var i = 0; i < dataList.length; i++) {
+          // eslint-disable-next-line no-new-wrappers
+          var x = Number(dataList[i].keyTerm)
+          // eslint-disable-next-line no-new-wrappers
+          var y = Number(dataList[i].keyTermYield)
+          income.push([x, y])
+          // eslint-disable-next-line no-new-wrappers
+          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
+        }
+        // 本次收益率
+        this.chartOptions.series[0].data = income
+        // 上一批次收益率
+        this.chartOptions.series[1].data = lastinCome
       })
     },
     qryCurveRvsQcList() {
@@ -172,16 +187,6 @@ export default {
         console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
         const { datalist } = response
         this.curveList.dataList = datalist
-        var income = []
-        var lastinCome = []
-        for (var i = 0; i < datalist.length; i++) {
-          income.push([datalist[i].keyTerm, datalist[i].keyTermYield])
-          lastinCome.push([datalist[i].keyTerm, datalist[i].tgtKeyTermYield])
-        }
-        // 本次收益率
-        this.chartOptions.series[0].data = income
-        // 上一批次收益率
-        this.chartOptions.series[1].data = lastinCome
       })
     }
   }

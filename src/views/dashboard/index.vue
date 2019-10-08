@@ -332,7 +332,6 @@ export default {
 </script>
 
 <style lang="scss">
-::-webkit-scrollbar {display:none}
 .custom-calendar {
   &.vc-container {
     --day-border: 1px solid #b8c2cc;
@@ -362,6 +361,7 @@ export default {
       min-width: var(--day-width);
       background-color: #fff;
       width: 82px;
+      ::-webkit-scrollbar {display:none}
       .el-tag--small {
         line-height: 22px;
         padding: 0 2px 0 2px;
