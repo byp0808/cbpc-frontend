@@ -102,7 +102,8 @@ export default [
             "Curve",
             "CurveProduct",
             "CurveProductDef",
-            "CurveSetHisIndex"
+            "CurveSetHisIndex",
+            'SchemeTaskAllotList'
           ]
         },
         "msg": null,

@@ -78,7 +78,9 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
+            <div class="downLoad" @click="downLoadMode">
+              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+              模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
             <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
@@ -116,7 +118,9 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
+            <div class="downLoad" @click="downLoadMode">
+              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+              模板文件下载</div>
           </el-form-item>
         </el-form>
         <el-row>
@@ -255,9 +259,16 @@ export default {
     },
     backTask() {
       if (this.selection.length === 0) {
-        return this.$message('请选择任务')
+        return this.$message({
+          message: '请选择任务',
+          type: 'warning'
+        })
       }
       returnTask(this.selection).then(res => {
+        this.$message({
+          message: '任务退回成功',
+          type: 'success'
+        })
         this.loadTable()
       })
     },
@@ -271,7 +282,7 @@ export default {
 
     },
     downLoadMode() {
-
+      this.$refs.moduleDownload.click()
     },
     batchChange() {
 
@@ -322,6 +333,7 @@ export default {
     memSuccess(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
       this.excelFile = item.file
+      console.log('file', item.file)
     },
     memSuccess1(item) {
       this.$message.success(`文件: ${item.file.name} 上传成功`)
@@ -380,5 +392,8 @@ export default {
    margin-left: 70px;
    color: #09f;
    margin-top: -10px;
+    &:hover {
+     cursor: pointer;
+   }
  }
 </style>

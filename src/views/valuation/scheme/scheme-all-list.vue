@@ -310,12 +310,16 @@ export default {
         if (!this.excelFile) {
           return this.$message('别着急, 您的文件还没有上传哦')
         }
-        var fd = new FormData()
+        const fd = new FormData()
         fd.append('attach', this.excelFile)
         fd.append('batchId', this.volumeAdd.batchId)
         fd.append('cause', this.volumeAdd.cause)
-        console.log('fd', fd)
-        addBatchTask(fd).then(res => {
+        console.log('fd', fd.getAll('attach'))
+        addBatchTask({
+          attach: this.excelFile,
+          batchId: this.volumeAdd.batchId,
+          cause: this.volumeAdd.cause
+        }).then(res => {
           this.volumeAddDialog = false
           this.$message({
             message: '添加成功',
