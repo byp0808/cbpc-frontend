@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-table
       ref="multipleTable"
-      :data="curveCrossLineList.dataList"
+      :data="curveCrossLineList.showDataList"
       tooltip-effect="dark"
       style="width: 100%"
       @selection-change="handleSelectionChange"
@@ -48,6 +48,7 @@ export default {
       titleDes: [],
       curveCrossLineList: {
         dataList: [],
+        showDataList: [],
         page: {
           pageNumber: 1,
           pageSize: 10
@@ -97,7 +98,15 @@ export default {
             this.titleDes.push(column['columComment'])
           }
         }
+        this.handlePage()
       })
+    },
+    handlePage() { // 处理分页
+      const totalRecord = this.curveCrossLineList.dataList.length
+      const pageSize = this.curveCrossLineList.page.pageSize
+      const pageNumber = this.curveCrossLineList.page.pageNumber
+      this.curveCrossLineList.page.totalRecord = totalRecord
+      this.curveCrossLineList.showDataList = this.curveCrossLineList.dataList.slice(pageSize * (pageNumber - 1), pageSize * pageNumber)
     }
   }
 }
