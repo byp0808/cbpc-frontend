@@ -25,8 +25,5 @@ export function upload({ url, data }) {
     } else {
       return res.data
     }
-  }).catch(message => {
-    console.log('message: ', message)
-    this.$message.error('上传失败，请联系管理员')
   })
 }

@@ -1,60 +1,49 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增规则</el-button>
+      <el-button type="primary" @click="toAdd">新增</el-button>
     </div>
     <el-table
-      ref="refKdTempTable"
+      ref="refMarketTempTable"
       border
-      :data="kdTempList"
+      :data="marketTempList"
       tooltip-effect="dark"
       style="width: 1286px"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
+        label="选择"
         type="selection"
         width="55"
       />
       <el-table-column
         prop="tempName"
-        label="规则名称"
+        label="行情展示模板名称"
         show-overflow-tooltip
-        width="330"
+        width="530"
       />
       <el-table-column
-        prop="standSlip"
-        label="规则详细"
+        prop="remark"
+        label="备注"
         show-overflow-tooltip
-        width="600"
+        width="300"
       />
-      <el-table-column
-        prop="approveStatus"
-        label="审核状态"
-        width="100"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
-        </template>
-      </el-table-column>
       <el-table-column
         prop="address"
         label="操作"
-        width="200"
+        width="400"
         show-overflow-tooltip
         align="center"
       >
         <template slot-scope="scope">
           <el-button
-            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDetail('EDIT', scope.row.id)"
           >
             设置
           </el-button>
           <el-button
-            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -62,11 +51,11 @@
             删除
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
             type="text"
             size="small"
+            @click.native.prevent="toDetail('VIEW', scope.row.id)"
           >
-            {{ statusText(scope.row.busiStatus) }}
+            查看
           </el-button>
         </template>
       </el-table-column>
@@ -80,35 +69,34 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="kdTempFormVisible" width="70%" title="关键期限模板设置" :visible.sync="kdTempFormVisible">
-      <kdTempForm
-        ref="KdTempForm"
-        :kd-temp-data="kdTempData"
-        :business-id="kdTempId"
+    <el-dialog v-if="marketTempFormVisible" width="80%" top="5vh" :visible.sync="marketTempFormVisible" :close="closeDialog">
+      <marketTempForm
+        ref="MarketTempForm"
+        :market-temp-data="marketTempData"
+        :business-id="marketTempId"
+        :op-type="opType"
         @saveCallBack="saveCallBack"
+        @closeDialog="closeDialog"
       />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="kdTempFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save('KdTempForm')">保 存</el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
-import { querykdTempList, deletekdTemp } from '@/api/curve/curve-kdtemp-list.js'
+import MarketTempForm from '@/views/market/temp/query-temp-form.vue'
+import { queryTempList, deletemarketTemp } from '@/api/market/market-temp.js'
 export default {
-  name: 'KdTempList',
+  name: 'MarketTempList',
   components: {
-    KdTempForm
+    MarketTempForm
   },
   data() {
     return {
-      kdTempFormVisible: false,
-      kdTempId: '',
-      kdTempList: [],
-      kdTempData: {},
+      marketTempFormVisible: false,
+      marketTempId: '',
+      opType: '',
+      marketTempList: [],
+      marketTempData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -133,11 +121,14 @@ export default {
   },
   methods: {
     loadTable() {
-      querykdTempList({ page: this.page }).then(response => {
+      queryTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.page = page
-        this.kdTempList = dataList
+        this.marketTempList = dataList
       })
+    },
+    closeDialog() {
+      this.marketTempFormVisible = false
     },
     checkStatus(approveStatus) {
       if (approveStatus === '01') {
@@ -149,16 +140,18 @@ export default {
       this.multipleSelection = val
     },
     save(formName) {
-      this.kdTempId = ''
-      this.$refs.KdTempForm.save(formName)
+      this.marketTempId = ''
+      this.$refs.MarketTempForm.save(formName)
     },
     cancel() {
-      this.$store.commit('kdTemp/setkdTempInfo', {})
-      this.kdTempFormVisible = false
+      this.$store.commit('marketTemp/setMarketTempInfo', {})
+      this.marketTempFormVisible = false
     },
-    toDetail(id) {
-      this.kdTempId = id
-      this.kdTempFormVisible = true
+    toDetail(opType, id) {
+      // console.log(id)
+      this.opType = opType
+      this.marketTempId = id
+      this.marketTempFormVisible = true
     },
     toDelete(id) {
       // console.log(id)
@@ -167,7 +160,7 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        await deletekdTemp(id)
+        await deletemarketTemp(id)
         this.loadTable()
       }).catch(() => {
         this.$message({
@@ -178,16 +171,14 @@ export default {
     },
     toAdd() {
       // console.log('toAdd')
-      this.kdTempId = ''
-      this.$store.commit('kdTemp/setkdTempInfo', {})
-      this.kdTempFormVisible = true
+      this.marketTempId = ''
+      this.opType = 'EDIT'
+      this.$store.commit('marketTemp/setMarketTempInfo', {})
+      this.marketTempFormVisible = true
     },
     saveCallBack() {
-      this.kdTempFormVisible = false
+      this.marketTempFormVisible = false
       this.loadTable()
-    },
-    isShowChangeStatusBtn(status) {
-      return status === '02' || status === '03'
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
@@ -198,7 +189,6 @@ export default {
       this.loadTable()
     }
   }
-
 }
 </script>
 

@@ -215,7 +215,7 @@ export default {
       formData: {
         startTime: '',
         endTime: '',
-        bondsPublisher: ''
+        bondPublisher: ''
       },
       valuationList: [],
       page: {

@@ -6,6 +6,7 @@
           v-model="queryForm.taskDay"
           align="right"
           type="date"
+          value-format="yyyy-MM-dd"
           format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
@@ -54,7 +55,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
-      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" :query-form="queryForm" />
     </el-card>
     <el-card v-if="activeName === 'qxdg'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -87,7 +88,7 @@ import CurveQualityOverallList from '@/views/curve/check/curve-quality-overall-l
 import CurveComprehensiveQcRpt from '@/views/curve/check/curve-quality-comprehensive-list.vue'
 import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
 import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
-import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
+import CurveCrsQcRpt from '@/views/curve/check/curve-crossline-list.vue'
 import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
 import { getOrderList } from '@/api/curve/curve-product-order.js'
 import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
@@ -165,6 +166,7 @@ export default {
     // 设置保存
     saveOrderSet() {
       console.info('saveOrderSet')
+      this.$refs.refCurveOrderCheckSetForm.setCurveQcParm()
       this.orderSetFormVisible = false
     },
     // 主页面查询方法
