@@ -1,12 +1,5 @@
 <template>
   <div class="app-container">
-    <div style="margin-bottom: 20px">
-      <el-date-picker v-model="overallList.compDate" type="date" placeholder="选择日期" value-format="yyyyMMdd" format="yyyy-MM-dd" />
-      <el-select placeholder="B0002">
-        <el-option label="B0002" value="B0002" />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-    </div>
     <el-table
       ref="multipleTable"
       :data="overallList.dataList"
@@ -79,21 +72,15 @@
 
 <script>
 import { qryCurveComprehensiveQcRpt } from '@/api/curve/curve-quality.js'
-// import { delCurveSample } from '@/api/curve/curve-sample.js'
-import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
   name: 'CurveComprehensiveQcRpt', // 质检全面性
-  components: {
-  },
-  filters: {
-    showCodeLabel: showCodeLabel
-  },
+  props: ['taskDay', 'orderId'],
   data() {
     return {
       overallList: {
         compDate: '',
-        batchId: 'B0002',
+        batchId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -104,18 +91,6 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
-  },
-  computed: {
-    // qryCurveOverallQcRpt() {
-    //   const dataList = qryCurveOverallQcRpt(this.requestData)
-    //   if (dataList && dataList.data) {
-    //     return dataList.data
-    //   }
-    //   return dataList
-    // }
-  },
-  beforeMount() {
-    // this.qryCurveComprehensiveQcRpt()
   },
   methods: {
     handleFilter() {
@@ -135,6 +110,8 @@ export default {
       this.multipleSelection = items
     },
     qryCurveComprehensiveQcRpt() {
+      this.overallList.compDate = this.taskDay
+      this.overallList.batchId = this.orderId
       qryCurveComprehensiveQcRpt(this.overallList).then(response => {
         console.info('qryCurveComprehensiveQcRpt.qryCurveComprehensiveQcRpt...')
         const { dataList, page } = response

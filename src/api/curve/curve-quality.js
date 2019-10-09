@@ -1,4 +1,5 @@
 import request from '@/utils/app-request'
+import downloadFile from '@/utils/request-client'
 
 const basic_api_curve = '/pi-curve'
 
@@ -63,4 +64,23 @@ export function qryCurveCrsQcRpt(data) {
     method: 'post',
     data: data
   })
+}
+
+// 查询曲线产品容错质检报告
+export function qryCurveFTQcRpt(data) {
+  return request({
+    url: `${basic_api_curve}` + '/cql/quality/qryCurveFTQcRpt',
+    method: 'post',
+    data: data
+  })
+}
+
+// 下载曲线质检报告
+export function dwnlCurveQcRpt(data) {
+  downloadFile(`${basic_api_curve}` + '/file/file/dwnlCurveQcRpt', data)
+  // downloadFile({
+  //   url: `${basic_api_curve}` + '/file/file/dwnlCurveQcRpt',
+  //   method: 'post',
+  //   data: data
+  // })
 }

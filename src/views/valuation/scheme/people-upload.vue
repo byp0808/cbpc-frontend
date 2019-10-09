@@ -102,8 +102,11 @@ export default {
 
     // },
     handleSelectionChange(val) {
-      this.selectionList = val
-      console.log('33', val)
+      val.map(v => {
+        this.selectionList.push(v.id)
+      })
+      this.selectionList = Array.from(new Set(this.selectionList))
+      this.$emit('selectionList', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize

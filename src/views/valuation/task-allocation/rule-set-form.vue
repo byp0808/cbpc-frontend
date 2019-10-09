@@ -61,6 +61,8 @@ export default {
       queryTaskRange(this.businessId).then(response => {
         this.ruleInfo = response
       })
+    } else {
+      this.ruleInfo = {}
     }
   },
   methods: {

@@ -9,7 +9,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="curveSample" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="disabled" placeholder="请选择曲线">
+                <el-select v-model="curveSample.curvePrdCode" filterable :disabled="curveSelectDisable" placeholder="请选择曲线">
                   <el-option
                     v-for="item in curveList"
                     :key="item.value"
@@ -39,12 +39,15 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-form ref="recCurveForm" :model="curveSample" label-width="150px" hidden>
-        <el-form-item label="备注">
-          <el-input v-model="curveSample.remark" type="textarea" />
-        </el-form-item>
-      </el-form>
-
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form ref="recCurveForm" label-width="150px">
+            <el-form-item label="备注">
+              <el-input type="textarea" v-model="curveSample.remark" :disabled="disabled"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
     </el-card>
     <BondFilter
       ref="refBondFilter"
@@ -56,7 +59,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { getCurveSample, getCurveList, saveCurveSample, submitTask } from '@/api/curve/curve-sample.js'
+import { getCurveSample, saveCurveSample, submitTask } from '@/api/curve/curve-sample.js'
 import { getCurveProductOptions } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'RecCurveForm',
@@ -67,6 +70,7 @@ export default {
   data() {
     return {
       disabled: '',
+      curveSelectDisable: false,
       curveList: [],
       allCurveList: []
     }
@@ -87,23 +91,31 @@ export default {
     console.info('===beforeMount===')
 
     // 先加载列表
-    this.curveList = getCurveProductOptions();
-    this.allCurveList = this.curveList;
+    this.curveList = getCurveProductOptions()
+    this.allCurveList = this.curveList
 
     if (this.productId) {
-      getCurveSample(this.productId).then(reponse => {
-        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
-      })
-
       if (this.opType === 'VIEW') {
         this.disabled = true
+        this.curveSelectDisable = true
       } else {
         this.disabled = false
       }
+
+      getCurveSample(this.productId).then(reponse => {
+        // 审批通过拒绝，不允许个性曲线产品
+        if (reponse) {
+          if ('02' === reponse.approveStatus || '03' === reponse.approveStatus) {
+            this.curveSelectDisable = true
+          }
+        }
+        this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
+      })
     } else if (this.businessId) {
       getCurveSample(this.businessId).then(reponse => {
         this.$store.commit('curveProduct/setCurveSampleFilterInfo', reponse)
       })
+      this.curveSelectDisable = true
     } else {
       this.disabled = false
       if (this.basePrdCode) {
@@ -134,9 +146,19 @@ export default {
         })
         return false
       }
+
+      if (this.curveSample.remark && this.curveSample.remark.length > 200) {
+        this.$message({
+          message: '备注不能超过200个字符',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
       var refBondFilterInfo = this.$refs.refBondFilter.getData()
       console.log(refBondFilterInfo)
-      if (!refBondFilterInfo.tempNo) {
+      if (!refBondFilterInfo.tempId) {
         this.$message({
           message: '请选择应用模板，并应用',
           type: 'warning',
@@ -159,6 +181,8 @@ export default {
         this.curveSample.id = ''
         this.curveSample.filterId = ''
       }
+      // 20190930 筛选器模板编号字段修改，这里不影响后续逻辑，特按tempNo走
+      refBondFilterInfo.tempNo = refBondFilterInfo.tempId
       var data = _.assign({ curveSample: this.curveSample }, refBondFilterInfo)
       // 保存
       saveCurveSample(data).then(response => {
