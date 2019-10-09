@@ -1,5 +1,5 @@
 import request from '@/utils/request-client'
-import { basic_api_valuation, basic_api_market } from '@/api/base-api.js'
+import { basic_api_valuation } from '@/api/base-api.js'
 
 // 获取一条 任务分配范围 详细信息
 export function queryTaskRange(data) {
@@ -59,16 +59,6 @@ export function taskAllocationList(data) {
     {
       url: `${basic_api_valuation}/valuation-task/task-allocation-list`,
       method: 'post',
-      data: data
-    }
-  )
-}
-// 获取同部门人员列表
-export function personnelList(data) {
-  return request(
-    {
-      url: `${basic_api_market}/sys/user/getOrgUsers`,
-      method: 'get',
       data: data
     }
   )
