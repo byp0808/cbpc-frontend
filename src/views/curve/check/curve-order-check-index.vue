@@ -116,10 +116,6 @@ export default {
         taskDay: null,
         orderId: ''
       },
-      dwnlForm: {
-        compDate: '20190918',
-        batchId: 'B0002'
-      },
       activeName: 'zl'
     }
   },
@@ -146,6 +142,7 @@ export default {
     }
     this.queryForm.taskDay = taskDay
     this.queryForm.orderId = orderId
+
     // 加载批次
     this.orderList = getOrderList()
   },
@@ -156,6 +153,10 @@ export default {
     // 下载
     download() {
       console.info('download')
+      const dwnlForm = {
+        compDate: this.taskDay,
+        batchId: this.orderId
+      }
       dwnlCurveQcRpt(this.dwnlForm)
     },
     // 曲线质检波动偏差值设置
