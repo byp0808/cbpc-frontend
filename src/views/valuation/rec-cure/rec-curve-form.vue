@@ -27,7 +27,10 @@
               >
                 <el-input
                   v-model="recCurveInfo.ruleName"
+                  type="text"
                   :disabled="disabled"
+                  max-length="64"
+                  show-word-limit
                   placeholder="请输入曲线规则名称"
                 />
               </el-form-item>
@@ -70,7 +73,7 @@
                   { required: true, message: '请输入备注', trigger: 'blur' },
                 ]"
               >
-                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" placeholder="请输入曲线规则名称" />
+                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" placeholder="请输入曲线规则名称" max-length="50" show-word-limit />
               </el-form-item>
             </div>
           </el-col>
