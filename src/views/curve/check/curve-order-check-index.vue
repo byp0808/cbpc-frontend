@@ -6,7 +6,7 @@
           v-model="queryForm.taskDay"
           align="right"
           type="date"
-          value-format="yyyyMMdd"
+          value-format="yyyy-MM-dd"
           format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
@@ -84,113 +84,113 @@
 </template>
 
 <script>
-  import CurveQualityOverallList from '@/views/curve/check/curve-quality-overall-list.vue'
-  import CurveComprehensiveQcRpt from '@/views/curve/check/curve-quality-comprehensive-list.vue'
-  import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
-  import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
-  import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
-  import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
-  import { getOrderList } from '@/api/curve/curve-product-order.js'
-  import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
-  import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
+import CurveQualityOverallList from '@/views/curve/check/curve-quality-overall-list.vue'
+import CurveComprehensiveQcRpt from '@/views/curve/check/curve-quality-comprehensive-list.vue'
+import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
+import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
+import CurveCrsQcRpt from '@/views/curve/check/curve-quality-crs-list.vue'
+import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
+import { getOrderList } from '@/api/curve/curve-product-order.js'
+import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
+import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
 
-  export default {
-    name: 'CurveOrderCheckIndex',
-    components: {
-      CurveQualityOverallList,
-      CurveComprehensiveQcRpt,
-      CurveShkQcRpt,
-      CurveRvsQcRpt,
-      CurveCrsQcRpt,
-      CurveFTQcRpt,
-      CurveOrderCheckSetForm
-    },
-    props: ['orderId', 'taskDay'],
-    data() {
-      return {
-        lockScroll: true,
-        disabled: false,
-        orderSetFormVisible: false, // 曲线质检波动偏差值设置界面
-        orderList: [], // 批次列表
-        queryForm: {
-          taskDay: null,
-          orderId: ''
-        },
-        dwnlForm: {
-          compDate: '20190918',
-          batchId: 'B0002'
-        },
-        activeName: 'zl'
-      }
-    },
-    computed: {
-      taskDayStr() {
-        var date = this.queryForm.taskDay
-        if (date) {
-          return this.$moment(date).format('YYYYMMDD')
-        }
-        return ''
-      }
-    },
-    watch: {
-    },
-    beforeMount() {
-      console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
-      var taskDay = this.taskDay
-      var orderId = this.orderId
-      if (!taskDay) {
-        taskDay = new Date()
-      }
-      if (!orderId) {
-        orderId = 'ORDER_ID_1'
-      }
-      this.queryForm.taskDay = taskDay
-      this.queryForm.orderId = orderId
-      // 加载批次
-      this.orderList = getOrderList()
-    },
-    methods: {
-      handleClick(tab, event) {
-        console.log(tab, event)
+export default {
+  name: 'CurveOrderCheckIndex',
+  components: {
+    CurveQualityOverallList,
+    CurveComprehensiveQcRpt,
+    CurveShkQcRpt,
+    CurveRvsQcRpt,
+    CurveCrsQcRpt,
+    CurveFTQcRpt,
+    CurveOrderCheckSetForm
+  },
+  props: ['orderId', 'taskDay'],
+  data() {
+    return {
+      lockScroll: true,
+      disabled: false,
+      orderSetFormVisible: false, // 曲线质检波动偏差值设置界面
+      orderList: [], // 批次列表
+      queryForm: {
+        taskDay: null,
+        orderId: ''
       },
-      // 下载
-      download() {
-        console.info('download')
-        dwnlCurveQcRpt(this.dwnlForm)
+      dwnlForm: {
+        compDate: '20190918',
+        batchId: 'B0002'
       },
-      // 曲线质检波动偏差值设置
-      orderSet() {
-        console.info('orderSet')
-        this.orderSetFormVisible = true
-      },
-      // 设置保存
-      saveOrderSet() {
-        console.info('saveOrderSet')
-        this.$refs.refCurveOrderCheckSetForm.setCurveQcParm()
-        this.orderSetFormVisible = false
-      },
-      // 主页面查询方法
-      // 根据 activeName 调用各个页面查询方法
-      indexQuery() {
-        console.info('indexQuery.activeName:' + this.activeName)
-        this.$refs[this.activeName].handleFilter()
-        // 总览 zl
-        // if (this.activeName === 'zl') {
-        //   this.$refs.zl.handleFilter()
-        // } else if (this.activeName === 'qmxjc') {
-        //   this.$refs.zl.handleFilter()
-        // } else if (this.activeName === 'bdpc') {
-        //   this.$refs.zl.handleFilter()
-        // } else if (this.activeName === 'qxkx') {
-        //   this.$refs.zl.handleFilter()
-        // } else if (this.activeName === 'qxdg') {
-        //   this.$refs.zl.handleFilter()
-        // } else if (this.activeName === 'rc') {
-        //   this.$refs.zl.handleFilter()
-        // }
+      activeName: 'zl'
+    }
+  },
+  computed: {
+    taskDayStr() {
+      var date = this.queryForm.taskDay
+      if (date) {
+        return this.$moment(date).format('YYYY-MM-DD')
       }
+      return ''
+    }
+  },
+  watch: {
+  },
+  beforeMount() {
+    console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
+    var taskDay = this.taskDay
+    var orderId = this.orderId
+    if (!taskDay) {
+      taskDay = new Date()
+    }
+    if (!orderId) {
+      orderId = 'ORDER_ID_1'
+    }
+    this.queryForm.taskDay = taskDay
+    this.queryForm.orderId = orderId
+    // 加载批次
+    this.orderList = getOrderList()
+  },
+  methods: {
+    handleClick(tab, event) {
+      console.log(tab, event)
+    },
+    // 下载
+    download() {
+      console.info('download')
+      dwnlCurveQcRpt(this.dwnlForm)
+    },
+    // 曲线质检波动偏差值设置
+    orderSet() {
+      console.info('orderSet')
+      this.orderSetFormVisible = true
+    },
+    // 设置保存
+    saveOrderSet() {
+      console.info('saveOrderSet')
+      this.$refs.refCurveOrderCheckSetForm.setCurveQcParm()
+      this.orderSetFormVisible = false
+    },
+    // 主页面查询方法
+    // 根据 activeName 调用各个页面查询方法
+    indexQuery() {
+      console.info('indexQuery.activeName:' + this.activeName)
+      this.$refs[this.activeName].handleFilter()
+      // 总览 zl
+      // if (this.activeName === 'zl') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qmxjc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'bdpc') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxkx') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'qxdg') {
+      //   this.$refs.zl.handleFilter()
+      // } else if (this.activeName === 'rc') {
+      //   this.$refs.zl.handleFilter()
+      // }
     }
   }
+}
 </script>
 
 <style>
