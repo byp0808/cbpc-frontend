@@ -55,7 +55,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
-      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" :query-form="queryForm" />
+      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" :query-form="queryForm"/>
     </el-card>
     <el-card v-if="activeName === 'qxdg'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -152,12 +152,12 @@ export default {
     },
     // 下载
     download() {
-      console.info('download')
+      console.info('download:' + this.orderId + ',taskDay:' + this.taskDay)
       const dwnlForm = {
-        compDate: this.taskDay,
-        batchId: this.orderId
+        compDate: this.queryForm.taskDay,
+        batchId: this.queryForm.orderId
       }
-      dwnlCurveQcRpt(this.dwnlForm)
+      dwnlCurveQcRpt(dwnlForm)
     },
     // 曲线质检波动偏差值设置
     orderSet() {
