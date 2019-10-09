@@ -60,7 +60,7 @@ export default {
     var validateEnd = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请选择相对曲线！'))
-      } else if (this.curveRelationInfo.relativeCurveId === value) {
+      } else if (this.curveRelationInfo.curveId === value) {
         callback(new Error('目标曲线和相对曲线不能相同！'))
       } else {
         callback()
@@ -90,7 +90,7 @@ export default {
       queryCurveRelation(this.relationId).then(response => {
         this.curveRelationInfo = response
         if (this.isCopy) {
-          this.curveRelationInfo.Id = ''
+          this.curveRelationInfo.id = null
         }
       })
     } else {
