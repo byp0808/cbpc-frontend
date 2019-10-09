@@ -32,7 +32,7 @@
         width="120"
       />
       <el-table-column
-        prop="bondsId"
+        prop="bondId"
         label="资产编码"
         show-overflow-tooltip
         width="100"
