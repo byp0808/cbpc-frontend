@@ -171,7 +171,7 @@ export default {
         case '05': return '客户投诉'
         case '06': return '评级上升'
         case '07': return '巡检'
-        case '08': return '其他'
+        case '08': return '其他阿'
       }
     },
     handleSelectionChange(val) {
