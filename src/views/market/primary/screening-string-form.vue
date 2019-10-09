@@ -26,7 +26,7 @@
 export default {
   name: 'ScreeningStringForm',
   components: {},
-  // props: ['businessId', 'disabled'],
+  props: ['businessId', 'disabled'],
   data() {
     return {
       dateDisabled: false,
@@ -45,9 +45,6 @@ export default {
         this.$store.commit('screeningDate/setScreeningDate', screeningForm)
       }
     }
-  },
-  beforeMount() {
-    // this.screeningForm.screeningSort = '1'
   },
   methods: {
     screening() {

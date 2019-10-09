@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import downloadFile from '@/utils/request-client'
+import { downloadFile } from '@/utils/request-client'
 
 const basic_api_curve = '/pi-curve'
 
@@ -75,9 +75,27 @@ export function qryCurveFTQcRpt(data) {
   })
 }
 
+// 设置曲线质检参数
+export function setCurveQcParm(data) {
+  return request({
+    url: `${basic_api_curve}` + '/param//quality/setCurveQcParm',
+    method: 'post',
+    data: data
+  })
+}
+
+// 查询曲线质检参数
+export function qryCurveQcParm(data) {
+  return request({
+    url: `${basic_api_curve}` + '/param//quality/qryCurveQcParm',
+    method: 'post',
+    data: data
+  })
+}
+
 // 下载曲线质检报告
 export function dwnlCurveQcRpt(data) {
-  downloadFile(`${basic_api_curve}` + '/file/file/dwnlCurveQcRpt', data)
+  downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/file/file/dwnlCurveQcRpt', data)
   // downloadFile({
   //   url: `${basic_api_curve}` + '/file/file/dwnlCurveQcRpt',
   //   method: 'post',

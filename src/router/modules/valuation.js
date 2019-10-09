@@ -47,7 +47,7 @@ const valuationRouter = {
       path: 'curveList',
       component: () => import('@/views/valuation/curve-relation/curve-relation-list.vue'),
       name: 'ValuationCurveRelationList',
-      meta: { title: '估值相对曲线设置', roles: ['ValuationCurveRelationList'] }
+      meta: { title: '估值相对曲线设置', noCache: true, roles: ['ValuationCurveRelationList'] }
     }, {
       path: 'rec-mandatory-list',
       component: () => import('@/views/valuation/rec-mandatory/rec-mandatory-list.vue'),
@@ -89,12 +89,17 @@ const valuationRouter = {
       path: '/flow-recommend',
       component: () => import('@/views/valuation/flow-difference/flow-recommend.vue'),
       name: 'FlowDifference',
-      meta: { title: '调整流动性点差', noCache: true }
+      meta: { title: '调整流动性点差', noCache: true, roles: ['FlowDifference'] }
     }, {
       path: 'scheme-task-allot',
       component: () => import('@/views/valuation/scheme/scheme-task-allot.vue'),
       name: 'SchemeTaskAllotList',
       meta: { title: '估值任务分配', noCache: true, roles: ['SchemeTaskAllotList'] }
+    }, {
+      path: 'query-valuation',
+      component: () => import('@/views/valuation/query/query-valuation.vue'),
+      name: 'QueryValuation',
+      meta: { title: '查询估值', noCache: true, roles: ['QueryValuation'] }
     }
   ]
 }

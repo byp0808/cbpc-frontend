@@ -22,8 +22,8 @@
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple">
-            <el-form ref="ruleInfo" :model="curveRelationInfo" label-width="120px">
-              <el-form-item label="目标曲线：">
+            <el-form ref="ruleInfo" :model="curveRelationInfo" :rules="rules" label-width="120px">
+              <el-form-item label="目标曲线：" prop="curveId">
                 <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" :disabled="disabled">
                   <el-option
                     v-for="item in curveList"
@@ -33,7 +33,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="相对曲线：">
+              <el-form-item label="相对曲线：" prop="relativeCurveId">
                 <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" :disabled="disabled">
                   <el-option
                     v-for="item in curveList"
@@ -57,14 +57,28 @@ export default {
   name: 'AddRulesForm',
   props: ['relationId', 'disabled', 'isCopy'],
   data() {
+    var validateEnd = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请选择相对曲线！'))
+      } else if (this.curveRelationInfo.relativeCurveId === value) {
+        callback(new Error('目标曲线和相对曲线不能相同！'))
+      } else {
+        callback()
+      }
+    }
     return {
       curveList: [],
-      curveRelationInfo: {},
+      curveRelationInfo: {
+        curveId: '',
+        relativeCurveId: ''
+      },
+      rules: {
+        curveId: [{ required: true, message: '请选择目标曲线！', trigger: 'change' }],
+        relativeCurveId: [{ required: true, validator: validateEnd, trigger: 'change' }]
+      },
       copyRelation: { // 复制新增
         targetValue: '',
         relativeValue: ''
-      },
-      method: {
       }
     }
   },
@@ -86,38 +100,21 @@ export default {
   methods: {
     // 保存/编辑曲线关系
     save() {
-      if (this.verify) {
-        saveCurveRelation(this.curveRelationInfo).then(response => {
-          this.$emit('saveCallBack')
-          this.$message({
-            message: '保存成功！',
-            type: 'success',
-            showClose: true
+      this.$refs['ruleInfo'].validate((valid) => {
+        if (valid) {
+          saveCurveRelation(this.curveRelationInfo).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
           })
-        })
-      }
-    },
-    verify() {
-      if (this.curveRelationInfo.curveId === '') {
-        this.$message({
-          type: 'warning',
-          message: '请选择目标曲线'
-        })
-        return false
-      } else if (this.curveRelationInfo.relativeCurveId === '') {
-        this.$message({
-          type: 'warning',
-          message: '请选择相对曲线'
-        })
-        return false
-      } else if (this.curveRelationInfo.curveId === this.curveRelationInfo.relativeCurveId) {
-        this.$message({
-          type: 'warning',
-          message: '目标曲线和相对曲线不能相同'
-        })
-        return false
-      }
-      return true
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }

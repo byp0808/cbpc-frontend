@@ -165,14 +165,14 @@
     </el-dialog>
     <el-dialog title="提示" :visible.sync="remaindDialog">
       <div class="content">{{ message }}</div>
-      <el-row>
+      <el-row style="margin-top:10px">
         <el-col :span="8" :offset="17">
           <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
             <el-button @click="cancle">否</el-button>
-            <el-button type="primary" @click="saveFirst">是</el-button>
+            <el-button type="primary" @click="saveFirst('01')">是</el-button>
           </div>
         </el-col>
-        <el-col :span="14" :offset="10" style="margin-top:10px">
+        <el-col :span="14" :offset="10">
           <div v-if="code === 'YBL100001003' " class="dialog-footer">
             <el-button @click="cancle">不迁移</el-button>
             <el-button type="primary" @click="saveFirst('01')">迁移并保留</el-button>
@@ -300,7 +300,7 @@ export default {
     getTask() {
       console.log('data', this.selection)
       if (this.selection.length === 0) {
-        return this.$message('请选择任务')
+        return this.$message.warning('请选择任务')
       } else {
         getTask(this.selection).then(res => {
           this.loadTable_all()
@@ -338,7 +338,7 @@ export default {
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
       const fd = new FormData()
-      fd.append('dataFile', this.excelFile)
+      fd.append('attach', this.excelFile)
       fd.append('batchId', this.volumeAdd.batchId)
       fd.append('cause', this.volumeAdd.cause)
       addBatchTask(fd).then(res => {
@@ -380,17 +380,27 @@ export default {
           return this.$message('别着急, 您的文件还没有上传哦')
         }
         const fd = new FormData()
-        fd.append('dataFile', this.excelFile)
+        fd.append('attach', this.excelFile)
         fd.append('batchId', this.volumeAdd.batchId)
         fd.append('cause', this.volumeAdd.cause)
         console.log('fd', fd.getAll('attach'))
         addBatchTask(fd).then(res => {
-          this.volumeAddDialog = false
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          })
-          this.loadTable_all()
+          if (res) {
+            if (res.code === 'YBL100001004') {
+              this.remaindDialog = true
+              this.code = res.code
+              this.message = res.message
+            } else {
+              this.volumeAddDialog = false
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.loadTable_all()
+            }
+          }
+        }).catch(message => {
+          this.$message.error(`${message}`)
         })
       } else {
         if (!this.bondId) {
@@ -445,11 +455,15 @@ export default {
     },
     allotTask() {
       this.allocationDialog = true
+      this.nameModel.userId = ''
       getUserName('00001').then(res => {
         this.nameList = res
       })
     },
     saveName() {
+      if (this.selection.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
       this.nameModel.ids = this.selection
       saveTask(this.nameModel).then(res => {
         this.$message({

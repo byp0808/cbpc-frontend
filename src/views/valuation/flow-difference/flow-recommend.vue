@@ -254,7 +254,7 @@
     </div>
     <el-dialog v-if="assetDialog" :visible.sync="assetDialog" title="资产组设置" width="1100px" class="dialog-box">
       <FlowForm
-        ref="refAssetForm"
+        ref="refAssetsForm"
         :rec-curve-data="recCurveData"
         :business-id="flowId"
         @saveCallBack="saveCallBack"
@@ -448,7 +448,7 @@ export default {
       return ruleDetail
     },
     save() {
-      this.$refs.refAssetForm.save()
+      this.$refs.refAssetsForm.save()
     },
     spreadParamSave() {
       this.$refs.refSpreadParamForm.save()

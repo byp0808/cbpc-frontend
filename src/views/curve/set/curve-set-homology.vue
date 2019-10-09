@@ -19,19 +19,18 @@
                 </template>
             </el-table-column>
             <el-table-column label="复核状态" width="150px" align="center">
-              <template slot-scope="scope">
-                <span v-if="scope.row.approveStatus==='01'">待审核</span>
-                <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-                <span v-else-if="scope.row.approveStatus==='03'">审核不通过</span>
-                <span v-else>审批不通过</span>
-              </template>
+                <template slot-scope="scope">
+                    <span>{{ scope.row.approveStatus }}</span>
+                </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-                  <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">编辑</el-button>
-                  <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
-                  <el-button v-else type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">删除</el-button>
+                    <el-button type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">
+                        修改
+                    </el-button>
+                    <el-button type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">
+                        删除
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -123,13 +122,8 @@
           })
         })
       },
-      disableEdit() {
-        this.$message({
-          type: 'warning',
-          message: '不能操作待审核状态的数据'
-        })
-      },
       storageCurveHomology() {
+        debugger
         var data = this.$refs.homology.obtainCurveHomology()
         if (!data.curveHomologyList) {
           alert("请选择同调曲线！")

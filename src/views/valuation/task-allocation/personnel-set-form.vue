@@ -70,7 +70,10 @@ export default {
         distRuleList: [{ userId: '', distRatio: '' }],
         lastUpdBy: '', // 最后更新者
         lastUpdTs: '' // 最后更新时间
-      } // 规则对象
+      }, // 规则对象
+      rules: {
+
+      }
     }
   },
   beforeMount() {
