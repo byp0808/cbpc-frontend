@@ -45,12 +45,12 @@
         </el-table-column>
         <el-table-column label="债券代码" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondsId }}</span>
+            <span>{{ scope.row.bondId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="债券简称" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondsShort }}</span>
+            <span>{{ scope.row.bondShort }}</span>
           </template>
         </el-table-column>
         <el-table-column label="场所" align="center">
@@ -165,7 +165,7 @@ export default {
     // },
     handleSelectionChange(val) {
       val.map(v => {
-        this.selectionList.push(v.bondsId)
+        this.selectionList.push(v.bondId)
       })
       this.selectionList = Array.from(new Set(this.selectionList))
       this.$emit('selectionList', this.selectionList)
