@@ -27,4 +27,3 @@ export function upload({ url, data }) {
     }
   })
 }
-

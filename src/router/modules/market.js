@@ -28,14 +28,13 @@ const marketRouter = {
       component: () => import('@/views/market/para/para-info.vue'),
       name: 'ParaInfo',
       meta: { title: '参数设置', noCache: true, roles: ['ParaInfo'] }
+    },
+    {
+      path: 'query-temp',
+      component: () => import('@/views/market/temp/query-temp-list.vue'),
+      name: 'QueryTempList',
+      meta: { title: '模板设置', noCache: true }
     }
-    // },
-    // {
-    //   path: 'query-temp',
-    //   component: () => import('@/views/market/temp/query-temp-list.vue'),
-    //   name: 'QueryTempList',
-    //   meta: { title: '模板设置', noCache: true }
-    // }
   ]
 }
 
