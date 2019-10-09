@@ -3,26 +3,34 @@
     <div>
       <el-table
         :data="allList"
+        max-height="300"
         style="width: 100%"
-        max-height="300px"
+        :header-cell-style="{background:'#f6f6f6'}"
         tooltip-effect="dark"
         border
-        :header-cell-style="{background:'#f6f6f6'}"
         fit
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column align="center" type="selection" />
-        <el-table-column prop="filterId" label="日期" align="center" />
-        <el-table-column prop="lastUpdBy" label="操作人" align="center" />
-        <el-table-column label="债券代码" align="center">
+        <el-table-column align="center" label="全选" type="selection" />
+        <el-table-column label="估值日期" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondId }}</span>
+            <span>{{ scope.row.cause }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="债券简称" align="center">
+        <el-table-column label="估值批次" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondShort }}</span>
+            <span>{{ scope.row.cause }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作人" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="债券代码" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.bondsId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="日间估价全价（元）" align="center" width="160px">
@@ -62,25 +70,25 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- <div>
-      <el-pagination
+    <div>
+      <!-- <el-pagination
+        style="margin-top:20px"
         align="center"
         :current-page="page.pageNumber"
         :page-sizes="[10, 20, 30, 40, 50]"
         :page-size="page.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="page.totalRecord"
-        style="margin-top:20px"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-      />
-    </div> -->
+      /> -->
+    </div>
   </div>
 </template>
 <script>
 
 export default {
-  name: 'PeopleUpload',
+  name: 'AssetList',
   components: {
 
   },
@@ -92,15 +100,21 @@ export default {
       }
     }
   },
+  //   props: ['allList'],
   data() {
     return {
-      selectionList: []
+      ruleSetFormVisible: false,
+      taskRangeId: '',
+      selectionList: [],
+      list: [],
+      page: {
+        pageNumber: 1,
+        pageSize: 10,
+        totalRecord: 0
+      }
     }
   },
   methods: {
-    // load() {
-
-    // },
     handleSelectionChange(val) {
       if (val.length > 0) {
         val.map(v => {
@@ -111,7 +125,6 @@ export default {
       } else {
         this.selectionList = []
       }
-      console.log('val', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize

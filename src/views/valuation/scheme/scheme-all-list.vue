@@ -90,7 +90,7 @@
     </el-dialog>
     <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
-        <el-form style="margin-left:50px" :label-position="labelPosition">
+        <el-form style="margin-left:50px" :label-position="labelPosition" :model="volumeAdd">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
             <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
@@ -98,6 +98,7 @@
           </el-form-item>
           <el-form-item v-if="isBatch" label="选择文件">
             <el-upload
+              ref="upload"
               class="upload-demo"
               action=""
               :limit="1"
@@ -138,6 +139,7 @@
           </el-form-item>
           <el-form-item label="选择文件">
             <el-upload
+              ref="upload1"
               class="upload-demo"
               action=""
               :limit="1"
@@ -164,7 +166,8 @@
       </div>
     </el-dialog>
     <el-dialog title="提示" :visible.sync="remaindDialog">
-      <div class="content">{{ message }}</div>
+      <div v-if="isBatch" class="content">{{ message }}{{ failMessage }}</div>
+      <div v-else class="content">{{ message }}</div>
       <el-row style="margin-top:10px">
         <el-col :span="8" :offset="17">
           <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
@@ -179,7 +182,7 @@
             <el-button type="primary" @click="saveFirst('02')">迁移不保留</el-button>
           </div>
         </el-col>
-        <el-col :span="8" :offset="17">
+        <el-col :span="10" :offset="15">
           <div v-if="code === 'YBL100001004' " class="dialog-footer">
             <el-button @click="cancle">取消</el-button>
             <el-button v-if="isBatch" type="primary" @click="saveBatchFirst('01')">忽略并导入</el-button>
@@ -218,6 +221,7 @@ export default {
       remaindDialog: false,
       message: '',
       code: '',
+      failMessage: '',
       taskTitle: '',
       excelFile: '',
       peopleName: '',
@@ -303,6 +307,10 @@ export default {
         return this.$message.warning('请选择任务')
       } else {
         getTask(this.selection).then(res => {
+          this.$message({
+            message: '任务认领成功',
+            type: 'success'
+          })
           this.loadTable_all()
         })
       }
@@ -331,9 +339,11 @@ export default {
       this.volumeAdd.batchId = e
     },
     resetTaskDialog() {
-      this.volumeAdd.batchId = ''
-      this.volumeAdd.attach = ''
-      this.excelFile = ''
+      // this.volumeAdd.batchId = ''
+      // this.volumeAdd.cause = '08'
+      this.excelFile = null
+      this.volumeAdd = { cause: '08' }
+      if (this.$refs.upload) this.$refs.upload.clearFiles()
     },
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
@@ -385,11 +395,13 @@ export default {
         fd.append('cause', this.volumeAdd.cause)
         console.log('fd', fd.getAll('attach'))
         addBatchTask(fd).then(res => {
+          console.log('22', res)
           if (res) {
-            if (res.code === 'YBL100001004') {
+            if (res.respCode === 'YBL100001004') {
               this.remaindDialog = true
-              this.code = res.code
-              this.message = res.message
+              this.code = res.respCode
+              this.message = res.respMsg
+              this.failMessage = res.failData
             } else {
               this.volumeAddDialog = false
               this.$message({
@@ -408,6 +420,7 @@ export default {
           return
         }
         delete this.volumeAdd.attach
+        delete this.volumeAdd.busiCode
         this.volumeAdd.csin = this.bondId
         addOneTask(this.volumeAdd).then(res => {
           if (res.code) {
