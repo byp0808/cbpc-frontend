@@ -4,8 +4,8 @@ export default {
     marketTempInfo: {
     },
     extendColInfo: {
-
-    }
+    },
+    colData: {}
   },
   mutations: {
     setMarketTempInfo(state, marketTempInfo) {
@@ -13,6 +13,9 @@ export default {
     },
     setExtendColInfo(state, extendColInfo) {
       state.extendColInfo = extendColInfo
+    },
+    setColData(state, colData) {
+      state.colData = colData
     }
   },
   actions: {

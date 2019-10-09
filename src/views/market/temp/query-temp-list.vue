@@ -29,33 +29,21 @@
         width="300"
       />
       <el-table-column
-        prop="approveStatus"
-        label="审核状态"
-        width="100"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
-        </template>
-      </el-table-column>
-      <el-table-column
         prop="address"
         label="操作"
-        width="300"
+        width="400"
         show-overflow-tooltip
         align="center"
       >
         <template slot-scope="scope">
           <el-button
-            v-if="checkStatus(scope.row.approveStatus)"
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDetail('EDIT', scope.row.id)"
           >
             设置
           </el-button>
           <el-button
-            v-if="checkStatus(scope.row.approveStatus)"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -63,9 +51,9 @@
             删除
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
             type="text"
             size="small"
+            @click.native.prevent="toDetail('VIEW', scope.row.id)"
           >
             查看
           </el-button>
@@ -81,12 +69,14 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="marketTempFormVisible" width="80%" top="5vh" :visible.sync="marketTempFormVisible">
+    <el-dialog v-if="marketTempFormVisible" width="80%" top="5vh" :visible.sync="marketTempFormVisible" :close="closeDialog">
       <marketTempForm
         ref="MarketTempForm"
-        :kd-temp-data="marketTempData"
+        :market-temp-data="marketTempData"
         :business-id="marketTempId"
+        :op-type="opType"
         @saveCallBack="saveCallBack"
+        @closeDialog="closeDialog"
       />
     </el-dialog>
   </div>
@@ -94,6 +84,7 @@
 
 <script>
 import MarketTempForm from '@/views/market/temp/query-temp-form.vue'
+import { queryTempList, deletemarketTemp } from '@/api/market/market-temp.js'
 export default {
   name: 'MarketTempList',
   components: {
@@ -103,6 +94,7 @@ export default {
     return {
       marketTempFormVisible: false,
       marketTempId: '',
+      opType: '',
       marketTempList: [],
       marketTempData: {},
       page: {
@@ -129,6 +121,14 @@ export default {
   },
   methods: {
     loadTable() {
+      queryTempList({ page: this.page }).then(response => {
+        const { dataList, page } = response
+        this.page = page
+        this.marketTempList = dataList
+      })
+    },
+    closeDialog() {
+      this.marketTempFormVisible = false
     },
     checkStatus(approveStatus) {
       if (approveStatus === '01') {
@@ -147,7 +147,9 @@ export default {
       this.$store.commit('marketTemp/setMarketTempInfo', {})
       this.marketTempFormVisible = false
     },
-    toDetail(id) {
+    toDetail(opType, id) {
+      // console.log(id)
+      this.opType = opType
       this.marketTempId = id
       this.marketTempFormVisible = true
     },
@@ -158,7 +160,7 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        // await deletemarketTemp(id)
+        await deletemarketTemp(id)
         this.loadTable()
       }).catch(() => {
         this.$message({
@@ -170,15 +172,13 @@ export default {
     toAdd() {
       // console.log('toAdd')
       this.marketTempId = ''
+      this.opType = 'EDIT'
       this.$store.commit('marketTemp/setMarketTempInfo', {})
       this.marketTempFormVisible = true
     },
     saveCallBack() {
       this.marketTempFormVisible = false
       this.loadTable()
-    },
-    isShowChangeStatusBtn(status) {
-      return status === '02' || status === '03'
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize

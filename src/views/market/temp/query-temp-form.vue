@@ -4,28 +4,34 @@
       <el-col :span="6">
         <el-card class="box-card margin-top calendar-job">
           <el-form ref="MarketTempForm" :model="marketTempInfo" :rules="tempInfoRules">
-            <el-form-item label="行情展示模板名称" class="blackItem">
-              <el-input v-model="marketTempInfo.tempName" :disabled="false" size="mini" />
+            <el-form-item label="行情展示模板名称" class="blackItem" prop="tempName">
+              <el-input v-model="marketTempInfo.tempName" :disabled="disabled" size="mini" />
             </el-form-item>
             <el-form-item label="备注" class="blackItem">
-              <el-input v-model="marketTempInfo.remark" :disabled="false" type="textarea" />
+              <el-input v-model="marketTempInfo.remark" :disabled="disabled" type="textarea" />
             </el-form-item>
-            <el-form-item label="数据行情" class="blackItem">
-              <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px">
+            <el-form-item label="数据行情" class="blackItem" prop="dataMarket">
+              <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px" :disabled="disabled">
                 <el-option v-for="item in dataMarketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <el-form-item label="展示区域" class="blackItem">
-              <el-select v-model="marketTempInfo.showArea" value-key="value" style="width:160px">
+            <el-form-item label="展示区域" class="blackItem" prop="showArea" :required="marketTempInfo.dataMarket==='02'?true:false">
+              <el-select
+                v-model="marketTempInfo.showArea"
+                value-key="value"
+                style="width:160px"
+                :disabled="disabled || marketTempInfo.dataMarket==='01'?true:false"
+                clearable
+              >
                 <el-option v-for="item in showAreaOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
             <el-form-item label="最后操作人" class="blackItem">
-              <el-input v-model="marketTempInfo.lastUpdBy" disabled style="width:145px" size="mini" />
+              <el-input v-model="marketTempInfo.lastUpdBy" disabled style="width:165px" size="mini" />
             </el-form-item>
             <el-form-item label="最后操作时间" class="blackItem">
-              <el-input v-model="marketTempInfo.lastUpdTs" disabled style="width:130px" size="mini" />
+              <el-input v-model="marketTempInfo.lastUpdTs" disabled style="width:150px" size="mini" />
             </el-form-item>
           </el-form>
         </el-card>
@@ -56,6 +62,7 @@
                 <template slot-scope="scope">
                   <el-button
                     v-if="checkColType(scope.row.colType)"
+                    :disabled="disabled"
                     type="text"
                     size="small"
                     @click.native.prevent="alterCol(scope.$index, scope.row)"
@@ -64,6 +71,7 @@
                   </el-button>
                   <el-button
                     v-if="checkColType(scope.row.colType)"
+                    :disabled="disabled"
                     type="text"
                     size="small"
                     @click.native.prevent="deleteCol(scope.$index)"
@@ -73,13 +81,18 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="showFlag"
+                prop="showOrhide"
                 label="展示"
                 sortable
                 width="80"
               >
                 <template slot-scope="scope">
-                  <el-checkbox v-model="scope.row.showFlag" v-bind="{'checked': scope.row.showFlag? true : false}" @change="checkedShow(scope.$index, scope.row.showFlag)" />
+                  <el-checkbox
+                    v-model="scope.row.showOrhide"
+                    v-bind="{'checked': scope.row.showOrhide? true : false}"
+                    :disabled="disabled"
+                    @change="checkedShow(scope.$index, scope.row.showOrhide)"
+                  />
                 </template>
               </el-table-column>
               <el-table-column
@@ -91,13 +104,13 @@
                 <template slot-scope="scope">
                   <el-button
                     size="mini"
-                    :disabled="scope.$index===0"
+                    :disabled="scope.$index===0 || disabled"
                     @click="moveUp(scope.$index,scope.row)"
                   ><i class="el-icon-arrow-up" />
                   </el-button>
                   <el-button
                     size="mini"
-                    :disabled="scope.$index===(colData.length-1)"
+                    :disabled="scope.$index===(colData.length-1) || disabled"
                     @click="moveDown(scope.$index,scope.row)"
                   ><i class="el-icon-arrow-down" />
                   </el-button>
@@ -112,28 +125,40 @@
               <el-col :offset="3">
                 <el-form ref="extendColForm" :model="extendColInfo" :rules="tempInfoRules">
                   <el-form-item label="字段名称" class="blackItem">&emsp;&emsp;&emsp;
-                    <el-input v-model="extendColInfo.colChiName" :disabled="false" size="mini" style="width:180px" />
+                    <el-input v-model="extendColInfo.colChiName" :disabled="disabled" size="mini" style="width:180px" />
                   </el-form-item>
                   <el-form-item>
-                    <el-select v-model="extendColInfo.baseCol" size="mini" value-key="code" style="width:150px">
-                      <el-option v-for="item in baseColsOptions" :key="item.code" :label="item.value" :value="item.code" />
+                    <el-select
+                      v-model="extendColInfo.relationCol"
+                      size="mini"
+                      value-key="code"
+                      style="width:150px"
+                      :disabled="disabled"
+                      @change="selectColName"
+                    >
+                      <el-option
+                        v-for="item in relationColsOptions"
+                        :key="item.code"
+                        :label="item.value"
+                        :value="item.code"
+                      />
                     </el-select>&emsp;&emsp;&emsp;
-                    <el-select v-model="extendColInfo.operType" value-key="value" size="mini" style="width:150px">
-                      <el-option v-for="item in operTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-select v-model="extendColInfo.operatorType" value-key="value" size="mini" style="width:150px" :disabled="disabled">
+                      <el-option v-for="item in operatorTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-select>
                   </el-form-item>
                   <el-form-item>
-                    <el-input v-model="extendColInfo.computeExp" type="textarea" :disabled="false" rows="3" style="width:350px" />
+                    <el-input v-model="extendColInfo.computeExp" type="textarea" :disabled="disabled" rows="3" style="width:350px" />
                   </el-form-item>
                   <el-form-item label="添加至" class="blackItem">&emsp;&emsp;
-                    <el-select v-model="extendColInfo.colType" value-key="value" size="mini" style="width:160px">
+                    <el-select v-model="extendColInfo.colType" value-key="value" size="mini" style="width:160px" :disabled="disabled">
                       <el-option v-for="item in colTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-select>
                   </el-form-item>
                 </el-form>
               </el-col>
             </el-row>
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<el-button type="primary" style="width:200px" @click="addtempcol">确认添加</el-button>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<el-button type="primary" style="width:200px" @click="addtempcol">确认添加</el-button>
           </el-card>
         </el-row>
       </el-col>
@@ -149,6 +174,7 @@
               tooltip-effect="dark"
               style="width: 100%"
               height="800"
+              :header-cell-style="tableHeaderColor"
             >
               <el-table-column
                 prop="colChiName"
@@ -160,8 +186,8 @@
           </el-row>
           <br><br><br>
           <el-row>
-            &emsp;&emsp;<el-button type="primary" style="width: 100px" size="mini">保存模板</el-button>
-            &emsp;&emsp;<el-button type="primary" style="width: 80px" size="mini">取消</el-button>
+            &emsp;&emsp;&emsp;<el-button type="primary" style="width: 100px" size="mini" @click="save()">保存模板</el-button>
+            &emsp;&emsp;<el-button type="primary" style="width: 80px" size="mini" @click="dialogClose">取消</el-button>
           </el-row>
         </el-card>
       </el-col>
@@ -171,20 +197,36 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
+import { saveMarketTemp, getMarketTemp } from '@/api/market/market-temp.js'
 
 export default {
   name: 'MarketTempForm',
   components: {},
-  props: ['businessId', 'disabled'],
+  props: ['businessId', 'opType'],
   data() {
     return {
+      disabled: '',
       tempInfoRules: {
+        tempName: [
+          { required: true, message: '请输入模板名称', trigger: 'blur' },
+          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { validator: this.checkTempName, trigger: 'blur' }
+        ],
+        dataMarket: [
+          { required: true, message: '请选择数据行情', trigger: 'blur' }
+        ],
+        showArea: [
+          { message: '请选择展示区域', trigger: 'blur' }
+        ]
       },
-      extendColInfo: {},
+      marketTempFormVisible: false,
+      extendColInfo: {
+        baseColChiName: {}
+      },
       colData: [],
       colDataResult: [],
       multipleSelection: [],
-      baseColsOptions: [
+      relationColsOptions: [
         {
           code: 'ZQDM',
           value: '债券代码'
@@ -203,7 +245,7 @@ export default {
     showAreaOptions() {
       return optioins(this, 'SHOW_AREA')
     },
-    operTypeOptions() {
+    operatorTypeOptions() {
       // console.log(optioins(this, 'OPER_TYPE'))
       return optioins(this, 'OPER_TYPE')
     },
@@ -221,16 +263,45 @@ export default {
   },
   beforeMount() {
     if (this.businessId) {
-      console.log('1111')
+      getMarketTemp(this.businessId).then(reponse => {
+        const { marketTempInfo, colData } = reponse
+        this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
+        this.colData = colData
+        // this.extendColInfo = {}
+        this.setColDataResult()
+      })
+      if (this.opType === 'VIEW') {
+        this.disabled = true
+      } else {
+        this.disabled = false
+      }
+    } else {
+      this.disabled = false
     }
   },
   mounted() {
   },
   methods: {
+    dialogClose() {
+      this.$emit('closeDialog')
+    },
     save(formName) {
       this.$refs.MarketTempForm.validate((valid) => {
         if (valid) {
-          console.log('1111')
+          const data = {}
+          data.marketTempInfo = this.marketTempInfo
+          data.colData = this.colData
+          saveMarketTemp(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          console.log('error submit!!')
+          return false
         }
       })
     },
@@ -245,32 +316,65 @@ export default {
       console.log(this.multipleSelection)
     },
     addtempcol() {
-      console.log(this.extendColInfo.index)
+      // console.log(this.extendColInfo.index)
+      if (!this.extendColInfo.relationCol) {
+        this.$message({
+          message: '请选择通用字段',
+          type: 'error'
+        })
+        return false
+      }
+      if (!this.extendColInfo.colType) {
+        this.$message({
+          message: '请选择通用/扩展字段',
+          type: 'error'
+        })
+        return false
+      }
+      if (this.extendColInfo.colType === '02') {
+        if (!this.extendColInfo.operatorType || !this.extendColInfo.computeExp || !this.extendColInfo.colChiName) {
+          this.$message({
+            message: '扩展字段字段名、运算符、计算方式不能为空',
+            type: 'error'
+          })
+          return false
+        }
+      }
       if (this.extendColInfo.index != null) {
         var index = this.extendColInfo.index
         var that = this
-        that.colData[index].colChiName = this.extendColInfo.colChiName
         that.colData[index].colType = this.extendColInfo.colType
-        that.colData[index].baseCol = this.extendColInfo.baseCol
-        that.colData[index].operType = this.extendColInfo.operType
+        that.colData[index].relationCol = this.extendColInfo.relationCol
+        if (this.extendColInfo.colType === '01') {
+          that.colData[index].colChiName = this.extendColInfo.baseColChiName
+        } else {
+          that.colData[index].colChiName = this.extendColInfo.colChiName
+        }
+        that.colData[index].operatorType = this.extendColInfo.operatorType
         that.colData[index].computeExp = this.extendColInfo.computeExp
-        console.log(that.colData[index])
+        // console.log(that.colData[index])
         this.extendColInfo.index = null
       } else {
+        var colChiName = ''
+        if (this.extendColInfo.colType === '01') {
+          colChiName = this.extendColInfo.baseColChiName
+        } else {
+          colChiName = this.extendColInfo.colChiName
+        }
         this.colData.push({
-          colChiName: this.extendColInfo.colChiName,
-          showFlag: true,
+          colChiName: colChiName,
+          showOrhide: true,
           colType: this.extendColInfo.colType,
-          baseCol: this.extendColInfo.baseCol,
-          operType: this.extendColInfo.operType,
+          relationCol: this.extendColInfo.relationCol,
+          operatorType: this.extendColInfo.operatorType,
           computeExp: this.extendColInfo.computeExp
         })
         this.colDataResult.push({
-          colChiName: this.extendColInfo.colChiName,
-          showFlag: true,
+          colChiName: colChiName,
+          showOrhide: true,
           colType: this.extendColInfo.colType,
-          baseCol: this.extendColInfo.baseCol,
-          operType: this.extendColInfo.operType,
+          relationCol: this.extendColInfo.relationCol,
+          operatorType: this.extendColInfo.operatorType,
           computeExp: this.extendColInfo.computeExp
         })
       }
@@ -282,7 +386,7 @@ export default {
         const upData = that.colData[index - 1]
         that.colData.splice(index - 1, 1)
         that.colData.splice(index, 0, upData)
-        console.log(this.colData)
+        // console.log(this.colData)
         // console.log(that.colData)
         this.setColDataResult()
       } else {
@@ -307,16 +411,32 @@ export default {
     },
     alterCol(index, row) {
       var that = this
-      that.extendColInfo.colChiName = row.colChiName
-      that.extendColInfo.baseCol = row.baseCol
-      that.extendColInfo.operType = row.operType
-      that.extendColInfo.computeExp = row.computeExp
-      that.extendColInfo.colType = row.colType
-      that.extendColInfo.index = index
-      console.log(that.extendColInfo)
+      if (this.businessId) {
+        this.extendColInfo = {
+          colChiName: '',
+          relationCol: '',
+          operatorType: '',
+          computeExp: '',
+          colType: '',
+          index: ''
+        }
+        that.extendColInfo.colChiName = row.colChiName
+        that.extendColInfo.relationCol = row.relationCol
+        that.extendColInfo.operatorType = row.operatorType
+        that.extendColInfo.computeExp = row.computeExp
+        that.extendColInfo.colType = row.colType
+        that.extendColInfo.index = index
+      } else {
+        // that.extendColInfo = {}
+        that.extendColInfo.colChiName = row.colChiName
+        that.extendColInfo.relationCol = row.relationCol
+        that.extendColInfo.operatorType = row.operatorType
+        that.extendColInfo.computeExp = row.computeExp
+        that.extendColInfo.colType = row.colType
+        that.extendColInfo.index = index
+      }
     },
     deleteCol(index) {
-      console.log(index)
       var that = this
       that.colData.splice(index, 1)
       this.setColDataResult()
@@ -328,18 +448,18 @@ export default {
       }
       return true
     },
-    checkedShow: function(index, showFlag) {
-      // console.log(index, showFlag)
+    checkedShow: function(index, showOrhide) {
+      // console.log(index, showOrhide)
       var that = this
-      if (!showFlag) {
+      if (!showOrhide) {
         that.colDataResult.splice(index, 1)
-        that.colData[index].showFlag = false
+        that.colData[index].showOrhide = false
       } else {
         that.colDataResult.splice(index, 0, this.colData[index])
-        that.colData[index].showFlag = true
-        // console.log(showFlag)
+        that.colData[index].showOrhide = true
+        // console.log(showOrhide)
       }
-      // console.log(this.colData[index].showFlag)
+      // console.log(this.colData[index].showOrhide)
     },
     setColDataResult() {
       // 结果预览
@@ -347,12 +467,27 @@ export default {
       that.colDataResult = []
       var j = 0
       for (var i = 0; i < that.colData.length; i++) {
-        if (that.colData[i].showFlag) {
+        if (that.colData[i].showOrhide) {
           // console.log(that.colData[i])
           that.colDataResult[j] = that.colData[i]
           j++
         }
       }
+    },
+    checkTempName(rule, value, callback) {
+      if (this.businessId) {
+        callback()
+      } else {
+        callback()
+      }
+    },
+    selectColName(val) {
+      let obj = {}
+      obj = this.relationColsOptions.find((item) => {
+        return item.code === val
+      })
+      this.extendColInfo.baseColChiName = obj.value
+      console.log(this.extendColInfo.baseColChiName)
     }
   }
 }
