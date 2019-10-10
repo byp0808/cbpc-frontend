@@ -39,10 +39,10 @@ export default {
   computed: {
     screeningForm: {
       get() {
-        return this.$store.state.screeningDate.screeningForm
+        return this.$store.state.secondaryScr.screeningForm
       },
       set(screeningForm) {
-        this.$store.commit('screeningDate/setScreeningDate', screeningForm)
+        this.$store.commit('secondaryScr/setSecondaryScr', screeningForm)
       }
     }
   },
@@ -56,7 +56,7 @@ export default {
       this.$emit('dateCallBack')
     },
     reset() {
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      this.$store.commit('secondaryScr/setSecondaryScr', {})
     },
     getForm() {
       return this.screeningForm
