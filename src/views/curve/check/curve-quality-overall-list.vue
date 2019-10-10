@@ -59,7 +59,7 @@
       </el-table-column>
       <el-table-column prop="curveId" label="操作" width="100" show-overflow-tooltip>
         <template v-if="scope.row.curveBuildStatus=='01' || scope.row.curveBuildStatus=='02'|| scope.row.curveBuildStatus=='03'" slot-scope="scope">
-          <a :href="'index.shtml?cureId='+scope.row.curveId">退回至联系人</a>
+          <el-button type="text" size="big" @click="fallbackContact(scope.$index, overallList.dataList)">退回至联系人</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { qryCurveOverallQcRpt, qryCurveOverallNum } from '@/api/curve/curve-quality.js'
+import { qryCurveOverallQcRpt, qryCurveOverallNum, fallbackContact } from '@/api/curve/curve-quality.js'
 
 export default {
   name: 'CurveQualityOverallList', // 质检总览
@@ -178,6 +178,17 @@ export default {
       qryCurveOverallNum(this.overallList).then(response => {
         console.info('qryCurveOverallNum.qryCurveOverallNum...')
         this.overallNum = response
+      })
+    },
+    fallbackContact(index, rows) {
+      var data = {
+        curveId: rows[index].curveId,
+        orderId: this.orderId
+      }
+      fallbackContact(data).then(response => {
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
       })
     }
   }
