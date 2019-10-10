@@ -4,7 +4,7 @@
     <div class="filter-container">
       <label>编制关键期限： </label>
       <el-select v-model="prdKdMod" style="width: 140px" class="filter-item" :disabled="disabled">
-        <el-option v-for="item in prdKdMods" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in prdKdMods" :key="item.value" :label="item.label" :value="item.value"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter" :disabled="disabled">
         应用模板
@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column label="操作时间" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD hh:mm') }}</span>
+          <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD HH:mm') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
@@ -117,7 +117,7 @@
       </el-table-column>
       <el-table-column label="操作时间" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD hh:mm') }}</span>
+          <span>{{ scope.row.operateTs == null ? '' : $moment(scope.row.operateTs).format('YYYY-MM-DD HH:mm') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" width="270px" align="center">
@@ -182,7 +182,6 @@ import {
   queryCurvePrdNk,
   prdKdModsList,
   forwardFlagModsList,
-  getPrdKdListByModId,
   getCurvePrdNkListByModId
 } from '@/api/curve/curve-product-list.js'
 
@@ -243,12 +242,21 @@ export default {
         nvalue: null,
         kvalue: null,
         remark: ''
-      }
+      },
+      prdKdList: []
     }
   },
   computed: {
     prdKdMods() {
-      return prdKdModsList()
+      var options = []
+      var datalist = this.prdKdList
+      if (datalist && datalist.length > 0) {
+        for (var i = 0; i < datalist.length; i++) {
+          var data = datalist[i]
+          options.push({value: data.id, label: data.tempName})
+        }
+      }
+      return options
     },
     forwardFlagMods() {
       return forwardFlagModsList()
@@ -258,8 +266,25 @@ export default {
     console.info('beforeMount.加载数据')
     this.getCurvePrdKdList();
     this.getCurvePrdNkList();
+
+    this.init()
   },
   methods: {
+    async init() {
+      console.info('=====init=====')
+      // 获取
+      var data = {
+        "page": {
+          "pageNumber": 1,
+          "pageSize": 100000
+        }
+      }
+      await prdKdModsList(data).then(response => {
+        if (response && response.dataList) {
+          this.prdKdList = response.dataList
+        }
+      })
+    },
     optioins: optioins,
     getCurvePrdKdList() {
       console.info('methods.getCurvePrdKdList')
@@ -296,7 +321,33 @@ export default {
         })
         return false
       }
-      this.curvePrdKdList = getPrdKdListByModId(prdKdMod)
+      this.curvePrdKdList = this.getPrdKdListByModId(prdKdMod)
+    },
+    getPrdKdListByModId(id) {
+      var options = []
+      var datalist = this.prdKdList
+      if (datalist && datalist.length > 0) {
+        var standSlip = ''
+        for (var i = 0; i < datalist.length; i++) {
+          var data = datalist[i]
+          if (id === data.id) {
+            standSlip = data.standSlip
+            break
+          }
+        }
+        if (standSlip) {
+          standSlip = standSlip.replace(/[^\d\.;]/g,'')
+          var array = standSlip.split(';')
+          if (array && array.length > 0) {
+            for (var i = 0; i < array.length; i++) {
+              if (array[i] || array[i] === '0') {
+                options.push({standSlip: array[i], sampleIntervalUp: '0', sampleIntervalDown: '0', operateTs: null})
+              }
+            }
+          }
+        }
+      }
+      return options
     },
     // 应用远期NK值模板
     handleCurvePrdNkFilter() {
@@ -374,7 +425,7 @@ export default {
       var sampleIntervalDown = this.curvePrdKdForm.sampleIntervalDown
       var sampleIntervalUp = this.curvePrdKdForm.sampleIntervalUp
 
-      if (!standSlip) {
+      if (!standSlip && ('' + standSlip) !== '0') {
         this.$message({
           type: 'error',
           message: '请选择期限'
