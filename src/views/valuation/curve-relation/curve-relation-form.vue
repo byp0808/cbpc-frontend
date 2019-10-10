@@ -1,6 +1,68 @@
 <template>
   <div class="app-container">
-    <el-card ref="recAddRulesForm" class="box-card">
+    <div class="top" style="margin-bottom:30px">
+      <el-form ref="ruleInfo" :model="curveRelationInfo" :rules="rules">
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="目标曲线：" prop="curveId">
+              <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" @change="changeTarget">
+                <el-option
+                  v-for="item in curveList"
+                  :key="item.curveId"
+                  :label="item.productName"
+                  :value="item.curveId"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="相对曲线：" prop="relativeCurveId">
+              <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" @change="changeRelative">
+                <el-option
+                  v-for="item in curveList"
+                  :key="item.curveId"
+                  :label="item.productName"
+                  :value="item.curveId"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="primary" @click="addData">添加</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+    <el-table
+      :data="selectList"
+      style="width: 100%"
+      max-height="250"
+      :header-cell-style="{background:'#f6f6f6'}"
+      tooltip-effect="dark"
+      border
+      fit
+      highlight-current-row
+    >
+      <el-table-column label="序号" align="center" type="index" width="70" />
+      <el-table-column label="估值曲线" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.targetName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="相对曲线" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.relativeName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button type="danger" size="small" @click="deleteRow(scope.$index,selectList, selectId)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- <el-card ref="recAddRulesForm" class="box-card">
       <div slot="header" class="clearfix card-head">
         <h3 style="margin: 0">基本信息</h3>
       </div>
@@ -23,8 +85,8 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form ref="ruleInfo" :model="curveRelationInfo" :rules="rules" label-width="120px">
-              <el-form-item label="估值曲线：" prop="curveId">
-                <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择估值曲线" :disabled="disabled">
+              <el-form-item label="目标曲线：" prop="curveId">
+                <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" :disabled="disabled">
                   <el-option
                     v-for="item in curveList"
                     :key="item.curveId"
@@ -47,7 +109,7 @@
           </div>
         </el-col>
       </el-row>
-    </el-card>
+    </el-card> -->
   </div>
 </template>
 
@@ -57,15 +119,15 @@ export default {
   name: 'AddRulesForm',
   props: ['relationId', 'disabled', 'isCopy'],
   data() {
-    var validateEnd = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请选择相对曲线！'))
-      } else if (this.curveRelationInfo.relativeCurveId === value) {
-        callback(new Error('估值曲线和相对曲线不能相同！'))
-      } else {
-        callback()
-      }
-    }
+    // var validateEnd = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请选择相对曲线！'))
+    //   } else if (this.curveRelationInfo.relativeCurveId === value) {
+    //     callback(new Error('目标曲线和相对曲线不能相同！'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       curveList: [],
       curveRelationInfo: {
@@ -74,21 +136,27 @@ export default {
       },
       rules: {
         curveId: [{ required: true, message: '请选择估值曲线！', trigger: 'change' }],
-        relativeCurveId: [{ required: true, validator: validateEnd, trigger: 'change' }]
+        // relativeCurveId: [{ required: true, validator: validateEnd, trigger: 'change' }]
+        relativeCurveId: [{ required: true, message: '请选择相对曲线！', trigger: 'change' }]
       },
       copyRelation: { // 复制新增
         targetValue: '',
         relativeValue: ''
-      }
+      },
+      selectList: [],
+      selectobj: {},
+      selectId: []
     }
   },
   beforeMount() {
     getCurveList().then(response => {
       this.curveList = response
+      console.log('this.curveList', this.curveList)
     })
     if (this.relationId) {
       queryCurveRelation(this.relationId).then(response => {
         this.curveRelationInfo = response
+        console.log('this.curveRelationInfo', this.curveRelationInfo)
         if (this.isCopy) {
           this.curveRelationInfo.Id = ''
         }
@@ -98,22 +166,69 @@ export default {
     }
   },
   methods: {
+    changeTarget(e) {
+      // this.selectTarget = e
+      this.curveRelationInfo.curveId = e
+      this.curveList.map(v => {
+        if (v.curveId === e) {
+          this.selectobj.targetName = v.productName
+          v.disabled = true
+        }
+      })
+    },
+    changeRelative(e) {
+      // this.selectRelative = e
+      // if (e) {
+      this.curveRelationInfo.relativeCurveId = e
+      this.curveList.map(v => {
+        if (v.curveId === e) {
+          this.selectobj.relativeName = v.productName
+          v.disabled = true
+        }
+      })
+      // }
+    },
+    // relativeVisible(e) {
+    //   if (e) {
+    //     if (this.selectTarget) {
+    //       this.curveList.map(v => {
+    //         if (v.curveId === this.selectTarget) {
+    //           v.disabled = true
+    //           console.log('v', v)
+    //         }
+    //       })
+    //     }
+    //   }
+    // },
+    addData() {
+      this.$refs.ruleInfo.validate(val => {
+        if (val) {
+          this.selectList.push(this.selectobj)
+          this.selectId.push(this.curveRelationInfo)
+          // this.curveRelationInfo.curveId = ''
+          // this.curveRelationInfo.relativeCurveId = ''
+        }
+      })
+    },
+    deleteRow(index, row, id) {
+      this.curveList.map(v => {
+        if (v.productName === row[index].targetName || v.productName === row[index].relativeName) {
+          v.disabled = false
+        }
+      })
+      row.splice(index, 1)
+      id.splice(index, 1)
+      console.log('id', this.selectId)
+    },
     // 保存/编辑曲线关系
     save() {
-      this.$refs['ruleInfo'].validate((valid) => {
-        if (valid) {
-          saveCurveRelation(this.curveRelationInfo).then(response => {
-            this.$emit('saveCallBack')
-            this.$message({
-              message: '保存成功！',
-              type: 'success',
-              showClose: true
-            })
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+      saveCurveRelation(this.selectId).then(response => {
+        this.$emit('saveCallBack')
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
       })
     }
   }

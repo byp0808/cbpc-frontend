@@ -41,16 +41,19 @@
         prop="orderNo"
         label="批次编号"
         show-overflow-tooltip
+        width="100"
       />
       <el-table-column
         prop="orderName"
         label="批次名称"
         show-overflow-tooltip
+        width="200"
       />
       <el-table-column
         prop="marketId"
         label="市场"
         show-overflow-tooltip
+        width="160"
       >
         <template slot-scope="{row}">
           {{ $dft('MARKET', row.marketId) }}
@@ -60,6 +63,7 @@
         prop="timeZone"
         label="时区"
         show-overflow-tooltip
+        width="180"
       >
         <template slot-scope="{row}">
           {{ $dft('TIME_ZONE', row.timeZone) }}
@@ -69,16 +73,19 @@
         prop="compTime"
         label="计算时间点"
         show-overflow-tooltip
+        width="140"
       />
       <el-table-column
         prop="remindTime"
         label="发布提醒时间点"
         show-overflow-tooltip
+        width="140"
       />
       <el-table-column
         prop="basePrd"
         label="基础产品"
         show-overflow-tooltip
+        width="100"
       >
         <template slot-scope="{row}">
           {{ $dft('TASK_BASE_PRD', row.basePrd) }}
@@ -88,6 +95,7 @@
         prop="orderFlag"
         label="批次时间说明"
         show-overflow-tooltip
+        width="140"
       >
         <template slot-scope="{row}">
           {{ $dft('ORDER_FLAG', row.orderFlag) }}
@@ -97,6 +105,7 @@
         prop="orderMark"
         label="批次说明"
         show-overflow-tooltip
+        width="160"
       />
       <el-table-column
         prop="approveStatus"
@@ -112,11 +121,12 @@
         prop="address"
         label="操作"
         width="200"
+        fixed="right"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.approveStatus==='02'"
+            v-if="scope.row.approveStatus!=='01'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"

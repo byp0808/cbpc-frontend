@@ -32,7 +32,7 @@
         width="120"
       />
       <el-table-column
-        prop="bondsId"
+        prop="bondId"
         label="资产编码"
         show-overflow-tooltip
         width="100"
@@ -91,7 +91,7 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.approveStatus==='02'"
+            v-if="scope.row.approveStatus!=='01'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"

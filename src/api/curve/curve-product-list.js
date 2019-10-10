@@ -3,11 +3,6 @@ import {basic_api_curve} from '@/api/base-api.js'
 
 // 查询曲线产品列表,获取下拉
 export function getCurveList(data) {
-  if (!data) {
-    data = {search_approveStatus_EQ: '02'}
-  } else {
-    data.search_approveStatus_EQ = '02'
-  }
   return request({
     url: `${basic_api_curve}/curveProduct/curveList`,
     method: 'post',
@@ -68,7 +63,7 @@ export function getCurveProduct(id) {
 // 获取曲线产品列表，仅包含曲线产品，key为曲线产品编号
 export function getCurveProductOptions() {
   var options = []
-  getCurveList({search_approveStatus_EQ: '02'}).then(response => {
+  getCurveList({}).then(response => {
     var datalist = response
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {

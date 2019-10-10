@@ -126,7 +126,8 @@ export default {
     } else {
       this.recCurveInfo = {}
     }
-    queryCurveList().then(response => {
+    const id = this.$store.state.recCurve.recCurveInfo.id ? this.$store.state.recCurve.recCurveInfo.id : 'unknown'
+    queryCurveList(id).then(response => {
       const { dataList } = response
       this.curveList = dataList
     })

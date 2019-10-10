@@ -110,7 +110,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
               模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
@@ -151,7 +151,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+              <a ref="moduleDownload" style="display: none" href="/model/voluation.xlsx" download="估值点差上传汇总文件" />
               模板文件下载</div>
           </el-form-item>
         </el-form>
@@ -231,7 +231,10 @@ export default {
       nameModel: {},
       batchList: [
         {
-          batchId: '2222',
+          batchId: '11',
+          name: '批次1'
+        }, {
+          batchId: '22',
           name: '批次2'
         }
       ],
@@ -339,10 +342,10 @@ export default {
       this.volumeAdd.batchId = e
     },
     resetTaskDialog() {
-      // this.volumeAdd.batchId = ''
-      // this.volumeAdd.cause = '08'
+      this.volumeAdd.batchId = this.batchList[0].batchId
+      this.volumeAdd.cause = '08'
       this.excelFile = null
-      this.volumeAdd = { cause: '08' }
+      // this.volumeAdd = { cause: '08' }
       if (this.$refs.upload) this.$refs.upload.clearFiles()
     },
     saveBatchFirst(type) {

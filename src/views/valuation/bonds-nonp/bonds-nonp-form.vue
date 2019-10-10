@@ -15,14 +15,14 @@
                 <el-input v-model="bondsNonpInfo.bondsConceptType" disabled />
               </el-form-item>
               <el-form-item
-                prop="bondsId"
+                prop="bondId"
                 label="资产编码"
                 :rules="[
                   { required: true, message: '请输入资产编码', trigger: ['blur', 'change'] }
                 ]"
               >
                 <el-input
-                  v-model="bondsNonpInfo.bondsId"
+                  v-model="bondsNonpInfo.bondId"
                   :disabled="disabled"
                   placeholder="请输入资产编码"
                   clearable
@@ -130,10 +130,10 @@ export default {
       })
     },
     queryBondsAttr() {
-      const bondsId = this.bondsNonpInfo.bondsId
-      if (bondsId) {
-        queryBondsById(bondsId).then(response => {
-          this.bondsNonpInfo.bondsId = response.bondsId
+      const bondId = this.bondsNonpInfo.bondId
+      if (bondId) {
+        queryBondsById(bondId).then(response => {
+          this.bondsNonpInfo.bondId = response.bondId
           this.bondsNonpInfo.bondsConceptType = response.bondsConceptType
           this.bondsNonpInfo.bondsShortName = response.bondsShortName
           this.bondsNonpInfo.bondsIssuer = response.bondsIssuer

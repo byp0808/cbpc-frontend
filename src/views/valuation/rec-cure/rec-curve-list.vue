@@ -63,7 +63,7 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.approveStatus==='02'"
+            v-if="scope.row.approveStatus!=='01'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
