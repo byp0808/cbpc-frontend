@@ -190,7 +190,7 @@
       var comparison = (rule, value, callback) => {
         value = this.sampleIntervalDown
         if (value >= this.sampleIntervalUp) {
-          callback(new Error('样本区间下限必须小于于样本区间上限!'));
+          callback(new Error('样本区间下限必须小于样本区间上限!'));
         } else {
           callback();
         }

@@ -62,6 +62,7 @@
       >
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.approveStatus==='02'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -184,13 +185,18 @@ export default {
       this.recCurveFormVisible = true
     },
     toDelete(id) {
-      deleteRecMandatory(id).then(response => {
-        this.$message({
-          message: '删除成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认删除此数据?', '提示', {
+        type: 'warning'
+      }).then(() => {
+        deleteRecMandatory(id).then(response => {
+          this.$message({
+            message: '删除成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
         })
-        this.loadTable()
+      }).catch(() => {
       })
     },
     toAdd() {
