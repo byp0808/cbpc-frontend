@@ -3,7 +3,7 @@
     <el-table
       :data="allList"
       style="width: 100%"
-      max-height="300"
+      max-height="280"
       :header-cell-style="{background:'#f6f6f6'}"
       tooltip-effect="dark"
       border
@@ -171,7 +171,7 @@ export default {
         case '05': return '客户投诉'
         case '06': return '评级上升'
         case '07': return '巡检'
-        case '08': return '其他阿'
+        case '08': return '其他'
       }
     },
     handleSelectionChange(val) {

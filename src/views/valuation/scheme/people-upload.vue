@@ -4,7 +4,7 @@
       <el-table
         :data="allList"
         style="width: 100%"
-        max-height="300px"
+        max-height="300"
         tooltip-effect="dark"
         border
         :header-cell-style="{background:'#f6f6f6'}"
