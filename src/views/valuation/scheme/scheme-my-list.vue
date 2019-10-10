@@ -80,8 +80,8 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
-              模板文件下载</div>
+              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
+            </div>
           </el-form-item>
           <el-form-item label="选择调整原因" prop="cause">
             <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
@@ -205,7 +205,10 @@ export default {
       },
       batchList: [
         {
-          batchId: '2222',
+          batchId: '11',
+          name: '批次1'
+        }, {
+          batchId: '22',
           name: '批次2'
         }
       ],
@@ -332,10 +335,9 @@ export default {
 
     },
     resetTaskDialog() {
-      // this.volumeAdd.batchId = ''
-      // this.volumeAdd.attach = ''
-      // this.volumeAdd.cause = '08'
-      this.volumeAdd = { cause: '08' }
+      this.volumeAdd.batchId = this.batchList[0].batchId
+      this.volumeAdd.attach = null
+      this.volumeAdd.cause = '08'
       if (this.$refs.upload) this.$refs.upload.clearFiles()
     },
     saveBatchFirst(type) {

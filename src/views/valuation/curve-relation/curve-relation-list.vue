@@ -52,7 +52,7 @@
       />
     </div>
     <div>
-      <el-dialog title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible">
+      <el-dialog title="设置目标曲线和相对曲线关系" :visible.sync="addRulesVisible" width="800px">
         <AddRulesForm
           v-if="addRulesVisible"
           ref="recAddRulesForm"
