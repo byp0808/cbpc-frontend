@@ -1,8 +1,33 @@
 <template>
   <div class="app-container">
-    <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增批次</el-button>
-    </div>
+    <el-form ref="queryForm" status-icon :model="queryForm" label-width="80px">
+      <el-row :gutter="20">
+        <el-col :span="3">
+          <el-button type="primary" @click="toAdd">新增批次</el-button>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="状态">
+            <el-select v-model="queryForm.search_approveStatus_EQ" placeholder="请选择" style="width: 100%">
+              <el-option
+                v-for="(name, key) in $dict('APPROVE_STATUS')"
+                :key="key"
+                :label="name"
+                :value="key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="批次名称">
+            <el-input v-model="queryForm.search_orderName_LIKE" placeholder="输入批次名称模糊查询" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-button class="filter-item" type="primary" icon="el-icon-search" @click="loadTable">查询</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
+        </el-col>
+      </el-row>
+    </el-form>
     <el-table
       ref="refOrderInfoTable"
       :data="orderInfoList"
@@ -157,6 +182,10 @@ export default {
   },
   data() {
     return {
+      queryForm: {
+        search_approveStatus_EQ: '',
+        search_orderName_LIKE: ''
+      },
       orderInfoFormVisible: false,
       orderInfoId: '',
       orderInfoList: [],
@@ -183,11 +212,17 @@ export default {
   },
   methods: {
     loadTable() {
-      queryOrderInfoList({ page: this.page }).then(response => {
+      const d1 = this.queryForm.search_approveStatus_EQ ? { search_approveStatus_EQ: this.queryForm.search_approveStatus_EQ } : {}
+      let d2 = this.queryForm.search_orderName_LIKE ? { search_orderName_LIKE: this.queryForm.search_orderName_LIKE } : {}
+      d2 = Object.assign(d2, d1)
+      queryOrderInfoList(Object.assign(d2, { page: this.page })).then(response => {
         const { dataList, page } = response
         this.page = page
         this.orderInfoList = dataList
       })
+    },
+    reset() {
+      this.$refs['queryForm'].resetFields()
     },
     save() {
       this.$refs.OrderInfoForm.save()

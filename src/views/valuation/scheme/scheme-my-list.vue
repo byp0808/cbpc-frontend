@@ -68,6 +68,7 @@
           </el-form-item>
           <el-form-item v-if="isBatch" label="选择文件" prop="attach">
             <el-upload
+              ref="upload"
               class="upload-demo"
               action=""
               :limit="1"
@@ -108,6 +109,7 @@
           </el-form-item>
           <el-form-item label="选择文件">
             <el-upload
+              ref="upload1"
               class="upload-demo"
               action=""
               :limit="1"
@@ -134,7 +136,8 @@
       </div>
     </el-dialog>
     <el-dialog title="提示" :visible.sync="remaindDialog">
-      <div class="content">{{ message }}</div>
+      <div v-if="isBatch" class="content">{{ message }}{{ failMessage }}</div>
+      <div v-else class="content">{{ message }}</div>
       <el-row style="margin-top:10px">
         <el-col :span="8" :offset="17">
           <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
@@ -149,7 +152,7 @@
             <el-button type="primary" @click="saveFirst('02')">迁移不保留</el-button>
           </div>
         </el-col>
-        <el-col :span="8" :offset="17">
+        <el-col :span="10" :offset="15">
           <div v-if="code === 'YBL100001004' " class="dialog-footer">
             <el-button @click="cancle">取消</el-button>
             <el-button v-if="isBatch" type="primary" @click="saveBatchFirst('01')">忽略并导入</el-button>
@@ -184,6 +187,7 @@ export default {
       remaindDialog: false,
       message: '',
       code: '',
+      failMessage: '',
       myList: [],
       taskTitle: '',
       uploadList: [],
@@ -294,6 +298,7 @@ export default {
       this.loadTable()
     },
     backTask() {
+      console.log('000', this.selection)
       if (this.selection.length === 0) {
         return this.$message({
           message: '请选择任务',
@@ -327,9 +332,11 @@ export default {
 
     },
     resetTaskDialog() {
-      this.volumeAdd.batchId = ''
-      this.volumeAdd.attach = ''
-      this.volumeAdd.cause = '08'
+      // this.volumeAdd.batchId = ''
+      // this.volumeAdd.attach = ''
+      // this.volumeAdd.cause = '08'
+      this.volumeAdd = { cause: '08' }
+      if (this.$refs.upload) this.$refs.upload.clearFiles()
     },
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
@@ -377,10 +384,11 @@ export default {
             fd.append('cause', this.volumeAdd.cause)
             addBatchTask(fd).then(res => {
               if (res) {
-                if (res.code === 'YBL100001004') {
+                if (res.respCode === 'YBL100001004') {
                   this.remaindDialog = true
-                  this.code = res.code
-                  this.message = res.message
+                  this.code = res.respCode
+                  this.message = res.respMsg
+                  this.failMessage = res.failData
                 } else {
                   this.volumeAddDialog = false
                   this.$message({
@@ -399,6 +407,7 @@ export default {
               return
             }
             delete this.volumeAdd.attach
+            delete this.volumeAdd.busiCode
             this.volumeAdd.csin = this.bondId
             addOneTask(this.volumeAdd).then(res => {
               if (res.code) {
