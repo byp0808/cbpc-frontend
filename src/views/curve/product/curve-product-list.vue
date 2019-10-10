@@ -50,8 +50,8 @@
           {{ $dft("APPROVE_STATUS", row.approveStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="产品明细" width="100" show-overflow-tooltip />
-      <el-table-column fixed="right" label="操作" width="150">
+      <el-table-column prop="remark" label="产品明细" width="150" show-overflow-tooltip />
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -88,7 +88,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="addCurveProductFormVisible" :lock-scroll="lockScroll" width="40%" title="新增产品" :visible.sync="addCurveProductFormVisible">
+    <el-dialog v-if="addCurveProductFormVisible" :lock-scroll="lockScroll" :close-on-click-modal="false" width="40%" title="新增产品" :visible.sync="addCurveProductFormVisible">
       <CurveProductForm
         ref="refCurveProductForm"
       />
@@ -101,6 +101,7 @@
       v-if="addCurveProductDefFormVisible"
       width="90%"
       title="曲线产品"
+      :close-on-click-modal="false"
       :visible.sync="addCurveProductDefFormVisible"
     >
       <CurveProductDefForm
@@ -112,7 +113,7 @@
         @confirmCurveInfoCallBack="confirmCurveInfoCallBack"
       />
     </el-dialog>
-    <el-dialog v-if="addCurveSampleFormVisible" :lock-scroll="lockScroll" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
+    <el-dialog v-if="addCurveSampleFormVisible" :lock-scroll="lockScroll" :close-on-click-modal="false" width="92%" title="曲线样本券" :visible.sync="addCurveSampleFormVisible">
       <CurveSampleForm
         ref="refCurveSampleForm"
         :product-id="productId"
