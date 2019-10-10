@@ -60,7 +60,7 @@
             </div>
         </el-dialog>
 
-        <el-dialog title="修改编制关键期限" :visible.sync="dialogFormVisible">
+        <el-dialog title="修改编制关键期限" :visible.sync="dialogFormVisible" :close-on-click-modal="false" append-to-body>
             <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px">
                 <el-row>
                     <el-col :span="10">
@@ -113,11 +113,11 @@
 
         <el-table :data="curvePrdNkList" border highlight-current-row style="width: 820px;">
             <el-table-column label="N值" width="150px">
-                <template slot-scope="scope">
+                <template slot-scope="scope" prop="nvalue">
                     <span>{{ scope.row.nvalue }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="K值" width="150px" align="center">
+            <el-table-column label="K值" width="150px" align="center" prop="kvalue">
                 <template slot-scope="scope">
                     <span>{{ scope.row.kvalue }}</span>
                 </template>
@@ -140,7 +140,7 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="远期NK" v-if="curvePrdNkFormVisible" :visible.sync="curvePrdNkFormVisible">
+        <el-dialog title="远期NK" v-if="curvePrdNkFormVisible" :visible.sync="curvePrdNkFormVisible" :close-on-click-modal="false" append-to-body>
             <el-col :span="20" :offset="2">
                 <el-form ref="curvePrdNkForm" :model="curvePrdNkFormTmp" :rules="curvePrdNkRules" label-position="left" label-width="60px">
                     <el-row>
@@ -149,8 +149,8 @@
                                 <el-input type="number" v-model="curvePrdNkFormTmp.nvalue" :disabled="disabled" />
                             </el-form-item>
                         </el-col>
-                        <el-col :span="11" :offset="2" prop="kvalue" >
-                            <el-form-item label="K值">
+                        <el-col :span="11" :offset="2" >
+                            <el-form-item label="K值" prop="kvalue">
                                 <el-input type="number" v-model="curvePrdNkFormTmp.kvalue" :disabled="disabled" />
                             </el-form-item>
                         </el-col>
@@ -391,6 +391,7 @@
       // 打开新增关键期限dialog
       toAddCurvePrdKd() {
         this.curvePrdKdFormVisible = true
+        this.curvePrdNkList.sort(this.sortCurvePrdNkList)
       },
       // 添加关键期限
       addCurvePrdKd() {
@@ -471,6 +472,14 @@
           if (valid) {
             var nvalue = (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
             var kvalue = (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
+            // 验证N、K值，不可全部为0
+            if (0 == nvalue && 0 == kvalue) {
+              this.$message({
+                type: 'error',
+                message: 'NK值不可全部为0'
+              })
+              return false
+            }
             // 验证N、K值，必须有一个为0
             if (0 != nvalue && 0 != kvalue) {
               this.$message({
@@ -488,7 +497,6 @@
               return false
             }
             // NK值对,不可重复
-            debugger
             for(var i=0; i<this.curvePrdNkList.length; i++){
               if(nvalue == this.curvePrdNkList[i].nvalue &&
                 kvalue == this.curvePrdNkList[i].kvalue){
@@ -520,11 +528,32 @@
               )
             }
             this.curvePrdNkFormVisible = false
+            // 保存后对NK值列表进行排序
+
+            this.curvePrdNkList.sort(this.sortCurvePrdNkList)
           } else {
             console.log('error add!!')
             return false
           }
         })
+      },
+      // 对NK列表进行排序
+      sortCurvePrdNkList(currentRow, nextRow) {
+        if(currentRow["nvalue"] === nextRow["nvalue"]) {
+          if(currentRow["kvalue"] > nextRow["kvalue"]) {
+            return 1;
+          } else if(currentRow["kvalue"] < nextRow["kvalue"]) {
+            return -1;
+          } else {
+            return 0;
+          }
+        } else {
+          if(currentRow["nvalue"] > nextRow["nvalue"]) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
       }
     }
   }
