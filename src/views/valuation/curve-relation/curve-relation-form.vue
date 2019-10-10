@@ -149,7 +149,7 @@ export default {
     }
   },
   beforeMount() {
-    getCurveList().then(response => {
+    getCurveList({ searchable: { 'search_prdStatus_IN': ['1', '2'] }}).then(response => {
       this.curveList = response
       console.log('this.curveList', this.curveList)
     })
