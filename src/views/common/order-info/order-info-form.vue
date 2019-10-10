@@ -63,7 +63,7 @@
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="批次名称" prop="orderName">
-                <el-input v-model="orderInfoForm.orderName" :disabled="disabled" placeholder="请输入批次名称" />
+                <el-input v-model="orderInfoForm.orderName" type="text" :disabled="disabled" placeholder="请输入批次名称" maxlength="50" show-word-limit />
               </el-form-item>
               <el-form-item label="所属时区" prop="timeZone">
                 <el-select v-model="orderInfoForm.timeZone" :disabled="disabled" placeholder="请选择所属时区" style="width: 100%">
@@ -92,7 +92,7 @@
           <el-col :span="16">
             <div class="grid-content bg-purple">
               <el-form-item label="批次说明">
-                <el-input v-model="orderInfoForm.orderMark" type="textarea" :disabled="disabled" placeholder="请输入批次说明" />
+                <el-input v-model="orderInfoForm.orderMark" type="textarea" :disabled="disabled" placeholder="请输入批次说明" maxlength="50" show-word-limit />
               </el-form-item>
             </div>
           </el-col>
@@ -104,12 +104,21 @@
 
 <script>
 import { saveOrderInfo, queryOrderInfo } from '@/api/common/order-info.js'
+import { checkSpecificKey } from '@/utils/custom-validate.js'
 
 export default {
   name: 'OrderInfoForm',
   components: {},
   props: ['businessId', 'disabled'],
   data() {
+    const validOrderName = (rule, value, callback) => {
+      if (!checkSpecificKey(value)) {
+        // callback(new Error("Special symbols are not supported"));
+        callback(new Error('您输入的文本中出现了特殊字符，请检查！'))
+      } else {
+        callback()
+      }
+    }
     return {
       rules: {
         basePrd: [
@@ -125,7 +134,8 @@ export default {
           { required: true, message: '请选择批次提醒时间', trigger: 'change' }
         ],
         orderName: [
-          { required: true, message: '请输入批次名称', trigger: 'blur' }
+          { required: true, message: '请输入批次名称', trigger: 'blur' },
+          { validator: validOrderName, trigger: ['blur', 'change'] }
         ],
         timeZone: [
           { required: true, message: '请选择所属时区', trigger: 'change' }

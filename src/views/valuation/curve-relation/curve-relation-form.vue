@@ -23,8 +23,8 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form ref="ruleInfo" :model="curveRelationInfo" :rules="rules" label-width="120px">
-              <el-form-item label="目标曲线：" prop="curveId">
-                <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" :disabled="disabled">
+              <el-form-item label="估值曲线：" prop="curveId">
+                <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择估值曲线" :disabled="disabled">
                   <el-option
                     v-for="item in curveList"
                     :key="item.curveId"
@@ -61,7 +61,7 @@ export default {
       if (value === '') {
         callback(new Error('请选择相对曲线！'))
       } else if (this.curveRelationInfo.relativeCurveId === value) {
-        callback(new Error('目标曲线和相对曲线不能相同！'))
+        callback(new Error('估值曲线和相对曲线不能相同！'))
       } else {
         callback()
       }
@@ -73,7 +73,7 @@ export default {
         relativeCurveId: ''
       },
       rules: {
-        curveId: [{ required: true, message: '请选择目标曲线！', trigger: 'change' }],
+        curveId: [{ required: true, message: '请选择估值曲线！', trigger: 'change' }],
         relativeCurveId: [{ required: true, validator: validateEnd, trigger: 'change' }]
       },
       copyRelation: { // 复制新增
