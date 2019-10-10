@@ -39,7 +39,7 @@
         label="产品状态"
       >
         <template slot-scope="{row}">
-          {{$dft('BUSI_STATUS', row.busiStatus)}}
+          {{ $dft('BUSI_STATUS', row.busiStatus) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -47,7 +47,7 @@
         label="审批状态"
       >
         <template slot-scope="{row}">
-          {{$dft('APPROVE_STATUS', row.approveStatus)}}
+          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -55,7 +55,7 @@
       >
         <template slot-scope="{row}">
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
-          <el-button type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
+          <el-button type="text" size="small" :disabled="row.approveStatus === '01'?true:false" @click="toEdit(row.id)">编辑</el-button>
           <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
           <el-button v-if="row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
         </template>

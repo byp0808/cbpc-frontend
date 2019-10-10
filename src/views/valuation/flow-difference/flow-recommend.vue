@@ -361,9 +361,7 @@ export default {
       })
     },
     addAsset() {
-      if (!this.flowId) {
-        this.detailInfo = ''
-      }
+      this.flowId = ''
       this.assetDialog = true
     },
     addParams() {

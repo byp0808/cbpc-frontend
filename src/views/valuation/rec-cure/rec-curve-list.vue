@@ -10,10 +10,11 @@
       tooltip-effect="dark"
       style="width: 100%"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
+      <el-table-column align="center" label="选择" min-width="5%">
+        <template slot-scope="scope">
+          <el-radio v-model="radio" :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="id"
         label="估值曲线规则ID"
@@ -136,6 +137,8 @@ export default {
       curveList: [],
       bondFilterList: [],
       recCurveData: {},
+      radio: '',
+      isCopy: false, // 复制新增
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -192,6 +195,7 @@ export default {
       this.$refs.refRecCurveForm.save()
     },
     toDetail(id) {
+      this.isCopy = false
       this.recCureId = id
       this.recCurveFormVisible = true
     },
@@ -232,6 +236,19 @@ export default {
         switchStatus({ id: id, busiStatus: '02' }).then(response => {
           this.loadTable()
         })
+      }
+    },
+    toggleSelection() {
+      if (this.radio === '') {
+        this.$message({
+          type: 'warning',
+          message: '请选中要复制的曲线关系规则'
+        })
+      } else {
+        this.disabled = false
+        this.isCopy = true
+        this.recCureId = this.radio
+        this.recCurveFormVisible = true
       }
     },
     isShowChangeStatusBtn(status) {

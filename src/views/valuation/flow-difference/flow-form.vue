@@ -54,7 +54,6 @@ export default {
         this.assetsGroupInfo = response
       })
     } else {
-      this.businessId = ''
       this.assetsGroupInfo = {}
     }
   },
