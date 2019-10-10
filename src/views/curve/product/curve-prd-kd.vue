@@ -447,6 +447,8 @@ export default {
         })
         return false
       }
+      sampleIntervalDown = Number(sampleIntervalDown)
+      sampleIntervalUp = Number(sampleIntervalUp)
       if (sampleIntervalDown >= sampleIntervalUp) {
         this.$message({
           type: 'error',
