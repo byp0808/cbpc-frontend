@@ -29,6 +29,7 @@
                   :disabled="disabled"
                   placeholder="请选择批次计算时间"
                   style="width: 100%"
+                  :picker-options="{selectableRange: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'00:00:00'}-23:59:59` }"
                 />
               </el-form-item>
             </div>
@@ -56,6 +57,7 @@
                   :disabled="disabled"
                   placeholder="请选择批次提醒时间"
                   style="width: 100%"
+                  :picker-options="{selectableRange: `00:00:00-${orderInfoForm.compTime?orderInfoForm.compTime:'23:59:59'}`}"
                 />
               </el-form-item>
             </div>
