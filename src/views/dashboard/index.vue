@@ -159,7 +159,7 @@
               layout="total, sizes, prev, pager, next, jumper"
               :total="todoInfo.page.totalRecord"
               @size-change="handleSizeChange"
-              @current-change="handleCutags-viewrrentChange"
+              @current-change="handleCurrentChange"
             />
           </div>
         </el-card>

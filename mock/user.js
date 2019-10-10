@@ -104,7 +104,9 @@ export default [
             'FlowDifference',
             'CurveProductDef',
             'CurveSetHisIndex',
-            'QueryValuation'
+            'QueryValuation',
+            'OrderInfoList',
+            'QueryCountValuation'
           ]
         },
         'msg': null,
