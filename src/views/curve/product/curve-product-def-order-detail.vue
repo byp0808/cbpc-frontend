@@ -113,13 +113,13 @@
       <h4>自动编制规则:</h4>
     </div>
     <el-row>
-      <el-select v-model="autoRule" placeholder="请选择自动编制规则" :disabled="disabled">
+      <el-select v-model="curvePrdOrder.orderAutoBuildRule" placeholder="请选择自动编制规则" :disabled="disabled">
         <el-option v-for="item in autoRuleOptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button type="primary" @click="toSetRule">设置</el-button>
     </el-row>
 
-    <el-dialog :lock-scroll="lockScroll" :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
+    <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
           <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
@@ -203,7 +203,7 @@ export default {
       curvePubTypeSelected: [],
       publishStepSizeSelected: [],
       // 自动编制规则
-      autoRule: '1',
+      // autoRule: '1',
       // 自动编制规则弹窗
       addAutoRuleFormVisible: false,
       // 自动编制规则-选择曲线
@@ -331,6 +331,13 @@ export default {
     // 规则设置
     toSetRule() {
       console.info('========tosetrule==========')
+      if (!this.curvePrdOrder.orderAutoBuildRule) {
+        this.$message({
+          type: 'error',
+          message: '请选择自动编制规则'
+        })
+        return false
+      }
       this.addAutoRuleFormVisible = true
       // init auto kt
       this.preview('toSetRule')
