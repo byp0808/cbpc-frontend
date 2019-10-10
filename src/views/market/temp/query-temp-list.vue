@@ -1,71 +1,61 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">æ–°å¢è§„åˆ™</el-button>
+      <el-button type="primary" @click="toAdd">ĞÂÔö</el-button>
     </div>
     <el-table
-      ref="refNkTempTable"
-      :data="nkTempList"
+      ref="refMarketTempTable"
+      border
+      :data="marketTempList"
       tooltip-effect="dark"
       style="width: 1286px"
-      border
       @selection-change="handleSelectionChange"
     >
       <el-table-column
+        label="Ñ¡Ôñ"
         type="selection"
         width="55"
       />
       <el-table-column
         prop="tempName"
-        label="è¿œæœŸNKå€¼è§„åˆ™åç§°"
+        label="ĞĞÇéÕ¹Ê¾Ä£°åÃû³Æ"
         show-overflow-tooltip
-        width="330"
+        width="530"
       />
       <el-table-column
-        prop="nkValues"
-        label="è§„åˆ™è¯¦ç»†"
+        prop="remark"
+        label="±¸×¢"
         show-overflow-tooltip
-        width="600"
+        width="300"
       />
-      <el-table-column
-        prop="approveStatus"
-        label="å®¡æ ¸çŠ¶æ€"
-        width="100"
-        show-overflow-tooltip
-      >
-        <template slot-scope="{row}">
-          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
-        </template>
-      </el-table-column>
       <el-table-column
         prop="address"
-        label="æ“ä½œ"
-        width="200"
+        label="²Ù×÷"
+        width="400"
         show-overflow-tooltip
+        align="center"
       >
         <template slot-scope="scope">
           <el-button
-            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.id)"
+            @click.native.prevent="toDetail('EDIT', scope.row.id)"
           >
-            è®¾ç½®
+            ÉèÖÃ
           </el-button>
           <el-button
-            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
           >
-            åˆ é™¤
+            É¾³ı
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
             type="text"
             size="small"
+            @click.native.prevent="toDetail('VIEW', scope.row.id)"
           >
-            {{ statusText(scope.row.busiStatus) }}
+            ²é¿´
           </el-button>
         </template>
       </el-table-column>
@@ -79,35 +69,34 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="nkTempFormVisible" width="70%" title="è¿œæœŸæœŸé™æ¨¡æ¿è®¾ç½®" :visible.sync="nkTempFormVisible">
-      <nkTempForm
-        ref="NkTempForm"
-        :nk-temp-data="nkTempData"
-        :business-id="nkTempId"
+    <el-dialog v-if="marketTempFormVisible" width="80%" top="5vh" :visible.sync="marketTempFormVisible" :close="closeDialog">
+      <marketTempForm
+        ref="MarketTempForm"
+        :market-temp-data="marketTempData"
+        :business-id="marketTempId"
+        :op-type="opType"
         @saveCallBack="saveCallBack"
+        @closeDialog="closeDialog"
       />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="nkTempFormVisible = false">å– æ¶ˆ</el-button>
-        <el-button type="primary" @click="save('NkTempForm')">ä¿ å­˜</el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import NkTempForm from '@/views/curve/timetemp/curve-nktemp-form.vue'
-import { querynkTempList, deletenkTemp } from '@/api/curve/curve-nktemp-list.js'
+import MarketTempForm from '@/views/market/temp/query-temp-form.vue'
+import { queryTempList, deletemarketTemp } from '@/api/market/market-temp.js'
 export default {
-  name: 'NkTempList',
+  name: 'MarketTempList',
   components: {
-    NkTempForm
+    MarketTempForm
   },
   data() {
     return {
-      nkTempFormVisible: false,
-      nkTempId: '',
-      nkTempList: [],
-      nkTempData: {},
+      marketTempFormVisible: false,
+      marketTempId: '',
+      opType: '',
+      marketTempList: [],
+      marketTempData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -120,9 +109,9 @@ export default {
       return function(status) {
         switch (status) {
           case '02':
-            return 'å¯ç”¨ä¸­'
+            return 'ÆôÓÃÖĞ'
           case '03':
-            return 'åœç”¨ä¸­'
+            return 'Í£ÓÃÖĞ'
         }
       }
     }
@@ -132,11 +121,14 @@ export default {
   },
   methods: {
     loadTable() {
-      querynkTempList({ page: this.page }).then(response => {
+      queryTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.page = page
-        this.nkTempList = dataList
+        this.marketTempList = dataList
       })
+    },
+    closeDialog() {
+      this.marketTempFormVisible = false
     },
     checkStatus(approveStatus) {
       if (approveStatus === '01') {
@@ -148,45 +140,45 @@ export default {
       this.multipleSelection = val
     },
     save(formName) {
-      this.nkTempId = ''
-      this.$refs.NkTempForm.save(formName)
+      this.marketTempId = ''
+      this.$refs.MarketTempForm.save(formName)
     },
     cancel() {
-      this.$store.commit('nkTemp/setnkTempInfo', {})
-      this.nkTempFormVisible = false
+      this.$store.commit('marketTemp/setMarketTempInfo', {})
+      this.marketTempFormVisible = false
     },
-    toDetail(id) {
-      this.nkTempId = id
-      this.nkTempFormVisible = true
+    toDetail(opType, id) {
+      // console.log(id)
+      this.opType = opType
+      this.marketTempId = id
+      this.marketTempFormVisible = true
     },
     toDelete(id) {
       // console.log(id)
-      this.$confirm('æ˜¯å¦åˆ é™¤?', 'æç¤º', {
-        confirmButtonText: 'ç¡®å®š',
-        cancelButtonText: 'å–æ¶ˆ',
+      this.$confirm('ÊÇ·ñÉ¾³ı?', 'ÌáÊ¾', {
+        confirmButtonText: 'È·¶¨',
+        cancelButtonText: 'È¡Ïû',
         type: 'info'
       }).then(async() => {
-        await deletenkTemp(id)
+        await deletemarketTemp(id)
         this.loadTable()
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: 'å·²å–æ¶ˆåˆ é™¤'
+          message: 'ÒÑÈ¡ÏûÉ¾³ı'
         })
       })
     },
     toAdd() {
       // console.log('toAdd')
-      this.nkTempId = ''
-      this.$store.commit('nkTemp/setnkTempInfo', {})
-      this.nkTempFormVisible = true
+      this.marketTempId = ''
+      this.opType = 'EDIT'
+      this.$store.commit('marketTemp/setMarketTempInfo', {})
+      this.marketTempFormVisible = true
     },
     saveCallBack() {
-      this.nkTempFormVisible = false
+      this.marketTempFormVisible = false
       this.loadTable()
-    },
-    isShowChangeStatusBtn(status) {
-      return status === '02' || status === '03'
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
@@ -197,7 +189,6 @@ export default {
       this.loadTable()
     }
   }
-
 }
 </script>
 
