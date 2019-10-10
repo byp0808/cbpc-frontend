@@ -7,9 +7,9 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="状态">
-            <el-select v-model="queryForm.search_approveStatus_EQ" placeholder="请选择" style="width: 100%">
+            <el-select v-model="queryForm.search_approveStatus_EQ" style="width: 100%">
               <el-option
-                v-for="(name, key) in $dict('APPROVE_STATUS')"
+                v-for="(name, key) in Object.assign({'':'请选择'}, $dict('APPROVE_STATUS'))"
                 :key="key"
                 :label="name"
                 :value="key"
@@ -19,12 +19,11 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="批次名称">
-            <el-input v-model="queryForm.search_orderName_LIKE" placeholder="输入批次名称模糊查询" />
+            <el-input v-model="queryForm.search_orderName_LIKE" placeholder="输入批次名称模糊查询" clearable />
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-button class="filter-item" type="primary" icon="el-icon-search" @click="loadTable">查询</el-button>
-          <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
+          <el-button class="filter-item" type="primary" @click="loadTable">查询</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -42,16 +41,19 @@
         prop="orderNo"
         label="批次编号"
         show-overflow-tooltip
+        width="100"
       />
       <el-table-column
         prop="orderName"
         label="批次名称"
         show-overflow-tooltip
+        width="200"
       />
       <el-table-column
         prop="marketId"
         label="市场"
         show-overflow-tooltip
+        width="160"
       >
         <template slot-scope="{row}">
           {{ $dft('MARKET', row.marketId) }}
@@ -61,6 +63,7 @@
         prop="timeZone"
         label="时区"
         show-overflow-tooltip
+        width="180"
       >
         <template slot-scope="{row}">
           {{ $dft('TIME_ZONE', row.timeZone) }}
@@ -70,16 +73,19 @@
         prop="compTime"
         label="计算时间点"
         show-overflow-tooltip
+        width="140"
       />
       <el-table-column
         prop="remindTime"
         label="发布提醒时间点"
         show-overflow-tooltip
+        width="140"
       />
       <el-table-column
         prop="basePrd"
         label="基础产品"
         show-overflow-tooltip
+        width="100"
       >
         <template slot-scope="{row}">
           {{ $dft('TASK_BASE_PRD', row.basePrd) }}
@@ -89,6 +95,7 @@
         prop="orderFlag"
         label="批次时间说明"
         show-overflow-tooltip
+        width="140"
       >
         <template slot-scope="{row}">
           {{ $dft('ORDER_FLAG', row.orderFlag) }}
@@ -98,6 +105,7 @@
         prop="orderMark"
         label="批次说明"
         show-overflow-tooltip
+        width="160"
       />
       <el-table-column
         prop="approveStatus"
@@ -113,10 +121,12 @@
         prop="address"
         label="操作"
         width="200"
+        fixed="right"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.approveStatus==='02'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -221,9 +231,6 @@ export default {
         this.orderInfoList = dataList
       })
     },
-    reset() {
-      this.$refs['queryForm'].resetFields()
-    },
     save() {
       this.$refs.OrderInfoForm.save()
     },
@@ -236,13 +243,18 @@ export default {
       this.orderInfoFormVisible = true
     },
     toDelete(id) {
-      deleteOrderInfo(id).then(response => {
-        this.$message({
-          message: '删除成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认删除此数据?', '提示', {
+        type: 'warning'
+      }).then(() => {
+        deleteOrderInfo(id).then(response => {
+          this.$message({
+            message: '删除成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
         })
-        this.loadTable()
+      }).catch(() => {
       })
     },
     toAdd() {

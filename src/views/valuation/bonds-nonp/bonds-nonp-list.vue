@@ -32,7 +32,7 @@
         width="120"
       />
       <el-table-column
-        prop="bondsId"
+        prop="bondId"
         label="资产编码"
         show-overflow-tooltip
         width="100"
@@ -91,6 +91,7 @@
       >
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.approveStatus==='02'"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -231,13 +232,18 @@ export default {
         })
         return
       }
-      deleteBondsNonp(res).then(response => {
-        this.$message({
-          message: '批量移出，操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认删除此数据?', '提示', {
+        type: 'warning'
+      }).then(() => {
+        deleteBondsNonp(res).then(response => {
+          this.$message({
+            message: '批量移出，操作成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
         })
-        this.loadTable()
+      }).catch(() => {
       })
     },
     toAdd() {
