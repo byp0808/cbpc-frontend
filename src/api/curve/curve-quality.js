@@ -84,3 +84,12 @@ export function dwnlCurveQcRpt(data) {
   //   data: data
   // })
 }
+
+// 质检报告，退回至联系人
+export function fallbackContact(data) {
+  return request({
+    url: `${basic_api_curve}` + '/cql/quality/fallbackContact',
+    method: 'post',
+    data: data
+  })
+}
