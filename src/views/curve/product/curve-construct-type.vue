@@ -33,13 +33,6 @@ export default {
       forwardFlagDisable: false,
     }
   },
-  beforeMount() {
-    console.info('construct-type'+ JSON.stringify(this.productInfo))
-    this.disableCheck()
-  },
-  computed: {
-
-  },
   watch: {
     'productInfo.rateType'(newVal, oldVal) {
       this.disableCheck()
@@ -50,6 +43,10 @@ export default {
     'productInfo.spotFlag'(newVal, oldVal) {
       this.disableCheck()
     }
+  },
+  beforeMount() {
+    console.info('construct-type' + JSON.stringify(this.productInfo))
+    this.disableCheck()
   },
   methods: {
     //

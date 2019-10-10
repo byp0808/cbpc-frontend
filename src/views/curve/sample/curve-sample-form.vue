@@ -102,7 +102,7 @@ export default {
       getCurveSample(this.productId).then(reponse => {
         // 审批通过拒绝，不允许个性曲线产品
         if (reponse) {
-          if ('02' === reponse.approveStatus || '03' === reponse.approveStatus) {
+          if (reponse.approveStatus === '02' || reponse.approveStatus === '03') {
             this.curveSelectDisable = true
           }
         }
