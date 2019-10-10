@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">ĞÂÔö</el-button>
+      <el-button type="primary" @click="toAdd">æ–°å¢</el-button>
     </div>
     <el-table
       ref="refMarketTempTable"
@@ -12,25 +12,25 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column
-        label="Ñ¡Ôñ"
+        label="é€‰æ‹©"
         type="selection"
         width="55"
       />
       <el-table-column
         prop="tempName"
-        label="ĞĞÇéÕ¹Ê¾Ä£°åÃû³Æ"
+        label="è¡Œæƒ…å±•ç¤ºæ¨¡æ¿åç§°"
         show-overflow-tooltip
         width="530"
       />
       <el-table-column
         prop="remark"
-        label="±¸×¢"
+        label="å¤‡æ³¨"
         show-overflow-tooltip
         width="300"
       />
       <el-table-column
         prop="address"
-        label="²Ù×÷"
+        label="æ“ä½œ"
         width="400"
         show-overflow-tooltip
         align="center"
@@ -41,21 +41,21 @@
             size="small"
             @click.native.prevent="toDetail('EDIT', scope.row.id)"
           >
-            ÉèÖÃ
+            è®¾ç½®
           </el-button>
           <el-button
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
           >
-            É¾³ı
+            åˆ é™¤
           </el-button>
           <el-button
             type="text"
             size="small"
             @click.native.prevent="toDetail('VIEW', scope.row.id)"
           >
-            ²é¿´
+            æŸ¥çœ‹
           </el-button>
         </template>
       </el-table-column>
@@ -109,9 +109,9 @@ export default {
       return function(status) {
         switch (status) {
           case '02':
-            return 'ÆôÓÃÖĞ'
+            return 'å¯ç”¨ä¸­'
           case '03':
-            return 'Í£ÓÃÖĞ'
+            return 'åœç”¨ä¸­'
         }
       }
     }
@@ -155,9 +155,9 @@ export default {
     },
     toDelete(id) {
       // console.log(id)
-      this.$confirm('ÊÇ·ñÉ¾³ı?', 'ÌáÊ¾', {
-        confirmButtonText: 'È·¶¨',
-        cancelButtonText: 'È¡Ïû',
+      this.$confirm('æ˜¯å¦åˆ é™¤?', 'æç¤º', {
+        confirmButtonText: 'ç¡®å®š',
+        cancelButtonText: 'å–æ¶ˆ',
         type: 'info'
       }).then(async() => {
         await deletemarketTemp(id)
@@ -165,7 +165,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: 'ÒÑÈ¡ÏûÉ¾³ı'
+          message: 'å·²å–æ¶ˆåˆ é™¤'
         })
       })
     },

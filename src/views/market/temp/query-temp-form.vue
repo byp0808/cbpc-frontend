@@ -4,18 +4,18 @@
       <el-col :span="6">
         <el-card class="box-card margin-top calendar-job">
           <el-form ref="MarketTempForm" :model="marketTempInfo" :rules="tempInfoRules">
-            <el-form-item label="ĞĞÇéÕ¹Ê¾Ä£°åÃû³Æ" class="blackItem" prop="tempName">
+            <el-form-item label="è¡Œæƒ…å±•ç¤ºæ¨¡æ¿åç§°" class="blackItem" prop="tempName">
               <el-input v-model="marketTempInfo.tempName" :disabled="disabled" size="mini" />
             </el-form-item>
-            <el-form-item label="±¸×¢" class="blackItem">
+            <el-form-item label="å¤‡æ³¨" class="blackItem">
               <el-input v-model="marketTempInfo.remark" :disabled="disabled" type="textarea" />
             </el-form-item>
-            <el-form-item label="Êı¾İĞĞÇé" class="blackItem" prop="dataMarket">
+            <el-form-item label="æ•°æ®è¡Œæƒ…" class="blackItem" prop="dataMarket">
               <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px" :disabled="disabled">
                 <el-option v-for="item in dataMarketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <el-form-item label="Õ¹Ê¾ÇøÓò" class="blackItem" prop="showArea" :required="marketTempInfo.dataMarket==='02'?true:false">
+            <el-form-item label="å±•ç¤ºåŒºåŸŸ" class="blackItem" prop="showArea" :required="marketTempInfo.dataMarket==='02'?true:false">
               <el-select
                 v-model="marketTempInfo.showArea"
                 value-key="value"
@@ -27,10 +27,10 @@
               </el-select>
             </el-form-item>
             <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-            <el-form-item label="×îºó²Ù×÷ÈË" class="blackItem">
+            <el-form-item label="æœ€åæ“ä½œäºº" class="blackItem">
               <el-input v-model="marketTempInfo.lastUpdBy" disabled style="width:165px" size="mini" />
             </el-form-item>
-            <el-form-item label="×îºó²Ù×÷Ê±¼ä" class="blackItem">
+            <el-form-item label="æœ€åæ“ä½œæ—¶é—´" class="blackItem">
               <el-input v-model="marketTempInfo.lastUpdTs" disabled style="width:150px" size="mini" />
             </el-form-item>
           </el-form>
@@ -49,7 +49,7 @@
             >
               <el-table-column
                 prop="colChiName"
-                label="×Ö¶Î"
+                label="å­—æ®µ"
                 show-overflow-tooltip
                 width="150"
                 :formatter="formatColname"
@@ -67,7 +67,7 @@
                     size="small"
                     @click.native.prevent="alterCol(scope.$index, scope.row)"
                   >
-                    µ÷Õû
+                    è°ƒæ•´
                   </el-button>
                   <el-button
                     v-if="checkColType(scope.row.colType)"
@@ -76,13 +76,13 @@
                     size="small"
                     @click.native.prevent="deleteCol(scope.$index)"
                   >
-                    É¾³ı
+                    åˆ é™¤
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="showOrhide"
-                label="Õ¹Ê¾"
+                label="å±•ç¤º"
                 sortable
                 width="80"
               >
@@ -98,7 +98,7 @@
               <el-table-column
                 prop="orderBy"
                 show-overflow-tooltip
-                label="Ë³Ğòµ÷Õû"
+                label="é¡ºåºè°ƒæ•´"
                 width="120"
               >
                 <template slot-scope="scope">
@@ -124,7 +124,7 @@
             <el-row>
               <el-col :offset="3">
                 <el-form ref="extendColForm" :model="extendColInfo" :rules="tempInfoRules">
-                  <el-form-item label="×Ö¶ÎÃû³Æ" class="blackItem">&emsp;&emsp;&emsp;
+                  <el-form-item label="å­—æ®µåç§°" class="blackItem">&emsp;&emsp;&emsp;
                     <el-input v-model="extendColInfo.colChiName" :disabled="disabled" size="mini" style="width:180px" />
                   </el-form-item>
                   <el-form-item>
@@ -150,7 +150,7 @@
                   <el-form-item>
                     <el-input v-model="extendColInfo.computeExp" type="textarea" :disabled="disabled" rows="3" style="width:350px" />
                   </el-form-item>
-                  <el-form-item label="Ìí¼ÓÖÁ" class="blackItem">&emsp;&emsp;
+                  <el-form-item label="æ·»åŠ è‡³" class="blackItem">&emsp;&emsp;
                     <el-select v-model="extendColInfo.colType" value-key="value" size="mini" style="width:160px" :disabled="disabled">
                       <el-option v-for="item in colTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-select>
@@ -158,14 +158,14 @@
                 </el-form>
               </el-col>
             </el-row>
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<el-button type="primary" style="width:200px" @click="addtempcol">È·ÈÏÌí¼Ó</el-button>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<el-button type="primary" style="width:200px" @click="addtempcol">ç¡®è®¤æ·»åŠ </el-button>
           </el-card>
         </el-row>
       </el-col>
       <el-col :span="7">
         <el-card class="box-card margin-top calendar-job">
           <el-row>
-            <el-button type="primary" style="width: 300px" size="mini">Ğ§¹ûÔ¤ÀÀ</el-button>
+            <el-button type="primary" style="width: 300px" size="mini">æ•ˆæœé¢„è§ˆ</el-button>
           </el-row>
           <el-row>
             <el-table
@@ -178,7 +178,7 @@
             >
               <el-table-column
                 prop="colChiName"
-                label="×Ö¶Î"
+                label="å­—æ®µ"
                 show-overflow-tooltip
                 width="300"
               />
@@ -186,8 +186,8 @@
           </el-row>
           <br><br><br>
           <el-row>
-            &emsp;&emsp;&emsp;<el-button type="primary" style="width: 100px" size="mini" @click="save()">±£´æÄ£°å</el-button>
-            &emsp;&emsp;<el-button type="primary" style="width: 80px" size="mini" @click="dialogClose">È¡Ïû</el-button>
+            &emsp;&emsp;&emsp;<el-button type="primary" style="width: 100px" size="mini" @click="save()">ä¿å­˜æ¨¡æ¿</el-button>
+            &emsp;&emsp;<el-button type="primary" style="width: 80px" size="mini" @click="dialogClose">å–æ¶ˆ</el-button>
           </el-row>
         </el-card>
       </el-col>
@@ -208,15 +208,15 @@ export default {
       disabled: '',
       tempInfoRules: {
         tempName: [
-          { required: true, message: 'ÇëÊäÈëÄ£°åÃû³Æ', trigger: 'blur' },
-          { min: 1, max: 128, message: '³¤¶ÈÔÚ 1 µ½ 128 ¸ö×Ö·û', trigger: 'blur' },
+          { required: true, message: 'è¯·è¾“å…¥æ¨¡æ¿åç§°', trigger: 'blur' },
+          { min: 1, max: 128, message: 'é•¿åº¦åœ¨ 1 åˆ° 128 ä¸ªå­—ç¬¦', trigger: 'blur' },
           { validator: this.checkTempName, trigger: 'blur' }
         ],
         dataMarket: [
-          { required: true, message: 'ÇëÑ¡ÔñÊı¾İĞĞÇé', trigger: 'blur' }
+          { required: true, message: 'è¯·é€‰æ‹©æ•°æ®è¡Œæƒ…', trigger: 'blur' }
         ],
         showArea: [
-          { message: 'ÇëÑ¡ÔñÕ¹Ê¾ÇøÓò', trigger: 'blur' }
+          { message: 'è¯·é€‰æ‹©å±•ç¤ºåŒºåŸŸ', trigger: 'blur' }
         ]
       },
       marketTempFormVisible: false,
@@ -229,11 +229,11 @@ export default {
       relationColsOptions: [
         {
           code: 'ZQDM',
-          value: 'Õ®È¯´úÂë'
+          value: 'å€ºåˆ¸ä»£ç '
         },
         {
           code: 'ZQJC',
-          value: 'Õ®È¯¼ò³Æ'
+          value: 'å€ºåˆ¸ç®€ç§°'
         }
       ]
     }
@@ -294,7 +294,7 @@ export default {
           saveMarketTemp(data).then(response => {
             this.$emit('saveCallBack')
             this.$message({
-              message: '±£´æ³É¹¦£¡',
+              message: 'ä¿å­˜æˆåŠŸï¼',
               type: 'success',
               showClose: true
             })
@@ -305,7 +305,7 @@ export default {
         }
       })
     },
-    // ¸ü¸Ä±íÍ·ÑùÊ½
+    // æ›´æ”¹è¡¨å¤´æ ·å¼
     tableHeaderColor({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 0) {
         return 'color: black;font-weight: 700;'
@@ -319,14 +319,14 @@ export default {
       // console.log(this.extendColInfo.index)
       if (!this.extendColInfo.relationCol) {
         this.$message({
-          message: 'ÇëÑ¡ÔñÍ¨ÓÃ×Ö¶Î',
+          message: 'è¯·é€‰æ‹©é€šç”¨å­—æ®µ',
           type: 'error'
         })
         return false
       }
       if (!this.extendColInfo.colType) {
         this.$message({
-          message: 'ÇëÑ¡ÔñÍ¨ÓÃ/À©Õ¹×Ö¶Î',
+          message: 'è¯·é€‰æ‹©é€šç”¨/æ‰©å±•å­—æ®µ',
           type: 'error'
         })
         return false
@@ -334,7 +334,7 @@ export default {
       if (this.extendColInfo.colType === '02') {
         if (!this.extendColInfo.operatorType || !this.extendColInfo.computeExp || !this.extendColInfo.colChiName) {
           this.$message({
-            message: 'À©Õ¹×Ö¶Î×Ö¶ÎÃû¡¢ÔËËã·û¡¢¼ÆËã·½Ê½²»ÄÜÎª¿Õ',
+            message: 'æ‰©å±•å­—æ®µå­—æ®µåã€è¿ç®—ç¬¦ã€è®¡ç®—æ–¹å¼ä¸èƒ½ä¸ºç©º',
             type: 'error'
           })
           return false
@@ -390,14 +390,14 @@ export default {
         // console.log(that.colData)
         this.setColDataResult()
       } else {
-        alert('ÒÑ¾­ÊÇµÚÒ»Ìõ£¬²»¿ÉÉÏÒÆ')
+        alert('å·²ç»æ˜¯ç¬¬ä¸€æ¡ï¼Œä¸å¯ä¸Šç§»')
       }
     },
     moveDown(index, row) {
       var that = this
-      // console.log('ÏÂÒÆ', index, row)
+      // console.log('ä¸‹ç§»', index, row)
       if ((index + 1) === that.colData.length) {
-        alert('ÒÑ¾­ÊÇ×îºóÒ»Ìõ£¬²»¿ÉÏÂÒÆ')
+        alert('å·²ç»æ˜¯æœ€åä¸€æ¡ï¼Œä¸å¯ä¸‹ç§»')
       } else {
         // console.log(index)
         const downData = that.colData[index + 1]
@@ -462,7 +462,7 @@ export default {
       // console.log(this.colData[index].showOrhide)
     },
     setColDataResult() {
-      // ½á¹ûÔ¤ÀÀ
+      // ç»“æœé¢„è§ˆ
       var that = this
       that.colDataResult = []
       var j = 0
