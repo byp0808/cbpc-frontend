@@ -105,7 +105,8 @@ export default [
             'CurveProductDef',
             'CurveSetHisIndex',
             'QueryValuation',
-            'OrderInfoList'
+            'OrderInfoList',
+            'QueryCountValuation'
           ]
         },
         'msg': null,
