@@ -19,9 +19,10 @@ const marketRouter = {
       name: 'PrimaryMarketList',
       meta: { title: '一级发行', noCache: true, roles: ['OrderInfoList'] }
     }, {
-      path: 'order-info-form',
-      component: () => import('@/views/common/order-info/order-info-form.vue'),
-      name: 'OrderInfoForm'
+      path: 'secondary-market-list',
+      component: () => import('@/views/market/secondary/secondary-market-list.vue'),
+      name: 'SecondaryMarketList',
+      meta: { title: '二级市场', noCache: true, roles: ['OrderInfoList'] }
     },
     {
       path: 'para-info',

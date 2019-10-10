@@ -1,49 +1,30 @@
 <template>
-  <!--  日期类-->
+  <!--  可选类-->
   <div class="" style="width: 300px">
     <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
       <el-row :gutter="66" align="left">
         <div class="grid-content bg-purple">
           <el-form-item label="" align="left">
             <el-row :gutter="22">
-              <el-col :span="6">
+              <el-col :span="2">
                 <el-radio v-model="radio" label="1">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="18">
-                <el-date-picker
-                  v-model="screeningForm.singleDate"
-                  type="datetime"
-                  placeholder="选择日期"
-                  :disabled="disable_1"
-                />
+              <el-col :span="20">
+                <el-input v-model="screeningForm.screeningCheckString" placeholder="请输入内容" :disabled="disable_1" />
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item>
             <el-row :gutter="22">
-              <el-col :span="6">
+              <el-col :span="5">
                 <el-radio v-model="radio" label="2">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="18">
-                <el-date-picker
-                  v-model="screeningForm.dateRange"
-                  type="datetimerange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  :disabled="disable_2"
-                />
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="" prop="screeningSort">
-            <el-row :gutter="22">
-              <el-col :span="6" align="right">排序</el-col>
               <el-col :span="12">
-                <el-select v-model="screeningForm.screeningSort" placeholder="请选择" style="width: 200px">
-                  <el-option label="升序" value="1" />
-                  <el-option label="降序" value="2" />
-                </el-select>
+                <el-checkbox-group v-model="checked" :disabled="disable_2">
+                  <el-checkbox label="复选框 A" />
+                  <el-checkbox label="复选框 B" />
+                  <el-checkbox label="复选框 C" />
+                </el-checkbox-group>
               </el-col>
             </el-row>
           </el-form-item>
@@ -58,7 +39,7 @@
 // import { saveOrderInfo, queryOrderInfo } from '@/api/market/market.js'
 
 export default {
-  name: 'ScreeningForm',
+  name: 'ScreeningCheckboxForm',
   components: {},
   // props: ['businessId', 'disabled'],
   data() {
@@ -67,24 +48,23 @@ export default {
       rangeDisabled: false,
       radio: '1',
       disable_1: false,
-      disable_2: true
+      disable_2: true,
+      checked: []
     }
   },
   computed: {
     screeningForm: {
       get() {
-        return this.$store.state.screeningDate.screeningForm
+        return this.$store.state.secondaryScr.screeningForm
       },
       set(screeningForm) {
-        this.$store.commit('screeningDate/setScreeningDate', screeningForm)
+        this.$store.commit('secondaryScr/setSecondaryScr', screeningForm)
       }
     }
   },
   watch: {
-    radio: 'radioChange'
-  },
-  beforeMount() {
-    // this.screeningForm.screeningSort = '1'
+    radio: 'radioChange',
+    checked: 'checkedChange'
   },
   methods: {
     screening() {
@@ -99,8 +79,11 @@ export default {
       }
       this.reset()
     },
+    checkedChange() {
+      this.screeningForm.screeningChecked = this.checked
+    },
     reset() {
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      this.$store.commit('secondaryScr/setSecondaryScr', {})
     },
     getForm() {
       return this.screeningForm
@@ -110,11 +93,8 @@ export default {
 </script>
 
 <style scoped>
-  /*.el-form-item {*/
-  /*  margin-left: 0px;*/
-  /*}*/
-  .el-form-item[data-v-d31eec1e] {
-    margin-left: -50px;
+  .el-form-item {
+    margin-left: 0px;
   }
 </style>
 

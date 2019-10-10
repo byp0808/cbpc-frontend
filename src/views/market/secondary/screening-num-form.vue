@@ -53,7 +53,6 @@
 </template>
 
 <script>
-// import { saveOrderInfo, queryOrderInfo } from '@/api/market/market.js'
 
 export default {
   name: 'ScreeningNumForm',
@@ -71,20 +70,20 @@ export default {
   computed: {
     screeningForm: {
       get() {
-        return this.$store.state.screeningDate.screeningForm
+        return this.$store.state.secondaryScr.screeningForm
       },
       set(screeningForm) {
-        this.$store.commit('screeningDate/setScreeningDate', screeningForm)
+        this.$store.commit('secondaryScr/setSecondaryScr', screeningForm)
       }
     }
   },
   watch: {
     radio: 'radioChange'
   },
-  // beforeMount() {
-  //   this.screeningForm.absoluteValue = false
-  //   // this.screeningForm.screeningSort = '1'
-  // },
+  beforeMount() {
+    // this.screeningForm.absoluteValue = false
+    // this.screeningForm.screeningSort = '1'
+  },
   methods: {
     screening() {
       const data = this.screeningForm
@@ -99,7 +98,7 @@ export default {
       this.reset()
     },
     reset() {
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      this.$store.commit('secondaryScr/setSecondaryScr', {})
     },
     getForm() {
       return this.screeningForm
