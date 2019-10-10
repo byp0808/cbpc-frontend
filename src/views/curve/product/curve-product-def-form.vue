@@ -568,7 +568,7 @@ export default {
             var nextItem = curvePrdKdList[i + 1]
             if (item.sampleIntervalUp > nextItem.sampleIntervalDown) {
               this.$message({
-                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于' + (i + 2) + '条区间下限',
+                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于第' + (i + 2) + '条区间下限',
                 type: 'error',
                 showClose: true
               })
