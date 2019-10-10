@@ -2,12 +2,12 @@
   <div class="app-container">
     <el-card class="box-card">
       <el-steps :active="stepActive" align-center finish-status="success" process-status="finish">
-        <el-step title="基本信息" />
-        <el-step title="选择范围" />
-        <el-step title="选择指标" />
-        <el-step title="估值场景" />
-        <el-step title="批次发布指标" />
-        <el-step title="确认产品" />
+        <el-step title="基本信息" @click.native="go(0)"/>
+        <el-step title="选择范围" @click.native="go(1)"/>
+        <el-step title="选择指标" @click.native="go(2)"/>
+        <el-step title="估值场景" @click.native="go(3)"/>
+        <el-step title="批次发布指标" @click.native="go(4)"/>
+        <el-step title="确认产品" @click.native="go(5)" />
       </el-steps>
     </el-card>
     <el-card v-show="stepActive === 0" class="box-card margin-top">
@@ -249,6 +249,7 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).compPermStatus"
+                        @change="compPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -261,6 +262,7 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).relaPermStatus"
+                        @change="relaPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -330,12 +332,11 @@ export default {
     return {
       boolTrue: true,
       prodId: '',
-      stepActive: 4,
+      stepActive: 0,
       valuationWay: [],
       batchesChoiceTemp: [],
       batchesChoiceIndices: [],
       prodIndices: [],
-      // batchProdIndices: {},
       confirm: {},
       basicProdList: [{
         id: 'prod-1',
@@ -454,7 +455,7 @@ export default {
     },
     fmtBatchName() {
       return function(batchId) {
-        const index = this.$lodash.findIndex(this.batches, { batchId: batchId })
+        const index = this.$lodash.findIndex(this.batches, { id: batchId })
         return this.batches[index].orderName
       }
     }
@@ -470,6 +471,31 @@ export default {
     this.$store.commit('valuationProd/setProdId', '')
   },
   methods: {
+    go(index) {
+      if (index === this.stepActive) {
+        return false
+      }
+      const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds } = this.detail
+      if (index === 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if (index === 1 && valuationProd) {
+        this.stepActive = index
+      }
+      if (index === 2 && valuationProdIndices && valuationProdIndices.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if (index === 3 && valuationProdMethods && valuationProdMethods.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if ((index === 4 || index === 5) && bachIds && bachIds.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+    },
     back() {
       if (this.stepActive-- < 0) this.stepActive = 5
     },
@@ -546,7 +572,7 @@ export default {
     loadDetail() {
       const that = this
       const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds, valuationProdBatchIndices } = this.detail
-      if (this.stepActive === 0) {
+      if (this.stepActive === 0 || this.stepActive === 1) {
         if (valuationProd.currency) {
           valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
         }
@@ -626,7 +652,6 @@ export default {
         })
       })
       this.$store.commit('valuationProd/setBatchProdIndices', prodIndices)
-
     },
     refreshBatch() {
       this.$store.dispatch('valuationProd/loadBatches')
@@ -634,6 +659,20 @@ export default {
         const { dataList } = response
         this.prodIndices = dataList
       })
+    },
+    compPermStatusChange(batchId, row) {
+      const compPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus
+      // const relaPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus
+      if (compPermStatus === '0') {
+        this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus = '0'
+      }
+    },
+    relaPermStatusChange(batchId, row) {
+      // const compPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus
+      const relaPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus
+      if (relaPermStatus === '1') {
+        this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus = '1'
+      }
     },
     save(data, msg) {
       const reqData = { step: this.stepActive + 1, prodId: this.prodId }

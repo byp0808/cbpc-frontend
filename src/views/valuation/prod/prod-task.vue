@@ -6,7 +6,7 @@
     <div class="button-box-fixed">
       <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
       <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
-      <el-button>取 消</el-button>
+      <el-button @click="$router.push({ path: '/' })">取 消</el-button>
     </div>
   </div>
 </template>

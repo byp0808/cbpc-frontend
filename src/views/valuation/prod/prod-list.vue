@@ -56,6 +56,7 @@
         <template slot-scope="{row}">
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
           <el-button type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
+          <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
           <el-button v-if="row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
         </template>
       </el-table-column>
@@ -73,7 +74,7 @@
 </template>
 
 <script>
-import { prodList } from '@/api/valuation/prod.js'
+import { prodList, delProd } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdList',
   data() {
@@ -100,6 +101,22 @@ export default {
     toDetail(prodId) {
       this.$store.commit('valuationProd/setProdId', prodId)
       this.$router.push({ name: 'ValuationProdDetail' })
+    },
+    toDelete(prodId) {
+      this.$confirm('是否要删除估值产品', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delProd(prodId).then(response => {
+          this.$message({
+            showClose: true,
+            message: '删除成功',
+            type: 'success'
+          })
+          this.queryList()
+        })
+      })
     },
     queryList() {
       prodList({ page: this.page }).then(response => {

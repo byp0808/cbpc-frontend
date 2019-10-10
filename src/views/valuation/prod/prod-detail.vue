@@ -148,7 +148,7 @@
     </el-card>
     <el-card class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
-        <h3>估值方法</h3>
+        <h3>估值场景</h3>
       </div>
       <el-row :gutter="20" class="margin-top">
         <el-col :span="12" :offset="6">
@@ -165,12 +165,12 @@
                 :selectable="checkSelectable"
               />
               <el-table-column
-                prop="id"
-                label="估值方法"
+                prop="name"
+                label="估值场景"
                 width="200"
               />
               <el-table-column
-                prop="name"
+                prop=""
                 label="描述"
                 width=""
               />
@@ -348,8 +348,8 @@ export default {
     },
     fmtBatchName() {
       return function(batchId) {
-        const index = this.$lodash.findIndex(this.batches, { batchId: batchId })
-        return this.batches[index].batchName
+        const index = this.$lodash.findIndex(this.batches, { id: batchId })
+        return this.batches[index].orderName
       }
     }
   },
@@ -359,7 +359,15 @@ export default {
       this.prodId = this.$store.state.valuationProd.prodId || this.businessNo
     }
     this.$store.dispatch('valuationProd/loadProdIndices')
-    this.$store.dispatch('valuationProd/loadValuationWay')
+    this.$store.dispatch('valuationProd/loadProdIndices')
+    const ways = []
+    this.$lodash(this.$dict('VAL_SCENE')).forEach(function(value, key) {
+      ways.push({
+        id: key,
+        name: value
+      })
+    })
+    this.$store.commit('valuationProd/setValuationWay', { dataList: ways })
     this.$store.dispatch('valuationProd/loadBatches')
     indicesProd(this.prodId).then(response => {
       const { dataList } = response
