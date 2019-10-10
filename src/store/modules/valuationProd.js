@@ -4,6 +4,7 @@ export default {
   state: {
     prodId: '',
     prodInfo: {
+      prodStatus: ''
     },
     bondFilter: {},
     prodIndices: {
@@ -35,7 +36,7 @@ export default {
       state.valuationWay.results = []
       state.batchIndices.batches = []
       state.batchIndices.batchesChoice = []
-      state.batchIndices.batchProdIndices = []
+      state.batchIndices.batchProdIndices = {}
       state.confirm = {}
     },
     setProdId(state, prodId) {
@@ -58,8 +59,8 @@ export default {
       if (batches) state.batchIndices.batches = batches
       if (batchesChoice) state.batchIndices.batchesChoice = batchesChoice
     },
-    setBatchProdIndices(state, { batchId, prodIndices }) {
-      state.batchIndices.batchProdIndices[batchId] = prodIndices
+    setBatchProdIndices(state, prodIndices) {
+      state.batchIndices.batchProdIndices = prodIndices
     }
   },
   actions: {
@@ -83,9 +84,9 @@ export default {
       })
     },
     loadBatches({ commit }) {
-      queryBatches().then(response => {
-        const { datalist } = response
-        commit('setBatchIndices', { batches: datalist })
+      queryBatches({ basePrd: '01' }).then(response => {
+        // const { datalist } = response
+        commit('setBatchIndices', { batches: response })
       })
     }
   }
