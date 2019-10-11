@@ -1,14 +1,14 @@
 <template>
   <div class="big-container">
     <div>
-      <el-form ref="assetsGroupInfo" label-width="150px">
+      <el-form ref="refAssetsGroupForm" :rules="rules" :model="assetsGroupInfo" label-width="150px">
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="规则ID">
                 <el-input v-model="assetsGroupInfo.id" disabled />
               </el-form-item>
-              <el-form-item label="资产规则">
+              <el-form-item label="资产规则" prop="ruleState">
                 <el-input v-model="assetsGroupInfo.ruleState" :disabled="disabled" />
               </el-form-item>
             </div>
@@ -45,7 +45,10 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     return {
-      assetsGroupInfo: {}
+      assetsGroupInfo: {},
+      rules: {
+        ruleState: [{ required: true, message: '请输入资产规则', trigger: 'blur' }]
+      }
     }
   },
   beforeMount() {
@@ -68,13 +71,20 @@ export default {
         assetsGroup: info,
         bondFilterInfo: bondFilterInfo
       }
-      saveData(data).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs['refAssetsGroupForm'].validate((valid) => {
+        if (valid) {
+          saveData(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     }
   }

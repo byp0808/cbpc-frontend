@@ -72,8 +72,8 @@ export default {
         lastUpdTs: '' // 最后更新时间
       }, // 规则对象
       rules: {
-        taskRangeId: [{ required: true, message: '请选择任务范围', trigger: 'blur' }],
-        userId: [{ required: true, message: '请选择分配人员', trigger: 'blur' }],
+        taskRangeId: [{ required: true, message: '请选择任务范围', trigger: 'change' }],
+        userId: [{ required: true, message: '请选择分配人员', trigger: 'change' }],
         distRatio: [{ required: true, message: '请输入分配比例', trigger: 'blur' }]
       }
     }
