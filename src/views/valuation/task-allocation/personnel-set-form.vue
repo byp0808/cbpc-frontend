@@ -18,7 +18,7 @@
         required
       >
         <el-col :span="10">
-          <el-form-item prop="userId">
+          <el-form-item>
             <el-select v-model="personnel.userId" filterable placeholder="请选择人员" :disabled="disabled">
               <el-option
                 v-for="item in personnelList"
@@ -30,7 +30,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="10">
-          <el-form-item prop="distRatio">
+          <el-form-item>
             <el-input v-model="personnel.distRatio" placeholder="请输入分配比例" :disabled="disabled" />
           </el-form-item>
         </el-col>
@@ -72,9 +72,9 @@ export default {
         lastUpdTs: '' // 最后更新时间
       }, // 规则对象
       rules: {
-        taskRangeId: [{ required: true, message: '请选择任务范围', trigger: 'change' }],
-        userId: [{ required: true, message: '请选择分配人员', trigger: 'change' }],
-        distRatio: [{ required: true, message: '请输入分配比例', trigger: 'blur' }]
+        taskRangeId: [{ required: true, message: '请选择任务范围', trigger: 'change' }]
+        // userId: [{ required: true, message: '请选择分配人员', trigger: 'change' }],
+        // distRatio: [{ required: true, message: '请输入分配比例', trigger: 'blur' }]
       }
     }
   },

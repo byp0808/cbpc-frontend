@@ -23,7 +23,7 @@
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
-            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="disableEdit">设置</el-button>
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.taskRangeId)">设置</el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
             <el-button type="text" size="small" @click="stop(scope.row.taskRangeId)">{{ statusText(scope.row.busiStatus) }}</el-button>
           </template>

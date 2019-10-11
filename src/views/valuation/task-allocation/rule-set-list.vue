@@ -24,9 +24,9 @@
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
-            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="disableEdit">设置
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.id)">设置
             </el-button>
-            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="disableEdit">删除
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="deleteInfo(scope.row.id)">删除
             </el-button>
             <el-button type="text" size="small" @click="stop(scope.row.id)">{{ statusText(scope.row.busiStatus) }}
             </el-button>
@@ -122,13 +122,6 @@ export default {
     saveCallBack() {
       this.ruleSetFormVisible = false
       this.load()
-    },
-    disableEdit() {
-      this.$message({
-        message: '不能操作待审核状态的数据！',
-        type: 'warning',
-        showClose: true
-      })
     },
     stop(id) {
       editBusiStatus({ id: id, busiStatus: '03' }).then(response => {
