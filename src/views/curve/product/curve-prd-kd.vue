@@ -4,12 +4,12 @@
     <div class="filter-container">
       <label>编制关键期限： </label>
       <el-select v-model="prdKdMod" style="width: 140px" class="filter-item" :disabled="disabled">
-        <el-option v-for="item in prdKdMods" :key="item.value" :label="item.label" :value="item.value"/>
+        <el-option v-for="item in prdKdMods" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdKdFilter" :disabled="disabled">
+      <el-button v-waves class="filter-item" type="primary" :disabled="disabled" @click="handleCurvePrdKdFilter">
         应用模板
       </el-button>
-      <el-button v-waves class="filter-item" type="primary" @click="toAddCurvePrdKd" :disabled="disabled">
+      <el-button v-waves class="filter-item" type="primary" :disabled="disabled" @click="toAddCurvePrdKd">
         添加标准期限
       </el-button>
     </div>
@@ -32,9 +32,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="text" size="big" @click="handleEdit(scope.$index, curvePrdKdList)" :disabled="disabled">修改
+          <el-button type="text" size="big" :disabled="disabled" @click="handleEdit(scope.$index, curvePrdKdList)">修改
           </el-button>
-          <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdKdList)" :disabled="disabled">
+          <el-button type="text" size="big" :disabled="disabled" @click="handleDelete(scope.$index, curvePrdKdList)">
             删除
           </el-button>
         </template>
@@ -48,10 +48,10 @@
             <el-form-item label="标准期限" prop="standSlip">
               <el-select v-model="curvePrdKdForm.standSlip" :disabled="curvePrdKdFormStandSlipEdit" filterable placeholder="请选择标准期限">
                 <el-option
-                        v-for="(name, key) in $dict('KD_TYPE')"
-                        :key="name"
-                        :label="name"
-                        :value="name"
+                  v-for="(name) in $dict('KD_TYPE')"
+                  :key="name"
+                  :label="name"
+                  :value="name"
                 />
               </el-select>
             </el-form-item>
@@ -69,12 +69,12 @@
         <el-row>
           <el-col :span="10">
             <el-form-item label="样本区间下限" prop="sampleIntervalDown">
-              <el-input v-model="curvePrdKdForm.sampleIntervalDown"/>
+              <el-input v-model="curvePrdKdForm.sampleIntervalDown" />
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="2">
             <el-form-item type="number" label="样本区间上限" prop="sampleIntervalUp">
-              <el-input type="number" v-model="curvePrdKdForm.sampleIntervalUp"/>
+              <el-input v-model="curvePrdKdForm.sampleIntervalUp" type="number" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -94,12 +94,12 @@
     <div class="filter-container" style="padding-top: 40px">
       <label>远期N/K值： </label>
       <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item" :disabled="disabled">
-        <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" @click="handleCurvePrdNkFilter" :disabled="disabled">
+      <el-button v-waves class="filter-item" type="primary" :disabled="disabled" @click="handleCurvePrdNkFilter">
         应用模板
       </el-button>
-      <el-button v-waves class="filter-item" type="primary" @click="toAddCurvePrdNk" :disabled="disabled">
+      <el-button v-waves class="filter-item" type="primary" :disabled="disabled" @click="toAddCurvePrdNk">
         添加远期N/K
       </el-button>
     </div>
@@ -122,38 +122,48 @@
       </el-table-column>
       <el-table-column label="备注" width="270px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.remark}}</span>
+          <span>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="100px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="text" size="big" @click="handleEditNK(scope.$index, curvePrdNkList)" :disabled="disabled">
+          <el-button type="text" size="big" :disabled="disabled" @click="handleEditNK(scope.$index, curvePrdNkList)">
             修改
           </el-button>
-          <el-button type="text" size="big" @click="handleDelete(scope.$index, curvePrdNkList)">删除</el-button>
+          <el-button type="text" size="big" :disabled="disabled" @click="handleDelete(scope.$index, curvePrdNkList)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog title="远期NK" v-if="curvePrdNkFormVisible" :visible.sync="curvePrdNkFormVisible"
-               :close-on-click-modal="false" append-to-body>
+    <el-dialog
+      v-if="curvePrdNkFormVisible"
+      title="远期NK"
+      :visible.sync="curvePrdNkFormVisible"
+      :close-on-click-modal="false"
+      append-to-body
+    >
       <el-col :span="20" :offset="2">
-        <el-form ref="curvePrdNkForm" :model="curvePrdNkFormTmp" :rules="curvePrdNkRules" label-position="left"
-                 label-width="60px">
+        <el-form
+          ref="curvePrdNkForm"
+          :model="curvePrdNkFormTmp"
+          :rules="curvePrdNkRules"
+          label-position="left"
+          label-width="60px"
+        >
           <el-row>
             <el-col :span="11">
               <el-form-item label="N值" prop="nvalue">
-                <el-input type="number" v-model="curvePrdNkFormTmp.nvalue" :disabled="disabled"/>
+                <el-input v-model="curvePrdNkFormTmp.nvalue" type="number" :disabled="disabled" />
               </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
               <el-form-item label="K值" prop="kvalue">
-                <el-input type="number" v-model="curvePrdNkFormTmp.kvalue" :disabled="disabled"/>
+                <el-input v-model="curvePrdNkFormTmp.kvalue" type="number" :disabled="disabled" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-form-item label="备注" prop="remark">
-            <el-input type="textarea" v-model="curvePrdNkFormTmp.remark"></el-input>
+            <el-input v-model="curvePrdNkFormTmp.remark" type="textarea" />
           </el-form-item>
         </el-form>
       </el-col>
@@ -172,13 +182,10 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import {optioins} from '@/api/curve/code-type.js'
-import {parseTime} from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { optioins } from '@/api/curve/code-type.js'
 
 import {
   queryCurvePrdKd,
-  delCurveProduct,
   queryCurvePrdNk,
   prdKdModsList,
   forwardFlagModsList,
@@ -187,18 +194,18 @@ import {
 
 export default {
   name: 'CurvePrdKd',
-  components: {Pagination},
-  directives: {waves},
+  directives: { waves },
   props: ['productId', 'disabled'],
   data() {
+    // eslint-disable-next-line no-unused-vars
     var comparison = (rule, value, callback) => {
       value = this.sampleIntervalDown
       if (value >= this.sampleIntervalUp) {
-        callback(new Error('样本区间下限必须小于样本区间上限!'));
+        callback(new Error('样本区间下限必须小于样本区间上限!'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       unit: 'y',
       tableKey: 0,
@@ -226,16 +233,16 @@ export default {
       // 新增远期NK
       curvePrdNkFormVisible: false,
       curvePrdNkForm: {},
-      curvePrdNkForm_index: null, //索引，用于编辑时获取行
+      curvePrdNkForm_index: null, // 索引，用于编辑时获取行
       curvePrdNkRules: {
         nvalue: [
-          {required: true, message: 'N值不可为空', trigger: 'change'}
+          { required: true, message: 'N值不可为空', trigger: 'change' }
         ],
         kvalue: [
-          {required: true, message: 'K值不可为空', trigger: 'change'}
+          { required: true, message: 'K值不可为空', trigger: 'change' }
         ],
         remark: [
-          {min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur'}
+          { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
         ]
       },
       curvePrdNkFormTmp: {
@@ -253,7 +260,7 @@ export default {
       if (datalist && datalist.length > 0) {
         for (var i = 0; i < datalist.length; i++) {
           var data = datalist[i]
-          options.push({value: data.id, label: data.tempName})
+          options.push({ value: data.id, label: data.tempName })
         }
       }
       return options
@@ -264,8 +271,8 @@ export default {
   },
   beforeMount() {
     console.info('beforeMount.加载数据')
-    this.getCurvePrdKdList();
-    this.getCurvePrdNkList();
+    this.getCurvePrdKdList()
+    this.getCurvePrdNkList()
 
     this.init()
   },
@@ -274,9 +281,9 @@ export default {
       console.info('=====init=====')
       // 获取
       var data = {
-        "page": {
-          "pageNumber": 1,
-          "pageSize": 100000
+        'page': {
+          'pageNumber': 1,
+          'pageSize': 100000
         }
       }
       await prdKdModsList(data).then(response => {
@@ -288,8 +295,8 @@ export default {
     optioins: optioins,
     getCurvePrdKdList() {
       console.info('methods.getCurvePrdKdList')
-      var curveId = this.productId;
-      queryCurvePrdKd({curveId: curveId}).then(response => {
+      var curveId = this.productId
+      queryCurvePrdKd({ curveId: curveId }).then(response => {
         console.info('====queryCurvePrdKd:')
         if (response && response.dataList) {
           this.curvePrdKdList = response.dataList
@@ -301,8 +308,8 @@ export default {
     },
     getCurvePrdNkList() {
       console.info('methods.getCurvePrdNkList')
-      var curveId = this.productId;
-      queryCurvePrdNk({curveId: curveId}).then(response => {
+      var curveId = this.productId
+      queryCurvePrdNk({ curveId: curveId }).then(response => {
         if (response && response.dataList) {
           this.curvePrdNkList = response.dataList
         }
@@ -336,12 +343,12 @@ export default {
           }
         }
         if (standSlip) {
-          standSlip = standSlip.replace(/[^\d\.;]/g,'')
+          standSlip = standSlip.replace(/[^\d\.;]/g, '')
           var array = standSlip.split(';')
           if (array && array.length > 0) {
-            for (var i = 0; i < array.length; i++) {
-              if (array[i] || array[i] === '0') {
-                options.push({standSlip: array[i], sampleIntervalUp: '0', sampleIntervalDown: '0', operateTs: null})
+            for (var j = 0; j < array.length; j++) {
+              if (array[j] || array[j] === '0') {
+                options.push({ standSlip: array[j], sampleIntervalUp: '0', sampleIntervalDown: '0', operateTs: null })
               }
             }
           }
@@ -363,7 +370,7 @@ export default {
     },
     handleEdit(index, rows) {
       // copy obj
-      this.temp = rows[index];
+      this.temp = rows[index]
       // 将上下限转换成为数字
       this.temp.sampleIntervalUp = Number(this.temp.sampleIntervalUp)
       this.temp.sampleIntervalDown = Number(this.temp.sampleIntervalDown)
@@ -371,7 +378,7 @@ export default {
       this.curvePrdKdForm = {
         standSlip: Number(this.temp.standSlip),
         sampleIntervalDown: Number(this.temp.sampleIntervalDown),
-        sampleIntervalUp: Number(this.temp.sampleIntervalUp),
+        sampleIntervalUp: Number(this.temp.sampleIntervalUp)
       }
       // 强制单位为y
       this.unit = 'y'
@@ -382,7 +389,7 @@ export default {
       })
     },
     handleDelete(index, rows) {
-      rows.splice(index, 1);
+      rows.splice(index, 1)
     },
     // NK编辑
     handleEditNK(index, rows) {
@@ -403,13 +410,13 @@ export default {
       for (var i = 0; i < this.curvePrdKdList.length; i++) {
         this.curvePrdKdList[i].curveId = this.productId
       }
-      return this.curvePrdKdList;
+      return this.curvePrdKdList
     },
     obtainCurvePrdNkList() {
       for (var i = 0; i < this.curvePrdNkList.length; i++) {
         this.curvePrdNkList[i].curveId = this.productId
       }
-      return this.curvePrdNkList;
+      return this.curvePrdNkList
     },
     // 打开新增关键期限dialog
     toAddCurvePrdKd() {
@@ -433,14 +440,14 @@ export default {
         return false
       }
       // 判断样本曲线，上下限是否输入
-      if (sampleIntervalDown != 0 && !sampleIntervalDown) {
+      if (sampleIntervalDown !== 0 && !sampleIntervalDown) {
         this.$message({
           type: 'error',
           message: '区间下限不能为空'
         })
         return false
       }
-      if (sampleIntervalUp != 0 && !sampleIntervalUp) {
+      if (sampleIntervalUp !== 0 && !sampleIntervalUp) {
         this.$message({
           type: 'error',
           message: '区间下限上能为空'
@@ -460,19 +467,19 @@ export default {
       // 判断列表中是否已经存在期限
       for (let i = 0; i < this.curvePrdKdList.length; i++) {
         var item = this.curvePrdKdList[i]
-        if (standSlip == item.standSlip) {
+        if (Number(standSlip) === Number(item.standSlip)) {
           if (!this.curvePrdKdFormStandSlipEdit) {
             this.$message({
-                type: 'error',
-                message: '该期限已经存在'
+              type: 'error',
+              message: '该期限已经存在'
             })
             return false
           } else { // 非新增，则更新已有记录
             // 按单位转换数值
-            if ('m' == this.unit) {
+            if (this.unit === 'm') {
               sampleIntervalDown = sampleIntervalDown / 12
               sampleIntervalUp = sampleIntervalUp / 12
-            } else if ('d' == this.unit) {
+            } else if (this.unit === 'd') {
               sampleIntervalDown = sampleIntervalDown / 365
               sampleIntervalUp = sampleIntervalUp / 365
             } else {
@@ -487,20 +494,20 @@ export default {
 
             this.$refs['curvePrdKdForm'].validate((valid) => {
               if (valid) {
-                this.temp.operateTs = new Date();
+                this.temp.operateTs = new Date()
                 this.temp.sampleIntervalUp = sampleIntervalUp
                 this.temp.sampleIntervalDown = sampleIntervalDown
-                this.dialogFormVisible = false;
+                this.dialogFormVisible = false
               }
-            });
+            })
           }
           this.curvePrdKdFormVisible = false
-          return true;
+          return true
         }
       }
 
       // 添加数据
-      if (!this.curvePrdKdList || this.curvePrdKdList.length == 0) {
+      if (!this.curvePrdKdList || this.curvePrdKdList.ßlength === 0) {
         this.curvePrdKdList = []
         this.curvePrdKdList.push({
           standSlip: standSlip,
@@ -511,6 +518,7 @@ export default {
       } else {
         var isdown = false
         for (let i = 0; i < this.curvePrdKdList.length; i++) {
+          // eslint-disable-next-line no-redeclare
           var item = this.curvePrdKdList[i]
           if (standSlip < item.standSlip) {
             this.curvePrdKdList.splice(i, 0, {
@@ -553,10 +561,10 @@ export default {
       // 验证表单
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          var nvalue = (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
-          var kvalue = (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
+          var nvalue = (Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
+          var kvalue = (Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
           // 验证N、K值，不可全部为0
-          if (0 == nvalue && 0 == kvalue) {
+          if (nvalue == 0 && kvalue == 0) {
             this.$message({
               type: 'error',
               message: 'NK值不可全部为0'
@@ -564,7 +572,7 @@ export default {
             return false
           }
           // 验证N、K值，必须有一个为0
-          if (0 != nvalue && 0 != kvalue) {
+          if (nvalue != 0 && kvalue != 0) {
             this.$message({
               type: 'error',
               message: 'NK值必须有一个为0'
@@ -593,21 +601,21 @@ export default {
           var index = this.curvePrdNkForm_index
           if (index || index === 0) {
             // n,k值保留一位小数
-            var nvalue = new Number(this.curvePrdNkFormTmp.nvalue)
-            var kvalue = new Number(this.curvePrdNkFormTmp.kvalue)
-            this.curvePrdNkForm.nvalue = nvalue.toFixed(1)
-            this.curvePrdNkForm.kvalue = kvalue.toFixed(1)
+            var _nvalue = Number(this.curvePrdNkFormTmp.nvalue)
+            var _kvalue = Number(this.curvePrdNkFormTmp.kvalue)
+            this.curvePrdNkForm.nvalue = _nvalue.toFixed(1)
+            this.curvePrdNkForm.kvalue = _kvalue.toFixed(1)
             this.curvePrdNkForm.remark = this.curvePrdNkFormTmp.remark
             this.curvePrdNkForm.operateTs = new Date()
           } else {
             // 添加
             this.curvePrdNkList.push(
-                {
-                  nvalue: (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1),
-                  kvalue: (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1),
-                  remark: this.curvePrdNkFormTmp.remark,
-                  operateTs: new Date()
-                }
+              {
+                nvalue: (Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1),
+                kvalue: (Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1),
+                remark: this.curvePrdNkFormTmp.remark,
+                operateTs: new Date()
+              }
             )
           }
           this.curvePrdNkFormVisible = false
@@ -622,19 +630,19 @@ export default {
     },
     // 对NK列表进行排序
     sortCurvePrdNkList(currentRow, nextRow) {
-      if (currentRow["nvalue"] === nextRow["nvalue"]) {
-        if (currentRow["kvalue"] > nextRow["kvalue"]) {
-          return 1;
-        } else if (currentRow["kvalue"] < nextRow["kvalue"]) {
-          return -1;
+      if (currentRow['nvalue'] === nextRow['nvalue']) {
+        if (currentRow['kvalue'] > nextRow['kvalue']) {
+          return 1
+        } else if (currentRow['kvalue'] < nextRow['kvalue']) {
+          return -1
         } else {
-          return 0;
+          return 0
         }
       } else {
-        if (currentRow["nvalue"] > nextRow["nvalue"]) {
-          return 1;
+        if (currentRow['nvalue'] > nextRow['nvalue']) {
+          return 1
         } else {
-          return -1;
+          return -1
         }
       }
     }

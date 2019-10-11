@@ -26,11 +26,11 @@
 <script>
 export default {
   name: 'CurveConstructType',
-  props: ['productInfo','disabled'],
+  props: ['productInfo', 'disabled'],
   data() {
     return {
       spotDisable: false,
-      forwardFlagDisable: false,
+      forwardFlagDisable: false
     }
   },
   watch: {

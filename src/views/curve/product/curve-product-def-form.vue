@@ -63,7 +63,7 @@
           <el-col :span="8">
             <el-form-item label="曲线评级">
               <!-- <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
-              <el-select v-model="productInfo.productGrade" placeholder="请选择曲线评级">
+              <el-select v-model="productInfo.productGrade" placeholder="请选择曲线评级" :disabled="disabled">
                 <el-option
                   v-for="(name, key) in $dict('MARKET_GRADE')"
                   :key="key"
@@ -95,7 +95,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线基准利率" v-if="productInfo.rateType != '01'" prop="referRate">
+            <el-form-item v-if="productInfo.rateType != '01'" label="曲线基准利率" prop="referRate">
               <el-select v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in referRateOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
@@ -104,23 +104,23 @@
           <el-col :span="8">
             <el-form-item label="上市日" prop="curveStartTime" :disabled="disabled">
               <el-date-picker
-                      v-model="productInfo.curveStartTime"
-                      align="right"
-                      type="date"
-                      placeholder="选择上市日"
-                      :disabled="disabled"
+                v-model="productInfo.curveStartTime"
+                align="right"
+                type="date"
+                placeholder="选择上市日"
+                :disabled="disabled"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="停产日" prop="curveEndTime" :disabled="disabled">
               <el-date-picker
-                      v-model="curveEndTime"
-                      align="right"
-                      type="date"
-                      placeholder="选择停产日"
-                      :disabled="disabled"
-                      :picker-options="pickerOptions"
+                v-model="curveEndTime"
+                align="right"
+                type="date"
+                placeholder="选择停产日"
+                :disabled="disabled"
+                :picker-options="pickerOptions"
               />
             </el-form-item>
           </el-col>
@@ -315,7 +315,7 @@ export default {
       },
       pickerOptions: {
         shortcuts: [
-                { text: '今天', onClick(picker) {picker.$emit('pick', new Date()) } }
+          { text: '今天', onClick(picker) { picker.$emit('pick', new Date()) } }
         ]
       }
     }
@@ -368,8 +368,8 @@ export default {
       }
     }
   },
-  watch:{
-    curveEndTime(newValue,oldValue) {
+  watch: {
+    curveEndTime(newValue, oldValue) {
       console.info('curveEndTime:' + newValue)
       this.productInfo.curveEndTime = newValue
     }
@@ -380,7 +380,7 @@ export default {
     if (this.basePrdCode) {
       this.productInfo.basePrdCode = this.basePrdCode
     }
-    this.productInfo.curveEndTime =  new Date('9999-12-31').getTime()
+    this.productInfo.curveEndTime = new Date('9999-12-31').getTime()
     this.curveEndTime = this.productInfo.curveEndTime
 
     var id = ''
@@ -408,7 +408,7 @@ export default {
     optioins: optioins,
     stepOnclick(index) {
       console.info('stepOnclick:' + index)
-      if ( index > 0 ){
+      if (index > 0) {
         if (!this.productId) {
           this.$message({
             message: '请先保存基本信息！',
@@ -515,8 +515,9 @@ export default {
     storageCurveInfo() {
       var productInfo = this.getProductInfo()
       var curveConstructType = this.$refs.curveConstructType.getCurveConstructType()
+      // eslint-disable-next-line no-undef
       var data = _.assign(productInfo, curveConstructType)
-      if (data.sort == 1) {
+      if (data.sort === 1) {
         data.sort = 2
       }
       // 调用保存方法
@@ -526,7 +527,7 @@ export default {
       storageCurveInfo(sendData).then(response => {
         this.stepActive++
         // 如果当前步骤号为1-只保存基本信息，保存成功后，步骤号为2
-        if (data.sort == 1) {
+        if (data.sort === 1) {
           this.productInfo.sort = 2
         }
         this.$message({
@@ -548,7 +549,7 @@ export default {
       if (curvePrdKdList && curvePrdKdList.length > 0) {
         for (let i = 0; i < curvePrdKdList.length; i++) {
           var item = curvePrdKdList[i]
-          if ( !item.sampleIntervalDown && item.sampleIntervalDown != 0 ||  !item.sampleIntervalUp && item.sampleIntervalUp != 0) {
+          if (!item.sampleIntervalDown && item.sampleIntervalDown !== 0 || !item.sampleIntervalUp && item.sampleIntervalUp !== 0) {
             this.$message({
               message: '第' + (i + 1) + '条关键期限,样本区间上、下限不能为空！',
               type: 'error',
