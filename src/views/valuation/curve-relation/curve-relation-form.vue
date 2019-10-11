@@ -20,7 +20,7 @@
             <el-form-item label="相对曲线：" prop="relativeCurveId">
               <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" @change="changeRelative">
                 <el-option
-                  v-for="item in curveRelativeList"
+                  v-for="item in curveList"
                   :key="item.curveId"
                   :label="item.productName"
                   :value="item.curveId"
@@ -82,13 +82,39 @@
             </el-form>
           </div>
         </el-col>
+        <el-col :span="12">
+          <div class="grid-content bg-purple">
+            <el-form ref="ruleInfo" :model="curveRelationInfo" :rules="rules" label-width="120px">
+              <el-form-item label="目标曲线：" prop="curveId">
+                <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" :disabled="disabled">
+                  <el-option
+                    v-for="item in curveList"
+                    :key="item.curveId"
+                    :label="item.productName"
+                    :value="item.curveId"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="相对曲线：" prop="relativeCurveId">
+                <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" :disabled="disabled">
+                  <el-option
+                    v-for="item in curveList"
+                    :key="item.curveId"
+                    :label="item.productName"
+                    :value="item.curveId"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-col>
       </el-row>
     </el-card> -->
   </div>
 </template>
 
 <script>
-import { saveCurveRelation, getCurveList, queryCurveRelation, haveId } from '@/api/valuation/curve-relation.js'
+import { saveCurveRelation, getCurveList, queryCurveRelation } from '@/api/valuation/curve-relation.js'
 export default {
   name: 'AddRulesForm',
   props: ['relationId', 'disabled', 'isCopy'],
@@ -104,7 +130,6 @@ export default {
     // }
     return {
       curveList: [],
-      curveRelativeList: [],
       curveRelationInfo: {
         curveId: '',
         relativeCurveId: ''
@@ -120,27 +145,14 @@ export default {
       },
       selectList: [],
       selectobj: {},
-      selectId: [],
-      haveId: [],
-      allList: [],
-      idInfo: {}
+      selectId: []
     }
   },
   beforeMount() {
-    this.addclick()
-    // haveId().then(res => {
-    //   this.haveId = res
-    // })
-    // getCurveList().then(response => {
-    //   this.allList = response
-    //   for (let i = 0; i < this.allList.length; i++) {
-    //     if (this.haveId.indexOf(this.allList[i].curveId) === -1) {
-    //       this.curveList.push(this.allList[i])
-    //       this.curveRelativeList.push(this.allList[i])
-    //       console.log('33')
-    //     }
-    //   }
-    // })
+    getCurveList({ searchable: { 'search_prdStatus_IN': ['1', '2'] }}).then(response => {
+      this.curveList = response
+      console.log('this.curveList', this.curveList)
+    })
     if (this.relationId) {
       queryCurveRelation(this.relationId).then(response => {
         this.curveRelationInfo = response
@@ -154,99 +166,47 @@ export default {
     }
   },
   methods: {
-    addclick() {
-      haveId().then(res => {
-        this.haveId = res
-      })
-      getCurveList({ searchable: { 'search_prdStatus_IN': ['1', '2'] }}).then(response => {
-        this.allList = response
-        for (let i = 0; i < this.allList.length; i++) {
-          Array.from(new Set(this.haveId))
-          if (this.haveId.indexOf(this.allList[i].curveId) === -1) {
-            this.curveList.push(this.allList[i])
-            this.curveRelativeList.push(this.allList[i])
-          }
-        }
-      })
-    },
     changeTarget(e) {
-      console.log('ee', e)
-      const idObj1 = {}
-      idObj1.curveId = e
-      this.targetId = e
-      if (this.relativeId) {
-        idObj1.relativeCurveId = this.relativeId
-      }
-      this.idInfo = idObj1
-      const obj1 = {}
-      this.curveRelativeList.map(v => {
+      // this.selectTarget = e
+      this.curveRelationInfo.curveId = e
+      this.curveList.map(v => {
         if (v.curveId === e) {
-          // this.selectobj.targetName = v.productName
-          this.targetName = v.productName
-          obj1.targetName = v.productName
-          if (this.relativeName) {
-            obj1.relativeName = this.relativeName
-          }
-          this.selectobj = obj1
+          this.selectobj.targetName = v.productName
           v.disabled = true
-        } else {
-          v.disabled = false
         }
       })
     },
     changeRelative(e) {
+      // this.selectRelative = e
       // if (e) {
-      const idObj = {}
-      this.relativeId = e
-      idObj.relativeCurveId = e
-      if (this.targetId) {
-        idObj.curveId = this.targetId
-      }
-      this.idInfo = idObj
-      const obj = {}
+      this.curveRelationInfo.relativeCurveId = e
       this.curveList.map(v => {
         if (v.curveId === e) {
-          // this.selectobj.relativeName = v.productName
-          this.relativeName = v.productName
-          obj.relativeName = v.productName
-          if (this.targetName) {
-            obj.targetName = this.targetName
-          }
-          this.selectobj = obj
+          this.selectobj.relativeName = v.productName
           v.disabled = true
-        } else {
-          v.disabled = false
         }
       })
       // }
     },
+    // relativeVisible(e) {
+    //   if (e) {
+    //     if (this.selectTarget) {
+    //       this.curveList.map(v => {
+    //         if (v.curveId === this.selectTarget) {
+    //           v.disabled = true
+    //           console.log('v', v)
+    //         }
+    //       })
+    //     }
+    //   }
+    // },
     addData() {
       this.$refs.ruleInfo.validate(val => {
         if (val) {
-          if (this.selectList.length > 0) {
-            this.selectList.map(v => {
-              if (v === this.selectobj) {
-                this.$message.warning('不能重复添加哦！')
-              } else {
-                // this.selectList.push(this.selectobj)
-                // this.selectId.push(this.idInfo)
-                this.selectId.map(v => {
-                  if (v.curveId === this.idInfo.curveId || v.relativeCurveId === this.idInfo.relativeCurveId ||
-                  v.curveId === this.idInfo.relativeCurveId || v.relativeCurveId === this.idInfo.curveId) {
-                    return this.$message.warning('不能重复添加哦！')
-                  } else {
-                    this.selectList.push(this.selectobj)
-                    this.selectId.push(this.idInfo)
-                  }
-                })
-                console.log('ppp', this.selectId)
-              }
-            })
-          } else {
-            this.selectList.push(this.selectobj)
-            this.selectId.push(this.idInfo)
-            console.log('rr', this.selectList)
-          }
+          this.selectList.push(this.selectobj)
+          this.selectId.push(this.curveRelationInfo)
+          // this.curveRelationInfo.curveId = ''
+          // this.curveRelationInfo.relativeCurveId = ''
         }
       })
     },
@@ -256,20 +216,12 @@ export default {
           v.disabled = false
         }
       })
-      this.curveRelativeList.map(v => {
-        if (v.productName === row[index].targetName || v.productName === row[index].relativeName) {
-          v.disabled = false
-        }
-      })
       row.splice(index, 1)
       id.splice(index, 1)
-      // this.curveRelationInfo.curveId = ''
-      // this.curveRelationInfo.relativeCurveId = ''
       console.log('id', this.selectId)
     },
     // 保存/编辑曲线关系
     save() {
-      console.log('ids', this.selectId)
       saveCurveRelation(this.selectId).then(response => {
         this.$emit('saveCallBack')
         this.$message({

@@ -53,12 +53,11 @@
 </template>
 
 <script>
-// import { saveOrderInfo, queryOrderInfo } from '@/api/market/market.js'
 
 export default {
   name: 'ScreeningNumForm',
   components: {},
-  // props: ['businessId', 'disabled'],
+  // props: ['isSceened'],
   data() {
     return {
       radio: '1',
@@ -70,10 +69,10 @@ export default {
   computed: {
     screeningForm: {
       get() {
-        return this.$store.state.screeningDate.screeningForm
+        return this.$store.state.secondaryScr.screeningForm
       },
       set(screeningForm) {
-        this.$store.commit('screeningDate/setScreeningDate', screeningForm)
+        this.$store.commit('secondaryScr/setSecondaryScr', screeningForm)
       }
     }
   },
@@ -88,11 +87,6 @@ export default {
     }
   },
   methods: {
-    screening() {
-      const data = this.screeningForm
-      console.info(data)
-      this.$emit('dateCallBack')
-    },
     radioChange(curVal, oldVal) {
       if (curVal !== oldVal) {
         this.disable_1 = !this.disable_1
@@ -105,7 +99,7 @@ export default {
       }
     },
     reset() {
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      this.$store.commit('secondaryScr/setSecondaryScr', {})
     },
     getForm() {
       return this.screeningForm

@@ -35,11 +35,11 @@
         </template>
       </el-table-column>
       <el-table-column
-              prop="prodStatus"
-              label="产品状态"
+        prop="prodStatus"
+        label="产品状态"
       >
         <template slot-scope="{row}">
-          {{$dft('CURVE_PRODUCT_STATUS', row.prodStatus)}}
+          {{ $dft('CURVE_PRODUCT_STATUS', row.prodStatus) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -47,7 +47,7 @@
         label="数据状态"
       >
         <template slot-scope="{row}">
-          {{$dft('BUSI_STATUS', row.busiStatus)}}
+          {{ $dft('BUSI_STATUS', row.busiStatus) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -55,7 +55,7 @@
         label="审批状态"
       >
         <template slot-scope="{row}">
-          {{$dft('APPROVE_STATUS', row.approveStatus)}}
+          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column

@@ -3,7 +3,7 @@
   <el-form>
     <el-row>
       <el-col :span="8">
-        <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="border:1px solid black;width:100%;padding:10px 5px;min-height:600px">
+        <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="border:1px solid black;width:100%;padding:10px 5px;height:600px">
           <el-row>
             <el-col>
               <el-form-item label="选择曲线" label-width="100px">
@@ -27,7 +27,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-table :data="curveHomologyList" border highlight-current-row style="width: 727px;" max-height="400">
+          <el-table :data="curveHomologyList" border highlight-current-row style="width: 727px;" max-height="300">
             <el-table-column label="关键期限" width="200px" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.productName }}</span>
@@ -58,7 +58,7 @@
           </el-table>
         </el-form>
       </el-col>
-      <el-col v-show="curveHomologyShow" :span="8" style="border:1px solid black;padding:10px 5px;min-height:600px;position: relative;">
+      <el-col v-show="curveHomologyShow" :span="8" style="border:1px solid black;border-left:0;padding:10px 5px;height:600px;position: relative;">
         <el-alert
           title="消息提示的文案"
           type="info"
@@ -68,7 +68,7 @@
         <el-table
           ref="singleTable"
           :data="tableData"
-
+          height="400"
           style="width:100%;"
         >
           <el-table-column
@@ -111,12 +111,12 @@
         </el-button>
       </el-col>
       <el-col v-show="curveHomologyXing" :span="8">
-        <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="border:1px solid black;width:100%;padding:10px 5px;height:600px;position: relative;">
+        <el-form ref="dataForm" :model="temp" label-position="left" label-width="90px" style="border:1px solid black;border-left:0;width:100%;padding:10px 5px;height:600px;position: relative;">
           <el-row style="height:45%">
             <el-col :span="4">
               <h3 style="font-size:40px;">场<br><br>景</h3>
             </el-col>
-            <el-scrollbar style="overflow-x: hidden;height:100%">
+            <el-scrollbar style="height:100%">
               <el-col v-for="(item, index) in bankMessage" :key="index" :span="16" class="box">
                 <el-form style="width:100%;min-height:200px">
                   <el-form style="padding:4px 8px;border:1px solid black;">
@@ -282,6 +282,30 @@ export default {
         name: '王小虎',
         address: '上海市普陀区金沙江路 1519 弄'
       }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙路 1519 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
         date: '2016-05-03',
         name: '王小虎',
         address: '上海市普陀区金沙江路 1516 弄'
@@ -337,8 +361,7 @@ export default {
       this.bankMessage.unshift(
         {
           lastUpdBy: '',
-          curveId: '',
-          clrgRuleId: ''
+          curveId: ''
         }
       )
     },
@@ -346,8 +369,7 @@ export default {
       this.bankMessage2.unshift(
         {
           lastUpdBy: '',
-          curveId: '',
-          clrgRuleId: ''
+          curveId: ''
         }
       )
     },
@@ -365,5 +387,4 @@ export default {
 </script>
 
 <style scoped>
-.el-scrollbar__wrap{overflow-x: hidden;margin-bottom: 0px}
 </style>

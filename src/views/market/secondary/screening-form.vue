@@ -1,44 +1,46 @@
 <template>
-  <!--  数值型-->
-  <div class="" style="width: 600px">
+  <!--  日期类-->
+  <div class="" style="width: 300px">
     <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
-      <el-row :gutter="76" align="left">
+      <el-row :gutter="66" align="left">
         <div class="grid-content bg-purple">
-          <el-form-item label="">
+          <el-form-item label="" align="left">
             <el-row :gutter="22">
-              <el-col :span="4">
-                <el-radio v-model="radio" label="1">数值</el-radio>
+              <el-col :span="6">
+                <el-radio v-model="radio" label="1">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="20">
-                <el-row>
-                  <el-input v-model="screeningForm.screeningNum" style="width: 200px" :disabled="disable_1" />
-                </el-row>
-                <el-row>
-                  <el-checkbox v-model="screeningForm.absoluteValue" :disabled="disable_1">是否包含绝对值</el-checkbox>
-                </el-row>
+              <el-col :span="18">
+                <el-date-picker
+                  v-model="screeningForm.singleDate"
+                  type="datetime"
+                  placeholder="选择日期"
+                  :disabled="disable_1"
+                />
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item>
             <el-row :gutter="22">
-              <el-col :span="4">
-                <el-radio v-model="radio" label="2">范围</el-radio>
+              <el-col :span="6">
+                <el-radio v-model="radio" label="2">&nbsp;</el-radio>
               </el-col>
-              <el-col :span="4">
-                <el-input v-model="screeningForm.startNum" style="width: 80px" :disabled="disable_2" />
+              <el-col :span="18">
+                <el-date-picker
+                  v-model="screeningForm.dateRange"
+                  type="datetimerange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :disabled="disable_2"
+                />
               </el-col>
-              <el-col :span="1" align="center">~</el-col>
-              <el-col :span="4">
-                <el-input v-model="screeningForm.endNum" style="width: 80px" :disabled="disable_2" />
-              </el-col>
-              <el-col :span="2">BP</el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="" align="left">
+          <el-form-item label="" prop="screeningSort">
             <el-row :gutter="22">
-              <el-col :span="4" align="center">排序</el-col>
-              <el-col :span="20">
-                <el-select v-model="screeningForm.screeningSort" placeholder="请选择">
+              <el-col :span="6" align="right">排序</el-col>
+              <el-col :span="12">
+                <el-select v-model="screeningForm.screeningSort" placeholder="请选择" style="width: 200px">
                   <el-option label="升序" value="1" />
                   <el-option label="降序" value="2" />
                 </el-select>
@@ -56,7 +58,7 @@
 // import { saveOrderInfo, queryOrderInfo } from '@/api/market/market.js'
 
 export default {
-  name: 'ScreeningNumForm',
+  name: 'ScreeningForm',
   components: {},
   // props: ['businessId', 'disabled'],
   data() {
@@ -70,19 +72,23 @@ export default {
   computed: {
     screeningForm: {
       get() {
-        return this.$store.state.screeningDate.screeningForm
+        return this.$store.state.secondaryScr.screeningForm
       },
       set(screeningForm) {
-        this.$store.commit('screeningDate/setScreeningDate', screeningForm)
+        this.$store.commit('secondaryScr/setSecondaryScr', screeningForm)
       }
     }
   },
   watch: {
     radio: 'radioChange'
   },
+  beforeMount() {
+    // this.screeningForm.screeningSort = '1'
+  },
   activated() {
+    console.info('数值类型')
     const form = this.screeningForm
-    if (typeof form.startNum !== 'undefined' || typeof form.endNum !== 'undefined') {
+    if (typeof form.dateRange !== 'undefined') {
       this.radio = '2'
       this.isScreened = true
     }
@@ -105,7 +111,7 @@ export default {
       }
     },
     reset() {
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      this.$store.commit('secondaryScr/setSecondaryScr', {})
     },
     getForm() {
       return this.screeningForm
@@ -118,5 +124,8 @@ export default {
   /*.el-form-item {*/
   /*  margin-left: 0px;*/
   /*}*/
+  .el-form-item[data-v-d31eec1e] {
+    margin-left: -50px;
+  }
 </style>
 

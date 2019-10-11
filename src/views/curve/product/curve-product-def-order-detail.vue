@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curve-order-id="item.curveOrderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -219,39 +219,39 @@ export default {
   computed: {
     // 该批次所需模型
     modelOption() {
-      return optioins(this,'MODEL')
+      return optioins(this, 'MODEL')
     },
     // 该批次所需编制方式
     buildTypeOption() {
-      return optioins(this,'BUILD_TYPE')
+      return optioins(this, 'BUILD_TYPE')
     },
     // 该批次所需计算方式
     computedTypeOption() {
-      return optioins(this,'COMPUTED_TYPE')
+      return optioins(this, 'COMPUTED_TYPE')
     },
     // 该批次所需发布方式
     publishTypeOption() {
-      return optioins(this,'PUBLISH_TYPE')
+      return optioins(this, 'PUBLISH_TYPE')
     },
     // 曲线发布类型
     curvePubTypeOption() {
-      return optioins(this,'CURVEPUB_TYPE')
+      return optioins(this, 'CURVEPUB_TYPE')
     },
     // 是否发布曲线样本券
     publishSampleFlagOption() {
-      return optioins(this,'Y_OR_N')
+      return optioins(this, 'Y_OR_N')
     },
     // 发布步长
     publishStepSizeOption() {
-      return optioins(this,'PUBLISH_STEP_SIZE')
+      return optioins(this, 'PUBLISH_STEP_SIZE')
     },
     // 付息频率
     interestDueFreqOption() {
-      return optioins(this,'INTEREST_DUE_FREQ')
+      return optioins(this, 'INTEREST_DUE_FREQ')
     },
     // 自动编制规则
     autoRuleOptions() {
-      return optioins(this,'AUTO_RULE')
+      return optioins(this, 'AUTO_RULE')
     }
   },
   beforeMount() {
@@ -298,6 +298,17 @@ export default {
       this.curvePrdOrder.curvePubType = this.curvePubTypeSelected.join(',')
       this.curvePrdOrder.publishStepSize = this.publishStepSizeSelected.join(',')
       return this.curvePrdOrder
+    },
+    setCurvePrdOrder() {
+      if (this.curvePrdOrder.interestDueFreq) {
+        this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
+      }
+      if (this.curvePrdOrder.curvePubType) {
+        this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+      }
+      if (this.curvePrdOrder.publishStepSize) {
+        this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
+      }
     },
     // 获取关键期限
     getPrdKtList() {
@@ -406,10 +417,10 @@ export default {
           }
         }
 
-        if ('toSetRule' != from) {
+        if (from !== 'toSetRule') {
           // 增加当前产品关键期限
           if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
-            for (var i = 0; i < this.curvePrdKdList.length; i++) {
+            for (let i = 0; i < this.curvePrdKdList.length; i++) {
               const item = this.curvePrdKdList[i]
 
               if (standSlipArray.indexOf(item.standSlip) < 0) {
@@ -420,6 +431,7 @@ export default {
         }
 
         // 增加自动勾选内容 prdOrderAutoKdsKeys
+        // eslint-disable-next-line no-redeclare
         for (var i = 0; i < this.curvePrdOrderAutoKtList.length; i++) {
           const item = this.curvePrdOrderAutoKtList[i]
 

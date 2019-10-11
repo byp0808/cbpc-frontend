@@ -7,7 +7,7 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="grid-content bg-purple">
-            <el-form ref="ruleInfo" :model="ruleInfo" label-width="150px">
+            <el-form ref="refRuleInfo" :model="ruleInfo" label-width="150px">
               <el-form-item label="规则ID">
                 <el-input v-model="ruleInfo.id" disabled />
               </el-form-item>
@@ -19,8 +19,8 @@
         </el-col>
         <el-col :span="8">
           <div class="grid-content bg-purple">
-            <el-form ref="ruleInfo" :model="ruleInfo" label-width="150px">
-              <el-form-item label="规则描述">
+            <el-form ref="refRuleInfo" :rules="rules" :model="ruleInfo" label-width="150px">
+              <el-form-item label="规则描述" prop="taskRangeName">
                 <el-input v-model="ruleInfo.taskRangeName" :disabled="disabled" />
               </el-form-item>
               <el-form-item label="最后操作时间">
@@ -53,7 +53,10 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     return {
-      ruleInfo: {}
+      ruleInfo: {},
+      rules: {
+        taskRangeName: [{ required: true, message: '请输入规则描述', trigger: 'blur' }]
+      }
     }
   },
   beforeMount() {
@@ -72,13 +75,20 @@ export default {
         taskRange: this.ruleInfo,
         bondFilterInfo: bondFilterInfo
       }
-      addTaskRange(data).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs['refRuleInfo'].validate((valid) => {
+        if (valid) {
+          addTaskRange(data).then(response => {
+            this.$emit('saveCallBack')
+            this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     }
   }

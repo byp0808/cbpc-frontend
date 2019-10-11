@@ -200,7 +200,6 @@ export default {
       this.relationId = ''
       this.isCopy = false
       this.addRulesVisible = true
-      // this.$refs.recAddRulesForm.addclick()
     },
     copyAdd() {
       if (this.radio === '') {

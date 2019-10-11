@@ -49,7 +49,7 @@
                     title="设置"
                     @click.native.prevent="setRuleValue(scope.$index, ruleList)"
                   >
-                    <svg-icon icon-class="set"/>
+                    <svg-icon icon-class="set" />
                   </el-button>
                   <el-button
                     type="text"
@@ -58,7 +58,7 @@
                     title="清空"
                     @click.native.prevent="emptyRuleValue(scope.$index, ruleList)"
                   >
-                    <svg-icon style="color:red;" icon-class="clear"/>
+                    <svg-icon style="color:red;" icon-class="clear" />
                   </el-button>
                 </template>
               </el-table-column>
@@ -97,7 +97,7 @@
                     title="加入黑名单"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListResult)"
                   >
-                    <svg-icon style="color: red" icon-class="black"/>
+                    <svg-icon style="color: red" icon-class="black" />
                   </el-button>
                 </template>
               </el-table-column>
@@ -161,7 +161,7 @@
                     title="移出黑名单"
                     @click.native.prevent="delRow(scope.$index, blackList)"
                   >
-                    <svg-icon style="color:red;" icon-class="remove"/>
+                    <svg-icon style="color:red;" icon-class="remove" />
                   </el-button>
                 </template>
               </el-table-column>
@@ -216,7 +216,7 @@
                     title="移出白名单"
                     @click.native.prevent="delRow(scope.$index, whiteList)"
                   >
-                    <svg-icon style="color:red;" icon-class="remove"/>
+                    <svg-icon style="color:red;" icon-class="remove" />
                   </el-button>
                 </template>
               </el-table-column>
@@ -253,7 +253,7 @@
                     title="加入白名单"
                     @click.native.prevent="mvToWhiteList(scope.$index, bondListAll)"
                   >
-                    <svg-icon icon-class="white"/>
+                    <svg-icon icon-class="white" />
                   </el-button>
                   <el-button
                     type="text"
@@ -261,8 +261,8 @@
                     title="加入黑名单"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListAll)"
                   >
-                    <svg-icon style="color:red;" icon-class="black"/>
-<!--                    移入黑名单-->
+                    <svg-icon style="color:red;" icon-class="black" />
+                    <!--                    移入黑名单-->
                   </el-button>
                 </template>
               </el-table-column>

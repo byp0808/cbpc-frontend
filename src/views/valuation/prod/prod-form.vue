@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card class="box-card">
       <el-steps :active="stepActive" align-center finish-status="success" process-status="finish">
-        <el-step title="基本信息" @click.native="go(0)"/>
-        <el-step title="选择范围" @click.native="go(1)"/>
-        <el-step title="选择指标" @click.native="go(2)"/>
-        <el-step title="估值场景" @click.native="go(3)"/>
-        <el-step title="批次发布指标" @click.native="go(4)"/>
+        <el-step title="基本信息" @click.native="go(0)" />
+        <el-step title="选择范围" @click.native="go(1)" />
+        <el-step title="选择指标" @click.native="go(2)" />
+        <el-step title="估值场景" @click.native="go(3)" />
+        <el-step title="批次发布指标" @click.native="go(4)" />
         <el-step title="确认产品" @click.native="go(5)" />
       </el-steps>
     </el-card>
@@ -61,9 +61,9 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  @change="listingDateChange"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
+                  @change="listingDateChange"
                 />
               </el-form-item>
             </div>
@@ -87,8 +87,8 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  @change="delistingDateChange"
                   style="width: 100%"
+                  @change="delistingDateChange"
                 />
               </el-form-item>
             </div>
@@ -249,10 +249,10 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).compPermStatus"
-                        @change="compPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
+                        @change="compPermStatusChange(batch.id, row)"
                       />
                     </template>
                   </el-table-column>
@@ -262,10 +262,10 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).relaPermStatus"
-                        @change="relaPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
+                        @change="relaPermStatusChange(batch.id, row)"
                       />
                     </template>
                   </el-table-column>

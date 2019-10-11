@@ -19,23 +19,23 @@ const marketRouter = {
       name: 'PrimaryMarketList',
       meta: { title: '一级发行', noCache: true, roles: ['OrderInfoList'] }
     }, {
-      path: 'order-info-form',
-      component: () => import('@/views/common/order-info/order-info-form.vue'),
-      name: 'OrderInfoForm'
+      path: 'secondary-market-list',
+      component: () => import('@/views/market/secondary/secondary-market-list.vue'),
+      name: 'SecondaryMarketList',
+      meta: { title: '二级市场', noCache: true, roles: ['OrderInfoList'] }
     },
     {
       path: 'para-info',
       component: () => import('@/views/market/para/para-info.vue'),
       name: 'ParaInfo',
       meta: { title: '参数设置', noCache: true, roles: ['ParaInfo'] }
+    },
+    {
+      path: 'query-temp',
+      component: () => import('@/views/market/temp/query-temp-list.vue'),
+      name: 'QueryTempList',
+      meta: { title: '模板设置', noCache: true }
     }
-    // },
-    // {
-    //   path: 'query-temp',
-    //   component: () => import('@/views/market/temp/query-temp-list.vue'),
-    //   name: 'QueryTempList',
-    //   meta: { title: '模板设置', noCache: true }
-    // }
   ]
 }
 

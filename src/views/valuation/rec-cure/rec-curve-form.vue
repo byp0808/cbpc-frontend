@@ -101,7 +101,7 @@ export default {
   components: {
     BondFilter
   },
-  props: ['businessId', 'disabled'],
+  props: ['businessId', 'disabled', 'isCopy'],
   data() {
     return {
       curveList: []
@@ -135,6 +135,9 @@ export default {
   methods: {
     save() {
       const bondFilterInfo = this.$refs.refBondFilter.getData()
+      if (this.isCopy) {
+        // 复制新增-->删除Id
+      }
       const data = {
         recCurve: this.recCurveInfo,
         bondFilterInfo: bondFilterInfo
