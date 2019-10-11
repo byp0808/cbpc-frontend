@@ -286,19 +286,19 @@
         <h3>确认产品</h3>
       </div>
       <el-card
-        v-for="(batch, key) in confirm"
-        :key="key"
+        v-for="batch in confirmBatches"
+        :key="batch.id"
         class="box-card margin-top"
       >
         <div slot="header" class="clearfix card-head">
-          <span>{{ fmtBatchName(key) }}</span>
+          <span>{{ batch.orderName }}</span>
         </div>
         <el-table
-          :data="batch.statusData"
+          :data="confirm[batch.id].statusData"
           style="width: 100%"
         >
           <el-table-column
-            v-for="(index, key) in batch.indices"
+            v-for="(index, key) in confirm[batch.id].indices"
             :key="key"
             :prop="index"
             :label="fmtIndexName(index)"
@@ -338,6 +338,7 @@ export default {
       batchesChoiceIndices: [],
       prodIndices: [],
       confirm: {},
+      confirmBatches: [],
       basicProdList: [{
         id: 'prod-1',
         name: '基础产品1'
@@ -502,9 +503,9 @@ export default {
     next() {
       if (this.stepActive++ > 5) this.stepActive = 0
       this.initData()
-      if (this.detail) {
-        this.loadDetail()
-      }
+      // if (this.prodId) {
+      //   this.loadDetail()
+      // }
     },
     initData() {
       this.$store.dispatch('valuationProd/loadProdIndices')
@@ -571,6 +572,7 @@ export default {
     },
     loadDetail() {
       const that = this
+      this.confirmBatches = []
       const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds, valuationProdBatchIndices } = this.detail
       if (this.stepActive === 0 || this.stepActive === 1) {
         if (valuationProd.currency) {
@@ -589,11 +591,17 @@ export default {
           }
         })
         that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
-      } else if (this.stepActive === 3 && valuationProdMethods) {
-        that.$lodash.each(valuationProdMethods, function(value, key) {
-          const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
-          that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
-        })
+      } else if (this.stepActive === 3) {
+        if (valuationProdMethods && valuationProdMethods.length > 0) {
+          that.$lodash.each(valuationProdMethods, function(value, key) {
+            const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
+            that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
+          })
+        } else {
+          that.$lodash.each(that.loadValuationWay, function(value, key) {
+            that.$refs.wayTable.toggleRowSelection(value, true)
+          })
+        }
       } else if (this.stepActive === 4) {
         if (bachIds && bachIds.length > 0) {
           that.$lodash.each(bachIds, function(value, key) {
@@ -617,6 +625,15 @@ export default {
           }
         })
       } else if (this.stepActive === 5) {
+        if (bachIds && bachIds.length > 0) {
+          that.$lodash.each(bachIds, function(value, key) {
+            const index = that.$lodash.findIndex(that.batches, { id: value })
+            if (index >= 0) {
+              that.confirmBatches.push(that.batches[index])
+            }
+          })
+          this.confirmBatches = this.$lodash.orderBy(this.confirmBatches, ['compTime'])
+        }
         confirmProd(this.prodId).then(response => {
           this.confirm = response
         })
@@ -624,7 +641,7 @@ export default {
     },
     choiceBatch(val) {
       if (val) {
-        this.batchesChoiceTemp = val
+        this.batchesChoiceTemp = this.$lodash.orderBy(val, ['compTime'])
       }
     },
     choiceWay(val) {
@@ -701,7 +718,10 @@ export default {
       })
     },
     saveFilter() {
-      this.save({ bondFilterInfo: this.$refs.refBondFilter.getData() }, '筛选范围')
+      const filterData = this.$refs.refBondFilter.getData('VAL00001')
+      if (filterData) {
+        this.save({ bondFilterInfo: filterData }, '筛选范围')
+      }
     },
     saveProdIndices() {
       const that = this

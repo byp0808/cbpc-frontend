@@ -30,11 +30,12 @@
                 prop="ruleName"
                 label="规则指标"
                 width="180"
+                show-overflow-tooltip
               />
               <el-table-column
                 prop="ruleValue"
                 label="规则值"
-                width="100"
+                show-overflow-tooltip
               />
               <el-table-column
                 prop="address"
@@ -45,17 +46,19 @@
                     type="text"
                     size="small"
                     :disabled="disabled"
+                    title="设置"
                     @click.native.prevent="setRuleValue(scope.$index, ruleList)"
                   >
-                    设置
+                    <svg-icon icon-class="set"/>
                   </el-button>
                   <el-button
                     type="text"
                     size="small"
                     :disabled="disabled"
+                    title="清空"
                     @click.native.prevent="emptyRuleValue(scope.$index, ruleList)"
                   >
-                    清空
+                    <svg-icon style="color:red;" icon-class="clear"/>
                   </el-button>
                 </template>
               </el-table-column>
@@ -77,19 +80,23 @@
               <el-table-column
                 prop="bondName"
                 label="债券名称"
+                show-overflow-tooltip
+                width="250"
               />
               <el-table-column
                 prop="name"
                 label="操作"
+                width="70"
+                align="center"
               >
                 <template slot-scope="scope">
                   <el-button
                     type="text"
-                    size="small"
                     :disabled="disabled"
+                    title="加入黑名单"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListResult)"
                   >
-                    移入黑名单
+                    <svg-icon style="color: red" icon-class="black"/>
                   </el-button>
                 </template>
               </el-table-column>
@@ -132,23 +139,28 @@
               <el-table-column
                 prop="bondName"
                 label="债券名称"
+                show-overflow-tooltip
               />
               <el-table-column
                 prop="bondSource"
                 label="来源"
+                show-overflow-tooltip
               />
               <el-table-column
                 prop="name"
                 label="操作"
+                width="65"
+                align="center"
               >
                 <template slot-scope="scope">
                   <el-button
                     type="text"
                     size="small"
                     :disabled="disabled"
+                    title="移出黑名单"
                     @click.native.prevent="delRow(scope.$index, blackList)"
                   >
-                    移出黑名单
+                    <svg-icon style="color:red;" icon-class="remove"/>
                   </el-button>
                 </template>
               </el-table-column>
@@ -186,20 +198,24 @@
             >
               <el-table-column
                 prop="bondName"
+                show-overflow-tooltip
                 label="债券名称"
               />
               <el-table-column
                 prop="name"
                 label="操作"
+                width="80"
+                align="center"
               >
                 <template slot-scope="scope">
                   <el-button
                     type="text"
                     size="small"
                     :disabled="disabled"
+                    title="移出白名单"
                     @click.native.prevent="delRow(scope.$index, whiteList)"
                   >
-                    移出白名单
+                    <svg-icon style="color:red;" icon-class="remove"/>
                   </el-button>
                 </template>
               </el-table-column>
@@ -221,7 +237,8 @@
               <el-table-column
                 prop="bondName"
                 label="债券名称"
-                width="190"
+                show-overflow-tooltip
+                width="250"
               />
               <el-table-column
                 prop="name"
@@ -232,17 +249,19 @@
                     type="text"
                     size="small"
                     :disabled="disabled"
+                    title="加入白名单"
                     @click.native.prevent="mvToWhiteList(scope.$index, bondListAll)"
                   >
-                    移入白名单
+                    <svg-icon icon-class="white"/>
                   </el-button>
                   <el-button
                     type="text"
-                    size="small"
                     :disabled="disabled"
+                    title="加入黑名单"
                     @click.native.prevent="mvToBlackList(scope.$index, bondListAll)"
                   >
-                    移入黑名单
+                    <svg-icon style="color:red;" icon-class="black"/>
+<!--                    移入黑名单-->
                   </el-button>
                 </template>
               </el-table-column>
@@ -256,7 +275,7 @@
 
 <script>
 import { basic_path } from '@/api/common/common.js'
-import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById } from '@/api/common/bond-filter.js'
+import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById, checkRepeat } from '@/api/common/bond-filter.js'
 export default {
   name: 'BondFilter',
   props: ['filterId', 'disabled'],
@@ -511,12 +530,22 @@ export default {
     bwListCheck(dataList, data) {
       return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.marketId })
     },
-    getData() {
-      return {
+    getData(busiCode) {
+      const data = {
         tempId: this.bondTempSelect.tempId,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
-        rules: this.ruleList
+        rules: this.ruleList,
+        filterApiScnCode: busiCode
       }
+      checkRepeat(data).then(response => {
+        if (response && response.length > 0) {
+          this.$message.error('债券已经存在其他同业务筛选器范围中')
+          console.log(response)
+          return false
+        } else {
+          return data
+        }
+      })
     },
     loading() {
       if (this.filterId) {

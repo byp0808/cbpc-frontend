@@ -35,8 +35,16 @@
         </template>
       </el-table-column>
       <el-table-column
+              prop="prodStatus"
+              label="产品状态"
+      >
+        <template slot-scope="{row}">
+          {{$dft('CURVE_PRODUCT_STATUS', row.prodStatus)}}
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="busiStatus"
-        label="产品状态"
+        label="数据状态"
       >
         <template slot-scope="{row}">
           {{$dft('BUSI_STATUS', row.busiStatus)}}
@@ -55,7 +63,7 @@
       >
         <template slot-scope="{row}">
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
-          <el-button type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
+          <el-button v-if="row.approveStatus != '01'" type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
           <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
           <el-button v-if="row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
         </template>
