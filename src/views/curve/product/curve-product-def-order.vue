@@ -419,6 +419,9 @@ export default {
         targetOrder.interestDueFreqSelected = srcOrder.interestDueFreqSelected
         targetOrder.curvePubTypeSelected = srcOrder.curvePubTypeSelected
         targetOrder.publishStepSizeSelected = srcOrder.publishStepSizeSelected
+
+        // 重置多选框
+        target.setCurvePrdOrder()
       }
     }
   }
