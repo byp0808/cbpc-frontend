@@ -207,7 +207,7 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryOrderInfoList } from '@/api/market/market.js'
+// import { queryOrderInfoList } from '@/api/market/market.js'
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -255,11 +255,11 @@ export default {
       updateFormVisible: false,
       // 报价
       offerMarketList: [
-        // { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        // { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
       ],
       offerTableHeader: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
@@ -281,7 +281,13 @@ export default {
       updateForm: {
         updateContent: ''
       },
-      marketList: [],
+      marketList: [
+        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+      ],
       tableHeader: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
         { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
@@ -351,12 +357,12 @@ export default {
         queryForm: this.queryForm
       }
       console.info(data)
-      queryOrderInfoList({ page: this.offerPage }).then(response => {
-        const { dataList, page } = response
-        this.offerPage = page
-        this.offerMarketList = dataList
-        this.offerMarketLoading = false
-      })
+      // queryOrderInfoList({ page: this.offerPage }).then(response => {
+      //   const { dataList, page } = response
+      //   this.offerPage = page
+      //   this.offerMarketList = dataList
+      this.offerMarketLoading = false
+      // })
     },
     offerHeaderScreening(column) {
       // 报价表头右击事件
@@ -450,12 +456,12 @@ export default {
         queryForm: this.queryForm
       }
       console.info(data)
-      queryOrderInfoList({ page: this.page }).then(response => {
-        const { dataList, page } = response
-        this.page = page
-        this.marketList = dataList
-        this.marketLoading = false
-      })
+      // queryOrderInfoList({ page: this.page }).then(response => {
+      //   const { dataList, page } = response
+      //   this.page = page
+      //   this.marketList = dataList
+      this.marketLoading = false
+      // })
     },
     headerScreening(column) {
       // 成交表头右击事件

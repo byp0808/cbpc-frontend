@@ -95,7 +95,7 @@ import ScreeningForm from '@/views/market/primary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
-import { queryOrderInfoList } from '@/api/market/market.js'
+// import { queryOrderInfoList } from '@/api/market/market.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -114,7 +114,13 @@ export default {
         updateContent: ''
       },
       orderInfoId: '',
-      marketList: [],
+      marketList: [
+        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+      ],
       currentHeader: {},
       currentRow: {},
       tableHeader: [
@@ -176,13 +182,12 @@ export default {
         screeningForm: this.screeningFormList
       }
       console.info(data)
-      queryOrderInfoList({ page: this.page }).then(response => {
-        const { dataList, page } = response
-        this.page = page
-        this.marketList = dataList
-        this.marketLoading = false
-        // this.currentPageList = dataList
-      })
+      // queryOrderInfoList({ page: this.page }).then(response => {
+      //   const { dataList, page } = response
+      //   this.page = page
+      //   this.marketList = dataList
+      this.marketLoading = false
+      // })
     },
     toUse() {
       // 应用模板
