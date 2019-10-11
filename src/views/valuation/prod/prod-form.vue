@@ -485,6 +485,7 @@ export default {
         this.stepActive = index
       }
       if (index === 2 && valuationProdIndices && valuationProdIndices.length > 0) {
+        // this.initData()
         this.initDetailData()
         this.stepActive = index
       }
@@ -579,18 +580,26 @@ export default {
           valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
         }
         that.$store.commit('valuationProd/setProdInfo', valuationProd)
-      } else if (this.stepActive === 2 && valuationProdIndices) {
-        const compIndicesResult = []
-        const basicIndicesResult = []
-        this.$store.dispatch('valuationProd/loadProdIndices')
-        that.$lodash.each(valuationProdIndices, function(value, key) {
-          if (value.indexType === '02') {
-            compIndicesResult.push(value.indexId)
-          } else if (value.indexType === '01') {
-            basicIndicesResult.push(value.indexId)
-          }
-        })
-        that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
+      } else if (this.stepActive === 2) {
+        if (valuationProdIndices && valuationProdIndices.length > 0) {
+          const compIndicesResult = []
+          const basicIndicesResult = []
+          this.$store.dispatch('valuationProd/loadProdIndices')
+          that.$lodash.each(valuationProdIndices, function(value, key) {
+            if (value.indexType === '02') {
+              compIndicesResult.push(value.indexId)
+            } else if (value.indexType === '01') {
+              basicIndicesResult.push(value.indexId)
+            }
+          })
+          that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
+        } else {
+          const basicIndicesResult = []
+          that.$lodash.each(that.basicIndices, function(value, key) {
+            basicIndicesResult.push(value.id)
+          })
+          that.$store.commit('valuationProd/setProdIndices', { basicIndicesResult: basicIndicesResult })
+        }
       } else if (this.stepActive === 3) {
         if (valuationProdMethods && valuationProdMethods.length > 0) {
           that.$lodash.each(valuationProdMethods, function(value, key) {
@@ -718,10 +727,12 @@ export default {
       })
     },
     saveFilter() {
-      const filterData = this.$refs.refBondFilter.getData('VAL00001')
-      if (filterData) {
-        this.save({ bondFilterInfo: filterData }, '筛选范围')
-      }
+      const that = this
+      this.$refs.refBondFilter.getData('VAL00001').then(function(data) {
+        if (data) {
+          that.save({ bondFilterInfo: data }, '筛选范围')
+        }
+      })
     },
     saveProdIndices() {
       const that = this

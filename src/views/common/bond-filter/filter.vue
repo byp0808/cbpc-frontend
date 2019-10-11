@@ -76,6 +76,7 @@
               style="width: 100%"
               fit
               height="300"
+              :row-class-name="tableWarningClass"
             >
               <el-table-column
                 prop="bondName"
@@ -531,20 +532,28 @@ export default {
       return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.marketId })
     },
     getData(busiCode) {
+      const that = this
       const data = {
         tempId: this.bondTempSelect.tempId,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
         rules: this.ruleList,
         filterApiScnCode: busiCode
       }
-      checkRepeat(data).then(response => {
-        if (response && response.length > 0) {
-          this.$message.error('债券已经存在其他同业务筛选器范围中')
-          console.log(response)
-          return false
-        } else {
-          return data
-        }
+      return new Promise((resolve, reject) => {
+        checkRepeat(data).then(response => {
+          if (response && response.length > 0) {
+            this.$message.error('债券已经存在其他同业务筛选器范围中')
+            this.$lodash(response).forEach(function(value, key) {
+              const index = that.$lodash.findIndex(that.bondListResult, { csin: value.csin, marketId: value.marketId })
+              if (index >= 0) {
+                that.bondListResult[index].className = 'error-row'
+              }
+            })
+            resolve(false)
+          } else {
+            resolve(data)
+          }
+        })
       })
     },
     loading() {
