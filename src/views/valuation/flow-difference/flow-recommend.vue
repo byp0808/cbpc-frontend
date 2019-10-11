@@ -33,9 +33,7 @@
                 width="100px"
               >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
-                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
-                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
+                  {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -119,9 +117,7 @@
                 width="100px"
               >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.approveStatus === '01'" style="margin-left: 10px">待复核</span>
-                  <span v-if="scope.row.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
-                  <span v-if="scope.row.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
+                  {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -208,9 +204,7 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.spreadRule.approveStatus === '01'" style="margin-left: 10px">待复核</span>
-                  <span v-if="scope.row.spreadRule.approveStatus === '02'" style="margin-left: 10px">审批通过</span>
-                  <span v-if="scope.row.spreadRule.approveStatus === '03'" style="margin-left: 10px">审批不通过</span>
+                  {{ $dft('APPROVE_STATUS', scope.row.spreadRule.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
