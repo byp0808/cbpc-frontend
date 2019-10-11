@@ -8,7 +8,7 @@
         <el-col :span="4" class="prd-order-name">
           {{ getOrderName(item.orderId) }}
         </el-col>
-        <el-col :span="6" class="prd-order-name-sample" v-if="item.curveSampleNumberVisible">
+        <el-col v-if="item.curveSampleNumberVisible" :span="6" class="prd-order-name-sample">
           <span>曲线样本券数量: {{ item.curveSampleNumber }}</span>
         </el-col>
       </el-row>
@@ -62,13 +62,13 @@ export default {
       // 加载批次
       this.orderList = []
       var dataList = []
-      await getOrderList({'basePrd': '02'}).then(response => {
+      await getOrderList({ 'basePrd': '02' }).then(response => {
         dataList = response
       })
       if (dataList && dataList.length > 0) {
         for (var i = 0; i < dataList.length; i++) {
           var item = dataList[i]
-          this.orderList.push({id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime})
+          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
         }
       }
 

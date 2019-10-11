@@ -48,7 +48,7 @@
             <el-form-item label="标准期限" prop="standSlip">
               <el-select v-model="curvePrdKdForm.standSlip" :disabled="curvePrdKdFormStandSlipEdit" filterable placeholder="请选择标准期限">
                 <el-option
-                  v-for="(name, key) in $dict('KD_TYPE')"
+                  v-for="(name) in $dict('KD_TYPE')"
                   :key="name"
                   :label="name"
                   :value="name"
@@ -197,6 +197,7 @@ export default {
   directives: { waves },
   props: ['productId', 'disabled'],
   data() {
+    // eslint-disable-next-line no-unused-vars
     var comparison = (rule, value, callback) => {
       value = this.sampleIntervalDown
       if (value >= this.sampleIntervalUp) {
@@ -466,7 +467,7 @@ export default {
       // 判断列表中是否已经存在期限
       for (let i = 0; i < this.curvePrdKdList.length; i++) {
         var item = this.curvePrdKdList[i]
-        if (standSlip === item.standSlip) {
+        if (Number(standSlip) === Number(item.standSlip)) {
           if (!this.curvePrdKdFormStandSlipEdit) {
             this.$message({
               type: 'error',
@@ -517,6 +518,7 @@ export default {
       } else {
         var isdown = false
         for (let i = 0; i < this.curvePrdKdList.length; i++) {
+          // eslint-disable-next-line no-redeclare
           var item = this.curvePrdKdList[i]
           if (standSlip < item.standSlip) {
             this.curvePrdKdList.splice(i, 0, {
@@ -559,8 +561,8 @@ export default {
       // 验证表单
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          var nvalue = (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
-          var kvalue = (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
+          var nvalue = (Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1)
+          var kvalue = (Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1)
           // 验证N、K值，不可全部为0
           if (nvalue == 0 && kvalue == 0) {
             this.$message({
@@ -599,18 +601,18 @@ export default {
           var index = this.curvePrdNkForm_index
           if (index || index === 0) {
             // n,k值保留一位小数
-            var nvalue = new Number(this.curvePrdNkFormTmp.nvalue)
-            var kvalue = new Number(this.curvePrdNkFormTmp.kvalue)
-            this.curvePrdNkForm.nvalue = nvalue.toFixed(1)
-            this.curvePrdNkForm.kvalue = kvalue.toFixed(1)
+            var _nvalue = Number(this.curvePrdNkFormTmp.nvalue)
+            var _kvalue = Number(this.curvePrdNkFormTmp.kvalue)
+            this.curvePrdNkForm.nvalue = _nvalue.toFixed(1)
+            this.curvePrdNkForm.kvalue = _kvalue.toFixed(1)
             this.curvePrdNkForm.remark = this.curvePrdNkFormTmp.remark
             this.curvePrdNkForm.operateTs = new Date()
           } else {
             // 添加
             this.curvePrdNkList.push(
               {
-                nvalue: (new Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1),
-                kvalue: (new Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1),
+                nvalue: (Number(this.curvePrdNkFormTmp.nvalue)).toFixed(1),
+                kvalue: (Number(this.curvePrdNkFormTmp.kvalue)).toFixed(1),
                 remark: this.curvePrdNkFormTmp.remark,
                 operateTs: new Date()
               }

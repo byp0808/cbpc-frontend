@@ -11,8 +11,8 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="30" />
-          <el-table-column prop="orderName" label="批次名称" width="100" show-overflow-tooltip />
-          <el-table-column prop="compTimeStr" label="批次发布时间段" width="180" show-overflow-tooltip>
+          <el-table-column prop="orderName" label="批次名称" width="200" show-overflow-tooltip />
+          <el-table-column prop="compTimeStr" label="批次发布时间段" width="160" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row.compTime }}~{{ scope.row.pubTime }}
             </template>
@@ -141,13 +141,13 @@ export default {
       // 加载批次
       this.orderList = []
       var dataList = []
-      await getOrderList({'basePrd': '02'}).then(response => {
+      await getOrderList({ 'basePrd': '02' }).then(response => {
         dataList = response
       })
       if (dataList && dataList.length > 0) {
         for (var i = 0; i < dataList.length; i++) {
           var item = dataList[i]
-          this.orderList.push({id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime})
+          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
         }
       }
 
@@ -252,6 +252,7 @@ export default {
       // 如果产品批次关键期限中没有相应记录，则从产品关键期限列表中获取
       if (list.length === 0) {
         // list = this.curvePrdKdList  // 不能直接赋值，只能拷贝
+        // eslint-disable-next-line no-undef
         list = _.cloneDeep(this.curvePrdKdList)
       }
 
