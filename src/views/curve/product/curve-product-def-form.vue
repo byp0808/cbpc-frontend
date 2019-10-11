@@ -63,7 +63,7 @@
           <el-col :span="8">
             <el-form-item label="曲线评级">
               <!-- <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
-              <el-select v-model="productInfo.productGrade" placeholder="请选择曲线评级">
+              <el-select v-model="productInfo.productGrade" placeholder="请选择曲线评级" :disabled="disabled">
                 <el-option
                   v-for="(name, key) in $dict('MARKET_GRADE')"
                   :key="key"
