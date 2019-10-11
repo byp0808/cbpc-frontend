@@ -22,25 +22,24 @@ export function queryCurveRelation(data) {
   )
 }
 // 调用曲线服务 获取曲线列表
-export function getCurveList(data) {
+export function getCurveList() {
   return request(
     {
       url: `${basic_api_curve}/curveProduct/curveList`,
+      method: 'post'
+    }
+  )
+}
+// 调用曲线服务 获取曲线名称
+export function getCurve(data) {
+  return request(
+    {
+      url: `${basic_api_curve}/curveProduct/curve`,
       method: 'post',
       data: data
     }
   )
 }
-// 调用曲线服务 获取曲线名称
-// export function getCurve(data) {
-//   return request(
-//     {
-//       url: `${basic_api_curve}/curveProduct/curve`,
-//       method: 'post',
-//       data: data
-//     }
-//   )
-// }
 // 保存 曲线关系规则
 export function saveCurveRelation(data) {
   return request(
@@ -77,6 +76,15 @@ export function taskSubmit(data) {
   return request(
     {
       url: `${basic_api_valuation}/curve-relation/roamTask`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+export function haveId(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/curve-relation/all-relative-curve`,
       method: 'post',
       data: data
     }
