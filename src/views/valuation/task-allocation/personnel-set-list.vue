@@ -25,7 +25,8 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.taskRangeId)">设置</el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
-            <el-button type="text" size="small" @click="stop(scope.row.taskRangeId)">{{ statusText(scope.row.busiStatus) }}</el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
