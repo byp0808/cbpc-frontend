@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import {basic_api_curve, basic_api_market} from '@/api/base-api.js'
+import {basic_api_curve} from '@/api/base-api.js'
 
 // 查询曲线产品列表,获取下拉
 export function getCurveList(data) {
@@ -224,14 +224,16 @@ export function finishRefer(data) {
   })
 }
 
-// 从行情应用获取关键期限模板
+// 关键期限模板列表
 // TODO 改为接口获取值
-export function prdKdModsList(data){
-  return request({
-    url: `${basic_api_market}/curve-temp/kd-list`,
-    method: 'post',
-    data
-  })
+export function prdKdModsList(){
+  console.info('关键期限模板列表，后期需要改为接口')
+  return [
+    {label: '模板一', key: '0001'},
+    {label: '模板二', key: '0002'},
+    {label: '模板三', key: '0003'},
+    {label: '模板四', key: '0004'},
+  ]
 }
 
 // 远期NK模板列表
@@ -243,6 +245,18 @@ export function forwardFlagModsList(){
     {label: '模板二', key: '0002'},
     {label: '模板三', key: '0003'},
     {label: '模板四', key: '0004'},
+  ]
+}
+
+// 根据期限模板ID，获取期限列表
+// TODO 改为接口获取值
+export function getPrdKdListByModId(id){
+  console.info('根据期限模板ID，获取期限列表：' + id + '，后期需要改为接口')
+  return [
+    {standSlip: '0.01', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
+    {standSlip: '0.08', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
+    {standSlip: '0.25', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
+    {standSlip: '0.5', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449}
   ]
 }
 

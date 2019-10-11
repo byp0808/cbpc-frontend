@@ -63,7 +63,7 @@
           <el-col :span="8">
             <el-form-item label="曲线评级">
               <!-- <el-input v-model="productInfo.productGrade" type="text" :disabled="disabled" />-->
-              <el-select v-model="productInfo.productGrade" placeholder="请选择曲线评级">
+              <el-select v-model="productInfo.productGrade" placeholder="请选择">
                 <el-option
                   v-for="(name, key) in $dict('MARKET_GRADE')"
                   :key="key"
@@ -95,30 +95,30 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线基准利率" v-if="productInfo.rateType != '01'" prop="referRate">
-              <el-select v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
+            <el-form-item label="曲线基准利率">
+              <el-select v-if="productInfo.rateType != '01'" v-model="productInfo.referRate" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in referRateOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="上市日" prop="curveStartTime" :disabled="disabled">
+            <el-form-item label="曲线发布日期" prop="curveStartTime" :disabled="disabled">
               <el-date-picker
                       v-model="productInfo.curveStartTime"
                       align="right"
                       type="date"
-                      placeholder="选择上市日"
+                      placeholder="选择日期"
                       :disabled="disabled"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="停产日" prop="curveEndTime" :disabled="disabled">
+            <el-form-item label="曲线终止日期" prop="curveEndTime" :disabled="disabled">
               <el-date-picker
                       v-model="curveEndTime"
                       align="right"
                       type="date"
-                      placeholder="选择停产日"
+                      placeholder="选择日期"
                       :disabled="disabled"
                       :picker-options="pickerOptions"
               />
@@ -133,7 +133,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="曲线价格源">
-              <el-select v-model="productInfo.curvePriceFr" placeholder="请选择曲线价格源" :disabled="disabled">
+              <el-select v-model="productInfo.curvePriceFr" placeholder="请选择基准利率" :disabled="disabled">
                 <el-option v-for="item in curvePriceFrOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -149,7 +149,7 @@
         <el-button type="primary" :disabled="disabled" @click="saveProductInfo('productInfo')">保存</el-button>
       </div>
     </el-card>
-    <el-card v-show="stepActive === 1" class="box-card margin-top">
+    <el-card v-if="stepActive === 1" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
         <h3>构建曲线类型</h3>
       </div>
@@ -239,7 +239,7 @@ export default {
       var end = formatTimeToStr(endDate, 'yyyy-MM-dd')
       console.info('starttime:' + start + ',end:' + end)
       if (start > end) {
-        callback(new Error('上市日不能晚于停产日'))
+        callback(new Error('曲线发布起始日不能晚于曲线终止日期'))
       } else {
         callback()
       }
@@ -261,7 +261,7 @@ export default {
       var end = formatTimeToStr(value, 'yyyy-MM-dd')
       console.info('starttime:' + start + ',end:' + end)
       if (start > end) {
-        callback(new Error('上市日不能晚于停产日'))
+        callback(new Error('曲线发布起始日不能晚于曲线终止日期'))
       } else {
         callback()
       }
@@ -298,7 +298,7 @@ export default {
           { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
         createCalendars: [
-          { required: true, message: '请选择编制日历', trigger: 'change' }
+          { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
         curveStartTime: [
           { validator: checkCurveStartTime, trigger: 'change' }
@@ -308,9 +308,6 @@ export default {
         ],
         remark: [
           { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
-        ],
-        referRate: [
-          { required: true, message: '请选择曲线基准利率', trigger: 'change' }
         ]
       },
       pickerOptions: {
@@ -568,7 +565,7 @@ export default {
             var nextItem = curvePrdKdList[i + 1]
             if (item.sampleIntervalUp > nextItem.sampleIntervalDown) {
               this.$message({
-                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于tx' + (i + 2) + '条区间下限',
+                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于' + (i + 2) + '条区间下限',
                 type: 'error',
                 showClose: true
               })

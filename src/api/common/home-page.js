@@ -63,12 +63,3 @@ export function readMsg(data) {
     data
   })
 }
-
-// 删除消息
-export function deleteMsg(data) {
-  return request({
-    url: `${basic_api_market}/msg/drop`,
-    method: 'post',
-    data
-  })
-}

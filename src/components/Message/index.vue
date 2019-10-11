@@ -3,7 +3,7 @@
     <el-badge :value="newMsgCount" :max="99" class="item">
       <svg-icon icon-class="message" @click="click" />
     </el-badge>
-    <el-dialog title="我的消息" :visible.sync="messageFormVisible" :width="width">
+    <el-dialog title="我的消息" :visible.sync="messageFormVisible">
       <el-table
         ref="msgTable"
         :data="msg.msgList"
@@ -51,8 +51,8 @@
           :show-overflow-tooltip="true"
         >
           <template slot-scope="{ row }">
-            <el-tag v-if="row.status === '1'" size="mini" type="danger">{{ $dft("MSG_STATUS", row.status) }}</el-tag>
-            <el-tag v-if="row.status === '2'" size="mini" type="success">{{ $dft("MSG_STATUS", row.status) }}</el-tag>
+            <el-tag v-if="row.status === '1'" size="mini" type="danger">{{ $dft("MSG_TYPE", row.status) }}</el-tag>
+            <el-tag v-if="row.status === '2'" size="mini" type="danger">{{ $dft("MSG_TYPE", row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -60,24 +60,6 @@
           label="发布时间"
           :show-overflow-tooltip="true"
         />
-        <el-table-column
-          prop="address"
-          label="操作"
-          width="200"
-          show-overflow-tooltip
-          align="center"
-        >
-          <template slot-scope="scope">
-            <el-button
-              v-if="scope.row.status === '2'"
-              type="text"
-              size="small"
-              @click.native.prevent="toDelete(scope.row.id)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <el-pagination
         :current-page="msg.page.pageNumber"
@@ -93,15 +75,9 @@
 </template>
 
 <script>
-import { queryNewMsgCount, readMsg, deleteMsg } from '@/api/common/home-page.js'
+import { queryNewMsgCount, readMsg } from '@/api/common/home-page.js'
 export default {
   name: 'Message',
-  props: {
-    width: {
-      type: String,
-      default: '80%'
-    }
-  },
   data() {
     return {
       messageFormVisible: false,
@@ -163,24 +139,6 @@ export default {
       if (this.isPoll) {
         setTimeout(this.start, 5000)
       }
-    },
-    toDelete(id) {
-      // console.log(id)
-      this.$confirm('是否删除?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(async() => {
-        var data = {}
-        data.msgId = id
-        await deleteMsg(data)
-        this.handleCurrentChange()
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
     }
   }
 }

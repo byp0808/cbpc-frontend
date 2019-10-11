@@ -41,7 +41,7 @@
 export default {
   name: 'ScreeningCheckboxForm',
   components: {},
-  // props: ['businessId', 'disabled'],
+  props: ['businessId', 'disabled'],
   data() {
     return {
       dateDisabled: false,
