@@ -67,7 +67,7 @@ export default {
 
 <style scoped>
   .el-form-item {
-    margin-left: 0px;
+    margin-left: 0;
   }
 </style>
 

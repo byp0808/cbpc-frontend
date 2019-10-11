@@ -57,14 +57,13 @@
 export default {
   name: 'ScreeningNumForm',
   components: {},
-  // props: ['businessId', 'disabled'],
+  // props: ['isSceened'],
   data() {
     return {
-      dateDisabled: false,
-      rangeDisabled: false,
       radio: '1',
       disable_1: false,
-      disable_2: true
+      disable_2: true,
+      isScreened: false
     }
   },
   computed: {
@@ -80,22 +79,24 @@ export default {
   watch: {
     radio: 'radioChange'
   },
-  beforeMount() {
-    // this.screeningForm.absoluteValue = false
-    // this.screeningForm.screeningSort = '1'
+  activated() {
+    const form = this.screeningForm
+    if (typeof form.startNum !== 'undefined' || typeof form.endNum !== 'undefined') {
+      this.radio = '2'
+      this.isScreened = true
+    }
   },
   methods: {
-    screening() {
-      const data = this.screeningForm
-      console.info(data)
-      this.$emit('dateCallBack')
-    },
     radioChange(curVal, oldVal) {
       if (curVal !== oldVal) {
         this.disable_1 = !this.disable_1
         this.disable_2 = !this.disable_2
       }
-      this.reset()
+      if (!this.isScreened) {
+        this.reset()
+      } else {
+        this.isScreened = false
+      }
     },
     reset() {
       this.$store.commit('secondaryScr/setSecondaryScr', {})

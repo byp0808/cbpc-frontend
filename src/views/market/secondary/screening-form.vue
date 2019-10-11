@@ -63,11 +63,10 @@ export default {
   // props: ['businessId', 'disabled'],
   data() {
     return {
-      dateDisabled: false,
-      rangeDisabled: false,
       radio: '1',
       disable_1: false,
-      disable_2: true
+      disable_2: true,
+      isScreened: false
     }
   },
   computed: {
@@ -86,6 +85,14 @@ export default {
   beforeMount() {
     // this.screeningForm.screeningSort = '1'
   },
+  activated() {
+    console.info('数值类型')
+    const form = this.screeningForm
+    if (typeof form.dateRange !== 'undefined') {
+      this.radio = '2'
+      this.isScreened = true
+    }
+  },
   methods: {
     screening() {
       const data = this.screeningForm
@@ -97,7 +104,11 @@ export default {
         this.disable_1 = !this.disable_1
         this.disable_2 = !this.disable_2
       }
-      this.reset()
+      if (!this.isScreened) {
+        this.reset()
+      } else {
+        this.isScreened = false
+      }
     },
     reset() {
       this.$store.commit('secondaryScr/setSecondaryScr', {})

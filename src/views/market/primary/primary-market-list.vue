@@ -36,34 +36,36 @@
       @current-change="handleCurrentChange"
     />
     <el-dialog v-if="screeningFormVisible" width="45%" title="筛选" :visible.sync="screeningFormVisible">
-      <!--日期类型-->
-      <ScreeningForm
-        v-if="formType===1"
-        ref="ScreeningForm"
-        :business-id="orderInfoId"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--数字类型-->
-      <ScreeningNumForm
-        v-if="formType===2"
-        ref="ScreeningNumForm"
-        :business-id="orderInfoId"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--字符类型-->
-      <ScreeningStringForm
-        v-if="formType===3"
-        ref="ScreeningStringForm"
-        :business-id="orderInfoId"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--可选类-->
-      <ScreeningCheckboxForm
-        v-if="formType===4"
-        ref="ScreeningCheckboxForm"
-        :business-id="orderInfoId"
-        @dateCallBack="screeningCallBack"
-      />
+      <keep-alive>
+        <!--日期类型-->
+        <ScreeningForm
+          v-if="formType===1"
+          ref="ScreeningForm"
+          :business-id="orderInfoId"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--数字类型-->
+        <ScreeningNumForm
+          v-if="formType===2"
+          ref="ScreeningNumForm"
+          :business-id="orderInfoId"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--字符类型-->
+        <ScreeningStringForm
+          v-if="formType===3"
+          ref="ScreeningStringForm"
+          :business-id="orderInfoId"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--可选类-->
+        <ScreeningCheckboxForm
+          v-if="formType===4"
+          ref="ScreeningCheckboxForm"
+          :business-id="orderInfoId"
+          @dateCallBack="screeningCallBack"
+        />
+      </keep-alive>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="screening">确 定</el-button>
@@ -334,29 +336,6 @@ export default {
       this.loadTable()
     },
     screeningCallBack() {
-      // // 确定筛选返回函数
-      // console.info('父组件')
-      // const screeningForm = this.$store.state.screeningDate.screeningForm
-      // // 判断该字段是否已进行筛选
-      // const index = this.isScreeningByheader(this.screeningFormList)
-      // if (index != null && index !== '') {
-      //   this.screeningFormList[index].screeningForm = screeningForm
-      // } else {
-      //   const screening = {}
-      //   screening.headerKey = this.currentHeader.key
-      //   screening.headerLabel = this.currentHeader.label
-      //   screening.screeningForm = screeningForm
-      //   this.screeningFormList.push(screening)
-      // }
-      // console.info('搜索条件集合')
-      // console.info(this.screeningFormList)
-      // // 清楚筛选表单信息
-      // this.screeningFormReset()
-      // // 清楚当前需筛选的表头信息
-      // this.currentHeader = {}
-      // // 关闭弹窗
-      // this.screeningFormVisible = false
-      // this.loadTable()
     },
     isScreeningByheader(val) {
       for (let i = 0; i < val.length; i++) {
