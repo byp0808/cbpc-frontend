@@ -4,7 +4,7 @@
       <el-button type="primary" class="float-left" @click="add">新增人员设置</el-button>
     </div>
     <div>
-      <el-table ref="multipleTable" :data="personnelList" tooltip-effect="dark">
+      <el-table ref="multipleTable" :data="taskAllocationList" tooltip-effect="dark">
         <el-table-column prop="taskRangeId" align="center" label="选择" min-width="5%">
           <template slot-scope="scope">
             <el-radio :label="scope.row.taskRangeId" class="textRadio">&nbsp;</el-radio>
@@ -66,13 +66,14 @@
 <script>
 
 import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form'
-import { taskAllocationList, editTaskAllocation, delTaskAllocation } from '@/api/valuation/task-allocation.js'
+import { taskAllocationList, editTaskAllocation, delTaskAllocation, personnelList } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetList',
   components: { PersonnelSetForm },
   data() {
     return {
       personnelFormVisible: false,
+      taskAllocationList: [],
       personnelList: [],
       distRatioList: [], // 人员任务分配列表
       taskRangeId: '',
@@ -88,9 +89,12 @@ export default {
   },
   methods: {
     load() {
+      personnelList('00001').then(response => {
+        this.personnelList = response
+      })
       taskAllocationList({ page: this.page }).then(response => {
         const { taskAllocationDtoList, distRatioDetail, page } = response
-        this.personnelList = taskAllocationDtoList
+        this.taskAllocationList = taskAllocationDtoList
         this.distRatioList = distRatioDetail
         this.page = page
       })
