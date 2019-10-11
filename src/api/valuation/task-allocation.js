@@ -1,5 +1,5 @@
 import request from '@/utils/request-client'
-import { basic_api_valuation } from '@/api/base-api.js'
+import { basic_api_valuation, basic_api_portal } from '@/api/base-api.js'
 
 // 获取一条 任务分配范围 详细信息
 export function queryTaskRange(data) {
@@ -49,6 +49,16 @@ export function delTaskRange(id) {
       url: `${basic_api_valuation}/valuation-task/del-task-range`,
       method: 'post',
       data: { id: id, busiStatus: '05' }
+    }
+  )
+}
+
+// 获取人员列表
+export function personnelList(orgId) {
+  return request(
+    {
+      url: `${basic_api_portal}/sys/user/getOrgUsers/${orgId}`,
+      method: 'get'
     }
   )
 }

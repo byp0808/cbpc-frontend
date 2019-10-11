@@ -1,14 +1,14 @@
 <template>
   <div class="app-container" style="margin: 0;padding-left:0;padding-right:0">
     <el-row
-      v-for="(item, index) in productOrderListLocal"
+      v-for="(item) in productOrderListLocal"
       :key="item.curveOrderId"
     >
       <el-row class="prd-order-top">
-        <el-col :span="2" class="prd-order-name">
+        <el-col :span="4" class="prd-order-name">
           {{ getOrderName(item.orderId) }}
         </el-col>
-        <el-col :span="6" class="prd-order-name-sample" v-if="item.curveSampleNumberVisible">
+        <el-col v-if="item.curveSampleNumberVisible" :span="6" class="prd-order-name-sample">
           <span>曲线样本券数量: {{ item.curveSampleNumber }}</span>
         </el-col>
       </el-row>
@@ -19,7 +19,7 @@
 
 <script>
 
-import { getOrderName, getOrderList, getProductOrderList } from '@/api/curve/curve-product-order.js'
+import { getOrderList, getProductOrderList } from '@/api/curve/curve-product-order.js'
 
 export default {
   name: 'CurveProductDefConfirm',
@@ -46,16 +46,38 @@ export default {
     this.init()
   },
   methods: {
-    getOrderName: getOrderName,
+    getOrderName(id) {
+      var list = this.orderList
+      var label = id
+      for (const index in list) {
+        const item = list[index]
+        if (id === item.id) {
+          return item.orderName
+        }
+      }
+      return label
+    },
     async init() {
       // 加载批次
-      this.orderList = getOrderList()
+      // 加载批次
+      this.orderList = []
+      var dataList = []
+      await getOrderList({ 'basePrd': '02' }).then(response => {
+        dataList = response
+      })
+      if (dataList && dataList.length > 0) {
+        for (var i = 0; i < dataList.length; i++) {
+          var item = dataList[i]
+          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
+        }
+      }
+
       // 查询产品已经关联批次
-      await getProductOrderList({curveId: this.productIdLocal}).then(response => {
+      await getProductOrderList({ curveId: this.productIdLocal }).then(response => {
         this.productOrderList = response
 
         if (this.productOrderList && this.productOrderList.length > 0) {
-          for (var i = 0 ; i < this.productOrderList.length ; i++) {
+          for (let i = 0; i < this.productOrderList.length; i++) {
             var item = this.productOrderList[i]
             this.productOrderListLocal.push({
               index: i,
@@ -73,7 +95,7 @@ export default {
     showCurveInfo(item) {
       const curveId = item.curveId
       const curveOrderId = item.curveOrderId
-      console.info(curveId,curveOrderId)
+      console.info(curveId, curveOrderId)
 
       item.curveSampleNumberVisible = true
       item.curveSampleNumber = 123

@@ -12,26 +12,23 @@
           <span>{{ scope.row.productName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="同调曲线" width="290px" align="center">
+      <el-table-column label="初始化方案" width="290px" align="center">
         <template slot-scope="scope">
           <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
         <template slot-scope="scope">
-          <span v-if="scope.row.approveStatus==='01'">待审核</span>
-          <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-          <span v-else>审批不通过</span>
+          <span>{{ scope.row.approveStatus }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">
-            编辑
+          <el-button type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">
+            修改
           </el-button>
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
-          <el-button v-else type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">删除
+          <el-button type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -45,9 +42,9 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog :visible.sync="dialogFormVisible" width="50%">
-      <Homology
-        ref="homology"
+    <el-dialog :visible.sync="dialogFormVisible" width="90%">
+      <Creditdebt
+        ref="creditdebt"
         :temp="temp"
       />
       <div slot="footer" class="dialog-footer">
@@ -68,12 +65,12 @@ import {
   storageHomology,
   delcurveHomologyDto
 } from '@/api/curve/curve-product-list.js'
-import Homology from '@/views/curve/set/homology.vue'
+import Creditdebt from '@/views/curve/creditdebt/creditdebt.vue'
 
 export default {
   name: 'CurvecurveHomology',
   components: {
-    Homology
+    Creditdebt
   },
   data() {
     return {
@@ -107,11 +104,19 @@ export default {
     curveHomologyCreate() {
       this.temp = []
       this.dialogFormVisible = true
+      this.$refs.creditdebt.jinZhiXuanZe = false
+      this.$refs.creditdebt.curveHomologyShow = false
+      this.$refs.creditdebt.curveHomologyXing = false
+      this.$refs.creditdebt.bankMessage = []
+      this.$refs.creditdebt.bankMessage2 = []
     },
     // dto列表修改操作
     curveHomologyDtoEdit(index, rows) {
       this.temp = rows[index]
       this.dialogFormVisible = true
+      this.$refs.creditdebt.jinZhiXuanZe = true
+      this.$refs.creditdebt.curveHomologyShow = false
+      this.$refs.creditdebt.curveHomologyXing = false
     },
     // dto列表删除
     curveHomologyDtoDel(index, rows) {
@@ -124,14 +129,9 @@ export default {
         })
       })
     },
-    disableEdit() {
-      this.$message({
-        type: 'warning',
-        message: '不能操作待审核状态的数据'
-      })
-    },
     storageCurveHomology() {
-      var data = this.$refs.homology.obtainCurveHomology()
+      debugger
+      var data = this.$refs.creditdebt.obtainCurveHomology()
       if (!data.curveHomologyList) {
         alert('请选择同调曲线！')
         return

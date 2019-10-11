@@ -45,3 +45,12 @@ export function queryFilterInfoById(data) {
     data
   })
 }
+
+// 根据筛选器Id 查筛选器详细信息
+export function checkRepeat(data) {
+  return request({
+    url: `${basic_api_market}/bond-filter/check-repeat`,
+    method: 'post',
+    data
+  })
+}

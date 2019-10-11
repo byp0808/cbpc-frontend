@@ -4,7 +4,7 @@
       <el-button type="primary" class="float-left" @click="add">新增人员设置</el-button>
     </div>
     <div>
-      <el-table ref="multipleTable" :data="personnelList" tooltip-effect="dark">
+      <el-table ref="multipleTable" :data="taskAllocationList" tooltip-effect="dark">
         <el-table-column prop="taskRangeId" align="center" label="选择" min-width="5%">
           <template slot-scope="scope">
             <el-radio :label="scope.row.taskRangeId" class="textRadio">&nbsp;</el-radio>
@@ -18,19 +18,14 @@
         </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span v-if="scope.row.approveStatus==='01'">待审核</span>
-            <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-            <span v-else>审批不通过</span>
+            {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">设置</el-button>
-            <el-button v-else type="text" size="small" @click="edit(scope.row.taskRangeId)">设置</el-button>
-            <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
-            <el-button v-else type="text" size="small" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="disableEdit">设置</el-button>
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
+            <el-button type="text" size="small" @click="stop(scope.row.taskRangeId)">{{ statusText(scope.row.busiStatus) }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,13 +61,14 @@
 <script>
 
 import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form'
-import { taskAllocationList, editTaskAllocation, delTaskAllocation } from '@/api/valuation/task-allocation.js'
+import { taskAllocationList, editTaskAllocation, delTaskAllocation, personnelList } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetList',
   components: { PersonnelSetForm },
   data() {
     return {
       personnelFormVisible: false,
+      taskAllocationList: [],
       personnelList: [],
       distRatioList: [], // 人员任务分配列表
       taskRangeId: '',
@@ -83,14 +79,29 @@ export default {
       }
     }
   },
+  computed: {
+    statusText() {
+      return function(status) {
+        switch (status) {
+          case '02':
+            return '启用中'
+          case '03':
+            return '停用中'
+        }
+      }
+    }
+  },
   beforeMount() {
     this.load()
   },
   methods: {
     load() {
+      personnelList('00001').then(response => {
+        this.personnelList = response
+      })
       taskAllocationList({ page: this.page }).then(response => {
         const { taskAllocationDtoList, distRatioDetail, page } = response
-        this.personnelList = taskAllocationDtoList
+        this.taskAllocationList = taskAllocationDtoList
         this.distRatioList = distRatioDetail
         this.page = page
       })

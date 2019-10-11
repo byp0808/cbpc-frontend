@@ -83,6 +83,11 @@ const curveRouter = {
       component: () => import('@/views/curve/report/curve-sampleticket-list.vue'),
       name: 'CurveSampleTicketList',
       meta: { title: '查询曲线样本券', noCache: true }
+    }, {
+      path: 'curve-set-creditdebt',
+      component: () => import('@/views/curve/creditdebt/curve-set-creditdebt.vue'),
+      name: 'CurveSetCreditdebt',
+      meta: { title: '设置信用债初始化方案', noCache: true }
     }
   ]
 }

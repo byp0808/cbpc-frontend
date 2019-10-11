@@ -1,6 +1,5 @@
 import request from '@/utils/app-request'
-import { basic_api_curve } from '@/api/base-api.js'
-import { formatTimeToStr } from '@/utils/date.js'
+import { basic_api_curve, basic_api_market } from '@/api/base-api.js'
 
 // 获取批次列表
 export function getOrderName(id) {
@@ -8,7 +7,7 @@ export function getOrderName(id) {
   var label = id
   for (const index in list) {
     const item = list[index]
-    if ( id === item.id) {
+    if (id === item.id) {
       return item.orderName
     }
   }
@@ -16,23 +15,27 @@ export function getOrderName(id) {
 }
 
 // 获取批次列表
-export function getOrderList() {
-  var list = [
-    { id: 'ORDER_ID_1', orderName: '批次1', compTime: 1568103569818, pubTime: 1568116569818 },
-    { id: 'ORDER_ID_2', orderName: '批次2', compTime: 1568104569818, pubTime: 1568226569818 },
-    { id: 'ORDER_ID_3', orderName: '批次3', compTime: 1568107569818, pubTime: 1568336569818 },
-    { id: 'ORDER_ID_4', orderName: '批次4', compTime: 1568108569818, pubTime: 1568446569818 }
-  ]
-  for (const index in list) {
-    const item = list[index]
-    if (item.compTime) {
-      item.compTimeStr = formatTimeToStr(item.compTime, 'hh:mm')
-    }
-    if (item.pubTime) {
-      item.pubTimeStr = formatTimeToStr(item.pubTime, 'hh:mm')
+export async function getOrderList(data) {
+  return request({
+    url: `${basic_api_market}/order/all-list`,
+    method: 'post',
+    data
+  })
+}
+
+export async function getOrderListOptions() {
+  var orderList = []
+  var dataList = []
+  await getOrderList({ 'basePrd': '02' }).then(response => {
+    dataList = response
+  })
+  if (dataList && dataList.length > 0) {
+    for (var i = 0; i < dataList.length; i++) {
+      var item = dataList[i]
+      orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
     }
   }
-  return list
+  return orderList
 }
 
 // 获取已关联批次
@@ -53,7 +56,7 @@ export function queryCurvePrdOrderKtList(data) {
 }
 
 // 查询产品-自动编制
-export function queryProductOrderAutoList(data){
+export function queryProductOrderAutoList(data) {
   return request({
     url: `${basic_api_curve}/curveProductOrderAuto/list`,
     method: 'post',
@@ -62,7 +65,7 @@ export function queryProductOrderAutoList(data){
 }
 
 // 保存产品批次信息
-export function savePrdOrder(data){
+export function savePrdOrder(data) {
   return request({
     url: `${basic_api_curve}/curveProductOrder/save`,
     method: 'post',
