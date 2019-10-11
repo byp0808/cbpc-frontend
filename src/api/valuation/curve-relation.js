@@ -81,3 +81,12 @@ export function taskSubmit(data) {
     }
   )
 }
+export function haveId(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/curve-relation/all-relative-curve`,
+      method: 'post',
+      data: data
+    }
+  )
+}
