@@ -24,7 +24,7 @@ export default [
           },
           {
             id: 'daim312331',
-            name: '估价净价'
+            name: '估价净价(元)'
           },
           {
             id: 'liut12333123',
@@ -32,7 +32,7 @@ export default [
           },
           {
             id: 'liut113323123',
-            name: '估价收益率'
+            name: '估价收益率(%)'
           },
           {
             id: 'liut2323144',

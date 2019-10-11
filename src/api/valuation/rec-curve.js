@@ -47,10 +47,11 @@ export function queryRecCurve(data) {
 }
 
 // 查询估值曲线详细信息
-export function queryCurveList() {
+export function queryCurveList(data) {
   return request({
     url: `${basic_api_valuation}/valuation-curve/curve-list`,
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 

@@ -90,7 +90,7 @@
     </el-dialog>
     <el-dialog :visible.sync="volumeAddDialog" :title="taskTitle">
       <div>
-        <el-form style="margin-left:50px" :label-position="labelPosition">
+        <el-form style="margin-left:50px" :label-position="labelPosition" :model="volumeAdd">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
             <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
@@ -98,6 +98,7 @@
           </el-form-item>
           <el-form-item v-if="isBatch" label="选择文件">
             <el-upload
+              ref="upload"
               class="upload-demo"
               action=""
               :limit="1"
@@ -108,7 +109,9 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
+            <div class="downLoad" @click="downLoadMode">
+              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
+              模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
             <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择原因" @change="batchChange">
@@ -136,6 +139,7 @@
           </el-form-item>
           <el-form-item label="选择文件">
             <el-upload
+              ref="upload1"
               class="upload-demo"
               action=""
               :limit="1"
@@ -146,7 +150,9 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">模板文件下载</div>
+            <div class="downLoad" @click="downLoadMode">
+              <a ref="moduleDownload" style="display: none" href="/model/voluation.xlsx" download="估值点差上传汇总文件" />
+              模板文件下载</div>
           </el-form-item>
         </el-form>
         <el-row>
@@ -158,6 +164,32 @@
           </el-col>
         </el-row>
       </div>
+    </el-dialog>
+    <el-dialog title="提示" :visible.sync="remaindDialog">
+      <div v-if="isBatch" class="content">{{ message }}{{ failMessage }}</div>
+      <div v-else class="content">{{ message }}</div>
+      <el-row style="margin-top:10px">
+        <el-col :span="8" :offset="17">
+          <div v-if="code === 'YBL100001001' || code === 'YBL100001002' " class="dialog-footer">
+            <el-button @click="cancle">否</el-button>
+            <el-button type="primary" @click="saveFirst('01')">是</el-button>
+          </div>
+        </el-col>
+        <el-col :span="14" :offset="10">
+          <div v-if="code === 'YBL100001003' " class="dialog-footer">
+            <el-button @click="cancle">不迁移</el-button>
+            <el-button type="primary" @click="saveFirst('01')">迁移并保留</el-button>
+            <el-button type="primary" @click="saveFirst('02')">迁移不保留</el-button>
+          </div>
+        </el-col>
+        <el-col :span="10" :offset="15">
+          <div v-if="code === 'YBL100001004' " class="dialog-footer">
+            <el-button @click="cancle">取消</el-button>
+            <el-button v-if="isBatch" type="primary" @click="saveBatchFirst('01')">忽略并导入</el-button>
+            <el-button v-else type="primary" @click="saveFirst('01')">忽略并导入</el-button>
+          </div>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -186,6 +218,10 @@ export default {
       fileLoading: false,
       methodUpload: false,
       isBatch: false,
+      remaindDialog: false,
+      message: '',
+      code: '',
+      failMessage: '',
       taskTitle: '',
       excelFile: '',
       peopleName: '',
@@ -195,7 +231,10 @@ export default {
       nameModel: {},
       batchList: [
         {
-          batchId: '2222',
+          batchId: '11',
+          name: '批次1'
+        }, {
+          batchId: '22',
           name: '批次2'
         }
       ],
@@ -268,9 +307,13 @@ export default {
     getTask() {
       console.log('data', this.selection)
       if (this.selection.length === 0) {
-        return this.$message('请选择任务')
+        return this.$message.warning('请选择任务')
       } else {
         getTask(this.selection).then(res => {
+          this.$message({
+            message: '任务认领成功',
+            type: 'success'
+          })
           this.loadTable_all()
         })
       }
@@ -299,29 +342,80 @@ export default {
       this.volumeAdd.batchId = e
     },
     resetTaskDialog() {
-      this.volumeAdd.batchId = ''
-      this.volumeAdd.attach = ''
+      this.volumeAdd.batchId = this.batchList[0].batchId
+      this.volumeAdd.cause = '08'
+      this.excelFile = null
+      // this.volumeAdd = { cause: '08' }
+      if (this.$refs.upload) this.$refs.upload.clearFiles()
+    },
+    saveBatchFirst(type) {
+      this.volumeAdd.busiCode = type
+      const fd = new FormData()
+      fd.append('attach', this.excelFile)
+      fd.append('batchId', this.volumeAdd.batchId)
+      fd.append('cause', this.volumeAdd.cause)
+      addBatchTask(fd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable_all()
+      })
+    },
+    saveFirst(type) {
+      console.log('ty', type)
+      this.volumeAdd.busiCode = type
+      addOneTask(this.volumeAdd).then(res => {
+        this.remaindDialog = false
+        this.volumeAddDialog = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.loadTable_all()
+      })
+    },
+    cancle() {
+      this.remaindDialog = false
+      this.volumeAddDialog = false
     },
     saveBatch() {
       if (!this.volumeAdd.batchId) {
         return this.$message.info('请选择批次')
       }
+      if (!this.volumeAdd.cause) {
+        return this.$message.info('请选择调整原因')
+      }
       if (this.isBatch) {
         if (!this.excelFile) {
           return this.$message('别着急, 您的文件还没有上传哦')
         }
-        var fd = new FormData()
+        const fd = new FormData()
         fd.append('attach', this.excelFile)
         fd.append('batchId', this.volumeAdd.batchId)
         fd.append('cause', this.volumeAdd.cause)
-        console.log('fd', fd)
+        console.log('fd', fd.getAll('attach'))
         addBatchTask(fd).then(res => {
-          this.volumeAddDialog = false
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          })
-          this.loadTable_all()
+          console.log('22', res)
+          if (res) {
+            if (res.respCode === 'YBL100001004') {
+              this.remaindDialog = true
+              this.code = res.respCode
+              this.message = res.respMsg
+              this.failMessage = res.failData
+            } else {
+              this.volumeAddDialog = false
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.loadTable_all()
+            }
+          }
+        }).catch(message => {
+          this.$message.error(`${message}`)
         })
       } else {
         if (!this.bondId) {
@@ -329,14 +423,22 @@ export default {
           return
         }
         delete this.volumeAdd.attach
+        delete this.volumeAdd.busiCode
         this.volumeAdd.csin = this.bondId
         addOneTask(this.volumeAdd).then(res => {
-          this.volumeAddDialog = false
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          })
-          this.loadTable_all()
+          if (res.code) {
+            // this.volumeAddDialog = false
+            this.remaindDialog = true
+            this.code = res.code
+            this.message = res.msg
+          } else {
+            this.volumeAddDialog = false
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+            this.loadTable_all()
+          }
         })
       }
     },
@@ -347,7 +449,7 @@ export default {
       this.resetTaskDialog()
     },
     downLoadMode() {
-
+      this.$refs.moduleDownload.click()
     },
     saveValuation() {
 
@@ -369,11 +471,15 @@ export default {
     },
     allotTask() {
       this.allocationDialog = true
+      this.nameModel.userId = ''
       getUserName('00001').then(res => {
         this.nameList = res
       })
     },
     saveName() {
+      if (this.selection.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
       this.nameModel.ids = this.selection
       saveTask(this.nameModel).then(res => {
         this.$message({
@@ -434,9 +540,16 @@ export default {
      font-weight: 700;
      font-size: 16px;
  }
+  .content {
+   font-size: 18px;
+   margin-top: -15px;
+ }
  .downLoad {
    margin-left: 70px;
    color: #09f;
    margin-top: -10px;
+    &:hover {
+     cursor: pointer;
+   }
  }
 </style>

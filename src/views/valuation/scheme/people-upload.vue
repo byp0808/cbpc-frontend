@@ -3,13 +3,13 @@
     <div>
       <el-table
         :data="allList"
-        max-height="300px"
+        style="width: 100%"
+        max-height="300"
         tooltip-effect="dark"
         border
         :header-cell-style="{background:'#f6f6f6'}"
         fit
         highlight-current-row
-        width="100%"
         @selection-change="handleSelectionChange"
       >
         <el-table-column align="center" type="selection" />
@@ -17,12 +17,12 @@
         <el-table-column prop="lastUpdBy" label="操作人" align="center" />
         <el-table-column label="债券代码" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondsId }}</span>
+            <span>{{ scope.row.bondId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="债券简称" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondsShort }}</span>
+            <span>{{ scope.row.bondShort }}</span>
           </template>
         </el-table-column>
         <el-table-column label="日间估价全价（元）" align="center" width="160px">
@@ -102,11 +102,16 @@ export default {
 
     // },
     handleSelectionChange(val) {
-      val.map(v => {
-        this.selectionList.push(v.id)
-      })
-      this.selectionList = Array.from(new Set(this.selectionList))
-      this.$emit('selectionList', this.selectionList)
+      if (val.length > 0) {
+        val.map(v => {
+          this.selectionList.push(v.id)
+        })
+        this.selectionList = Array.from(new Set(this.selectionList))
+        this.$emit('selectionList', this.selectionList)
+      } else {
+        this.selectionList = []
+      }
+      console.log('val', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize

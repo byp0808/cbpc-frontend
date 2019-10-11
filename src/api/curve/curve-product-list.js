@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import {basic_api_curve} from '@/api/base-api.js'
+import { basic_api_curve, basic_api_market } from '@/api/base-api.js'
 
 // 查询曲线产品列表,获取下拉
 export function getCurveList(data) {
@@ -136,7 +136,7 @@ export function defCurvePeriod(data) {
 }
 
 // 查询同调曲线dto列表
-export function querycurveHomologyDto(data){
+export function querycurveHomologyDto(data) {
   return request({
     url: `${basic_api_curve}/curveHomology/queryCurveHomologyDto`,
     method: 'post',
@@ -145,7 +145,7 @@ export function querycurveHomologyDto(data){
 }
 
 // 删除同调曲线dto列表
-export function delcurveHomologyDto(data){
+export function delcurveHomologyDto(data) {
   return request({
     url: `${basic_api_curve}/curveHomology/delcurveHomologyDto`,
     method: 'post',
@@ -154,7 +154,7 @@ export function delcurveHomologyDto(data){
 }
 
 // 查询同调曲线列表
-export function querycurveHomology(data){
+export function querycurveHomology(data) {
   return request({
     url: `${basic_api_curve}/curveHomology/queryCurveHomology`,
     method: 'post',
@@ -163,7 +163,7 @@ export function querycurveHomology(data){
 }
 
 // 同调曲线保存并发起流程
-export function storageHomology(data){
+export function storageHomology(data) {
   return request({
     url: `${basic_api_curve}/curveHomology/storageHomology`,
     method: 'post',
@@ -179,9 +179,8 @@ export function finishHomology(data) {
   })
 }
 
-
 // 查询参考曲线dto列表
-export function queryCurveReferDto(data){
+export function queryCurveReferDto(data) {
   return request({
     url: `${basic_api_curve}/curveRefer/queryCurveReferDto`,
     method: 'post',
@@ -190,7 +189,7 @@ export function queryCurveReferDto(data){
 }
 
 // 删除参考曲线dto列表
-export function delCurveReferDto(data){
+export function delCurveReferDto(data) {
   return request({
     url: `${basic_api_curve}/curveRefer/delCurveReferDto`,
     method: 'post',
@@ -199,7 +198,7 @@ export function delCurveReferDto(data){
 }
 
 // 查询参考曲线列表
-export function queryCurveRefer(data){
+export function queryCurveRefer(data) {
   return request({
     url: `${basic_api_curve}/curveRefer/queryCurveRefer`,
     method: 'post',
@@ -208,7 +207,7 @@ export function queryCurveRefer(data){
 }
 
 // 参考曲线保存并发起流程
-export function storageRefer(data){
+export function storageRefer(data) {
   return request({
     url: `${basic_api_curve}/curveRefer/storageRefer`,
     method: 'post',
@@ -224,49 +223,35 @@ export function finishRefer(data) {
   })
 }
 
-// 关键期限模板列表
+// 从行情应用获取关键期限模板
 // TODO 改为接口获取值
-export function prdKdModsList(){
-  console.info('关键期限模板列表，后期需要改为接口')
-  return [
-    {label: '模板一', key: '0001'},
-    {label: '模板二', key: '0002'},
-    {label: '模板三', key: '0003'},
-    {label: '模板四', key: '0004'},
-  ]
+export function prdKdModsList(data) {
+  return request({
+    url: `${basic_api_market}/curve-temp/kd-list`,
+    method: 'post',
+    data
+  })
 }
 
 // 远期NK模板列表
 // TODO 改为接口获取值
-export function forwardFlagModsList(){
+export function forwardFlagModsList() {
   console.info('远期NK模板列表，后期需要改为接口')
   return [
-    {label: '模板一', key: '0001'},
-    {label: '模板二', key: '0002'},
-    {label: '模板三', key: '0003'},
-    {label: '模板四', key: '0004'},
-  ]
-}
-
-// 根据期限模板ID，获取期限列表
-// TODO 改为接口获取值
-export function getPrdKdListByModId(id){
-  console.info('根据期限模板ID，获取期限列表：' + id + '，后期需要改为接口')
-  return [
-    {standSlip: '0.01', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
-    {standSlip: '0.08', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
-    {standSlip: '0.25', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449},
-    {standSlip: '0.5', sampleIntervalUp: '', sampleIntervalDown: '', operateTs: 1568968332449}
+    { label: '模板一', key: '0001' },
+    { label: '模板二', key: '0002' },
+    { label: '模板三', key: '0003' },
+    { label: '模板四', key: '0004' }
   ]
 }
 
 // 根据远期NK模板ID，获取列表
 // TODO 改为接口获取值
-export function getCurvePrdNkListByModId(id){
+export function getCurvePrdNkListByModId(id) {
   console.info('根据远期NK模板ID，获取列表：' + id + '，后期需要改为接口')
   return [
-    {nvalue: '0', kvalue: '11', operateTs: 1568968332449, remark: ''},
-    {nvalue: '12', kvalue: '33', operateTs: 1568968332449, remark: ''},
-    {nvalue: '13', kvalue: '0', operateTs: 1568968332449, remark: ''}
+    { nvalue: '0', kvalue: '11', operateTs: 1568968332449, remark: '' },
+    { nvalue: '12', kvalue: '33', operateTs: 1568968332449, remark: '' },
+    { nvalue: '13', kvalue: '0', operateTs: 1568968332449, remark: '' }
   ]
 }

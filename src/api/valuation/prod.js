@@ -55,6 +55,15 @@ export function saveProd(data) {
   })
 }
 
+// 删除估值产品配置信息
+export function delProd(data) {
+  return request({
+    url: `${basic_api_valuation}/prod/delete`,
+    method: 'post',
+    data
+  })
+}
+
 // 产品管关联的指标
 export function indicesProd(data) {
   return request({
@@ -90,7 +99,7 @@ export function queryBasicProdIndex(data) {
     data
   })
 }
-// 估值方法
+// 估值方法 废弃
 export function queryValuationWay(data) {
   return request({
     url: `/valuation/way`,
@@ -101,7 +110,7 @@ export function queryValuationWay(data) {
 // 估值方法
 export function queryBatches(data) {
   return request({
-    url: `/batch/list`,
+    url: `${basic_api_market}/order/all-list`,
     method: 'post',
     data
   })

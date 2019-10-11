@@ -45,7 +45,7 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="checkStatus(scope.row.approveStatus)"
+            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -53,7 +53,7 @@
             设置
           </el-button>
           <el-button
-            v-if="checkStatus(scope.row.approveStatus)"
+            :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"

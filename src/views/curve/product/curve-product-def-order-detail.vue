@@ -119,7 +119,7 @@
       <el-button type="primary" @click="toSetRule">设置</el-button>
     </el-row>
 
-    <el-dialog :lock-scroll="lockScroll" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
+    <el-dialog :lock-scroll="lockScroll" :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
           <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />

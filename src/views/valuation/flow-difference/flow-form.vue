@@ -55,7 +55,7 @@ export default {
       })
     } else {
       this.businessId = ''
-      this.assetsGroupInfo = ''
+      this.assetsGroupInfo = {}
     }
   },
   mounted() {

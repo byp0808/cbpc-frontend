@@ -2,12 +2,12 @@
   <div class="app-container">
     <el-card class="box-card">
       <el-steps :active="stepActive" align-center finish-status="success" process-status="finish">
-        <el-step title="基本信息" />
-        <el-step title="选择范围" />
-        <el-step title="选择指标" />
-        <el-step title="估值方法" />
-        <el-step title="批次发布指标" />
-        <el-step title="确认产品" />
+        <el-step title="基本信息" @click.native="go(0)"/>
+        <el-step title="选择范围" @click.native="go(1)"/>
+        <el-step title="选择指标" @click.native="go(2)"/>
+        <el-step title="估值场景" @click.native="go(3)"/>
+        <el-step title="批次发布指标" @click.native="go(4)"/>
+        <el-step title="确认产品" @click.native="go(5)" />
       </el-steps>
     </el-card>
     <el-card v-show="stepActive === 0" class="box-card margin-top">
@@ -22,23 +22,24 @@
                 <el-input v-model="prodInfo.prodName" type="text" auto-complete="off" />
               </el-form-item>
               <el-form-item label="产品状态">
-                <el-select v-model="prodInfo.prodStatus" placeholder="产品状态" style="width: 100%">
+                <el-select v-model="prodInfo.prodStatus" disabled placeholder="产品状态" style="width: 100%">
                   <el-option
-                    v-for="prodStatus in prodStatusList"
-                    :key="prodStatus.id"
-                    :label="prodStatus.name"
-                    :value="prodStatus.id"
+                    v-for="(name, key) in $dict('CURVE_PRODUCT_STATUS')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="退市日">
-                <el-date-picker
-                  v-model="prodInfo.delistingDate"
-                  align="right"
-                  type="date"
-                  placeholder="选择日期"
-                  style="width: 100%"
-                />
+              <el-form-item label="币种" prop="currency">
+                <el-select v-model="prodInfo.currency" multiple placeholder="请选择币种" style="width: 100%">
+                  <el-option
+                    v-for="(name, key) in $dict('CURRENCY')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
+                  />
+                </el-select>
               </el-form-item>
             </div>
           </el-col>
@@ -54,39 +55,21 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="上市日">
+              <el-form-item label="上市日" prop="checkDate">
                 <el-date-picker
                   v-model="prodInfo.listingDate"
                   align="right"
                   type="date"
                   placeholder="选择日期"
+                  @change="listingDateChange"
+                  value-format="yyyy-MM-dd"
                   style="width: 100%"
                 />
-              </el-form-item>
-              <el-form-item label="币种" prop="currency">
-                <el-select v-model="prodInfo.currency" placeholder="请选择币种" style="width: 100%">
-                  <el-option
-                    v-for="currency in currencyList"
-                    :key="currency.id"
-                    :label="currency.name"
-                    :value="currency.id"
-                  />
-                </el-select>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-purple">
-              <el-form-item label="市场" prop="prodMarket">
-                <el-select v-model="prodInfo.prodMarket" placeholder="请选择市场" style="width: 100%">
-                  <el-option
-                    v-for="market in marketList"
-                    :key="market.id"
-                    :label="market.name"
-                    :value="market.id"
-                  />
-                </el-select>
-              </el-form-item>
               <el-form-item label="编制日历">
                 <el-select v-model="prodInfo.calendar" placeholder="请选择编制日历" style="width: 100%">
                   <el-option
@@ -96,6 +79,17 @@
                     :value="calendar.id"
                   />
                 </el-select>
+              </el-form-item>
+              <el-form-item label="停产日" prop="checkDate">
+                <el-date-picker
+                  v-model="prodInfo.delistingDate"
+                  prop="delistingDate"
+                  align="right"
+                  type="date"
+                  placeholder="选择日期"
+                  @change="delistingDateChange"
+                  style="width: 100%"
+                />
               </el-form-item>
             </div>
           </el-col>
@@ -165,7 +159,7 @@
     </el-card>
     <el-card v-show="stepActive === 3" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
-        <h3>估值方法</h3>
+        <h3>估值场景</h3>
       </div>
       <el-row :gutter="20" class="margin-top">
         <el-col :span="12" :offset="6">
@@ -183,12 +177,12 @@
                 width="55"
               />
               <el-table-column
-                prop="id"
-                label="估值方法"
+                prop="name"
+                label="估值场景"
                 width="200"
               />
               <el-table-column
-                prop="name"
+                prop=""
                 label="描述"
                 width=""
               />
@@ -211,7 +205,7 @@
           <div class="grid-content bg-purple">
             <div>
               <el-button type="primary" @click="useChoiceBatch">应用所选批次</el-button>
-              <el-button type="primary">刷新</el-button>
+              <el-button type="primary" @click="refreshBatch">刷新</el-button>
             </div>
             <el-table
               ref="batchesTable"
@@ -226,7 +220,7 @@
                 width="55"
               />
               <el-table-column
-                prop="batchName"
+                prop="orderName"
                 label="批次"
               />
             </el-table>
@@ -235,9 +229,9 @@
         <el-col :span="18">
           <div class="grid-content bg-purple">
             <el-tabs type="card">
-              <el-tab-pane v-for="batch in batchesChoice" :key="batch.batchId" :label="batch.batchName">
+              <el-tab-pane v-for="batch in batchesChoice" :key="batch.id" :label="batch.orderName">
                 <el-table
-                  :data="batchProdIndices[batch.batchId]"
+                  :data="batchProdIndices[batch.id]"
                   tooltip-effect="dark"
                   style="width:100%"
                 >
@@ -254,7 +248,8 @@
                   >
                     <template slot-scope="{row}">
                       <el-switch
-                        v-model="batchChoiceIndicesStatus(batch.batchId, row.indexId).compPermStatus"
+                        v-model="batchChoiceIndicesStatus(batch.id, row.indexId).compPermStatus"
+                        @change="compPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -266,7 +261,8 @@
                   >
                     <template slot-scope="{row}">
                       <el-switch
-                        v-model="batchChoiceIndicesStatus(batch.batchId, row.indexId).relaPermStatus"
+                        v-model="batchChoiceIndicesStatus(batch.id, row.indexId).relaPermStatus"
+                        @change="relaPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
@@ -350,14 +346,6 @@ export default {
         id: 'prod-2',
         name: '基础产品2'
       }],
-      marketList: [{
-        id: 'market-1',
-        name: '市场1'
-      },
-      {
-        id: 'market-2',
-        name: '市场2'
-      }],
       calendarList: [{
         id: 'calendar-1',
         name: '编制日历1'
@@ -365,14 +353,6 @@ export default {
       {
         id: 'calendar-2',
         name: '编制日历2'
-      }],
-      prodStatusList: [{
-        id: 'prodStatus-1',
-        name: '产品状态1'
-      },
-      {
-        id: 'prodStatus-2',
-        name: '产品状态2'
       }],
       currencyList: [{
         id: 'currency-1',
@@ -388,6 +368,9 @@ export default {
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { validator: this.checkProdName, trigger: 'blur' }
         ],
+        checkDate: [
+          { validator: this.checkDate, trigger: 'blur' }
+        ],
         prodBasic: [
           { required: true, message: '请选择基础产品', trigger: 'blur' }
         ],
@@ -395,7 +378,7 @@ export default {
           { required: true, message: '请选择市场', trigger: 'blur' }
         ],
         currency: [
-          { required: true, message: '请选择市场', trigger: 'blur' }
+          { required: true, message: '请选择币种', trigger: 'blur' }
         ]
       }
     }
@@ -456,10 +439,9 @@ export default {
         return this.batchesChoiceIndices[arrIndex] || {}
       }
     },
-    batchProdIndices: {
-      get() {
-        return this.$store.state.valuationProd.batchIndices.batchProdIndices
-      }
+    batchProdIndices() {
+      console.log(this.$store.state.valuationProd.batchIndices.batchProdIndices)
+      return this.$store.state.valuationProd.batchIndices.batchProdIndices
     },
     fmtIndexName() {
       return function(indexId) {
@@ -473,8 +455,8 @@ export default {
     },
     fmtBatchName() {
       return function(batchId) {
-        const index = this.$lodash.findIndex(this.batches, { batchId: batchId })
-        return this.batches[index].batchName
+        const index = this.$lodash.findIndex(this.batches, { id: batchId })
+        return this.batches[index].orderName
       }
     }
   },
@@ -489,6 +471,31 @@ export default {
     this.$store.commit('valuationProd/setProdId', '')
   },
   methods: {
+    go(index) {
+      if (index === this.stepActive) {
+        return false
+      }
+      const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds } = this.detail
+      if (index === 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if (index === 1 && valuationProd) {
+        this.stepActive = index
+      }
+      if (index === 2 && valuationProdIndices && valuationProdIndices.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if (index === 3 && valuationProdMethods && valuationProdMethods.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+      if ((index === 4 || index === 5) && bachIds && bachIds.length > 0) {
+        this.initDetailData()
+        this.stepActive = index
+      }
+    },
     back() {
       if (this.stepActive-- < 0) this.stepActive = 5
     },
@@ -500,31 +507,60 @@ export default {
       }
     },
     initData() {
-      switch (this.stepActive) {
-        case 0:
-          break
-        case 1:
-          this.$store.dispatch('valuationProd/loadProdIndices')
-          break
-        case 2:
-          this.$store.dispatch('valuationProd/loadValuationWay')
-          break
-        case 3:
-          this.$store.dispatch('valuationProd/loadBatches')
-          indicesProd(this.prodId).then(response => {
-            const { dataList } = response
-            that.prodIndices = dataList
-          })
-          break
-        case 4:
-          break
-        case 5:
-          confirmProd(this.prodId).then(response => {
-            this.confirm = response
-          })
-          break
-      }
-      const that = this
+      this.$store.dispatch('valuationProd/loadProdIndices')
+      const ways = []
+      this.$lodash(this.$dict('VAL_SCENE')).forEach(function(value, key) {
+        ways.push({
+          id: key,
+          name: value
+        })
+      })
+      this.$store.commit('valuationProd/setValuationWay', { dataList: ways })
+      this.$store.dispatch('valuationProd/loadBatches')
+
+      // switch (this.stepActive) {
+      //   case 0:
+      //     break
+      //   case 1:
+      //     this.$store.dispatch('valuationProd/loadProdIndices')
+      //     break
+      //   case 2:
+      //     const ways = []
+      //     this.$lodash(this.$dict('VAL_SCENE')).forEach(function(value, key) {
+      //       ways.push({
+      //         id: key,
+      //         name: value
+      //       })
+      //     })
+      //     this.$store.commit('valuationProd/setValuationWay', { dataList: ways })
+      //     break
+      //   case 3:
+      //     // this.$store.dispatch('valuationProd/loadBatches')
+      //     // indicesProd(this.prodId).then(response => {
+      //     //   const { dataList } = response
+      //     //   that.prodIndices = dataList
+      //     // })
+      //     break
+      //   case 4:
+      //     this.$store.dispatch('valuationProd/loadBatches')
+      //     if (this.prodId) {
+      //       new Promise((resolve, reject) => {
+      //         indicesProd(this.prodId).then(response => {
+      //           const { dataList } = response
+      //           that.prodIndices = dataList
+      //           resolve()
+      //         })
+      //       })
+      //     }
+      //     break
+      //   case 5:
+      //     this.$store.dispatch('valuationProd/loadBatches')
+      //     confirmProd(this.prodId).then(response => {
+      //       this.confirm = response
+      //     })
+      //     break
+      // }
+      // const that = this
     },
     initDetailData() {
       const that = this
@@ -536,7 +572,10 @@ export default {
     loadDetail() {
       const that = this
       const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds, valuationProdBatchIndices } = this.detail
-      if (this.stepActive === 0) {
+      if (this.stepActive === 0 || this.stepActive === 1) {
+        if (valuationProd.currency) {
+          valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
+        }
         that.$store.commit('valuationProd/setProdInfo', valuationProd)
       } else if (this.stepActive === 2 && valuationProdIndices) {
         const compIndicesResult = []
@@ -555,35 +594,55 @@ export default {
           const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
           that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
         })
-      } else if (this.stepActive === 4 && bachIds) {
-        that.$lodash.each(bachIds, function(value, key) {
-          const index = that.$lodash.findIndex(that.batches, { batchId: value })
-          that.$refs.batchesTable.toggleRowSelection(that.batches[index], true)
-        })
-        this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: that.batchesChoiceTemp })
-        this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
-          that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
-        })
-        if (valuationProdBatchIndices) {
-          this.batchesChoiceIndices = valuationProdBatchIndices
+      } else if (this.stepActive === 4) {
+        if (bachIds && bachIds.length > 0) {
+          that.$lodash.each(bachIds, function(value, key) {
+            const index = that.$lodash.findIndex(that.batches, { id: value })
+            if (index >= 0) {
+              that.$refs.batchesTable.toggleRowSelection(that.batches[index], true)
+            }
+          })
+          this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: that.batchesChoiceTemp })
         }
+        indicesProd(this.prodId).then(response => {
+          const { dataList } = response
+          this.prodIndices = dataList
+          const prodIndices = {}
+          this.$lodash.each(that.batchesChoiceTemp, function(batch, key) {
+            prodIndices[batch.id] = dataList
+          })
+          this.$store.commit('valuationProd/setBatchProdIndices', prodIndices)
+          if (valuationProdBatchIndices) {
+            this.batchesChoiceIndices = valuationProdBatchIndices
+          }
+        })
+      } else if (this.stepActive === 5) {
+        confirmProd(this.prodId).then(response => {
+          this.confirm = response
+        })
       }
     },
     choiceBatch(val) {
-      this.batchesChoiceTemp = val
+      if (val) {
+        this.batchesChoiceTemp = val
+      }
     },
     choiceWay(val) {
-      this.valuationWay = val
+      if (val) {
+        this.valuationWay = val
+      }
     },
     useChoiceBatch() {
       const that = this
       this.batchesChoiceIndices = []
       this.$store.commit('valuationProd/setBatchIndices', { batchesChoice: this.batchesChoiceTemp })
-      this.$lodash.each(this.batchesChoiceTemp, function(batch, key) {
-        that.$store.commit('valuationProd/setBatchProdIndices', { batchId: batch.batchId, prodIndices: that.$lodash.clone(that.prodIndices) })
+      const prodIndices = {}
+      this.$lodash.each(that.batchesChoiceTemp, function(batch, key) {
+        prodIndices[batch.id] = that.$lodash.clone(that.prodIndices)
+        // that.batchProdIndices[batch.id] = that.prodIndices
         that.$lodash.each(that.prodIndices, function(index, key) {
           const temp = {
-            batchId: batch.batchId,
+            batchId: batch.id,
             prodId: that.prodId,
             indexId: index.indexId,
             compPermStatus: '1',
@@ -592,6 +651,28 @@ export default {
           that.batchesChoiceIndices.push(temp)
         })
       })
+      this.$store.commit('valuationProd/setBatchProdIndices', prodIndices)
+    },
+    refreshBatch() {
+      this.$store.dispatch('valuationProd/loadBatches')
+      indicesProd(this.prodId).then(response => {
+        const { dataList } = response
+        this.prodIndices = dataList
+      })
+    },
+    compPermStatusChange(batchId, row) {
+      const compPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus
+      // const relaPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus
+      if (compPermStatus === '0') {
+        this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus = '0'
+      }
+    },
+    relaPermStatusChange(batchId, row) {
+      // const compPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus
+      const relaPermStatus = this.batchChoiceIndicesStatus(batchId, row.indexId).relaPermStatus
+      if (relaPermStatus === '1') {
+        this.batchChoiceIndicesStatus(batchId, row.indexId).compPermStatus = '1'
+      }
     },
     save(data, msg) {
       const reqData = { step: this.stepActive + 1, prodId: this.prodId }
@@ -611,7 +692,9 @@ export default {
     saveProd(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.save({ valuationProd: this.prodInfo }, '产品信息')
+          const prodInfo = this.prodInfo
+          prodInfo.currency = this.$lodash.join(prodInfo.currency, [';'])
+          this.save({ valuationProd: prodInfo }, '产品信息')
         } else {
           return false
         }
@@ -644,7 +727,7 @@ export default {
         }
         dataList.push(tep)
       })
-      this.save({ valuationProdMethods: dataList }, '估值方法')
+      this.save({ valuationProdMethods: dataList }, '估值场景')
     },
     saveBatchIndices() {
       this.save({ valuationProdBatchIndices: this.batchesChoiceIndices }, '批次发布指标')
@@ -678,6 +761,38 @@ export default {
           callback()
         }
       })
+    },
+    checkDate(rule, value, callback) {
+      const listingDate = this.prodInfo.listingDate
+      const delistingDate = this.prodInfo.delistingDate
+      if (this.$moment(delistingDate).isBefore(listingDate) || this.$moment(delistingDate).isSame(listingDate)) {
+        callback(new Error('停产日不能早于上市日期'))
+      } else {
+        callback()
+      }
+    },
+    listingDateChange(val) {
+      // 上市日变更触发 产品状态变更
+      const prodInfo = this.$store.state.valuationProd.prodInfo
+      const nowDate = this.$moment(new Date()).add('year', 0).format('YYYY-MM-DD')
+      if (this.$moment(val).isAfter(nowDate) || this.$moment(val).isSame(nowDate)) {
+        prodInfo.prodStatus = '2'
+      } else if (prodInfo.delistingDate && (this.$moment(prodInfo.delistingDate).isBefore(nowDate) || this.$moment(prodInfo.delistingDate).isSame(nowDate))) {
+        prodInfo.prodStatus = '3'
+      } else {
+        prodInfo.prodStatus = '1'
+      }
+      this.$store.commit('valuationProd/setProdInfo', prodInfo)
+      this.$refs['prodBasicForm'].validateField('checkDate')
+    },
+    delistingDateChange(val) {
+      const prodInfo = this.$store.state.valuationProd.prodInfo
+      const nowDate = this.$moment(new Date()).add('year', 0).format('YYYY-MM-DD')
+      if (this.$moment(val).isBefore(nowDate) || this.$moment(val).isSame(nowDate)) {
+        prodInfo.prodStatus = '3'
+      } else {
+        this.listingDateChange(this.prodInfo.listingDate)
+      }
     }
   }
 }
