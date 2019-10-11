@@ -158,7 +158,7 @@ export default {
       haveId().then(res => {
         this.haveId = res
       })
-      getCurveList().then(response => {
+      getCurveList({ searchable: { 'search_prdStatus_IN': ['1', '2'] }}).then(response => {
         this.allList = response
         for (let i = 0; i < this.allList.length; i++) {
           Array.from(new Set(this.haveId))
