@@ -15,9 +15,8 @@
   </div>
 </template>
 <script>
-import { getOrderList } from '@/api/curve/curve-product-order.js'
 import CurveOrderCompute from '@/views/curve/compute/curve-order-compute.vue'
-
+import { getCurveTaskOrderOptions } from '@/api/curve/curve-order-compute.js'
 export default {
   components: {
     CurveOrderCompute
@@ -34,15 +33,18 @@ export default {
   },
   beforeMount() {
     console.info('===beforeMount===')
-    // 加载批次
-    this.orderList = getOrderList()
-
-    if (this.orderList && this.orderList.length > 0) {
-      // 默认显示第一条
-      this.selectOrder = this.orderList[0]
-    }
+    this.init()
   },
   methods: {
+    async init() {
+      // 加载批次
+      this.orderList = []
+      await getCurveTaskOrderOptions(this.orderList)
+      if (this.orderList && this.orderList.length > 0) {
+        // 默认显示第一条
+        this.selectOrder = this.orderList[0]
+      }
+    },
     orderTabClick(tab, event) {
       console.info('orderTabClick.tab:' + tab + ',tab.index:' + tab.index)
       this.selectOrder = this.orderList[tab.index]
