@@ -70,17 +70,18 @@ export default {
   },
   methods: {
     save() {
+      const that = this
       this.$refs['refRuleInfo'].validate((valid) => {
         if (valid) {
-          this.$refs.refBondFilter.getData('VAL00005').then(function(data) {
+          that.$refs.refBondFilter.getData('VAL00005').then(function(data) {
             if (data) {
               const param = {
-                taskRange: this.ruleInfo,
+                taskRange: that.ruleInfo,
                 bondFilterInfo: data
               }
               addTaskRange(param).then(response => {
-                this.$emit('saveCallBack')
-                this.$message({
+                that.$emit('saveCallBack')
+                that.$message({
                   message: '保存成功！',
                   type: 'success',
                   showClose: true

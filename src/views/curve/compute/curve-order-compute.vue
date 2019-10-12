@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-button type="primary" @click="toCompute()">开始计算</el-button>
+      <el-button type="primary" @click="toCompute()" :disabled="computeDisabled">开始计算</el-button>
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
@@ -121,6 +121,7 @@ export default {
   props: ['orderId', 'orderInfo'],
   data() {
     return {
+      computeDisabled: false, // 计算按钮是否允许操作
       multipleSelection: [],
       percentage: 0,
       queryForm: {
@@ -198,7 +199,7 @@ export default {
       this.getCurveOrderComputeList()
     },
     // 计算
-    toCompute() {
+    async toCompute() {
       var items = this.multipleSelection
       if (!items || items.length <= 0) {
         this.$message({
@@ -209,6 +210,14 @@ export default {
       }
       var curveTaskId = []
       for (let i = 0; i < items.length; i++) {
+        const buildStatus = items[i].buildStatus
+        if (buildStatus !== '3' && buildStatus !== '4') {
+          this.$message({
+            type: 'error',
+            message: '曲线[' + items[i].curveName + ']编制状态非已确认、已计算，不能进行计算'
+          })
+          return false
+        }
         curveTaskId.push(items[i].curveTaskId)
       }
       var data = {
@@ -216,7 +225,8 @@ export default {
         orderId: this.orderId
       }
 
-      toCompletotionRate(data).then(response => {
+      this.computeDisabled = true
+      await toCompletotionRate(data).then(response => {
         var result = response
         if (result.showMessage) {
           this.$message({
@@ -231,10 +241,11 @@ export default {
             showClose: true
           })
         }
-
+        this.computeDisabled = false
         this.getCurveOrderComputeList()
         this.calculatCompletionRate()
       })
+      this.computeDisabled = false
     },
     // 曲线发布
     toAddCurveProduct() {
