@@ -1,12 +1,12 @@
 <template>
   <div class="margin-top">
     <el-card class="box-card">
-      <el-select v-model="bondTempSelect.tempNo" placeholder="请选择">
+      <el-select v-model="tempNo" placeholder="请选择">
         <el-option
-          v-for="temp in bondTempSelect.bondTemps"
-          :key="temp.id"
+          v-for="temp in bondTemps"
+          :key="temp.tempId"
           :label="temp.tempName"
-          :value="temp.id"
+          :value="temp.tempId"
         />
       </el-select>
       <el-button type="primary" :disabled="disabled" @click="applicationTemp">应用模板</el-button>
@@ -110,7 +110,7 @@
               height="300"
             >
               <el-table-column
-                prop="bondName"
+                prop="csin"
                 label="债券名称"
                 width="280"
               />
@@ -159,7 +159,7 @@
               :row-class-name="tableWarningClass"
             >
               <el-table-column
-                prop="bondNo"
+                prop="csin"
                 label="债券名称"
                 width="180"
               />
@@ -209,7 +209,7 @@
               :row-class-name="tableWarningClass"
             >
               <el-table-column
-                prop="bondNo"
+                prop="csin"
                 label="债券名称"
                 width="180"
               />
@@ -294,10 +294,8 @@ export default {
       othRuleList: [{ id: 1, ruleValue: '标签一' }, { id: 2, ruleValue: '标签二' }, { id: 3, ruleValue: '标签三' }, { id: 4, ruleValue: '标签4' }, { id: 5, ruleValue: '标签5' }],
       allRuleList: [],
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/bond-filter/batch-in`,
-      bondTempSelect: {
-        bondTemps: [],
-        tempNo: ''
-      },
+      bondTemps: [],
+      tempNo: '',
       blackList: [],
       whiteList: [],
       ruleList: [],
@@ -371,10 +369,11 @@ export default {
       })
     },
     tempList() {
-      console.log('call' + this.filterId)
       queryTempList().then(response => {
         const { datalist } = response
-        this.bondTempSelect.bondTemps = datalist
+        console.log(datalist)
+        this.bondTemps = datalist
+        console.log(this.bondTemps)
       })
     },
     applicationTemp() {
@@ -383,9 +382,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        queryTempInfo(this.bondTempSelect.tempNo.toString()).then(response => {
-          const { filterName, black, white, rules } = response
-          this.bondTempSelect.tempNo = filterName
+        queryTempInfo(this.tempNo.toString()).then(response => {
+          const { tempId, black, white, rules } = response
+          this.tempNo = tempId
           this.blackList = black
           this.whiteList = white
           this.ruleList = rules
@@ -401,7 +400,7 @@ export default {
     },
     screenBonds() {
       const data = {
-        tempNo: this.bondTempSelect.tempNo,
+        tempNo: this.tempNo,
         rules: this.ruleList,
         blwls: this.whiteList.concat(this.blackList)
       }
@@ -416,7 +415,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.bondTempSelect.tempNo = ''
+        this.tempNo = ''
         this.blackList = []
         this.whiteList = []
         this.ruleList = []
@@ -536,11 +535,11 @@ export default {
     loading() {
       if (this.filterId) {
         queryTempInfo(this.filterId.toString()).then(response => {
-          const { filterName, rules, black, white } = response
+          const { tempId, rules, black, white } = response
           this.blackList = black
           this.whiteList = white
           this.ruleList = rules
-          this.bondTempSelect.tempNo = filterName
+          this.tempNo = tempId
           // this.screenBonds()
         })
         // this.queryBondsList()

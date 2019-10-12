@@ -5,8 +5,8 @@ import { basic_api_market } from '@/api/base-api.js'
 export function queryTempList(data) {
   return request({
     url: `${basic_api_market}/tmpl-filter/tpl-list`,
-    method: 'get',
-    params: {}
+    method: 'post',
+    data: data
   })
 }
 
