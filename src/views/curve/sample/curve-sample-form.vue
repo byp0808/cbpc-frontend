@@ -39,12 +39,15 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-form ref="recCurveForm" :model="curveSample" label-width="150px" hidden>
-        <el-form-item label="备注">
-          <el-input v-model="curveSample.remark" type="textarea" />
-        </el-form-item>
-      </el-form>
-
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form ref="recCurveForm" label-width="150px">
+            <el-form-item label="备注">
+              <el-input type="textarea" v-model="curveSample.remark" :disabled="disabled"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
     </el-card>
     <BondFilter
       ref="refBondFilter"
@@ -143,42 +146,57 @@ export default {
         })
         return false
       }
-      var refBondFilterInfo = this.$refs.refBondFilter.getData()
-      console.log(refBondFilterInfo)
-      if (!refBondFilterInfo.tempId) {
-        this.$message({
-          message: '请选择应用模板，并应用',
-          type: 'warning',
-          showClose: true,
-          duration: 2000
-        })
-        return false
-      } else if (refBondFilterInfo.rules.length === 0) {
-        this.$message({
-          message: '请应用模板',
-          type: 'warning',
-          showClose: true,
-          duration: 2000
-        })
-        return false
-      }
 
-      // 如果是拷贝，则清除ID,新增记录
-      if (this.opType === 'COPY') {
-        this.curveSample.id = ''
-        this.curveSample.filterId = ''
-      }
-      // 20190930 筛选器模板编号字段修改，这里不影响后续逻辑，特按tempNo走
-      refBondFilterInfo.tempNo = refBondFilterInfo.tempId
-      var data = _.assign({ curveSample: this.curveSample }, refBondFilterInfo)
-      // 保存
-      saveCurveSample(data).then(response => {
-        this.$emit('saveCureSampleCallBack')
+      if (this.curveSample.remark && this.curveSample.remark.length > 200) {
         this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
+          message: '备注不能超过200个字符',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
         })
+        return false
+      }
+      const $this = this
+      this.$refs.refBondFilter.getData('CRV00001').then(function(refBondFilterInfo) {
+        if (refBondFilterInfo) {
+          console.log(refBondFilterInfo)
+          if (!refBondFilterInfo.tempId) {
+            $this.$message({
+              message: '请选择应用模板，并应用',
+              type: 'warning',
+              showClose: true,
+              duration: 2000
+            })
+            return false
+          } else if (refBondFilterInfo.rules.length === 0) {
+            $this.$message({
+              message: '请应用模板',
+              type: 'warning',
+              showClose: true,
+              duration: 2000
+            })
+            return false
+          }
+
+          // 如果是拷贝，则清除ID,新增记录
+          if ($this.opType === 'COPY') {
+            $this.curveSample.id = ''
+            $this.curveSample.filterId = ''
+          }
+          // 20190930 筛选器模板编号字段修改，这里不影响后续逻辑，特按tempNo走
+          refBondFilterInfo.tempNo = refBondFilterInfo.tempId
+          // eslint-disable-next-line no-undef
+          var data = _.assign({ curveSample: $this.curveSample }, refBondFilterInfo)
+          // 保存
+          saveCurveSample(data).then(response => {
+            $this.$emit('saveCureSampleCallBack')
+            $this.$message({
+              message: '保存成功！',
+              type: 'success',
+              showClose: true
+            })
+          })
+        }
       })
     },
     taskSubmit(opType) {
