@@ -65,18 +65,19 @@ export default {
   },
   methods: {
     save() {
+      const that = this
       this.$refs['refAssetsGroupForm'].validate((valid) => {
         if (valid) {
-          this.$refs.refBondFilter.getData('VAL00006').then(function(data) {
+          that.$refs.refBondFilter.getData('VAL00006').then(function(data) {
             if (data) {
-              const info = { id: this.assetsGroupInfo.id, ruleState: this.assetsGroupInfo.ruleState }
+              const info = { id: that.assetsGroupInfo.id, ruleState: that.assetsGroupInfo.ruleState }
               const param = {
                 assetsGroup: info,
                 bondFilterInfo: data
               }
               saveData(param).then(response => {
-                this.$emit('saveCallBack')
-                this.$message({
+                that.$emit('saveCallBack')
+                that.$message({
                   message: '保存成功！',
                   type: 'success',
                   showClose: true

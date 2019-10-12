@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin: 10px">
       <el-button type="primary" class="float-left" @click="addRule">新增规则</el-button>
-      <el-button type="primary" class="float-left">规则重复性校验</el-button>
+      <!--      <el-button type="primary" class="float-left">规则重复性校验</el-button>-->
     </div>
     <div>
       <el-table ref="multipleTable" :data="taskRangeList" tooltip-effect="dark">

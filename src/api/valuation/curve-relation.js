@@ -22,11 +22,12 @@ export function queryCurveRelation(data) {
   )
 }
 // 调用曲线服务 获取曲线列表
-export function getCurveList() {
+export function getCurveList(data) {
   return request(
     {
       url: `${basic_api_curve}/curveProduct/curveList`,
-      method: 'post'
+      method: 'post',
+      data: data
     }
   )
 }
