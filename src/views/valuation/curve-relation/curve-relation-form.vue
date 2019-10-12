@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="目标曲线：" prop="curveId">
-              <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" @change="changeTarget">
+              <el-select v-model="curveRelationInfo.curveId" filterable placeholder="请选择目标曲线" :disabled="disabled" @change="changeTarget">
                 <el-option
                   v-for="item in curveList"
                   :key="item.curveId"
@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="11">
             <el-form-item label="相对曲线：" prop="relativeCurveId">
-              <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" @change="changeRelative">
+              <el-select v-model="curveRelationInfo.relativeCurveId" filterable placeholder="请选择相对曲线" :disabled="disabled" @change="changeRelative">
                 <el-option
                   v-for="item in curveRelativeList"
                   :key="item.curveId"
@@ -30,7 +30,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-button type="primary" @click="addData">添加</el-button>
+            <el-button type="primary" :disabled="disabled" @click="addData">添加</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -226,14 +226,14 @@ export default {
           if (this.selectList.length > 0) {
             this.selectList.map(v => {
               if (v === this.selectobj) {
-                this.$message.warning('不能重复添加哦！')
+                this.$message.warning('该曲线已被使用，请选择其他曲线！')
               } else {
                 // this.selectList.push(this.selectobj)
                 // this.selectId.push(this.idInfo)
                 this.selectId.map(v => {
                   if (v.curveId === this.idInfo.curveId || v.relativeCurveId === this.idInfo.relativeCurveId ||
                   v.curveId === this.idInfo.relativeCurveId || v.relativeCurveId === this.idInfo.curveId) {
-                    return this.$message.warning('不能重复添加哦！')
+                    return this.$message.warning('该曲线已被使用，请选择其他曲线！')
                   } else {
                     this.selectList.push(this.selectobj)
                     this.selectId.push(this.idInfo)
@@ -270,14 +270,22 @@ export default {
     // 保存/编辑曲线关系
     save() {
       console.log('ids', this.selectId)
-      saveCurveRelation(this.selectId).then(response => {
-        this.$emit('saveCallBack')
+      if (this.selectId.length !== 0) {
+        saveCurveRelation(this.selectId).then(response => {
+          this.$emit('saveCallBack')
+          this.$message({
+            message: '保存成功！',
+            type: 'success',
+            showClose: true
+          })
+        })
+      } else {
         this.$message({
-          message: '保存成功！',
-          type: 'success',
+          message: '请添加待保存的曲线关系规则！',
+          type: 'error',
           showClose: true
         })
-      })
+      }
     }
   }
 }
