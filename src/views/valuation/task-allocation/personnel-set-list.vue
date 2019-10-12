@@ -171,10 +171,11 @@ export default {
       this.load()
     },
     ruleDetail(taskRangeId) {
+      const that = this
       const ruleList = this.$lodash.get(this.distRatioList, taskRangeId)
       let ruleDetail = ''
       this.$lodash.forEach(ruleList, function(value, key) {
-        ruleDetail += value.userId + ':' + value.distRatio + '%'
+        ruleDetail += that.personnelList[that.$lodash.findIndex(that.personnelList, ['userId', value.userId])].userName + ':' + value.distRatio + '%'
         if (key < ruleList.length - 1) {
           ruleDetail += ', '
         }
