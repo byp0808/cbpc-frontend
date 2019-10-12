@@ -46,15 +46,12 @@ export default {
       }
     }
   },
-  beforeMount() {
-    // this.screeningForm.screeningSort = '1'
-  },
   methods: {
-    screening() {
-      const data = this.screeningForm
-      console.info(data)
-      this.$emit('dateCallBack')
-    },
+    // screening() {
+    //   const data = this.screeningForm
+    //   console.info(data)
+    //   this.$emit('dateCallBack')
+    // },
     reset() {
       this.$store.commit('screeningDate/setScreeningDate', {})
     },
@@ -67,7 +64,7 @@ export default {
 
 <style scoped>
   .el-form-item {
-    margin-left: 0px;
+    margin-left: 0;
   }
 </style>
 

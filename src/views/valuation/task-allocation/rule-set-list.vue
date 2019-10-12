@@ -19,30 +19,17 @@
         </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span v-if="scope.row.approveStatus==='01'">待审核</span>
-            <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-            <span v-else>审批不通过</span>
+            {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">设置
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.id)">设置
             </el-button>
-            <el-button
-              v-else
-              type="text"
-              size="small"
-              @click="edit(scope.row.id)"
-            >设置
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="deleteInfo(scope.row.id)">删除
             </el-button>
-            <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除
-            </el-button>
-            <el-button v-else type="text" size="small" @click="deleteInfo(scope.row.id)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用
-            </el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">
-              启用
-            </el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -94,6 +81,18 @@ export default {
       }
     }
   },
+  computed: {
+    statusText() {
+      return function(status) {
+        switch (status) {
+          case '02':
+            return '启用中'
+          case '03':
+            return '停用中'
+        }
+      }
+    }
+  },
   beforeMount() {
     this.load()
   },
@@ -123,13 +122,6 @@ export default {
     saveCallBack() {
       this.ruleSetFormVisible = false
       this.load()
-    },
-    disableEdit() {
-      this.$message({
-        message: '不能操作待审核状态的数据！',
-        type: 'warning',
-        showClose: true
-      })
     },
     stop(id) {
       editBusiStatus({ id: id, busiStatus: '03' }).then(response => {

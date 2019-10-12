@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
-      <!--修改单元格-->
+      <!--查询条件-->
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px">
         <el-form-item label="曲线编制类型">
           <el-select v-model="queryForm.curveType" :clearable="true" placeholder="请选择曲线编制类型">
@@ -57,6 +57,9 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
           />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="queryCell">查询</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="width: 100%">
@@ -150,29 +153,31 @@
     </div>
     <el-dialog v-if="screeningFormVisible" width="45%" title="筛选" :visible.sync="screeningFormVisible">
       <!--日期类型-->
-      <ScreeningForm
-        v-if="formType===1"
-        ref="ScreeningForm"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--数字类型-->
-      <ScreeningNumForm
-        v-if="formType===2"
-        ref="ScreeningNumForm"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--字符类型-->
-      <ScreeningStringForm
-        v-if="formType===3"
-        ref="ScreeningStringForm"
-        @dateCallBack="screeningCallBack"
-      />
-      <!--可选类-->
-      <ScreeningCheckboxForm
-        v-if="formType===4"
-        ref="ScreeningCheckboxForm"
-        @dateCallBack="screeningCallBack"
-      />
+      <keep-alive>
+        <ScreeningForm
+          v-if="formType===1"
+          ref="ScreeningForm"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--数字类型-->
+        <ScreeningNumForm
+          v-if="formType===2"
+          ref="ScreeningNumForm"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--字符类型-->
+        <ScreeningStringForm
+          v-if="formType===3"
+          ref="ScreeningStringForm"
+          @dateCallBack="screeningCallBack"
+        />
+        <!--可选类-->
+        <ScreeningCheckboxForm
+          v-if="formType===4"
+          ref="ScreeningCheckboxForm"
+          @dateCallBack="screeningCallBack"
+        />
+      </keep-alive>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="screening">确 定</el-button>
@@ -202,7 +207,7 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryOrderInfoList } from '@/api/market/market.js'
+// import { queryOrderInfoList } from '@/api/market/market.js'
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -250,11 +255,11 @@ export default {
       updateFormVisible: false,
       // 报价
       offerMarketList: [
-        // { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        // { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        // { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
       ],
       offerTableHeader: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
@@ -271,11 +276,18 @@ export default {
       offerModuleId: '',
       offerModuleList: [],
       offerMarketLoading: false,
+
       // 成交
       updateForm: {
         updateContent: ''
       },
-      marketList: [],
+      marketList: [
+        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+      ],
       tableHeader: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
         { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
@@ -326,8 +338,6 @@ export default {
       marketLoading: false
     }
   },
-  computed: {
-  },
   beforeMount() {
     this.offerLoadTable()
     this.loadTable()
@@ -347,15 +357,15 @@ export default {
         queryForm: this.queryForm
       }
       console.info(data)
-      queryOrderInfoList({ page: this.offerPage }).then(response => {
-        const { dataList, page } = response
-        this.offerPage = page
-        this.offerMarketList = dataList
-        this.offerMarketLoading = false
-      })
+      // queryOrderInfoList({ page: this.offerPage }).then(response => {
+      //   const { dataList, page } = response
+      //   this.offerPage = page
+      //   this.offerMarketList = dataList
+      this.offerMarketLoading = false
+      // })
     },
     offerHeaderScreening(column) {
-      // 表头右击事件
+      // 报价表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
       // 清空筛选表单数据
@@ -366,8 +376,10 @@ export default {
       const type = column.property
       this.currentHeader.key = type
       this.currentHeader.label = column.label
+      // 默认该表头没有筛选过
       const index = this.isScreeningByHeader(this.offerScreeningFormList)
       if (index != null && index !== '') {
+        // 该表头筛选过
         const form = this.offerScreeningFormList[index].screeningForm
         this.screeningFormSet(form)
       }
@@ -388,11 +400,11 @@ export default {
       this.screeningFormVisible = true
     },
     offerCellDblclick(row, column) {
+      // 报价表格双击事件
       this.currentTable = 1
       const title = column.property
       console.info(row[title])
       if (!row[title].isNull) {
-        console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
         this.currentHeader.label = column.label
@@ -409,10 +421,6 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      // console.info('行')
-      // console.info(row)
-      // console.info('头')
-      // console.info(header)
       return row.remindTime === '08:20:00' && header.key === 'remindTime'
     },
     offerToUse() {
@@ -438,8 +446,7 @@ export default {
     // 成交表
     loadTable() {
       // 初始化表数据
-      // 获取用户所有模板
-      // 获取默认模板表头信息及行情列表信息
+      // 获取默认模板表头信息及行情成交列表信息
       this.marketLoading = true
       const data = {
         moduleId: this.moduleId,
@@ -449,37 +456,20 @@ export default {
         queryForm: this.queryForm
       }
       console.info(data)
-      queryOrderInfoList({ page: this.page }).then(response => {
-        const { dataList, page } = response
-        this.page = page
-        this.marketList = dataList
-        this.marketLoading = false
-      })
-    },
-    cellDblclick(row, column) {
-      this.currentTable = 2
-      const title = column.property
-      console.info(row[title])
-      if (!row[title].isNull) {
-        console.info('进来啦')
-        this.currentRow = row
-        this.currentHeader.key = column.property
-        this.currentHeader.label = column.label
-        this.updateFormVisible = true
-      }
-    },
-    isLight(row, header) {
-      // 判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      // queryOrderInfoList({ page: this.page }).then(response => {
+      //   const { dataList, page } = response
+      //   this.page = page
+      //   this.marketList = dataList
+      this.marketLoading = false
+      // })
     },
     headerScreening(column) {
+      // 成交表头右击事件
       this.currentTable = 2
-      // 表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
       // 清空筛选表单数据
       this.screeningFormReset()
-      // console.info(column)
       const type = column.property
       this.currentHeader.key = type
       this.currentHeader.label = column.label
@@ -504,6 +494,19 @@ export default {
       }
       this.screeningFormVisible = true
     },
+    cellDblclick(row, column) {
+      // 成交表格双击事件
+      this.currentTable = 2
+      const title = column.property
+      console.info(row[title])
+      if (!row[title].isNull) {
+        console.info('进来啦')
+        this.currentRow = row
+        this.currentHeader.key = column.property
+        this.currentHeader.label = column.label
+        this.updateFormVisible = true
+      }
+    },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
       this.loadTable()
@@ -511,6 +514,10 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.loadTable()
+    },
+    isLight(row, header) {
+      // 成交判断是否高亮
+      return row.remindTime === '08:20:00' && header.key === 'remindTime'
     },
     toUse() {
       // 应用成交表模板
@@ -532,6 +539,15 @@ export default {
       }
     },
 
+    // 公用
+    queryCell() {
+      // 确定查询
+      this.drawerIsOpen = false
+      // 查询成交表
+      this.loadTable()
+      // 查询报价表
+      this.offerLoadTable()
+    },
     screening() {
       // 确定筛选方法
       if (this.currentTable === 1) {
@@ -690,7 +706,7 @@ export default {
       }
     },
     loadModuleList(val) {
-      // 加载所有报价模板
+      // 加载所有成交模板
       if (val) {
         this.moduleList = [
           { value: '1', label: '模板一' },

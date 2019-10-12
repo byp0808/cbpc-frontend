@@ -32,3 +32,11 @@ export function getMarketTemp(id) {
     params: { id: id }
   })
 }
+
+export function getMarketColsInfo(data) {
+  return request({
+    url: `${basic_api_market}/market-temp/cols-all`,
+    method: 'post',
+    data: data
+  })
+}

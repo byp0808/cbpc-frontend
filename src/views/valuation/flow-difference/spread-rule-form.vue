@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form label-width="150px">
+    <el-form ref="refSpreadRuleForm" :rules="rules" :model="spreadRule" label-width="150px">
       <el-row>
         <el-col :span="10">
           <div class="grid-content bg-purple">
-            <el-form-item label="规则名称">
+            <el-form-item label="规则名称" prop="ruleName">
               <el-input v-model="spreadRule.ruleName" :disabled="disabled" />
             </el-form-item>
-            <el-form-item label="点差类型">
+            <el-form-item label="点差类型" prop="spreadType">
               <el-select v-model="spreadRule.spreadType" placeholder="请选择" :disabled="disabled">
                 <el-option
                   v-for="item in spreadTypes"
@@ -16,7 +16,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="资产规则">
+            <el-form-item label="资产规则" prop="assetsGroupId">
               <el-select v-model="spreadRule.assetsGroupId" placeholder="请选择" :disabled="disabled">
                 <el-option
                   v-for="item in assetsList"
@@ -93,7 +93,12 @@ export default {
         { key: '流动性点差', value: '流动性点差' },
         { key: '信用点差', value: '信用点差' },
         { key: '其他点差', value: '其他点差' }
-      ]
+      ],
+      rules: {
+        ruleName: [{ required: true, message: '请输入规则名称', trigger: 'blur' }],
+        spreadType: [{ required: true, message: '请选择点差类型', trigger: 'change' }],
+        assetsGroupId: [{ required: true, message: '请选择资产规则', trigger: 'change' }]
+      }
     }
   },
   beforeMount() {
@@ -121,13 +126,28 @@ export default {
   },
   methods: {
     save() {
-      saveSomeBad({ spreadRule: this.spreadRule, spreadParamList: this.spreadParamSelects }).then(response => {
-        this.$emit('saveCallBack')
-        this.$message({
-          message: '保存成功！',
-          type: 'success',
-          showClose: true
-        })
+      this.$refs['refSpreadRuleForm'].validate((valid) => {
+        if (valid) {
+          if (this.spreadParamSelects.length !== 0) {
+            saveSomeBad({ spreadRule: this.spreadRule, spreadParamList: this.spreadParamSelects }).then(response => {
+              this.$emit('saveCallBack')
+              this.$message({
+                message: '保存成功！',
+                type: 'success',
+                showClose: true
+              })
+            })
+          } else {
+            this.$message({
+              message: '请勾选点差参数！',
+              type: 'error',
+              showClose: true
+            })
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     },
     handleSelectionChange(val) {

@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card class="box-card">
       <el-steps :active="stepActive" align-center finish-status="success" process-status="finish">
-        <el-step title="基本信息" @click.native="go(0)"/>
-        <el-step title="选择范围" @click.native="go(1)"/>
-        <el-step title="选择指标" @click.native="go(2)"/>
-        <el-step title="估值场景" @click.native="go(3)"/>
-        <el-step title="批次发布指标" @click.native="go(4)"/>
+        <el-step title="基本信息" @click.native="go(0)" />
+        <el-step title="选择范围" @click.native="go(1)" />
+        <el-step title="选择指标" @click.native="go(2)" />
+        <el-step title="估值场景" @click.native="go(3)" />
+        <el-step title="批次发布指标" @click.native="go(4)" />
         <el-step title="确认产品" @click.native="go(5)" />
       </el-steps>
     </el-card>
@@ -61,9 +61,9 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  @change="listingDateChange"
                   value-format="yyyy-MM-dd"
                   style="width: 100%"
+                  @change="listingDateChange"
                 />
               </el-form-item>
             </div>
@@ -87,8 +87,8 @@
                   align="right"
                   type="date"
                   placeholder="选择日期"
-                  @change="delistingDateChange"
                   style="width: 100%"
+                  @change="delistingDateChange"
                 />
               </el-form-item>
             </div>
@@ -249,10 +249,10 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).compPermStatus"
-                        @change="compPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
+                        @change="compPermStatusChange(batch.id, row)"
                       />
                     </template>
                   </el-table-column>
@@ -262,10 +262,10 @@
                     <template slot-scope="{row}">
                       <el-switch
                         v-model="batchChoiceIndicesStatus(batch.id, row.indexId).relaPermStatus"
-                        @change="relaPermStatusChange(batch.id, row)"
                         active-color="#13ce66"
                         active-value="1"
                         inactive-value="0"
+                        @change="relaPermStatusChange(batch.id, row)"
                       />
                     </template>
                   </el-table-column>
@@ -286,19 +286,19 @@
         <h3>确认产品</h3>
       </div>
       <el-card
-        v-for="(batch, key) in confirm"
-        :key="key"
+        v-for="batch in confirmBatches"
+        :key="batch.id"
         class="box-card margin-top"
       >
         <div slot="header" class="clearfix card-head">
-          <span>{{ fmtBatchName(key) }}</span>
+          <span>{{ batch.orderName }}</span>
         </div>
         <el-table
-          :data="batch.statusData"
+          :data="confirm[batch.id].statusData"
           style="width: 100%"
         >
           <el-table-column
-            v-for="(index, key) in batch.indices"
+            v-for="(index, key) in confirm[batch.id].indices"
             :key="key"
             :prop="index"
             :label="fmtIndexName(index)"
@@ -338,6 +338,7 @@ export default {
       batchesChoiceIndices: [],
       prodIndices: [],
       confirm: {},
+      confirmBatches: [],
       basicProdList: [{
         id: 'prod-1',
         name: '基础产品1'
@@ -484,6 +485,7 @@ export default {
         this.stepActive = index
       }
       if (index === 2 && valuationProdIndices && valuationProdIndices.length > 0) {
+        // this.initData()
         this.initDetailData()
         this.stepActive = index
       }
@@ -502,9 +504,9 @@ export default {
     next() {
       if (this.stepActive++ > 5) this.stepActive = 0
       this.initData()
-      if (this.detail) {
-        this.loadDetail()
-      }
+      // if (this.prodId) {
+      //   this.loadDetail()
+      // }
     },
     initData() {
       this.$store.dispatch('valuationProd/loadProdIndices')
@@ -571,29 +573,44 @@ export default {
     },
     loadDetail() {
       const that = this
+      this.confirmBatches = []
       const { valuationProd, valuationProdIndices, valuationProdMethods, bachIds, valuationProdBatchIndices } = this.detail
       if (this.stepActive === 0 || this.stepActive === 1) {
         if (valuationProd.currency) {
           valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
         }
         that.$store.commit('valuationProd/setProdInfo', valuationProd)
-      } else if (this.stepActive === 2 && valuationProdIndices) {
-        const compIndicesResult = []
-        const basicIndicesResult = []
-        this.$store.dispatch('valuationProd/loadProdIndices')
-        that.$lodash.each(valuationProdIndices, function(value, key) {
-          if (value.indexType === '02') {
-            compIndicesResult.push(value.indexId)
-          } else if (value.indexType === '01') {
-            basicIndicesResult.push(value.indexId)
-          }
-        })
-        that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
-      } else if (this.stepActive === 3 && valuationProdMethods) {
-        that.$lodash.each(valuationProdMethods, function(value, key) {
-          const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
-          that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
-        })
+      } else if (this.stepActive === 2) {
+        if (valuationProdIndices && valuationProdIndices.length > 0) {
+          const compIndicesResult = []
+          const basicIndicesResult = []
+          this.$store.dispatch('valuationProd/loadProdIndices')
+          that.$lodash.each(valuationProdIndices, function(value, key) {
+            if (value.indexType === '02') {
+              compIndicesResult.push(value.indexId)
+            } else if (value.indexType === '01') {
+              basicIndicesResult.push(value.indexId)
+            }
+          })
+          that.$store.commit('valuationProd/setProdIndices', { compIndicesResult: compIndicesResult, basicIndicesResult: basicIndicesResult })
+        } else {
+          const basicIndicesResult = []
+          that.$lodash.each(that.basicIndices, function(value, key) {
+            basicIndicesResult.push(value.id)
+          })
+          that.$store.commit('valuationProd/setProdIndices', { basicIndicesResult: basicIndicesResult })
+        }
+      } else if (this.stepActive === 3) {
+        if (valuationProdMethods && valuationProdMethods.length > 0) {
+          that.$lodash.each(valuationProdMethods, function(value, key) {
+            const index = that.$lodash.findIndex(that.loadValuationWay, { id: value.methodId })
+            that.$refs.wayTable.toggleRowSelection(that.loadValuationWay[index], true)
+          })
+        } else {
+          that.$lodash.each(that.loadValuationWay, function(value, key) {
+            that.$refs.wayTable.toggleRowSelection(value, true)
+          })
+        }
       } else if (this.stepActive === 4) {
         if (bachIds && bachIds.length > 0) {
           that.$lodash.each(bachIds, function(value, key) {
@@ -617,6 +634,15 @@ export default {
           }
         })
       } else if (this.stepActive === 5) {
+        if (bachIds && bachIds.length > 0) {
+          that.$lodash.each(bachIds, function(value, key) {
+            const index = that.$lodash.findIndex(that.batches, { id: value })
+            if (index >= 0) {
+              that.confirmBatches.push(that.batches[index])
+            }
+          })
+          this.confirmBatches = this.$lodash.orderBy(this.confirmBatches, ['compTime'])
+        }
         confirmProd(this.prodId).then(response => {
           this.confirm = response
         })
@@ -624,7 +650,7 @@ export default {
     },
     choiceBatch(val) {
       if (val) {
-        this.batchesChoiceTemp = val
+        this.batchesChoiceTemp = this.$lodash.orderBy(val, ['compTime'])
       }
     },
     choiceWay(val) {
@@ -701,7 +727,12 @@ export default {
       })
     },
     saveFilter() {
-      this.save({ bondFilterInfo: this.$refs.refBondFilter.getData() }, '筛选范围')
+      const that = this
+      this.$refs.refBondFilter.getData('VAL00001').then(function(data) {
+        if (data) {
+          that.save({ bondFilterInfo: data }, '筛选范围')
+        }
+      })
     },
     saveProdIndices() {
       const that = this
