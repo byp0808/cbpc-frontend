@@ -7,6 +7,7 @@
           align="right"
           type="date"
           format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
         />
@@ -50,7 +51,7 @@
       </div>
       <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
-    <el-card v-if="activeName === 'qxkx'" class="box-card ">
+    <el-card v-if="activeName === 'qxkx'" :task-day="taskDayStr" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
