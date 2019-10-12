@@ -23,7 +23,7 @@
       <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线发布</el-button>
       <i class="el-icon-caret-right" />
-      <el-button type="primary" @click="toAddCurveProduct('ADD')">检查曲线样本券</el-button>
+      <el-button type="primary" @click="checkCoupon('ADD')">检查曲线样本券</el-button>
       <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线样本券发布</el-button>
     </el-row>
@@ -62,7 +62,9 @@
     </el-row>
 
     <el-table
+      v-if="curveOrderVisible"
       ref="refCurveOrderList"
+      :visible.sync="curveOrderVisible"
       :data="curveOrderList"
       tooltip-effect="dark"
       style="width: 100%"
@@ -89,6 +91,8 @@
       <el-table-column prop="assign" label="责任人" width="140" show-overflow-tooltip />
     </el-table>
     <el-pagination
+      v-if="curveOrderVisible"
+      :visible.sync="curveOrderVisible"
       :current-page="page.pageNumber"
       :page-sizes="[10, 20, 30, 40, 50]"
       :page-size="page.pageSize"
@@ -97,12 +101,22 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
+    <!-- 檢查曲綫樣本券列表 -->
+    <CurveCheckCouponCompute
+      v-if="checkCouponVisible"
+      ref="refCurveCheckCouponCompute"
+      :visible.sync="checkCouponVisible"
+    />
   </div>
 </template>
 <script>
 import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployAndCheckCurve } from '@/api/curve/curve-order-compute.js'
+import CurveCheckCouponCompute from '@/views/curve/compute/curve-checkCoupon-compute.vue'
 
 export default {
+  components: {
+    CurveCheckCouponCompute
+  },
   // eslint-disable-next-line vue/require-prop-types
   props: ['orderId', 'orderInfo'],
   data() {
@@ -118,7 +132,9 @@ export default {
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      curveOrderVisible: true,
+      checkCouponVisible: false
     }
   },
   computed: {},
@@ -267,7 +283,6 @@ export default {
         })
         return false
       }
-      debugger
       for (var i = 0; i < selection.length; i++) {
         // eslint-disable-next-line eqeqeq
         if (selection[i].buildStatus != '4') {
@@ -290,6 +305,10 @@ export default {
         })
         setTimeout(1.5 * 1000)
       })
+    },
+    checkCoupon() {
+      this.curveOrderVisible = false
+      this.checkCouponVisible = true
     }
   }
 }
