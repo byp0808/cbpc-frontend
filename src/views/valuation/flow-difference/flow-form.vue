@@ -28,7 +28,7 @@
     </div>
     <BondFilter
       ref="refBondFilter"
-      :filter-id="assetsGroupInfo.bondFilterId"
+      :filter-id="assetsGroupInfo.filterId"
       :disabled="disabled"
     />
   </div>

@@ -37,7 +37,7 @@
       </div>
       <BondFilter
         ref="refBondFilter"
-        :filter-id="ruleInfo.bondFilterId"
+        :filter-id="ruleInfo.filterId"
         :disabled="disabled"
       />
     </el-card>
