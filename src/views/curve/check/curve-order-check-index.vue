@@ -12,8 +12,8 @@
         />
       </el-form-item>
       <el-form-item label="批次">
-        <el-select v-model="queryForm.orderId" placeholder="活动区域" :disabled="disabled">
-          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.orderName" />
+        <el-select v-model="queryForm.orderId" placeholder="批次" :disabled="disabled">
+          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -89,9 +89,10 @@ import CurveShkQcRpt from '@/views/curve/check/curve-quality-shk-list.vue'
 import CurveRvsQcRpt from '@/views/curve/check/curve-quality-rvs-list.vue'
 import CurveCrsQcRpt from '@/views/curve/check/curve-crossline-list.vue'
 import CurveFTQcRpt from '@/views/curve/check/curve-quality-ft-list.vue'
-import { getOrderList } from '@/api/curve/curve-product-order.js'
+import { getCurveTaskOrderOptions } from '@/api/curve/curve-order-compute.js'
 import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 import CurveOrderCheckSetForm from '@/views/curve/check/curve-order-check-set-form.vue'
+import { formatTimeToStr } from '@/utils/date.js'
 
 export default {
   name: 'CurveOrderCheckIndex',
@@ -132,23 +133,35 @@ export default {
     }
   },
   watch: {
+    'queryForm.taskDay'(newValue, oldValue) {
+      console.info('queryForm.taskDay.newValue:' + newValue)
+      this.init()
+    }
   },
   beforeMount() {
     console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
     var taskDay = this.taskDay
-    var orderId = this.orderId
     if (!taskDay) {
       taskDay = new Date()
     }
-    if (!orderId) {
-      orderId = 'ORDER_ID_1'
-    }
     this.queryForm.taskDay = taskDay
-    this.queryForm.orderId = orderId
     // 加载批次
-    this.orderList = getOrderList()
+    this.init()
   },
   methods: {
+    async init() {
+      // 加载批次
+      this.orderList = []
+      const data = {
+        taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
+      }
+      this.queryForm.orderId = ''
+      await getCurveTaskOrderOptions(this.orderList, data)
+      if (this.orderList && this.orderList.length > 0) {
+        // 默认显示第一条
+        this.queryForm.orderId = this.orderList[0].id
+      }
+    },
     handleClick(tab, event) {
       console.log(tab, event)
     },
@@ -171,6 +184,13 @@ export default {
     // 根据 activeName 调用各个页面查询方法
     indexQuery() {
       console.info('indexQuery.activeName:' + this.activeName)
+      if (!this.queryForm.orderId) {
+        this.$message({
+          type: 'error',
+          message: '请选择批次'
+        })
+        return false
+      }
       this.$refs[this.activeName].handleFilter()
       // 总览 zl
       // if (this.activeName === 'zl') {

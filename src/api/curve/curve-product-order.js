@@ -23,8 +23,10 @@ export async function getOrderList(data) {
   })
 }
 
-export async function getOrderListOptions() {
-  var orderList = []
+export async function getOrderListOptions(orderList) {
+  if (!orderList) {
+    orderList = []
+  }
   var dataList = []
   await getOrderList({ 'basePrd': '02' }).then(response => {
     dataList = response
