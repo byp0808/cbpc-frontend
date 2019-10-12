@@ -65,21 +65,24 @@ export default {
   },
   methods: {
     save() {
-      const bondFilterInfo = this.$refs.refBondFilter.getData()
-      const info = { id: this.assetsGroupInfo.id, ruleState: this.assetsGroupInfo.ruleState }
-      const data = {
-        assetsGroup: info,
-        bondFilterInfo: bondFilterInfo
-      }
       this.$refs['refAssetsGroupForm'].validate((valid) => {
         if (valid) {
-          saveData(data).then(response => {
-            this.$emit('saveCallBack')
-            this.$message({
-              message: '保存成功！',
-              type: 'success',
-              showClose: true
-            })
+          this.$refs.refBondFilter.getData('VAL00006').then(function(data) {
+            if (data) {
+              const info = { id: this.assetsGroupInfo.id, ruleState: this.assetsGroupInfo.ruleState }
+              const param = {
+                assetsGroup: info,
+                bondFilterInfo: data
+              }
+              saveData(param).then(response => {
+                this.$emit('saveCallBack')
+                this.$message({
+                  message: '保存成功！',
+                  type: 'success',
+                  showClose: true
+                })
+              })
+            }
           })
         } else {
           console.log('error submit!!')
