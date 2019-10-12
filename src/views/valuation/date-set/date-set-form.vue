@@ -112,21 +112,29 @@ export default {
     }
   },
   methods: {
+    saveBusi(req) {
+      saveDateSet(req).then(response => {
+        this.$emit('saveCallBack')
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
     save() {
-      const bondFilterInfo = this.$refs.refBondFilter.getData()
-      const data = {
-        dateSet: this.dateSetInfo,
-        bondFilterInfo: bondFilterInfo
-      }
       this.$refs.dateSetInfo.validate((valid) => {
         if (valid) {
-          saveDateSet(data).then(response => {
-            this.$emit('saveCallBack')
-            this.$message({
-              message: '保存成功！',
-              type: 'success',
-              showClose: true
-            })
+          // 校验筛选器结果
+          const that = this
+          this.$refs.refBondFilter.getData('VAL00004').then(function(data) {
+            if (data) {
+              const req = {
+                dateSet: that.dateSetInfo,
+                bondFilterInfo: data
+              }
+              that.saveBusi(req)
+            }
           })
         } else {
           this.$message.warning('表单校验不通过，请检查！')

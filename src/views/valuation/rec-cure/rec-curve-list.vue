@@ -10,7 +10,7 @@
       tooltip-effect="dark"
       style="width: 100%"
     >
-      <el-table-column align="center" label="选择" min-width="5%">
+      <el-table-column align="center" label="选择" min-width="15%">
         <template slot-scope="scope">
           <el-radio v-model="radio" :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
         </template>
@@ -19,7 +19,7 @@
         prop="id"
         label="估值曲线规则ID"
         show-overflow-tooltip
-        width="145"
+        width="300"
       />
       <el-table-column
         prop="ruleName"
@@ -39,7 +39,7 @@
       <el-table-column
         prop="curveId"
         label="估值曲线"
-        width="260"
+        width="120"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -72,6 +72,7 @@
             编辑
           </el-button>
           <el-button
+            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"

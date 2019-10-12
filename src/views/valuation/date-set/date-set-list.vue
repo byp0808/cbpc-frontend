@@ -71,6 +71,7 @@
             设置
           </el-button>
           <el-button
+            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"

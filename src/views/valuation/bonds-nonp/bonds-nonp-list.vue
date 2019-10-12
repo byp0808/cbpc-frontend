@@ -24,6 +24,7 @@
       <el-table-column
         type="selection"
         width="55"
+        :selectable="selectToBatch"
       />
       <el-table-column
         prop="bondsConceptType"
@@ -99,6 +100,7 @@
             设置
           </el-button>
           <el-button
+            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -198,6 +200,9 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+    selectToBatch(row, index) {
+      return row.busiStatus === '02' || row.busiStatus === '03'
+    },
     save() {
       this.$refs.BondsNonpForm.save()
     },
@@ -210,13 +215,18 @@ export default {
       this.bondsNonpFormVisible = true
     },
     toDelete(id) {
-      deleteBondsNonp([id]).then(response => {
-        this.$message({
-          message: '移出成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认移出此规则?', '提示', {
+        type: 'warning'
+      }).then(() => {
+        deleteBondsNonp([id]).then(response => {
+          this.$message({
+            message: '移出成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
         })
-        this.loadTable()
+      }).catch(() => {
       })
     },
     batchDelete() {
@@ -230,14 +240,14 @@ export default {
           type: 'warning',
           showClose: true
         })
-        return
+        return false
       }
-      this.$confirm('确认删除此数据?', '提示', {
+      this.$confirm('共选择' + res.length + '条资产，确认移出?', '提示', {
         type: 'warning'
       }).then(() => {
         deleteBondsNonp(res).then(response => {
           this.$message({
-            message: '批量移出，操作成功！',
+            message: '移出成功！',
             type: 'success',
             showClose: true
           })

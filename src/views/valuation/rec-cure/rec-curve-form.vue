@@ -29,7 +29,7 @@
                   v-model="recCurveInfo.ruleName"
                   type="text"
                   :disabled="disabled"
-                  max-length="64"
+                  maxlength="64"
                   show-word-limit
                   placeholder="请输入曲线规则名称"
                 />
@@ -73,7 +73,7 @@
                   { required: true, message: '请输入备注', trigger: 'blur' },
                 ]"
               >
-                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" placeholder="请输入曲线规则名称" max-length="50" show-word-limit />
+                <el-input v-model="recCurveInfo.remark" type="textarea" :disabled="disabled" placeholder="请输入曲线规则名称" maxlength="50" show-word-limit />
               </el-form-item>
             </div>
           </el-col>
@@ -133,24 +133,33 @@ export default {
     })
   },
   methods: {
+    saveBusi(req) {
+      saveRecCurve(req).then(response => {
+        this.$emit('saveCallBack')
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
+    },
     save() {
-      const bondFilterInfo = this.$refs.refBondFilter.getData()
       if (this.isCopy) {
         // 复制新增-->删除Id
       }
-      const data = {
-        recCurve: this.recCurveInfo,
-        bondFilterInfo: bondFilterInfo
-      }
+
       this.$refs.recCurveInfo.validate((valid) => {
         if (valid) {
-          saveRecCurve(data).then(response => {
-            this.$emit('saveCallBack')
-            this.$message({
-              message: '保存成功！',
-              type: 'success',
-              showClose: true
-            })
+          // 校验筛选器结果
+          const that = this
+          this.$refs.refBondFilter.getData('VAL00002').then(function(data) {
+            if (data) {
+              const req = {
+                recCurve: that.recCurveInfo,
+                bondFilterInfo: data
+              }
+              that.saveBusi(req)
+            }
           })
         } else {
           this.$message.warning('表单校验不通过，请检查！')
