@@ -796,10 +796,12 @@ export default {
     checkDate(rule, value, callback) {
       const listingDate = this.prodInfo.listingDate
       const delistingDate = this.prodInfo.delistingDate
-      if (this.$moment(delistingDate).isBefore(listingDate) || this.$moment(delistingDate).isSame(listingDate)) {
-        callback(new Error('停产日不能早于上市日期'))
-      } else {
-        callback()
+      if (listingDate && delistingDate) {
+        if (this.$moment(delistingDate).isBefore(listingDate) || this.$moment(delistingDate).isSame(listingDate)) {
+          callback(new Error('停产日不能早于上市日期'))
+        } else {
+          callback()
+        }
       }
     },
     listingDateChange(val) {
