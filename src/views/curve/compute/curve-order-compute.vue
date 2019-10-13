@@ -17,7 +17,7 @@
         />
       </div>
       <i class="el-icon-caret-right" />
-      <el-button type="primary" @click="toAddCurveProduct('ADD')">查看质检报告</el-button>
+      <el-button type="primary" @click="toCheck()">查看质检报告</el-button>
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
@@ -320,6 +320,11 @@ export default {
     checkCoupon() {
       this.curveOrderVisible = false
       this.checkCouponVisible = true
+    },
+    // 跳转质检页面
+    toCheck() {
+      this.$store.commit('curveOrderCompute/setOrderId', this.orderId)
+      this.$router.push({ name: 'CurveOrderCheckIndex' })
     }
   }
 }

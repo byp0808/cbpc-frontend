@@ -140,14 +140,15 @@ export default {
     }
   },
   beforeMount() {
-    console.info('beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
+    console.info('curve-order-check-index.vue beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
     var taskDay = this.taskDay
     if (!taskDay) {
       taskDay = new Date()
     }
     this.queryForm.taskDay = taskDay
+    this.queryForm.orderId = this.$store.state.curveOrderCompute.orderId
     // 加载批次
-    this.init()
+    this.init(true)
   },
   methods: {
     async init() {
@@ -156,11 +157,24 @@ export default {
       const data = {
         taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       }
-      this.queryForm.orderId = ''
+
       await getCurveTaskOrderOptions(this.orderList, data)
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条
-        this.queryForm.orderId = this.orderList[0].id
+        if (this.queryForm.orderId) {
+          var isIn = false
+          for (let i = 0; i < this.orderList.length; i++) {
+            const orderInfo = this.orderList[i];
+            if (this.queryForm.orderId === orderInfo.id) {
+              isIn = true
+            }
+          }
+          if (!isIn) {
+            this.queryForm.orderId = this.orderList[0].id
+          }
+        } else {
+          this.queryForm.orderId = this.orderList[0].id
+        }
       }
     },
     handleClick(tab, event) {
