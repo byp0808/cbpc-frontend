@@ -129,6 +129,12 @@
               <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
                 <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
+              <el-popover placement="top-start" title="" width="250" trigger="hover" data-html="true" >
+                <div>
+                  注：利率类型的设置会影响后续功能<br>1.曲线行情对敲判断<br> 2.曲线方案初始化<br> 3.盯市点差调整
+                </div>
+                <i slot="reference" class="el-icon-info curveBuildTypePopover" />
+              </el-popover>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -650,5 +656,13 @@ export default {
   }
   .baseinfo .el-select .el-select__tags>span{
     display: block;
+  }
+  .curveBuildTypePopover{
+    color: red;
+    float: left;
+    position: absolute;
+    top: 4px;
+    left: -13px;
+    font-size: 12px;
   }
 </style>
