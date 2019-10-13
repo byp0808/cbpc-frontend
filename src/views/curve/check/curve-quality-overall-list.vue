@@ -186,6 +186,11 @@ export default {
         orderId: this.orderId
       }
       fallbackContact(data).then(response => {
+        this.$message({
+          type: 'success',
+          message: '操作成功',
+          showClose: true
+        })
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)

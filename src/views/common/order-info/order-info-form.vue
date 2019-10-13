@@ -22,14 +22,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="批次计算时间" prop="compTime">
-                <el-time-picker
+                <el-time-select
                   v-model="orderInfoForm.compTime"
                   value-format="HH:mm:ss"
-                  arrow-control
                   :disabled="disabled"
                   placeholder="请选择批次计算时间"
                   style="width: 100%"
-                  :picker-options="{selectableRange: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'00:00:00'}-23:59:59` }"
+                  :picker-options="{ start: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'00:00'}` , end:'23:30', step:'00:30' }"
                 />
               </el-form-item>
             </div>
@@ -50,14 +49,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="批次提醒时间" prop="remindTime">
-                <el-time-picker
+                <el-time-select
                   v-model="orderInfoForm.remindTime"
                   value-format="HH:mm:ss"
-                  arrow-control
                   :disabled="disabled"
                   placeholder="请选择批次提醒时间"
                   style="width: 100%"
-                  :picker-options="{selectableRange: `00:00:00-${orderInfoForm.compTime?orderInfoForm.compTime:'23:59:59'}`}"
+                  :picker-options="{ start:'00:00', end: `${orderInfoForm.compTime?orderInfoForm.compTime:'23:30'}` , step:'00:30'}"
                 />
               </el-form-item>
             </div>
@@ -115,11 +113,14 @@ export default {
   data() {
     // eslint-disable-next-line no-unused-vars
     const validOrderName = (rule, value, callback) => {
-      if (!checkSpecificKey(value)) {
-        // callback(new Error("Special symbols are not supported"));
-        callback(new Error('您输入的文本中出现了特殊字符，请检查！'))
+      if (value && value.trim() !== '') {
+        if (!checkSpecificKey(value)) {
+          callback(new Error('您输入的文本中出现了特殊字符，请检查'))
+        } else {
+          callback()
+        }
       } else {
-        callback()
+        callback(new Error('请输入批次说明'))
       }
     }
     return {
@@ -138,7 +139,6 @@ export default {
         ],
         orderName: [
           { required: true, message: '请输入批次名称', trigger: 'blur' }
-          // { validator: validOrderName, trigger: ['blur', 'change'] }
         ],
         timeZone: [
           { required: true, message: '请选择所属时区', trigger: 'change' }
@@ -147,7 +147,8 @@ export default {
           { required: true, message: '请选择批次标识', trigger: 'change' }
         ],
         orderMark: [
-          { required: true, message: '请输入批次说明', trigger: 'change' }
+          { required: true, message: '请输入批次说明', trigger: 'change' },
+          { validator: validOrderName, trigger: ['blur', 'change'] }
         ]
       }
     }

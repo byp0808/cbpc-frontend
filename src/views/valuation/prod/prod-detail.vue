@@ -14,22 +14,22 @@
               <el-form-item label="产品状态">
                 <el-select v-model="prodInfo.prodStatus" placeholder="产品状态" style="width: 100%" :disabled="boolTrue">
                   <el-option
-                    v-for="prodStatus in prodStatusList"
-                    :key="prodStatus.id"
-                    :label="prodStatus.name"
-                    :value="prodStatus.id"
+                    v-for="(name, key) in $dict('CURVE_PRODUCT_STATUS')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="退市日">
-                <el-date-picker
-                  v-model="prodInfo.delistingDate"
-                  :disabled="boolTrue"
-                  align="right"
-                  type="date"
-                  placeholder="选择日期"
-                  style="width: 100%"
-                />
+              <el-form-item label="币种">
+                <el-select v-model="prodInfo.currency" multiple placeholder="请选择币种" style="width: 100%" :disabled="boolTrue">
+                  <el-option
+                    v-for="(name, key) in $dict('CURRENCY')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
+                  />
+                </el-select>
               </el-form-item>
             </el-form>
           </div>
@@ -57,32 +57,12 @@
                   style="width: 100%"
                 />
               </el-form-item>
-              <el-form-item label="币种">
-                <el-select v-model="prodInfo.currency" placeholder="请选择币种" style="width: 100%" :disabled="boolTrue">
-                  <el-option
-                    v-for="currency in currencyList"
-                    :key="currency.id"
-                    :label="currency.name"
-                    :value="currency.id"
-                  />
-                </el-select>
-              </el-form-item>
             </el-form>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="ruleForm2" :model="prodInfo" status-icon label-width="100px" class="demo-ruleForm">
-              <el-form-item label="市场">
-                <el-select v-model="prodInfo.prodMarket" placeholder="请选择市场" style="width: 100%" :disabled="boolTrue">
-                  <el-option
-                    v-for="market in marketList"
-                    :key="market.id"
-                    :label="market.name"
-                    :value="market.id"
-                  />
-                </el-select>
-              </el-form-item>
               <el-form-item label="编制日历">
                 <el-select v-model="prodInfo.calendar" placeholder="请选择编制日历" style="width: 100%" :disabled="boolTrue">
                   <el-option
@@ -92,6 +72,16 @@
                     :value="calendar.id"
                   />
                 </el-select>
+              </el-form-item>
+              <el-form-item label="停产日">
+                <el-date-picker
+                        v-model="prodInfo.delistingDate"
+                        :disabled="boolTrue"
+                        align="right"
+                        type="date"
+                        placeholder="选择日期"
+                        style="width: 100%"
+                />
               </el-form-item>
             </el-form>
           </div>
@@ -375,6 +365,9 @@ export default {
     })
     detailProd(this.prodId).then(response => {
       const { valuationProd, valuationProdIndices, valuationProdMethods } = response
+      if (valuationProd.currency) {
+        valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
+      }
       that.$store.commit('valuationProd/setProdInfo', valuationProd)
       this.initWays(valuationProdIndices)
       that.$lodash.each(valuationProdMethods, function(value, key) {

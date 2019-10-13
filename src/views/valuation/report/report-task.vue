@@ -1,30 +1,28 @@
 <template>
   <div class="app-container">
-    <DateSetForm
+    <ReportForm
       ref="refApprovalDialog"
       :business-id="businessNo"
-      :disabled="disabled"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit('02')">审批通过</el-button>
-      <el-button type="primary" @click="taskSubmit('03')">审批拒绝</el-button>
+      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
+      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
       <el-button @click="backPage">取 消</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import DateSetForm from '@/views/valuation/date-set/date-set-form.vue'
-import { taskSubmit } from '@/api/valuation/date-set.js'
+import ReportForm from '@/views/valuation/report/report-form.vue'
+import { taskSubmit } from '@/api/valuation/report.js'
 export default {
-  name: 'DateSetTask',
+  name: 'ReportTask',
   components: {
-    DateSetForm
+    ReportForm
   },
   data() {
     return {
-      businessNo: '',
-      disabled: true
+      businessNo: ''
     }
   },
   beforeMount() {
@@ -43,7 +41,7 @@ export default {
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',
-        taskType: '01'
+        taskType: '02'
       }).then(response => {
         this.$message({
           message: '提交成功！',
