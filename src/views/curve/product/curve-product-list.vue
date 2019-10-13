@@ -71,7 +71,7 @@
           <el-button
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.approveStatus === '02' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="handleDelete(scope)"
           >
             删除
