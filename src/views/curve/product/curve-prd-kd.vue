@@ -69,7 +69,7 @@
         <el-row>
           <el-col :span="10">
             <el-form-item label="样本区间下限" prop="sampleIntervalDown">
-              <el-input v-model="curvePrdKdForm.sampleIntervalDown" />
+              <el-input type="number" v-model="curvePrdKdForm.sampleIntervalDown" />
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="2">
@@ -511,8 +511,8 @@ export default {
         this.curvePrdKdList = []
         this.curvePrdKdList.push({
           standSlip: standSlip,
-          sampleIntervalDown: 0,
-          sampleIntervalUp: 1,
+          sampleIntervalDown: sampleIntervalDown,
+          sampleIntervalUp: sampleIntervalUp,
           operateTs: new Date()
         })
       } else {
@@ -523,8 +523,8 @@ export default {
           if (standSlip < item.standSlip) {
             this.curvePrdKdList.splice(i, 0, {
               standSlip: standSlip,
-              sampleIntervalDown: 0,
-              sampleIntervalUp: 1,
+              sampleIntervalDown: sampleIntervalDown,
+              sampleIntervalUp: sampleIntervalUp,
               operateTs: new Date()
             })
             isdown = true
@@ -535,8 +535,8 @@ export default {
           // 如果for循环没有执行插入，则最后插入
           this.curvePrdKdList.push({
             standSlip: standSlip,
-            sampleIntervalDown: 0,
-            sampleIntervalUp: 1,
+            sampleIntervalDown: sampleIntervalDown,
+            sampleIntervalUp: sampleIntervalUp,
             operateTs: new Date()
           })
         }
