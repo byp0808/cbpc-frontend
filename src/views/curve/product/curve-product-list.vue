@@ -13,8 +13,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="prdCode" label="产品编号" width="120" />
-      <el-table-column prop="productName" label="产品名称" width="140" show-overflow-tooltip />
+      <el-table-column prop="prdCode" label="产品编号" width="150" />
+      <el-table-column prop="productName" label="产品名称" width="180" show-overflow-tooltip />
       <el-table-column prop="productLine" label="产品线" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.productLine }}
@@ -30,12 +30,12 @@
           {{ $dft("BASE_PRD_CODE", row.basePrdCode) }}
         </template>
       </el-table-column>
-      <el-table-column prop="curveStartTime" label="产品上市日期" width="120" show-overflow-tooltip>
+      <el-table-column prop="curveStartTime" label="上市日" width="120" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.curveStartTime == null ? '' : $moment(scope.row.curveStartTime).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
-      <el-table-column prop="curveEndTime" label="产品退市日期" width="120" show-overflow-tooltip>
+      <el-table-column prop="curveEndTime" label="停产日" width="120" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.curveEndTime == null ? '' : $moment(scope.row.curveEndTime).format('YYYY-MM-DD') }}
         </template>
@@ -50,7 +50,6 @@
           {{ $dft("APPROVE_STATUS", row.approveStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="产品明细" width="200" show-overflow-tooltip />
       <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button
