@@ -109,8 +109,9 @@
     <el-row :gutter="10">
       <el-col :span="14">
         <el-card class="box-card margin-top">
-          <div slot="header" class="clearfix card-head">
+          <div slot="header" class="head-title">
             <h3>待办任务列表</h3>
+            <div class="lookMore" @click="lookMore">查看更多</div>
           </div>
           <div class="grid-content bg-purple">
             <el-table
@@ -196,7 +197,6 @@ import { queryCalendarList, saveMyCalendar, readMsg } from '@/api/common/home-pa
 // import editorDashboard from './editor'
 export default {
   name: 'Dashboard',
-  // components: { adminDashboard, editorDashboard },
   data() {
     return {
       calendar: {
@@ -254,6 +254,9 @@ export default {
         that.calendar.result = doneList
         that.calendar.workday = dayInfo
       })
+    },
+    lookMore() {
+      this.$router.push('commons/audit-index')
     },
     onPageUpdate(page) {
       const m = this.$moment().set('year', page.year).set('month', page.month - 1).format('YYYYMM')
@@ -393,6 +396,17 @@ export default {
 }
 .overflow-x-auto {
   overflow-x: auto;
+}
+.head-title {
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
+  align-items: center;
+  .lookMore {
+     &:hover {
+       cursor: pointer;
+     }
+  }
 }
 .flex-grow {
   flex-grow: 1;
