@@ -242,7 +242,7 @@ export default {
           { required: true, message: 'K值不可为空', trigger: 'change' }
         ],
         remark: [
-          { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
+          { min: 0, max: 300, message: '长度在 1 到 300 个字符', trigger: 'blur' }
         ]
       },
       curvePrdNkFormTmp: {
@@ -250,7 +250,8 @@ export default {
         kvalue: null,
         remark: ''
       },
-      prdKdList: []
+      prdKdList: [],
+      forwardFlagModsList: []
     }
   },
   computed: {
@@ -266,7 +267,15 @@ export default {
       return options
     },
     forwardFlagMods() {
-      return forwardFlagModsList()
+      var options = []
+      var datalist = this.forwardFlagModsList
+      if (datalist && datalist.length > 0) {
+        for (var i = 0; i < datalist.length; i++) {
+          var data = datalist[i]
+          options.push({ value: data.id, label: data.tempName })
+        }
+      }
+      return options
     }
   },
   beforeMount() {
@@ -289,6 +298,12 @@ export default {
       await prdKdModsList(data).then(response => {
         if (response && response.dataList) {
           this.prdKdList = response.dataList
+        }
+      })
+
+      await forwardFlagModsList(data).then(response => {
+        if (response && response.dataList) {
+          this.forwardFlagModsList = response.dataList
         }
       })
     },
