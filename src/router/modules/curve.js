@@ -19,6 +19,11 @@ const curveRouter = {
       name: 'CurveProduct',
       meta: { title: '曲线产品', noCache: true, roles: ['CurveProduct'] }
     }, {
+      path: 'curve-set-rela',
+      component: () => import('@/views/curve/set/curve-set-rela.vue'),
+      name: 'CurveSetHisIndex',
+      meta: { title: '曲线关系模板', noCache: true, roles: ['CurveSetHisIndex'] }
+    }, {
       path: 'curve-set-hisindex',
       component: () => import('@/views/curve/set/curve-set-hisindex.vue'),
       name: 'CurveSetHisIndex',
