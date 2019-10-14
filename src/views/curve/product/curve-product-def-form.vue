@@ -17,7 +17,7 @@
         <el-row :gutter="24">
           <el-col :span="8">
             <el-form-item label="曲线产品名称" prop="productName">
-              <el-input v-model="productInfo.productName" :disabled="disabled" type="text" />
+              <el-input v-model="productInfo.productName" :disabled="disabled" type="text"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -206,7 +206,7 @@
         :op-type="opType"
       />
       <div class="text-center">
-        <el-button type="primary" :disabled="disabled" @click="curvePrdConfirm">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="curvePrdConfirm">确认</el-button>
       </div>
     </el-card>
   </div>
@@ -280,15 +280,15 @@ export default {
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+          { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
         ],
         productShortName: [
           { required: true, message: '请输入产品简称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 25 个字符', trigger: 'blur' }
+          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
         productEnglishName: [
           { required: true, message: '请输入产品英文名称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+          { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
         ],
         sort: [
           { required: true, message: '排序不能为空' },
@@ -313,7 +313,7 @@ export default {
           { validator: checkCurveEndTime, trigger: 'change' }
         ],
         remark: [
-          { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
+          { min: 0, max: 300, message: '长度在 1 到 300 个字符', trigger: 'blur' }
         ],
         referRate: [
           { required: true, message: '请选择曲线基准利率', trigger: 'change' }
@@ -635,7 +635,7 @@ export default {
         this.stepActive++
         this.$emit('confirmCurveInfoCallBack')
         this.$message({
-          message: '操作成功！',
+          message: '产品'+this.productInfo.productName+'完成装备！',
           type: 'success',
           showClose: true
         })
