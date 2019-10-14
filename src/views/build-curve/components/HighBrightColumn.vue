@@ -1,6 +1,6 @@
 <template>
-  <el-table-column :label="column.label" align="center" :class-name="column.className">
-    <span slot-scope="{ row }" :class="(0 + row[column.prop]) > 0 ? '' : 'red'">
+  <el-table-column :label="column.label" align="right" header-align="center" :class-name="column.className">
+    <span slot-scope="{ row }" :class="(0 + row[column.prop]) >= 0 ? '' : 'red'">
       {{ row[column.prop] }}
     </span>
   </el-table-column>
