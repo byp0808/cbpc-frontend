@@ -2,7 +2,7 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :span="12" class="scroll-box">
+        <el-col :span="13" class="scroll-box">
           <el-button type="primary">方案调整</el-button>
           <template>
             <el-dropdown split-button type="primary" @command="batchAdjust">
@@ -11,7 +11,8 @@
                 <el-dropdown-item command="a">批量调整曲线</el-dropdown-item>
                 <el-dropdown-item command="b">批量调整隐含评级</el-dropdown-item>
                 <el-dropdown-item command="c">批量调整信用点差</el-dropdown-item>
-                <el-dropdown-item command="d">批量调整其他点差</el-dropdown-item>
+                <el-dropdown-item command="d">批量调整流动性点差</el-dropdown-item>
+                <el-dropdown-item command="e">批量调整其他点差</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -26,7 +27,7 @@
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
         </el-col> -->
-        <el-col :span="11" :offset="1" class="scroll-box">
+        <el-col :span="10" :offset="1" class="scroll-box">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
@@ -285,17 +286,17 @@
         </el-table-column>
         <el-table-column align="center" label="全选" type="selection" />
       </el-table>
-      <el-form ref="creditDom" style="margin-top:20px" :rules="creditRule" :model="creditObj" :label-position="labelPosition">
+      <el-form ref="creditDom" style="margin-top:20px" :rules="creditRule" :model="creditObject" :label-position="labelPosition">
         <el-form-item label="交易量" required>
           <el-col :span="9">
             <el-form-item prop="starNumber">
-              <el-input v-model="creditObj.starNumber" type="number" clearable />
+              <el-input v-model="creditObject.starNumber" type="number" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
             <el-form-item prop="endNumber">
-              <el-input v-model="creditObj.endNumber" type="number" clearable />
+              <el-input v-model="creditObject.endNumber" type="number" clearable />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -363,20 +364,123 @@
       <opposite-form :is-opposite="islookOpposite" />
     </el-dialog>
     <el-dialog :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
-      <el-form-item label="目标估值曲线">
-        <el-select v-model="valuationScheme.curveId" placeholder="请选择">
-          <el-option
-            v-for="curve in curveList"
-            :key="curve.id"
-            :label="curve.name"
-            :value="curve.id"
-          />
-        </el-select>
-      </el-form-item>
+      <el-form>
+        <el-form-item label="目标估值曲线">
+          <el-select v-model="valuationScheme.curveId" placeholder="请选择">
+            <el-option
+              v-for="curve in curveList"
+              :key="curve.id"
+              :label="curve.name"
+              :value="curve.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="8" :offset="15">
+          <div class="dialog-footer">
+            <el-button @click="batchAdjustDialog.a = false">取 消</el-button>
+            <el-button type="primary" @click="saveTarget">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.b" title="批量调整隐含评级" />
-    <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" />
-    <el-dialog :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差" />
+    <el-dialog :visible.sync="batchAdjustDialog.b" title="批量调整隐含评级">
+      <el-form>
+        <el-form-item label="市场隐含评级">
+          <el-select v-model="valuationScheme.marketGrade" placeholder="请选择">
+            <el-option
+              v-for="(name, key) in $dict('MARKET_GRADE')"
+              :key="key"
+              :label="name"
+              :value="key"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="8" :offset="15">
+          <div class="dialog-footer">
+            <el-button @click="batchAdjustDialog.b = false">取 消</el-button>
+            <el-button type="primary" @click="saveGrade">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="830px">
+      <el-form :model="creditObj">
+        <el-form-item label="目标流动性点差">
+          <div>
+            <el-radio v-model="creditObj.targetCredit" label="1">常规调整</el-radio>
+            <el-input type="number" style="width:20%" />
+          </div>
+          <div style="margin-top:10px">
+            <el-row :gutter="0">
+              <el-col :span="5">
+                <el-radio v-model="creditObj.targetCredit" class="moveLeft" label="2">多次调整</el-radio>
+              </el-col>
+              <el-col :span="6" :offset="1">
+                <el-form-item label="初始点差:">
+                  <el-input v-model="creditObj.count" type="number" style="width:50%" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="最终点差:">
+                  <el-input type="number" style="width:50%" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="调整幅度:">
+                  <el-input v-model="creditObj.count" type="number" style="width:45%" /> BP/天
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+          <div style="margin-top:10px">
+            <el-radio v-model="creditObj.targetCredit" class="moveLeft" label="3">相对点差</el-radio>
+            <el-input v-model="creditObj.count" type="number" style="width:20%" />
+          </div>
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="8" :offset="15">
+          <div class="dialog-footer">
+            <el-button @click="batchAdjustDialog.c = false">取 消</el-button>
+            <el-button type="primary" @click="saveCredit">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差">
+      <el-form>
+        <el-form-item label="目标流动性点差">
+          <el-input v-model="otAdjValue" type="number" style="width:60%" clearable />
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="8" :offset="15">
+          <div class="dialog-footer">
+            <el-button @click="batchAdjustDialog.d = false">取 消</el-button>
+            <el-button type="primary" @click="saveFlow">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
+      <el-form>
+        <el-form-item label="目标其他点差">
+          <el-input v-model="valuationScheme.spreadValue" type="number" style="width:60%" clearable />
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="8" :offset="15">
+          <div class="dialog-footer">
+            <el-button @click="batchAdjustDialog.e = false">取 消</el-button>
+            <el-button type="primary" @click="saveOther">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -386,6 +490,7 @@ import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask } from '@/api/valuation/task.js'
+import { getCurveList } from '@/api/valuation/scheme.js'
 // import { uploadFile } from '@/utils/request-client'
 // import { basic_api_valuation } from '@/api/base-api'
 export default {
@@ -402,6 +507,9 @@ export default {
       activeElement: '01',
       activeName: '01',
       labelPosition: 'left',
+      creditObj: {
+        targetCredit: '01'
+      },
       isLook: false,
       isOpposite: false,
       volumeAddDialog: false,
@@ -415,22 +523,18 @@ export default {
       interestDialog: false,
       adjustDialog: false,
       islookOpposite: false,
+      targetFlow: '',
+      targetOther: '',
       message: '',
       code: '',
       failMessage: '',
       myList: [],
+      curveList: [],
       interestList: [],
       adjustList: [],
-      creditList: [
-        { remark: '01' },
-        { remark: '01' },
-        { remark: '01' },
-        { remark: '01' },
-        { remark: '01' }
-
-      ],
+      creditList: [],
       interestObj: {},
-      creditObj: {},
+      creditObject: {},
       compareObj: {},
       taskTitle: '',
       uploadList: [],
@@ -564,7 +668,8 @@ export default {
         a: false,
         b: false,
         c: false,
-        d: false
+        d: false,
+        e: false
       }
     }
   },
@@ -602,6 +707,21 @@ export default {
     },
     refrech() {
       this.loadTable()
+    },
+    saveTarget() {
+
+    },
+    saveGrade() {
+
+    },
+    saveCredit() {
+
+    },
+    saveFlow() {
+
+    },
+    saveOther() {
+
     },
     marketAdjust() {
       this.marketDialog = true
@@ -829,7 +949,15 @@ export default {
 
     },
     batchAdjust: function(command) {
+      this.valuationScheme = {}
       this.batchAdjustDialog[command] = true
+      console.log('cc', command)
+      if (command === 'a') {
+        getCurveList().then(response => {
+          const { dataList } = response
+          this.curveList = dataList
+        })
+      }
     },
     taskBack: function() {
 
@@ -849,6 +977,9 @@ export default {
  .assset {
      font-weight: 700;
      font-size: 16px;
+ }
+ .moveLeft {
+   margin-left: 110px;
  }
  .card {
      height: 100%;
