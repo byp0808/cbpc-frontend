@@ -2,9 +2,18 @@
   <div class="app-container">
     <el-form ref="refForm" :model="formData">
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="12">
           <el-form-item label="开始日期及批次期">
             <el-date-picker v-model="formData.startTime" type="date" placeholder="选择日期" />
+            <span>-</span>
+            <el-select v-model="formData.batchId" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -22,9 +31,18 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="12">
           <el-form-item label="结束日期及批次期">
             <el-date-picker v-model="formData.endTime" type="date" placeholder="选择日期" />
+            <span>-</span>
+            <el-select v-model="formData.batchId" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -44,7 +62,7 @@
       <el-row :gutter="10">
         <el-col :span="8">
           <el-form-item label="对应收益率曲线">
-            <el-select v-model="formData.endTime" placeholder="请选择收益率曲线">
+            <el-select v-model="formData.yieldCurve" placeholder="请选择收益率曲线">
               <el-option label="区域一" value="shanghai" />
               <el-option label="区域二" value="beijing" />
             </el-select>
@@ -267,10 +285,15 @@ export default {
   name: 'QueryValuation',
   data() {
     return {
+      options: [
+        { value: '1', label: '8：00' },
+        { value: '2', label: '9：00' }
+      ],
       formData: {
         startTime: '',
         endTime: '',
-        bondsPublisher: ''
+        bondsPublisher: '',
+        yieldCurve: ''
       },
       valuationResultList: [],
       page: {

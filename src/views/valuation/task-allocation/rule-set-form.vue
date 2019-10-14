@@ -20,7 +20,7 @@
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="refRuleInfo" :rules="rules" :model="ruleInfo" label-width="150px">
-              <el-form-item label="规则描述" prop="taskRangeName">
+              <el-form-item label="任务范围名称" prop="taskRangeName">
                 <el-input v-model="ruleInfo.taskRangeName" :disabled="disabled" />
               </el-form-item>
               <el-form-item label="最后操作时间">
@@ -55,7 +55,7 @@ export default {
     return {
       ruleInfo: {},
       rules: {
-        taskRangeName: [{ required: true, message: '请输入规则描述', trigger: 'blur' }]
+        taskRangeName: [{ required: true, message: '请输入任务范围名称', trigger: 'blur' }]
       }
     }
   },

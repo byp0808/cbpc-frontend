@@ -78,7 +78,7 @@ const valuationRouter = {
     }, {
       path: 'taskAllocation-list',
       component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
-      name: 'ValuationTaskAllocationList',
+      name: 'TaskAllocation',
       meta: { title: '设置任务分配规则', noCache: true, roles: ['ValuationTaskAllocationList'] }
     }, {
       path: '/scheme-form',
