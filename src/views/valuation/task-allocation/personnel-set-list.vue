@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin: 10px">
-      <el-button type="primary" class="float-left" @click="add">新增人员设置</el-button>
+      <el-button type="primary" class="float-left" @click="add">新增任务规则</el-button>
     </div>
     <div>
       <el-table ref="multipleTable" :data="taskAllocationList" tooltip-effect="dark">
@@ -10,7 +10,7 @@
             <el-radio :label="scope.row.taskRangeId" class="textRadio">&nbsp;</el-radio>
           </template>
         </el-table-column>
-        <el-table-column prop="taskRangeName" label="规则名称" min-width="35%" show-overflow-tooltip />
+        <el-table-column prop="taskRangeName" label="范围名称" min-width="35%" show-overflow-tooltip />
         <el-table-column prop="userId" label="分配人员" min-width="35%" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ ruleDetail(scope.row.taskRangeId) }}</span>
