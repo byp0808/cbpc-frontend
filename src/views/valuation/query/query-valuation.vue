@@ -75,124 +75,178 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-table :data="valuationList" style="width: 100%" :row-class-name="tableRowClassName">
+    <el-table :data="valuationResultList" style="width: 100%">
       <el-table-column
         type="selection"
         width="30"
       />
       <el-table-column
-        prop="date"
+        fixed="left"
+        prop="bondId"
         label="债券简称"
         width="100"
       />
       <el-table-column
-        prop="name"
+        fixed="left"
+        prop="csin"
         label="债券代码"
         width="100"
       />
       <el-table-column
-        prop="address"
+        align="center"
+        prop="cptDate"
         label="估值日期"
-        width="150"
+        width="180"
       />
       <el-table-column
-        prop="address"
+        prop="batchId"
         label="估值批次"
         width="100"
       />
       <el-table-column
-        prop="address"
+        prop="marketId"
         label="流通场所"
         width="150"
       />
       <el-table-column
-        prop="address"
+        prop="indexResult.residualMaturity"
         label="代偿期"
         width="100"
       />
       <el-table-column
-        prop="address"
-        label="日间估价全价"
+        prop="indexResult.fullPriceInterDay"
+        label="日间估价全价（元）"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="日间应计利息"
+        prop="indexResult.accruedInterestInterDay"
+        label="日间应计利息（元）"
         width="150"
       />
       <el-table-column
-        prop="address"
-        label="估价净价"
+        prop="indexResult.netPrice"
+        label="估价净价（元）"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="估价收益率"
+        prop="indexResult.yield"
+        label="估价收益率（%）"
         width="150"
       />
       <el-table-column
-        prop="address"
-        label="加权平均结全价"
+        prop="indexResult.modifiedDuration"
+        label="估价修正久期"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="修正久期"
+        prop="indexResult.Convexity"
+        label="估价凸性"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利率久期"
+        prop="indexResult.BPValue"
+        label="估价基点价值"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利差久期"
+        prop="indexResult.spreadDuration"
+        label="估价利差久期"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="凸性"
+        prop="indexResult.spreadConvexity"
+        label="估价利差凸性"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利率凸性"
+        prop="indexResult.averageSettlementFullPrice"
+        label="加权平均结算全价（元）"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利差凸性"
+        prop="indexResult.averageSettlementNetPrice"
+        label="加权平均结算净价（元）"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="基点价值"
+        prop="indexResult.averageSettlementYield"
+        label="加权平均结算收益率（%）"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利率基点价值"
+        prop="indexResult.averageSettlementModifiedDuration"
+        label="加权平均结算价修正久期"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="利差基点价值"
+        prop="indexResult.averageSettlementConvexity"
+        label="加权平均结算价凸性"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="均衡票面价格"
+        prop="indexResult.averageSettlementBPValue"
+        label="加权平均结算价基点价值"
         width="180"
       />
       <el-table-column
-        prop="address"
-        label="均衡行权价格"
+        prop="indexResult.averageSettlementSpreadDuration"
+        label="加权平均结算价利差久期"
         width="180"
       />
       <el-table-column
-        prop="address"
+        prop="indexResult.averageSettlementSpreadConvexity"
+        label="加权平均结算价利差凸性"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.rateDuration"
+        label="估价利率久期"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.rateConvexity"
+        label="估价利率凸性"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.averageSettlementRateDuration"
+        label="加权平均结算价利率久期"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.averageSettlementRateConvexity"
+        label="加权平均结算价利率凸性"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.fullPriceEndDay"
+        label="日终估价全价(元）"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.accruedInterestEndDay"
+        label="日终应计利息(元)"
+        width="180"
+      />
+      <el-table-column
+        prop=""
+        label="剩余本金"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.spreadYield"
+        label="点差收益率(%)"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.equilibriumCouponRate"
+        label="估算的行权后票面利率(%)"
+        width="180"
+      />
+      <el-table-column
+        prop="indexResult.reliability"
         label="可信度"
+        width="150"
       />
     </el-table>
     <el-pagination
@@ -208,6 +262,7 @@
 </template>
 
 <script>
+import { queryValuation } from '@/api/valuation/query.js'
 export default {
   name: 'QueryValuation',
   data() {
@@ -217,30 +272,35 @@ export default {
         endTime: '',
         bondsPublisher: ''
       },
-      valuationList: [],
+      valuationResultList: [],
       page: {
         pageNumber: 1,
-        pageSize: 10
+        pageSize: 10,
+        totalRecord: 0
       }
     }
   },
+  beforeMount() {
+    this.load()
+  },
   methods: {
-    tableRowClassName({ row, rowIndex }) {
-      if (rowIndex === 1) {
-        return 'warning-row'
-      } else if (rowIndex === 3) {
-        return 'success-row'
-      }
-      return ''
+    load() {
+      queryValuation({ page: this.page }).then(response => {
+        const { dataList, page } = response
+        this.valuationResultList = dataList
+        this.page = page
+      })
     },
     resetForm() {
       this.$refs['refForm'].resetFields()
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
+      this.load()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
+      this.load()
     }
   }
 }
