@@ -4,7 +4,17 @@
       <el-row>
         <el-col :span="11" class="scroll-box">
           <el-button type="primary">方案调整</el-button>
-          <el-button type="primary">批量调整</el-button>
+	        <template>
+		        <el-dropdown split-button type="primary" @command="batchAdjust">
+			        批量调整
+			        <el-dropdown-menu slot="dropdown">
+				        <el-dropdown-item command="a">批量调整曲线</el-dropdown-item>
+				        <el-dropdown-item command="b">批量调整隐含评级</el-dropdown-item>
+				        <el-dropdown-item command="c">批量调整信用点差</el-dropdown-item>
+				        <el-dropdown-item command="d">批量调整其他点差</el-dropdown-item>
+			        </el-dropdown-menu>
+		        </el-dropdown>
+	        </template>
           <el-button type="primary" @click="backTask">任务退回</el-button>
           <el-button type="primary">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
@@ -161,6 +171,21 @@
         </el-col>
       </el-row>
     </el-dialog>
+	  <el-dialog :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
+		  <el-form-item label="目标估值曲线">
+			  <el-select v-model="valuationScheme.curveId" placeholder="请选择">
+				  <el-option
+					  v-for="curve in curveList"
+					  :key="curve.id"
+					  :label="curve.name"
+					  :value="curve.id"
+				  />
+			  </el-select>
+		  </el-form-item>
+	  </el-dialog>
+	  <el-dialog :visible.sync="batchAdjustDialog.b" title="批量调整隐含评级"></el-dialog>
+	  <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差"></el-dialog>
+	  <el-dialog :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差"></el-dialog>
   </div>
 </template>
 
@@ -249,6 +274,23 @@ export default {
         },
         tab: '02',
         scene: '01'
+      },
+      valuationScheme: {
+        curveId: '',
+        marketGrade: '',
+        cdsPremAdjType: '',
+        cdsPremAdjWay: '',
+        recoDire: '',
+        relaSpread: '',
+        flAdjValue: '',
+        otAdjValue: '',
+        spreadValue: ''
+      },
+      batchAdjustDialog: {
+        a: false,
+        b: false,
+        c: false,
+        d: false
       }
     }
   },
@@ -466,8 +508,8 @@ export default {
     schemeAdjust: function() {
 
     },
-    batchAdjust: function() {
-
+    batchAdjust: function(command) {
+			this.batchAdjustDialog[command] = true
     },
     taskBack: function() {
 
