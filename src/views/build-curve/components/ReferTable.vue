@@ -23,7 +23,7 @@ export default {
       type: String,
       default: ''
     },
-    line: {
+    mainCurve: {
       type: Array,
       default: () => []
     }
@@ -31,7 +31,7 @@ export default {
   computed: {
     make() {
       return this.list.map((item) => {
-        const l = this.line.filter(m => item.standSlip === m.standSlip - 0)
+        const l = this.mainCurve.filter(m => item.standSlip === m.standSlip - 0)
         if (l.length === 0) {
           return item
         }
