@@ -51,7 +51,7 @@
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="storageCurveHomology()">
+        <el-button type="primary" @click="storageInit()">
           确定
         </el-button>
       </div>
@@ -62,6 +62,7 @@
 <script>
 import {
   getInitPageList,
+  storageInitList,
   delInitList
 } from '@/api/curve/curve-product-list.js'
 import Creditdebt from '@/views/curve/creditdebt/creditdebt.vue'
@@ -104,17 +105,17 @@ export default {
     curveHomologyCreate() {
       this.temp = []
       this.dialogFormVisible = true
-      this.$refs.creditdebt.jinZhiXuanZe = false
-      this.$refs.creditdebt.curveHomologyShow = true
-      this.$refs.creditdebt.curveHomologyXing = true
-      this.$refs.creditdebt.bankMessage = []
-      this.$refs.creditdebt.bankMessage2 = []
+      // this.$refs.creditdebt.jinzhiXuanZe = false
+      // this.$refs.creditdebt.curveHomologyShow = true
+      // this.$refs.creditdebt.curveHomologyXing = true
+      // this.$refs.creditdebt.bankMessage = []
+      // this.$refs.creditdebt.bankMessage2 = []
     },
     // 列表修改操作
     curveHomologyDtoEdit(index, rows) {
       this.temp = rows[index]
       this.dialogFormVisible = true
-      this.$refs.creditdebt.jinZhiXuanZe = true
+      this.$refs.creditdebt.jinzhiXuanZe = true
       this.$refs.creditdebt.curveHomologyShow = false
       this.$refs.creditdebt.curveHomologyXing = false
     },
@@ -129,22 +130,22 @@ export default {
         })
       })
     },
-    storageCurveHomology() {
+    storageInit() {
       debugger
       var data = this.$refs.creditdebt.obtainCurveHomology()
       if (!data.standSlipList) {
         alert('请选择曲线！')
         return
       }
-      // storageHomology(data).then(response => {
-      //   this.initCaseList.unshift(this.temp)
-      //   this.dialogFormVisible = false
-      //   this.$message({
-      //     message: '操作成功！',
-      //     type: 'success',
-      //     showClose: true
-      //   })
-      // })
+      storageInitList(data).then(response => {
+        this.initCaseList.unshift(this.temp)
+        this.dialogFormVisible = false
+        this.$message({
+          message: '操作成功！',
+          type: 'success',
+          showClose: true
+        })
+      })
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
