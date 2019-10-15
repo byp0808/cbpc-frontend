@@ -86,6 +86,11 @@
             <span>{{ makeValid(row.validFlag) }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="审批状态">
+          <template slot-scope="{ row }">
+            <span>{{ row.approveStatus }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="责任人">
           <template slot-scope="{ row }">
             <span>{{ row.assignName }}</span>
