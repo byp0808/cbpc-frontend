@@ -465,7 +465,7 @@ export default {
       if (sampleIntervalUp !== 0 && !sampleIntervalUp) {
         this.$message({
           type: 'error',
-          message: '区间下限上能为空'
+          message: '区间上限上能为空'
         })
         return false
       }
