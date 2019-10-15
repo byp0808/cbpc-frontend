@@ -198,7 +198,7 @@
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
-        <h3>确认产品</h3>
+        <h3>确认产品  编制曲线编码：{{this.productInfo.curvePrdCode}}</h3>
       </div>
       <CurveProductDefConfirm
         ref="refCurveProductDefConfirm"

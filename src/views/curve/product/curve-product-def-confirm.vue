@@ -10,7 +10,6 @@
         </el-col>
         <el-col v-if="item.curveSampleNumberVisible" :span="6" class="prd-order-name-sample">
           <span>曲线样本券数量: {{ item.curveSampleNumber }}</span>
-<!--          <span>编制曲线编码: {{ item.curvePrdCode }}</span>-->
         </el-col>
       </el-row>
       <el-button type="primary" size="mini" round :disabled="disabled" @click="showCurveInfo(item)">查看曲线性质</el-button>
