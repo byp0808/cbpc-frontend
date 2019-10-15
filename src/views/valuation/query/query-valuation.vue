@@ -93,7 +93,15 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-table :data="valuationResultList" style="width: 100%">
+    <el-table
+      :data="valuationResultList"
+      style="width: 100%"
+      :header-cell-style="{background:'#f6f6f6'}"
+      tooltip-effect="dark"
+      border
+      fit
+      highlight-current-row
+    >
       <el-table-column
         type="selection"
         width="30"
@@ -267,7 +275,9 @@
         width="150"
       />
     </el-table>
+    <el-button type="primary" :loading="loading" @click="download"><i class="el-icon-download el-icon--left">下载</i></el-button>
     <el-pagination
+      align="center"
       :current-page="page.pageNumber"
       :page-sizes="[10, 20, 30, 40, 50]"
       :page-size="page.pageSize"
@@ -281,6 +291,8 @@
 
 <script>
 import { queryValuation } from '@/api/valuation/query.js'
+import { basic_api_valuation } from '@/api/base-api'
+import { downloadFile } from '@/utils/request-client'
 export default {
   name: 'QueryValuation',
   data() {
@@ -289,6 +301,7 @@ export default {
         { value: '1', label: '8：00' },
         { value: '2', label: '9：00' }
       ],
+      loading: false, // 下载按钮是否是加载状态
       formData: {
         startTime: '',
         endTime: '',
@@ -316,6 +329,14 @@ export default {
     },
     resetForm() {
       this.$refs['refForm'].resetFields()
+    },
+    download() {
+      const that = this
+      this.loading = true
+      window.setTimeout(function() {
+        that.loading = false
+      }, 1500)
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-query-valuation')
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
