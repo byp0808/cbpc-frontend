@@ -407,7 +407,7 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="830px">
+    <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="860px">
       <el-form :model="creditObj">
         <el-form-item label="目标流动性点差">
           <div>
@@ -443,7 +443,7 @@
         </el-form-item>
       </el-form>
       <el-row>
-        <el-col :span="8" :offset="15">
+        <el-col :span="7" :offset="18">
           <div class="dialog-footer">
             <el-button @click="batchAdjustDialog.c = false">取 消</el-button>
             <el-button type="primary" @click="saveCredit">确 定</el-button>
@@ -454,7 +454,7 @@
     <el-dialog :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差">
       <el-form>
         <el-form-item label="目标流动性点差">
-          <el-input v-model="otAdjValue" type="number" style="width:60%" clearable />
+          <el-input v-model="valuationScheme.otAdjValue" type="number" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -469,7 +469,7 @@
     <el-dialog :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
       <el-form>
         <el-form-item label="目标其他点差">
-          <el-input v-model="valuationScheme.spreadValue" type="number" style="width:60%" clearable />
+          <el-input v-model="valuationScheme.spreadValue" type="number" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
