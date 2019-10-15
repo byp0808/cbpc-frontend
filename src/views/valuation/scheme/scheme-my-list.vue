@@ -5,7 +5,7 @@
         <el-col :span="13" class="scroll-box">
           <el-button type="primary">方案调整</el-button>
           <template>
-            <el-dropdown split-button type="primary" @command="batchAdjust">
+            <el-dropdown split-button type="primary" @command="batchesAdjust">
               批量调整
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="a">批量调整曲线</el-dropdown-item>
@@ -50,7 +50,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tableLoading">
-        <asset-list :all-list="myList" @selectionList="selectionList" />
+        <asset-list :all-list="myList" @selectionList="selectionList" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -64,7 +64,7 @@
         />
       </div>
       <div v-if="activeElement === '04'" v-loading="tableLoading">
-        <people-upload :all-list="uploadList" @selectionList="selectionList" />
+        <people-upload :all-list="uploadList" @selectionList="selectionList" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -363,7 +363,7 @@
     <el-dialog :visible.sync="oppositeDialog" title="对敲人工识别" width="1000px">
       <opposite-form :is-opposite="islookOpposite" />
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
+    <el-dialog v-loading="Dialog.a" :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
       <el-form>
         <el-form-item label="目标估值曲线">
           <el-select v-model="valuationScheme.curveId" placeholder="请选择">
@@ -385,7 +385,7 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.b" title="批量调整隐含评级">
+    <el-dialog v-loading="Dialog.b" :visible.sync="batchAdjustDialog.b" title="批量调整隐含评级">
       <el-form>
         <el-form-item label="市场隐含评级">
           <el-select v-model="valuationScheme.marketGrade" placeholder="请选择">
@@ -407,39 +407,41 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="860px">
-      <el-form :model="creditObj">
+    <el-dialog v-loading="Dialog.c" :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="860px">
+      <el-form>
         <el-form-item label="目标流动性点差">
-          <div>
-            <el-radio v-model="creditObj.targetCredit" label="1">常规调整</el-radio>
-            <el-input type="number" style="width:20%" />
-          </div>
-          <div style="margin-top:10px">
-            <el-row :gutter="0">
-              <el-col :span="5">
-                <el-radio v-model="creditObj.targetCredit" class="moveLeft" label="2">多次调整</el-radio>
-              </el-col>
-              <el-col :span="6" :offset="1">
-                <el-form-item label="初始点差:">
-                  <el-input v-model="creditObj.count" type="number" style="width:50%" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="最终点差:">
-                  <el-input type="number" style="width:50%" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="6">
-                <el-form-item label="调整幅度:">
-                  <el-input v-model="creditObj.count" type="number" style="width:45%" /> BP/天
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-          <div style="margin-top:10px">
-            <el-radio v-model="creditObj.targetCredit" class="moveLeft" label="3">相对点差</el-radio>
-            <el-input v-model="creditObj.count" type="number" style="width:20%" />
-          </div>
+          <el-radio-group v-model="radio" style="margin-top:-40px" @change="radioChange">
+            <div class="moveLeft">
+              <el-radio label="1">常规调整</el-radio>
+              <el-input v-model="valuationScheme.spreadValue" :disabled="radio!== '1'" type="number" style="width:20%" clearable />
+            </div>
+            <div style="margin-top:10px">
+              <el-row :gutter="0">
+                <el-col :span="5" style="margin-top:10px">
+                  <el-radio class="moveLeft" label="2">多次调整</el-radio>
+                </el-col>
+                <el-col :span="6" :offset="1">
+                  <el-form-item label="初始点差:">
+                    <el-input v-model="valuationScheme.spreadStart" :disabled="radio!== '2'" type="number" style="width:50%" clearable />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="最终点差:">
+                    <el-input v-model="valuationScheme.spreadEnd" :disabled="radio!== '2'" type="number" style="width:50%" clearable />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="调整幅度:">
+                    <el-input v-model="valuationScheme.cdsAdjValue" :disabled="radio!== '2'" type="number" style="width:45%" clearable /> BP/天
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </div>
+            <div style="margin-top:10px">
+              <el-radio class="moveLeft" label="3">相对点差</el-radio>
+              <el-input v-model="valuationScheme.relaSpread" :disabled="radio!== '3'" type="number" style="width:20%" clearable />
+            </div>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <el-row>
@@ -451,10 +453,10 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差">
+    <el-dialog v-loading="Dialog.d" :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差">
       <el-form>
         <el-form-item label="目标流动性点差">
-          <el-input v-model="valuationScheme.otAdjValue" type="number" style="width:50%" clearable />
+          <el-input v-model="valuationScheme.flAdjValue" type="number" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -466,10 +468,10 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
+    <el-dialog v-loading="Dialog.e" :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
       <el-form>
         <el-form-item label="目标其他点差">
-          <el-input v-model="valuationScheme.spreadValue" type="number" style="width:50%" clearable />
+          <el-input v-model="valuationScheme.otAdjValue" type="number" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -489,7 +491,7 @@ import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask } from '@/api/valuation/task.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust } from '@/api/valuation/task.js'
 import { getCurveList } from '@/api/valuation/scheme.js'
 // import { uploadFile } from '@/utils/request-client'
 // import { basic_api_valuation } from '@/api/base-api'
@@ -507,9 +509,10 @@ export default {
       activeElement: '01',
       activeName: '01',
       labelPosition: 'left',
-      creditObj: {
-        targetCredit: '01'
-      },
+      radio: '1',
+      // creditObj: {
+      //   targetCredit: '1'
+      // },
       isLook: false,
       isOpposite: false,
       volumeAddDialog: false,
@@ -523,6 +526,13 @@ export default {
       interestDialog: false,
       adjustDialog: false,
       islookOpposite: false,
+      Dialog: {
+        a: false,
+        b: false,
+        c: false,
+        d: false,
+        e: false
+      },
       targetFlow: '',
       targetOther: '',
       message: '',
@@ -601,6 +611,7 @@ export default {
         }
       ],
       excelFile: '',
+      tasks: [],
       tabList: [
         // {
         //   label: '正常',
@@ -644,6 +655,7 @@ export default {
       bondId: '',
       valuationAllTask: [],
       valuationMyTask: [],
+      taskLists: [],
       params: {
         page: {
           pageNumber: 1,
@@ -654,6 +666,7 @@ export default {
         scene: '01'
       },
       valuationScheme: {
+        tasks: [],
         curveId: '',
         marketGrade: '',
         cdsPremAdjType: '',
@@ -662,7 +675,10 @@ export default {
         relaSpread: '',
         flAdjValue: '',
         otAdjValue: '',
-        spreadValue: ''
+        spreadValue: '',
+        spreadStart: '',
+        spreadEnd: '',
+        cdsAdjValue: ''
       },
       batchAdjustDialog: {
         a: false,
@@ -695,7 +711,12 @@ export default {
     },
     selectionList(data) {
       this.selection = data
-      console.log('00', data)
+    },
+    taskList(data) { // 批量调整任务id
+      this.taskLists = data
+    },
+    radioChange(e) {
+      this.radio = e
     },
     tabName(param) {
       switch (param) {
@@ -708,20 +729,123 @@ export default {
     refrech() {
       this.loadTable()
     },
+    // validateTask() {
+    //   if (this.tasks.length === 0) {
+    //     return this.$message.warning('请至少选择一条任务进行调整')
+    //   }
+    //   this.valuationScheme.tasks = this.tasks
+    // },
+    selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
+      if (this.taskLists && this.taskLists.length > 0) {
+        this.taskLists.map(v => {
+          this.tasks.push({ bondId: v.bondId })
+        })
+      }
+      this.valuationScheme.tasks = this.tasks
+      console.log('cc', this.tasks)
+    },
+    clearTask() {
+      this.tasks = []
+      this.taskLists = []
+    },
     saveTarget() {
-
+      if (this.taskLists.length === 0) {
+        return this.$message.warning('请至少选择一条任务进行调整')
+      }
+      if (!this.valuationScheme.curveId) {
+        return this.$message.warning('请至少选择一条曲线')
+      }
+      this.selectBondId()
+      this.Dialog.a = true
+      batchAdjust(this.valuationScheme).then(res => {
+        this.Dialog.a = false
+        this.batchAdjustDialog.a = false
+        this.$message.success('添加成功')
+        this.loadTable()
+        this.clearTask()
+      })
     },
     saveGrade() {
-
+      if (this.taskLists.length === 0) {
+        return this.$message.warning('请至少选择一条任务进行调整')
+      }
+      if (!this.valuationScheme.marketGrade) {
+        return this.$message.warning('请至少选择一个隐含评级')
+      }
+      this.selectBondId()
+      this.Dialog.b = true
+      batchAdjust(this.valuationScheme).then(res => {
+        this.Dialog.b = false
+        this.batchAdjustDialog.b = false
+        this.$message.success('添加成功')
+        this.loadTable()
+        this.clearTask()
+      })
     },
     saveCredit() {
-
+      if (this.taskLists.length === 0) {
+        return this.$message.warning('请至少选择一条任务进行调整')
+      }
+      if (!this.valuationScheme.cdsAdjValue && !this.valuationScheme.spreadStart && !this.valuationScheme.spreadEnd &&
+      !this.valuationScheme.relaSpread && !this.valuationScheme.spreadValue) {
+        return this.$message.warning('请输入一种目标点差')
+      }
+      if (this.radio === '2') {
+        if (!this.valuationScheme.cdsAdjValue) {
+          return this.$message.warning('请输入调整幅度')
+        }
+        if (!this.valuationScheme.spreadStart) {
+          return this.$message.warning('请输入初始点差')
+        }
+        if (!this.valuationScheme.spreadEnd) {
+          return this.$message.warning('请输入最终点差')
+        }
+      }
+      this.selectBondId()
+      this.Dialog.c = true
+      batchAdjust(this.valuationScheme).then(res => {
+        this.Dialog.c = false
+        this.batchAdjustDialog.c = false
+        this.$message.success('添加成功')
+        this.loadTable()
+        this.clearTask()
+      })
     },
     saveFlow() {
-
+      if (this.taskLists.length === 0) {
+        return this.$message.warning('请至少选择一条任务进行调整')
+      }
+      if (!this.valuationScheme.flAdjValue) {
+        return this.$message.warning('请输入目标流动性点差')
+      }
+      // this.valuationScheme.tasks = this.tasks
+      this.selectBondId()
+      this.Dialog.d = true
+      batchAdjust(this.valuationScheme).then(res => {
+        this.Dialog.d = false
+        this.batchAdjustDialog.d = false
+        this.$message.success('添加成功')
+        this.loadTable()
+        this.clearTask()
+      })
     },
     saveOther() {
-
+      if (this.taskLists.length === 0) {
+        return this.$message.warning('请至少选择一条任务进行调整')
+      }
+      if (!this.valuationScheme.otAdjValue) {
+        return this.$message.warning('请输入目标其他点差')
+      }
+      // this.valuationScheme.tasks = this.tasks
+      this.selectBondId()
+      this.Dialog.e = true
+      batchAdjust(this.valuationScheme).then(res => {
+        this.Dialog.e = false
+        this.batchAdjustDialog.e = false
+        this.$message.success('添加成功')
+        this.loadTable()
+        this.clearTask()
+      })
     },
     marketAdjust() {
       this.marketDialog = true
@@ -732,7 +856,7 @@ export default {
     },
     creditAdjust() {
       this.creditDialog = true
-      this.creditObj = {}
+      this.creditObject = {}
       if (this.creditList.length > 4) {
         this.creditList = this.creditList.slice(0, 4)
         this.creditList.push({ remark: '......' })
@@ -770,7 +894,6 @@ export default {
 
     },
     handleSelect(e) {
-      console.log('tab', e.name)
       this.params.scene = e.name
       this.loadTable()
     },
@@ -783,7 +906,7 @@ export default {
       this.loadTable()
     },
     backTask() {
-      console.log('000', this.selection)
+      console.log('this.selection', this.selection)
       if (this.selection.length === 0) {
         return this.$message({
           message: '请选择任务',
@@ -948,10 +1071,11 @@ export default {
     schemeAdjust: function() {
 
     },
-    batchAdjust: function(command) {
+    batchesAdjust(command) {
+      console.log('this.taskLists', this.taskLists)
       this.valuationScheme = {}
+      this.radio = '1'
       this.batchAdjustDialog[command] = true
-      console.log('cc', command)
       if (command === 'a') {
         getCurveList().then(response => {
           const { dataList } = response

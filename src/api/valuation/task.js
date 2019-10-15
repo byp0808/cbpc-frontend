@@ -68,4 +68,13 @@ export function returnTask(data) { // 退回任务
     }
   )
 }
+export function batchAdjust(data) { // 批量调整
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/batch-update`,
+      method: 'post',
+      data: data
+    }
+  )
+}
 

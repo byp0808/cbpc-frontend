@@ -149,6 +149,7 @@ export default {
       ruleSetFormVisible: false,
       taskRangeId: '',
       selectionList: [],
+      taskList: [],
       list: [],
       tabHeight: '',
       page: {
@@ -176,13 +177,16 @@ export default {
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
-        val.map(v => {
-          this.selectionList.push(v.id)
+        val.map((v, i) => {
+          this.selectionList.push(v.bondId)
+          // this.taskList.push({ bondId: v.bondId })
         })
         this.selectionList = Array.from(new Set(this.selectionList))
         this.$emit('selectionList', this.selectionList)
+        this.$emit('taskList', val)
       } else {
         this.selectionList = []
+        this.taskList = []
       }
     }
     // handleSizeChange(pageSize) {

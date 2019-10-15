@@ -94,24 +94,24 @@ export default {
   },
   data() {
     return {
-      selectionList: []
+      selectionList: [],
+      taskList: []
     }
   },
   methods: {
-    // load() {
-
-    // },
     handleSelectionChange(val) {
       if (val.length > 0) {
         val.map(v => {
-          this.selectionList.push(v.id)
+          this.selectionList.push(v.bondId)
+          // this.taskList.push({ bondId: v.bondId })
         })
         this.selectionList = Array.from(new Set(this.selectionList))
         this.$emit('selectionList', this.selectionList)
+        this.$emit('taskList', val)
       } else {
         this.selectionList = []
+        this.taskList = []
       }
-      console.log('val', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize
