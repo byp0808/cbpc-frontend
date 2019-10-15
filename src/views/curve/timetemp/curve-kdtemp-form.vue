@@ -54,7 +54,7 @@ import { savekdTemp, queryKdTemp, checkTempName } from '@/api/curve/curve-kdtemp
 export default {
   name: 'KdTempForm',
   components: {},
-  props: ['businessId', 'disabled'],
+  props: ['businessId', 'disabled', 'isCopy'],
   data() {
     const generateData = _ => {
       const data = this.$dict('KD_TYPE')
@@ -115,6 +115,11 @@ export default {
   },
   methods: {
     save(formName) {
+      if (this.isCopy) {
+        // 复制新增-->删除Id
+        this.reqData.id = ''
+        this.kdTempInfo.id = ''
+      }
       this.$refs.KdTempForm.validate((valid) => {
         if (valid) {
           const data = this.kdTempInfo
@@ -155,21 +160,18 @@ export default {
       return a - b
     },
     checkTempName(rule, value, callback) {
-      if (this.businessId) {
-        callback()
-      } else {
-        var data = {}
-        data.tempType = 'kd'
-        data.tempName = value
-        checkTempName(data).then(response => {
-          // console.log(response)
-          if (response) {
-            callback(new Error('模板名称重复'))
-          } else {
-            callback()
-          }
-        })
-      }
+      var data = {}
+      data.tempType = 'kd'
+      data.tempName = value
+      data.id = this.kdTempInfo.id
+      checkTempName(data).then(response => {
+        // console.log(response)
+        if (response) {
+          callback(new Error('模板名称重复'))
+        } else {
+          callback()
+        }
+      })
     }
   }
 }

@@ -1,15 +1,17 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增规则</el-button>
+      <el-button type="primary" class="float-left" @click="toAdd">新增规则</el-button>
+      <el-button type="primary" class="float-left" @click="copyAdd">复制新增</el-button>
     </div>
     <el-table
-      ref="refNkTempTable"
-      :data="nkTempList"
+      ref="refKdTempTable"
+      border
+      :data="kdTempList"
       tooltip-effect="dark"
       style="width: 1286px"
-      border
       @selection-change="handleSelectionChange"
+      @row-click="clickRow"
     >
       <el-table-column
         type="selection"
@@ -17,12 +19,12 @@
       />
       <el-table-column
         prop="tempName"
-        label="远期NK值规则名称"
+        label="规则名称"
         show-overflow-tooltip
         width="330"
       />
       <el-table-column
-        prop="nkValues"
+        prop="standSlip"
         label="规则详细"
         show-overflow-tooltip
         width="600"
@@ -42,6 +44,7 @@
         label="操作"
         width="200"
         show-overflow-tooltip
+        align="center"
       >
         <template slot-scope="scope">
           <el-button
@@ -79,35 +82,39 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="nkTempFormVisible" width="70%" title="远期期限模板设置" :visible.sync="nkTempFormVisible">
-      <nkTempForm
-        ref="NkTempForm"
-        :nk-temp-data="nkTempData"
-        :business-id="nkTempId"
+    <el-dialog v-if="kdTempFormVisible" width="70%" title="关键期限模板设置" :visible.sync="kdTempFormVisible">
+      <kdTempForm
+        ref="KdTempForm"
+        :kd-temp-data="kdTempData"
+        :business-id="kdTempId"
+        :is-copy="isCopy"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="nkTempFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save('NkTempForm')">保 存</el-button>
+        <el-button @click="kdTempFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save('KdTempForm')">保 存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import NkTempForm from '@/views/curve/timetemp/curve-nktemp-form.vue'
-import { querynkTempList, deletenkTemp } from '@/api/curve/curve-nktemp-list.js'
+import KdTempForm from '@/views/curve/timetemp/curve-kdtemp-form.vue'
+import { querykdTempList, deletekdTemp } from '@/api/curve/curve-kdtemp-list.js'
 export default {
-  name: 'NkTempList',
+  name: 'KdTempList',
   components: {
-    NkTempForm
+    KdTempForm
   },
   data() {
     return {
-      nkTempFormVisible: false,
-      nkTempId: '',
-      nkTempList: [],
-      nkTempData: {},
+      kdTempFormVisible: false,
+      isCopy: false,
+      flag: false,
+      kdTempId: '',
+      tmpKdTempId: '',
+      kdTempList: [],
+      kdTempData: {},
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -131,11 +138,24 @@ export default {
     this.loadTable()
   },
   methods: {
+    clickRow(row) {
+      if (this.tmpKdTempId === '') {
+        this.tmpKdTempId = row.id
+      }
+      this.kdTempId = row.id
+      this.flag = !this.flag
+      this.$refs.refKdTempTable.toggleRowSelection(row, this.flag)
+      if (this.tmpKdTempId !== row.id) {
+        this.$refs.refKdTempTable.clearSelection()
+        this.$refs.refKdTempTable.toggleRowSelection(row, true)
+        this.tmpKdTempId = row.id
+      }
+    },
     loadTable() {
-      querynkTempList({ page: this.page }).then(response => {
+      querykdTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
         this.page = page
-        this.nkTempList = dataList
+        this.kdTempList = dataList
       })
     },
     checkStatus(approveStatus) {
@@ -145,19 +165,21 @@ export default {
       return true
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      if (val.length > 1) {
+        this.$refs.refKdTempTable.clearSelection()
+      }
     },
     save(formName) {
-      this.nkTempId = ''
-      this.$refs.NkTempForm.save(formName)
+      this.kdTempId = ''
+      this.$refs.KdTempForm.save(formName)
     },
     cancel() {
-      this.$store.commit('nkTemp/setnkTempInfo', {})
-      this.nkTempFormVisible = false
+      this.$store.commit('kdTemp/setkdTempInfo', {})
+      this.kdTempFormVisible = false
     },
     toDetail(id) {
-      this.nkTempId = id
-      this.nkTempFormVisible = true
+      this.kdTempId = id
+      this.kdTempFormVisible = true
     },
     toDelete(id) {
       // console.log(id)
@@ -166,7 +188,7 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        await deletenkTemp(id)
+        await deletekdTemp(id)
         this.loadTable()
       }).catch(() => {
         this.$message({
@@ -177,12 +199,24 @@ export default {
     },
     toAdd() {
       // console.log('toAdd')
-      this.nkTempId = ''
-      this.$store.commit('nkTemp/setnkTempInfo', {})
-      this.nkTempFormVisible = true
+      this.kdTempId = ''
+      this.$store.commit('kdTemp/setkdTempInfo', {})
+      this.kdTempFormVisible = true
+    },
+    copyAdd() {
+      if (this.kdTempId === '') {
+        this.$message({
+          type: 'warning',
+          message: '请选中要复制的关键期限模板'
+        })
+      } else {
+        this.disabled = false
+        this.isCopy = true
+        this.kdTempFormVisible = true
+      }
     },
     saveCallBack() {
-      this.nkTempFormVisible = false
+      this.kdTempFormVisible = false
       this.loadTable()
     },
     isShowChangeStatusBtn(status) {
@@ -202,5 +236,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
