@@ -11,13 +11,6 @@
               <el-form-item label="规则ID">
                 <el-input v-model="recCurveInfo.id" disabled />
               </el-form-item>
-              <el-form-item label="最后操作人">
-                <el-input v-model="recCurveInfo.lastUpdBy" disabled />
-              </el-form-item>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-purple">
               <el-form-item
                 label="曲线规则名称"
                 prop="ruleName"
@@ -34,32 +27,39 @@
                   placeholder="请输入曲线规则名称"
                 />
               </el-form-item>
-              <el-form-item label="最后操作时间">
-                <el-input v-model="recCurveInfo.lastUpdTs" disabled />
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple">
+              <el-form-item label="最后操作人">
+                <el-input v-model="recCurveInfo.lastUpdBy" disabled />
+              </el-form-item>
+              <el-form-item
+                label="估值曲线"
+                prop="curveId"
+                :rules="[
+                  { required: true, message: '请选择估值曲线', trigger: 'change' },
+                ]"
+              >
+                <el-select
+                  v-model="recCurveInfo.curveId"
+                  placeholder="请选择估值曲线"
+                  style="width: 100%"
+                  :disabled="disabled"
+                >
+                  <el-option
+                    v-for="curve in curveList"
+                    :key="curve.curveId"
+                    :label="curve.curveName"
+                    :value="curve.curveId"
+                  />
+                </el-select>
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="8">
-            <el-form-item
-              label="估值曲线"
-              prop="curveId"
-              :rules="[
-                { required: true, message: '请选择估值曲线', trigger: 'change' },
-              ]"
-            >
-              <el-select
-                v-model="recCurveInfo.curveId"
-                placeholder="请选择估值曲线"
-                style="width: 100%"
-                :disabled="disabled"
-              >
-                <el-option
-                  v-for="curve in curveList"
-                  :key="curve.curveId"
-                  :label="curve.curveName"
-                  :value="curve.curveId"
-                />
-              </el-select>
+            <el-form-item label="最后操作时间">
+              <el-input v-model="recCurveInfo.lastUpdTs" disabled />
             </el-form-item>
           </el-col>
         </el-row>
@@ -147,24 +147,29 @@ export default {
       if (this.isCopy) {
         // 复制新增-->删除Id
       }
-
-      this.$refs.recCurveInfo.validate((valid) => {
-        if (valid) {
+      // 草稿状态，确定按钮直接返回父页面
+      const busiStatus = this.recCurveInfo.busiStatus
+      if (busiStatus === '04') {
+        this.$emit('saveCallBack')
+      } else {
+        this.$refs.recCurveInfo.validate((valid) => {
+          if (valid) {
           // 校验筛选器结果
-          const that = this
-          this.$refs.refBondFilter.getData('VAL00002').then(function(data) {
-            if (data) {
-              const req = {
-                recCurve: that.recCurveInfo,
-                bondFilterInfo: data
+            const that = this
+            this.$refs.refBondFilter.getData('VAL00002').then(function(data) {
+              if (data) {
+                const req = {
+                  recCurve: that.recCurveInfo,
+                  bondFilterInfo: data
+                }
+                that.saveBusi(req)
               }
-              that.saveBusi(req)
-            }
-          })
-        } else {
-          this.$message.warning('表单校验不通过，请检查！')
-        }
-      })
+            })
+          } else {
+            this.$message.warning('表单校验不通过，请检查！')
+          }
+        })
+      }
     }
   }
 }

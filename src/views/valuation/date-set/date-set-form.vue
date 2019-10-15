@@ -44,7 +44,7 @@
               <el-form-item label="最后操作时间">
                 <el-input v-model="dateSetInfo.lastUpdTs" disabled />
               </el-form-item>
-              <el-form-item v-if="dateSetInfo.firstDateType !== '01'" label="延后天数" prop="delayDays" placeholder="请输入延后天数">
+              <el-form-item v-if="dateSetInfo.firstDateType === '03'" label="延后天数" prop="delayDays" placeholder="请输入延后天数">
                 <el-input v-model.number="dateSetInfo.delayDays" :disabled="disabled" />
               </el-form-item>
             </div>
@@ -123,23 +123,29 @@ export default {
       })
     },
     save() {
-      this.$refs.dateSetInfo.validate((valid) => {
-        if (valid) {
-          // 校验筛选器结果
-          const that = this
-          this.$refs.refBondFilter.getData('VAL00004').then(function(data) {
-            if (data) {
-              const req = {
-                dateSet: that.dateSetInfo,
-                bondFilterInfo: data
+      // 草稿状态，确定按钮直接返回父页面
+      const busiStatus = this.dateSetInfo.busiStatus
+      if (busiStatus === '04') {
+        this.$emit('saveCallBack')
+      } else {
+        this.$refs.dateSetInfo.validate((valid) => {
+          if (valid) {
+            // 校验筛选器结果
+            const that = this
+            this.$refs.refBondFilter.getData('VAL00004').then(function(data) {
+              if (data) {
+                const req = {
+                  dateSet: that.dateSetInfo,
+                  bondFilterInfo: data
+                }
+                that.saveBusi(req)
               }
-              that.saveBusi(req)
-            }
-          })
-        } else {
-          this.$message.warning('表单校验不通过，请检查！')
-        }
-      })
+            })
+          } else {
+            this.$message.warning('表单校验不通过，请检查！')
+          }
+        })
+      }
     }
   }
 }
