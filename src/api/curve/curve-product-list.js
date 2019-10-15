@@ -88,7 +88,7 @@ export function getCurveProductIdOptions() {
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]
-        options.push({ value: data.curveId, label: data.productName })
+        options.push({ value: data.curveId, label: data.productName, curveId: data.curveId, productName: data.productName, productGrade: data.productGrade })
       }
     }
   })
