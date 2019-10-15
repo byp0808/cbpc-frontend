@@ -167,3 +167,17 @@ export const STAND_SLIP = [
   { value: '0.5', label: '0.5' },
   { value: '1', label: '1' }
 ]
+
+// 样本券编制状态
+export const SAMPLE_COMP_STATUS = [
+  { value: '1', label: '待复核' },
+  { value: '2', label: '已审核' },
+  { value: '3', label: '已发布' }
+]
+
+// 变化类型
+export const CHANGE = [
+  { value: '1', label: '新增' },
+  { value: '2', label: '减少' },
+  { value: '3', label: '忽略' }
+]

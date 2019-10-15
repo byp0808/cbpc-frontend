@@ -88,7 +88,7 @@ import { checkTempName } from '@/api/curve/curve-kdtemp-list.js'
 export default {
   name: 'NkTempForm',
   components: {},
-  props: ['businessId', 'disabled'],
+  props: ['businessId', 'disabled', 'isCopy'],
   data() {
     return {
       nkTempInfoRules: {
@@ -131,6 +131,9 @@ export default {
   },
   methods: {
     save(formName) {
+      if (this.isCopy) {
+        this.nkTempInfo.id = ''
+      }
       this.$refs.NkTempForm.validate((valid) => {
         if (valid) {
           const data = this.nkTempInfo
@@ -192,20 +195,17 @@ export default {
       }
     },
     checkTempName(rule, value, callback) {
-      if (this.businessId) {
-        callback()
-      } else {
-        var data = {}
-        data.tempType = 'nk'
-        data.tempName = value
-        checkTempName(data).then(response => {
-          if (response) {
-            callback(new Error('模板名称重复'))
-          } else {
-            callback()
-          }
-        })
-      }
+      var data = {}
+      data.tempType = 'nk'
+      data.tempName = value
+      data.id = this.nkTempInfo.id
+      checkTempName(data).then(response => {
+        if (response) {
+          callback(new Error('模板名称重复'))
+        } else {
+          callback()
+        }
+      })
     }
   }
 }

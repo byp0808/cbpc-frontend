@@ -8,12 +8,14 @@
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
-        <el-col :span="11" :offset="2" class="scroll-box">
+        <el-col :span="11" :offset="2">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" clearable style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
-          <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
-          <el-button type="primary">下载估值方案</el-button>
+          <div style="margin-top:7px">
+            <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
+            <el-button type="primary">下载估值方案</el-button>
+          </div>
         </el-col>
       </el-row>
     </div>

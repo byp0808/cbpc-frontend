@@ -2,24 +2,21 @@
   <div class="app-container">
     <el-form ref="refForm" :model="formData" :label-position="labelPosition">
       <el-row>
-        <el-col :span="9">
+        <el-col :span="12">
           <el-form-item label="开始日期及批次期">
             <el-date-picker v-model="formData.startTime" type="date" placeholder="选择日期" clearable />
+            <span>-</span>
+            <el-select v-model="formData.batchId" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="9">
-          <el-form-item label="结束日期及批次期">
-            <el-date-picker v-model="formData.endTime" type="date" placeholder="选择日期" clearable />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="债券代码">
-            <el-input v-model="formData.test" style="width:60%" clearable />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="9">
+        <el-col :span="7">
           <el-form-item label="对应收益率曲线">
             <el-select v-model="formData.line" placeholder="请选择" clearable style="margin-left:12px">
               <el-option
@@ -31,12 +28,28 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="9">
-          <el-form-item label="发行人">
+        <el-col :span="5">
+          <el-form-item label="债券代码">
             <el-input v-model="formData.test" style="width:60%" clearable />
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="结束日期及批次期">
+            <el-date-picker v-model="formData.endTime" type="date" placeholder="选择日期" clearable />
+            <span>-</span>
+            <el-select v-model="formData.batchId" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="7">
           <el-form-item label="估值方法">
             <el-select v-model="formData.line" placeholder="请选择" clearable style="width:60%">
               <el-option
@@ -48,27 +61,37 @@
             </el-select>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="操作人">
-            <el-select v-model="formData.line" placeholder="请选择" clearable style="margin-left:65px">
-              <el-option
-                v-for="item in interestLine"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
+        <el-col :span="5">
+          <el-form-item label="债券简称">
+            <el-input v-model="formData.test" style="width:60%" clearable />
           </el-form-item>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary">搜索</el-button>
+      </el-row>
+      <el-row>
+        <el-col :span="5">
+          <el-form-item label="债券品种">
+            <el-input v-model="formData.test" style="width:60%" clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="发行人">
+            <el-input v-model="formData.test" style="width:60%" clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">
+          <el-form-item>
+            <el-button type="primary">查询</el-button>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">
+          <el-form-item>
+            <el-button type="primary" @click="resetForm">重置</el-button>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <el-tabs v-model="activeElement" @tab-click="handleSelect">
-      <el-tab-pane label="点差及方案查询" name="01" />
+      <el-tab-pane label="点差方案" name="01" />
       <el-tab-pane label="人工估值" name="02" />
     </el-tabs>
     <transition name="el-fade-in-linear">
@@ -101,6 +124,7 @@
         />
       </div>
     </transition>
+    <el-button type="primary" @click="download"><i class="el-icon-download el-icon--left">下载</i></el-button>
   </div>
 </template>
 

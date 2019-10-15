@@ -328,9 +328,10 @@ export default {
     },
     fmtIndexName() {
       return function(indexId) {
-        const index = this.$lodash.findIndex(this.compIndices, { id: indexId })
+        const indices = this.$lodash.concat(this.compIndices, this.basicIndices)
+        const index = this.$lodash.findIndex(indices, { id: indexId })
         if (index >= 0) {
-          return this.compIndices[index].name
+          return indices[index].name
         } else {
           return ''
         }

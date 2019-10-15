@@ -17,7 +17,7 @@
             v-if="col.component"
             :column="col"
           />
-          <el-table-column v-else v-bind="col" align="center" :class-name="col.className" />
+          <el-table-column v-else v-bind="col" align="right" header-align="center" :class-name="col.className" />
         </slot>
       </template>
     </el-table>
@@ -34,8 +34,6 @@
               <el-input v-model="compute.type" readonly />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="选择格" prop="num">
               <el-input v-model="compute.num" readonly />
@@ -46,20 +44,16 @@
               <el-input v-model="compute.avg" v-focus readonly @keyup.49.native="saveData('avg')" @dblclick.native="saveData('avg')" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="中位数" prop="mid">
               <el-input v-model="compute.mid" readonly @keyup.50.native="saveData('mid')" @dblclick.native="saveData('mid')" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col v-for="(p, i) in compute.plu" :key="i" :span="12">
             <el-form-item label="众数" prop="plu">
-              <el-input v-model="compute.plu" readonly @keyup.51.native="saveData('plu')" @dblclick.native="saveData('plu')" />
+              <el-input v-model="compute.plu[i]" readonly @keyup.51.native="saveData('plu')" @dblclick.native="saveData('plu')" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="最大值" prop="max">
               <el-input v-model="compute.max" readonly @keyup.52.native="saveData('max')" @dblclick.native="saveData('max')" />

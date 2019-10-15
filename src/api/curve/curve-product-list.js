@@ -242,12 +242,17 @@ export function prdKdModsList(data) {
 // TODO 改为接口获取值
 export function forwardFlagModsList() {
   console.info('远期NK模板列表，后期需要改为接口')
-  return [
-    { label: '模板一', key: '0001' },
-    { label: '模板二', key: '0002' },
-    { label: '模板三', key: '0003' },
-    { label: '模板四', key: '0004' }
-  ]
+  // return [
+  //   { label: '模板一', key: '0001' },
+  //   { label: '模板二', key: '0002' },
+  //   { label: '模板三', key: '0003' },
+  //   { label: '模板四', key: '0004' }
+  // ]
+  return request({
+    url: `${basic_api_market}/curve-temp/nk-list`,
+    method: 'post',
+    data
+  })
 }
 
 // 根据远期NK模板ID，获取列表
