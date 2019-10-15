@@ -111,17 +111,18 @@
             <div slot="header" class="clearfix card-head">
               <div>黑名单</div>
               <div class="input-box">
-                <el-input v-model="input5" placeholder="请输入内容" size="mini" suffix-icon="el-icon-search">
-                  <!-- <el-button slot="append" icon="el-icon-search" /> -->
+                <el-input v-model="input5" placeholder="请输入内容" size="mini">
+                  <el-button slot="append" icon="el-icon-search" />
                 </el-input>
               </div>
               <div>
                 <el-upload
-                  :action="uploadUrl"
                   :multiple="false"
+                  action=""
                   name="attach"
                   :on-success="uploadBlackList"
                   :show-file-list="false"
+                  :http-request="upload"
                 >
                   <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
                 </el-upload>
@@ -141,12 +142,24 @@
                 prop="bondName"
                 label="债券名称"
                 show-overflow-tooltip
-              />
+              >
+	              <template slot-scope="scope">
+		              <span v-if="scope.row.bondName">{{scope.row.bondName}}</span>
+		              <span v-else>{{scope.row.bondName}}</span>
+	              </template>
+              </el-table-column>
               <el-table-column
                 prop="bondSource"
                 label="来源"
                 show-overflow-tooltip
-              />
+              >
+	              <template slot="header" slot-scope="scope">
+		              <span>来源</span>
+		              <el-tooltip class="item" effect="dark" content="筛选结果300个,其他5000个" placement="right">
+			              <i class="el-icon-question"></i>
+		              </el-tooltip>
+	              </template>
+              </el-table-column>
               <el-table-column
                 prop="name"
                 label="操作"
@@ -177,9 +190,10 @@
               </div>
               <div>
                 <el-upload
-                  :action="uploadUrl"
+                  action=""
                   :multiple="false"
                   name="attach"
+                  :http-request="upload"
                   :on-success="uploadWhiteList"
                   :show-file-list="false"
                 >
@@ -275,24 +289,16 @@
 </template>
 
 <script>
-import { basic_path } from '@/api/common/common.js'
+import { basic_api_market } from '@/api/base-api.js'
 import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById, checkRepeat } from '@/api/common/bond-filter.js'
+import { upload } from '../../../utils/file-request'
+
 export default {
   name: 'BondFilter',
   props: ['filterId', 'disabled'],
-  // props: {
-  //   filterId: {
-  //     type: String,
-  //     default: ''
-  //   },
-  //   disabled: {
-  //     type: Boolean,
-  //     default: false
-  //   }
-  // },
   data() {
     return {
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_path}/bond-filter/batch-in`,
+      uploadUrl: `${basic_api_market}/bond-filter/batch-in`,
       bondTempSelect: {
         bondTemps: [],
         tempId: ''
@@ -329,6 +335,16 @@ export default {
     this.loading()
   },
   methods: {
+    upload(data) {
+      const form = new FormData()
+	    form.append('attach', data.file)
+      upload({
+	      url: this.uploadUrl,
+        data: form
+      }).then(response => {
+        data.onSuccess(response)
+      })
+    },
     delRow(index, rows) {
       rows.splice(index, 1)
     },
@@ -394,7 +410,7 @@ export default {
       })
     },
     screenBonds() {
-      if (!this.ruleList.length || !this.$lodash.concat(this.whiteList, this.blackList).length) {
+      if (!this.ruleList || this.ruleList.length === 0 || !this.$lodash.concat(this.whiteList, this.blackList).length) {
         this.$message({
           type: 'warning',
           message: '请选择具体的模板,并应用模板!'
@@ -500,9 +516,9 @@ export default {
     },
     uploadBlackList(response) {
       const that = this
-      if (response.data && response.data.datalist) {
-        for (const index in response.data.datalist) {
-          const bondInfoBlack = response.data.datalist[index]
+      if (response) {
+        for (const index in response) {
+          const bondInfoBlack = response[index]
           if (this.bwListCheck(that.whiteList, bondInfoBlack) >= 0) {
             this.$message.error('该券已经添加到白名单中')
             bondInfoBlack.className = 'error-row'
@@ -515,9 +531,9 @@ export default {
     },
     uploadWhiteList(response) {
       const that = this
-      if (response.data && response.data.datalist) {
-        for (const index in response.data.datalist) {
-          const bondInfoWhite = response.data.datalist[index]
+      if (response) {
+        for (const index in response) {
+          const bondInfoWhite = response[index]
           if (this.bwListCheck(that.blackList, bondInfoWhite) >= 0) {
             this.$message.error('该券已经添加到黑名单中')
             bondInfoWhite.className = 'error-row'
@@ -539,7 +555,15 @@ export default {
         rules: this.ruleList,
         filterApiScnCode: busiCode
       }
+      if ((data.rules || data.rules.length === 0) && (!data.blwls || data.blwls.length === 0)) {
+        this.$message.error('您还未选择任何筛选条件,请先选择筛选条件')
+        return false
+      }
       return new Promise((resolve, reject) => {
+        if (!this.check()) {
+          this.$message.error('您有债券同时存在于黑白名单列表中请检查')
+          return false
+        }
         checkRepeat(data).then(response => {
           if (response && response.length > 0) {
             this.$message.error('债券已经存在其他同业务筛选器范围中')
@@ -569,6 +593,16 @@ export default {
         })
         this.queryBondsList()
       }
+    },
+    check() {
+      const that = this
+      let flag = true
+      this.$lodash(this.whiteList).forEach(function(value, key) {
+        if (that.bwListCheck(that.blackList, value) >= 0) {
+          flag = false
+        }
+      })
+      return flag
     }
   }
 }

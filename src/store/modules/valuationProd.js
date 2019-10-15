@@ -4,7 +4,8 @@ export default {
   state: {
     prodId: '',
     prodInfo: {
-      prodStatus: ''
+      prodStatus: '',
+      currency: []
     },
     bondFilter: {},
     prodIndices: {
@@ -27,7 +28,10 @@ export default {
   mutations: {
     clear(state) {
       state.prodId = ''
-      state.prodInfo = {}
+      state.prodInfo = {
+        prodStatus: '',
+        currency: []
+      }
       state.prodIndices.basicIndices = []
       state.prodIndices.basicIndicesResult = []
       state.prodIndices.compIndices = []

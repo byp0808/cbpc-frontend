@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column
         prop="delistingDate"
-        label="产品退市日期"
+        label="产品停产日期"
       >
         <template v-if="row.delistingDate" slot-scope="{row}">
           {{ $moment(row.delistingDate).format('YYYY-MM-DD') }}
@@ -63,10 +63,10 @@
       >
         <template slot-scope="{row}">
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
-          <el-button v-if="row.approveStatus != '01'" type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
+          <el-button v-if="row.approveStatus != '01' && !row.relationId" type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
           <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
-          <el-button v-if="row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
-        </template>
+          <el-button v-if="row.approveStatus != '01' && row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
+				</template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     toAdd() {
-      this.$store.commit('valuationProd/clear')
+      // this.$store.commit('valuationProd/clear')
       this.$router.push({ name: 'ValuationProdForm' })
     },
     toEdit(prodId) {
