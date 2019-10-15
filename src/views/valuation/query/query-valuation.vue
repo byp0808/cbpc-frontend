@@ -275,7 +275,7 @@
         width="150"
       />
     </el-table>
-    <el-button type="primary" @click="download"><i class="el-icon-download el-icon--left">下载</i></el-button>
+    <el-button type="primary" :loading="loading" @click="download"><i class="el-icon-download el-icon--left">下载</i></el-button>
     <el-pagination
       align="center"
       :current-page="page.pageNumber"
@@ -301,6 +301,7 @@ export default {
         { value: '1', label: '8：00' },
         { value: '2', label: '9：00' }
       ],
+      loading: false, // 下载按钮是否是加载状态
       formData: {
         startTime: '',
         endTime: '',
@@ -330,7 +331,12 @@ export default {
       this.$refs['refForm'].resetFields()
     },
     download() {
-      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/??')
+      const that = this
+      this.loading = true
+      window.setTimeout(function() {
+        that.loading = false
+      }, 1500)
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-query-valuation')
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
