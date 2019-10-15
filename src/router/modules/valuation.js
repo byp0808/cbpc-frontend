@@ -104,7 +104,7 @@ const valuationRouter = {
       path: 'query-countValuation',
       component: () => import('@/views/valuation/query/query-countValuation.vue'),
       name: 'QueryValuation',
-      meta: { title: '查询估值点差方案', noCache: true, roles: ['QueryCountValuation'] }
+      meta: { title: '查询估值方案', noCache: true, roles: ['QueryCountValuation'] }
     }, {
       path: 'report-manage',
       component: () => import('@/views/valuation/report/report-manage.vue'),

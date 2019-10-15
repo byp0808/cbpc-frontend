@@ -23,11 +23,15 @@
       <i class="el-icon-caret-right" />
       <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线发布</el-button>
       <i class="el-icon-caret-right" />
-      <el-button type="primary" @click="checkCoupon('ADD')">检查曲线样本券</el-button>
+      <el-button type="primary" @click="checkCoupon()">检查曲线样本券</el-button>
       <i class="el-icon-caret-right" />
-      <el-button type="primary" @click="toAddCurveProduct('ADD')">曲线样本券发布</el-button>
+      <el-button type="primary" @click="deployCoupon()">曲线样本券发布</el-button>
     </el-row>
-    <el-row style="margin: 20px 0;">
+    <el-row
+      v-if="curveOrderVisible"
+      style="margin: 20px 0;"
+      :visible.sync="curveOrderVisible"
+    >
       <el-form :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="曲线名称">
           <el-input v-model="queryForm.curveName" placeholder="曲线名称" />
@@ -110,7 +114,7 @@
   </div>
 </template>
 <script>
-import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployAndCheckCurve } from '@/api/curve/curve-order-compute.js'
+import { calculatCompletionRate, queryCurveOrderComputeList, toCompletotionRate, deployAndCheckCurve, checkCurveSample, checkOrDeployComp } from '@/api/curve/curve-order-compute.js'
 import CurveCheckCouponCompute from '@/views/curve/compute/curve-checkCoupon-compute.vue'
 
 export default {
@@ -200,6 +204,8 @@ export default {
     },
     // 计算
     async toCompute() {
+      this.curveOrderVisible = true
+      this.checkCouponVisible = false
       var items = this.multipleSelection
       if (!items || items.length <= 0) {
         this.$message({
@@ -249,6 +255,8 @@ export default {
     },
     // 曲线发布
     toAddCurveProduct() {
+      this.curveOrderVisible = true
+      this.checkCouponVisible = false
       // 获取已经勾选的行
       // eslint-disable-next-line no-unused-vars
       var selection = this.$refs.refCurveOrderList.selection
@@ -317,14 +325,36 @@ export default {
         setTimeout(1.5 * 1000)
       })
     },
+    // 检查样本券
     checkCoupon() {
       this.curveOrderVisible = false
       this.checkCouponVisible = true
+      checkCurveSample(this.$refs.refCurveOrderList.selection).then(response => {
+        setTimeout(1.5 * 1000)
+      })
     },
     // 跳转质检页面
     toCheck() {
       this.$store.commit('curveOrderCompute/setOrderId', this.orderId)
       this.$router.push({ name: 'CurveOrderCheckIndex' })
+    },
+    // 发布样本券
+    deployCoupon() {
+      var selection = this.$refs.refCurveOrderList.selection
+      var data = {
+        action: '3',
+        computes: selection
+      }
+      if (selection.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择需要发布的曲线'
+        })
+        return false
+      }
+      checkOrDeployComp(data).then(response => {
+        setTimeout(1.5 * 1000)
+      })
     }
   }
 }

@@ -28,6 +28,11 @@
             <span>{{ scope.row.remark }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="债券简称" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.bondsId }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="债券代码" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.bondsId }}</span>

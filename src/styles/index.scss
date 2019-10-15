@@ -362,7 +362,10 @@ label {
 
 
 .text-smaller {
-  font-size: 12px;
+  font: {
+    weight: unset;
+    size: 12px;
+  };
 }
 
 .text-placeholder {

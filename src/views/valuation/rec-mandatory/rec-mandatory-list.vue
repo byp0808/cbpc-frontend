@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增强制推荐规则</el-button>
+      <el-button type="primary" @click="toAdd">新增规则</el-button>
     </div>
     <el-table
       ref="refRecCureTable"
@@ -14,20 +14,14 @@
         width="55"
       />
       <el-table-column
-        prop="id"
-        label="规则ID"
-        show-overflow-tooltip
-        width="145"
-      />
-      <el-table-column
         prop="ruleName"
-        label="规则描述"
+        label="规则名称"
         show-overflow-tooltip
         width="165"
       />
       <el-table-column
         prop="bondFilterId"
-        label="资产规划"
+        label="规则说明"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -37,7 +31,7 @@
       <el-table-column
         prop="recoDirection"
         label="强制推荐方向"
-        width="200"
+        width="120"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -45,9 +39,15 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="remark"
+        label="备注"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
         prop="approveStatus"
         label="审核状态"
-        width="120"
+        width="100"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -67,7 +67,7 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            规则调整
+            编辑
           </el-button>
           <el-button
             v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
@@ -146,9 +146,9 @@ export default {
       return function(status) {
         switch (status) {
           case '02':
-            return '启用中'
+            return '停用'
           case '03':
-            return '停用中'
+            return '启用'
         }
       }
     },

@@ -4,7 +4,7 @@ import { basic_api_curve, basic_api_market } from '@/api/base-api.js'
 // 查询曲线产品列表,获取下拉
 export function getCurveList(data) {
   if (!data) {
-    data = {search_approveStatus_EQ: '02'}
+    data = { search_approveStatus_EQ: '02' }
   } else {
     data.search_approveStatus_EQ = '02'
   }
@@ -296,9 +296,8 @@ export function getInitDetailList(data) {
 // 根据ID获取初始化方案记录
 export function getInitIdlList(id) {
   return request({
-    url: `${basic_api_curve}/curveSetInit/getInit` + id,
-    method: 'get',
-    params: { id: id }
+    url: `${basic_api_curve}/curveSetInit/getInit/${id}`,
+    method: 'get'
   })
 }
 
@@ -331,6 +330,21 @@ export function delInitList(id) {
 export function getCurveInitOptions() {
   var options = []
   getCurveList({}).then(response => {
+    var datalist = response
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ data })
+      }
+    }
+  })
+  return options
+}
+
+// 获取初始化列表，仅包含曲线产品，key为曲线产品编号
+export function getDetalInitOptions() {
+  var options = []
+  getInitDetailList({}).then(response => {
     var datalist = response
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
