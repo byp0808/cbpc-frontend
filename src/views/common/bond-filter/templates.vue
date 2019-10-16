@@ -170,6 +170,7 @@ export default {
         inputValue: this.tempName
       }).then(({ value }) => {
         this.$refs.refTmpBondFilter.save(value)
+        this.bondFilterVisible = false
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -236,6 +237,7 @@ export default {
     },
     toAdd() {
       this.bondFilterVisible = true
+      this.disabled = false
     },
     toAddNew() {
       this.tempId = null
@@ -248,12 +250,8 @@ export default {
       this.loadTable()
     },
     handleSelectionChange(row) {
-      this.tempId = row.map(i => {
-        return i.tempId
-      })
-      this.tempName = row.map(i => {
-        return i.tempName
-      })
+      this.tempId = row[0].tempId
+      this.tempName = row[0].tempName
     }
   }
 }
