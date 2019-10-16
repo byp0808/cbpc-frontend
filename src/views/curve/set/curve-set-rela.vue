@@ -66,7 +66,7 @@
 <script>
 import {
   queryCurveSetRela,
-  storageCurveSetRela,
+  saveRelaTempMain,
   delcurveSetRela
 } from '@/api/curve/curve-set-rela.js'
 import CurveSetRelaForm from '@/views/curve/set/curve-set-rela-form.vue'
@@ -155,7 +155,7 @@ export default {
         })
         return
       }
-      storageCurveSetRela(tmp_tempInfo).then(response => {
+      saveRelaTempMain(tmp_tempInfo).then(response => {
         // this.curveCurveSetRelaList.unshift(this.temp)
         this.dialogFormVisible = false
         this.$message({
