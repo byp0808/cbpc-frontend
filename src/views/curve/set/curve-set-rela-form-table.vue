@@ -17,7 +17,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column v-for="(item) in relaFormTable.columnProp" :key="item.key" :prop="item.prop" :label="item.label" width="140" />
+      <el-table-column v-for="(item) in relaFormTable.columnProp" :key="item.key" :prop="item.prop" :label="item.label" />
     </el-table>
   </div>
 </template>
@@ -56,6 +56,17 @@ export default {
     // 后移
     moveToNext() {
       this.$emit('moveToNext', this.index)
+    },
+    getSeletedKd() {
+      var selectedKd = []
+      for (const index in this.multipleSelection) {
+        const item = this.multipleSelection[index]
+        selectedKd.push({ standSlip: item.standSlip, tempId: this.relaFormTable.tempInfo.id })
+      }
+      return selectedKd
+    },
+    getRelaFormTable() {
+      return this.relaFormTable
     }
   }
 }
