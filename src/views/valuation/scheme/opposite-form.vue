@@ -150,9 +150,7 @@ export default {
   props: {
     isOpposite: {
       type: Boolean,
-      default: function() {
-        return false
-      }
+      default: false
     }
   },
   data() {

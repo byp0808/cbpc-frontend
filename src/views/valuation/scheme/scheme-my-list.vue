@@ -2,7 +2,7 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :span="13" class="scroll-box">
+        <el-col :span="13">
           <el-button type="primary">方案调整</el-button>
           <template>
             <el-dropdown split-button type="primary" @command="batchesAdjust">
@@ -27,7 +27,7 @@
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
         </el-col> -->
-        <el-col :span="10" :offset="1" class="scroll-box">
+        <el-col :span="10" :offset="1">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
@@ -345,22 +345,22 @@
         <el-col :span="23" :offset="1">
           <el-button type="primary" @click="countOpposite">计算对敲</el-button>
           <el-button type="primary" @click="lookOpposite">查看对敲</el-button>
-          <el-button type="primary" @click="countDiff">计算点差</el-button>
-          <el-button type="primary" @click="lookDiff">查看点差</el-button>
+          <el-button type="primary" @click="countcreditDiff">计算点差</el-button>
+          <el-button type="primary" @click="lookcreditDiff">查看点差</el-button>
           <el-button @click="creditDialog = false">取消</el-button>
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog :visible.sync="adjustDialog" title="利率债点差调整" width="1200px">
+    <el-dialog :visible.sync="adjustDialog" :title="countTitle" width="1200px">
       <el-tabs v-model="activeName" type="card" @tab-click="tabClick">
         <el-tab-pane v-for="item in tabPaneList" :key="item.name" :label="item.label" :name="item.name">
           <transition name="el-fade-in-linear">
-            <adjust-form :is-look="isLook" :active-name="activeName" />
+            <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
           </transition>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
-    <el-dialog :visible.sync="oppositeDialog" title="对敲人工识别" width="1000px">
+    <el-dialog :visible.sync="oppositeDialog" title="对敲券人工识别" width="1000px">
       <opposite-form :is-opposite="islookOpposite" />
     </el-dialog>
     <el-dialog v-loading="Dialog.a" :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
@@ -526,6 +526,8 @@ export default {
       interestDialog: false,
       adjustDialog: false,
       islookOpposite: false,
+      isCredit: false, // 区分利率和信用计算点差的表格内容
+      countTitle: '',
       Dialog: {
         a: false,
         b: false,
@@ -571,13 +573,13 @@ export default {
       ],
       exchangeObj: {},
       compareList: [
-        { name: '本日经纪成交与市场收益率偏差(BP)', number: '' },
-        { name: '昨日经纪成交与市场收益率偏差(BP)', number: '' },
-        { name: '线的调整幅度与日间单券偏差只差(BP)', number: '' },
-        { name: '同业存单可靠成交（报价）待偿期', number: '' },
-        { name: '同业存单成交（报价）估值偏离', number: '' },
-        { name: '同业存单成交（报价）连续阈值', number: '' },
-        { name: '同业存单发行人成交（报价）历史总分', number: '' }
+        { name: '本日经纪成交与市场收益率偏差(BP)' },
+        { name: '昨日经纪成交与市场收益率偏差(BP)' },
+        { name: '线的调整幅度与日间单券偏差只差(BP)' },
+        { name: '同业存单可靠成交（报价）待偿期' },
+        { name: '同业存单成交（报价）估值偏离' },
+        { name: '同业存单成交（报价）连续阈值' },
+        { name: '同业存单发行人成交（报价）历史总分' }
 
       ],
       extends: '',
@@ -875,14 +877,35 @@ export default {
       this.activeName = e.name
     },
     countDiff() {
+      this.countTitle = '利率债点差调整'
+      this.isCredit = false
       this.isLook = false
       this.adjustDialog = true
     },
     lookDiff() {
+      this.countTitle = '利率债点差调整'
+      this.isCredit = false
+      this.isLook = true
+      this.adjustDialog = true
+    },
+    countcreditDiff() {
+      this.countTitle = '信用债点差调整'
+      this.isCredit = true
+      this.isLook = false
+      this.adjustDialog = true
+    },
+    lookcreditDiff() {
+      this.countTitle = '信用债点差调整'
+      this.isCredit = true
       this.isLook = true
       this.adjustDialog = true
     },
     countOpposite() {
+      this.creditObject.target = []
+      this.compareList.map(v => {
+        this.creditObject.target.push({ symbol: v.symbol, number: v.number })
+      })
+      console.log('this.compareList', this.creditObject.target)
       this.islookOpposite = false
       this.oppositeDialog = true
     },

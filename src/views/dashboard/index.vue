@@ -2,12 +2,19 @@
   <div class="dashboard-container">
     <!--<component :is="currentRole" />-->
     <el-row :gutter="10">
-      <el-col :span="14">
+      <el-col :span="sidebar.opened? 16 : 14">
+        <el-card style="margin-top:15px">
+          <div class="title">
+            <span style="padding-right:20px;color:#09f;font-size:24px"><svg-icon icon-class="computer" /></span>
+            收益率曲线任务 <span class="line">/</span> 债券估值任务
+            <span style="padding-left:30px">4 / 10</span>
+          </div>
+        </el-card>
         <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
             <h3>工作日历</h3>
           </div>
-          <el-row>
+          <el-row :gutter="10">
             <el-col :span="21">
               <div class="grid-content bg-purple">
                 <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
@@ -22,18 +29,74 @@
             </el-col>
             <el-col :span="3">
               <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting" />
-              <ul>
-                <li v-for=" (m, index) in calendar.my" :key="index">
-                  <el-tag hit :type="getTagType(index)" size="small">{{ getSubName(m) }}</el-tag>
+              <ul style="margin-top:50px">
+                <li v-for=" (m, index) in calendar.my" :key="index" style="margin-top:15px">
+                  <el-tag hit :type="getTagType(index)" size="mini">{{ getSubName(m) }}</el-tag>
                   <span class="remark">{{ getCalendarName(m) }}</span>
                 </li>
               </ul>
             </el-col>
           </el-row>
         </el-card>
+        <el-card class="box-card margin-top">
+          <div slot="header" class="head-title">
+            <h3>待办任务列表</h3>
+            <div class="lookMore" @click="lookMore">更多</div>
+          </div>
+          <div class="grid-content bg-purple">
+            <el-table
+              :data="todoInfo.dataList"
+              style="width: 100%"
+            >
+              <el-table-column
+                prop="businessName"
+                label="业务名称"
+                width="170"
+              />
+              <el-table-column
+                prop="taskName"
+                label="任务名称"
+                width="170"
+              />
+              <el-table-column
+                prop="taskStartUserName"
+                label="发起人"
+              />
+              <el-table-column
+                prop="createdTs"
+                label="发起时间"
+                width="160"
+              />
+              <el-table-column
+                prop="address"
+                label="操作"
+                width="60"
+              >
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click.native.prevent="toApproval(scope.row.businessNo, scope.row.businessRouter)"
+                  >
+                    审核
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-pagination
+              :current-page="todoInfo.page.pageNumber"
+              :page-sizes="[10, 20, 30, 40, 50]"
+              :page-size="todoInfo.page.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="todoInfo.page.totalRecord"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
+          </div>
+        </el-card>
       </el-col>
-      <el-col :span="10">
-        <el-card class="box-card margin-top calendar-job">
+      <el-col :span="sidebar.opened? 8 : 10">
+        <el-card class="box-card margin-top calendar-job scroll-box">
           <div slot="header" class="clearfix card-head">
             <h3>我的消息</h3>
           </div>
@@ -95,6 +158,8 @@
             />
           </el-table>
           <el-pagination
+            align="center"
+            style="margin-top:15px"
             :current-page="msg.page.pageNumber"
             :page-sizes="[10, 20, 30, 40, 50]"
             :page-size="msg.page.pageSize"
@@ -106,12 +171,12 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-row :gutter="10">
+    <!-- <el-row :gutter="10">
       <el-col :span="14">
         <el-card class="box-card margin-top">
           <div slot="header" class="head-title">
             <h3>待办任务列表</h3>
-            <div class="lookMore" @click="lookMore">查看更多</div>
+            <div class="lookMore" @click="lookMore">更多</div>
           </div>
           <div class="grid-content bg-purple">
             <el-table
@@ -165,7 +230,7 @@
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
     <el-dialog v-if="calendar.visible" title="日历设置" :visible.sync="calendar.visible">
       <el-row :gutter="20">
         <el-col :span="18" :offset="6">
@@ -222,7 +287,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'roles'
+      'roles',
+      'sidebar'
     ]),
     todoInfo: {
       get() {
@@ -324,10 +390,11 @@ export default {
       return type[index % 4]
     },
     handleSizeChangeMsg(pageSize) {
-      this.page.pageSize = pageSize
+      this.msg.page.pageSize = pageSize
       this.$store.dispatch('homePage/queryMsgList', { pageSize: pageSize })
     },
     handleCurrentChangeMsg(currentPage) {
+      this.msg.page.pageNumber = currentPage
       this.$store.dispatch('homePage/queryMsgList', { pageNumber: currentPage })
     }
   }
@@ -391,6 +458,21 @@ export default {
     }
   }
 }
+.title {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background: #fff;
+  font-size: 20px;
+  .line {
+    font-weight: 500;
+    font-size: 22px;
+  }
+}
+//  .icon-box {
+//     padding-right: 20px;
+//     color: #00f;
+//   }
 .overflow-y-scroll {
   overflow-y: scroll;
 }
@@ -427,11 +509,18 @@ export default {
   display: flex;
 }
 .remark {
-  padding: 0 5px;
+  // padding: 0 2px;
   font: {
-    size: 13px;
+    size: 12px;
   };
   color: #909399;
+}
+.scroll-box {
+  overflow-x: scroll;
+   // &::-webkit-scrollbar {
+  //   width: 2px;
+  //   background: #ccc;
+  // }
 }
 .calendar-job {
   ul {

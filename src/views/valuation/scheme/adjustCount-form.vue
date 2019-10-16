@@ -93,7 +93,7 @@
           <span>{{ scope.row.bondShort }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="当前收益率" align="center" width="110px">
+      <el-table-column v-if="!isCredit" label="当前收益率" align="center" width="110px">
         <template slot-scope="scope">
           <span>{{ scope.row.bondShort }}</span>
         </template>
@@ -108,12 +108,17 @@
           <span>{{ scope.row.bondShort }}</span>
         </template>
       </el-table-column>
+      <el-table-column v-if="isCredit" label="明日调整幅度" align="center" width="120px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.bondShort }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="调整后点差" align="center" width="110px">
         <template slot-scope="scope">
           <span>{{ scope.row.bondShort }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调整后收益率" align="center" width="120px">
+      <el-table-column v-if="!isCredit" label="调整后收益率" align="center" width="120px">
         <template slot-scope="scope">
           <span>{{ scope.row.bondShort }}</span>
         </template>
@@ -163,15 +168,15 @@ export default {
   props: {
     isLook: {
       type: Boolean,
-      default: function() {
-        return false
-      }
+      default: false
+    },
+    isCredit: {
+      type: Boolean,
+      default: false
     },
     activeName: {
       type: String,
-      default: function() {
-        return '01'
-      }
+      default: '01'
     }
   },
   data() {
@@ -208,9 +213,6 @@ export default {
     this.getAllList()
   },
   methods: {
-    // load() {
-
-    // },
     getAllList() {
 
     },
