@@ -166,6 +166,11 @@ export default {
     handleSelectionChange(val) {
       if (val.length > 1) {
         this.$refs.refNkTempTable.clearSelection()
+        this.$refs.refNkTempTable.toggleRowSelection(val[1], true)
+      } else if (val.length === 0) {
+        this.nkTempId = ''
+      } else {
+        this.nkTempId = val[0].id
       }
     },
     save(formName) {
@@ -178,6 +183,7 @@ export default {
     },
     toDetail(id) {
       this.nkTempId = id
+      this.isCopy = false
       this.nkTempFormVisible = true
     },
     toDelete(id) {

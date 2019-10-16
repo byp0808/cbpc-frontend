@@ -167,6 +167,11 @@ export default {
     handleSelectionChange(val) {
       if (val.length > 1) {
         this.$refs.refKdTempTable.clearSelection()
+        this.$refs.refKdTempTable.toggleRowSelection(val[1], true)
+      } else if (val.length === 0) {
+        this.kdTempId = ''
+      } else {
+        this.kdTempId = val[0].id
       }
     },
     save(formName) {
@@ -179,6 +184,7 @@ export default {
     },
     toDetail(id) {
       this.kdTempId = id
+      this.isCopy = false
       this.kdTempFormVisible = true
     },
     toDelete(id) {

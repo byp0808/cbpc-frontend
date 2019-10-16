@@ -127,11 +127,7 @@ export default {
           var picked = this.kdrule.picked.sort(this.sortNum)
           // console.log(picked)
           for (var i in picked) {
-            if (picked[i] === '0') {
-              standSlip += picked[i] + 'd;'
-            } else {
-              standSlip += picked[i] + 'Y;'
-            }
+            standSlip += picked[i] + 'Y;'
           }
           if (!standSlip) {
             this.$message({
