@@ -4,9 +4,9 @@
       <el-select v-model="moduleId" filterable placeholder="选择模板" @visible-change="loadModuleList">
         <el-option
           v-for="item in moduleList"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          :key="item.id"
+          :label="item.tempName"
+          :value="item.id"
         />
       </el-select>
       <el-button type="primary" @click="toUse">应用</el-button>
@@ -17,12 +17,13 @@
       :data="marketList"
       tooltip-effect="dark"
       style="width: 100%"
-      @header-contextmenu="headerScreening"
+      @header-click="headerScreening"
       @cell-dblclick="cellDblclick"
+      @header-contextmenu="editCurrentModule"
     >
-      <el-table-column v-for="item in tableHeader" :key="item.id" :prop="item.key" :label="item.label" align="center">
+      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
         <template slot-scope="scope">
-          <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.key] }}</span>
+          <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -87,6 +88,50 @@
         <el-button type="primary" @click="updateCell">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog v-if="editModuleIsOpen" width="50%" :visible.sync="editModuleIsOpen">
+      <!--编辑模板-->
+      <el-form ref="" status-icon :model="editModuleForm" label-width="150px">
+        <el-form-item label="模板名称" prop="moduleName">
+          <el-input v-model="editModuleForm.moduleName" placeholder="" style="width: 300px" />
+        </el-form-item>
+        <el-form-item>
+          <span style="font-size: 2px;color: #dddfdd">
+            修改模板名称后保存，视为新模板
+          </span>
+        </el-form-item>
+        <el-form-item label="展示区域">
+          <el-table
+            ref="editTable"
+            :data="editTableHeader"
+            tooltip-effect="dark"
+            style="width: 100%"
+            :show-header="isShowHeader"
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="colChiName" align="left" />
+            <el-table-column align="center">
+              <template slot-scope="scope">
+                <i class="el-icon-caret-top" style="font-size: 30px" @click="topMoved(scope.row)" />
+                <i class="el-icon-caret-bottom" style="font-size: 30px" @click="bottomMoved(scope.row)" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer" style="width: 100%">
+        <el-row>
+          <el-col :span="6">&nbsp;</el-col>
+          <el-col :span="6" align="center">
+            <el-button type="primary" @click="saveEditCell">保存并应用</el-button>
+          </el-col>
+          <el-col :span="6" align="center">
+            <el-button @click="editCancel">取 消</el-button>
+          </el-col>
+          <el-col :span="6" />
+        </el-row>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -95,7 +140,7 @@ import ScreeningForm from '@/views/market/primary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
-// import { queryOrderInfoList } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -106,6 +151,15 @@ export default {
   },
   data() {
     return {
+      // 模板编辑
+      editModuleIsOpen: false,
+      editModuleForm: {
+        moduleName: ''
+      },
+      multipleSelection: [],
+      isShowHeader: false,
+      editTableHeader: [],
+
       marketLoading: false,
       formType: 1,
       screeningFormVisible: false,
@@ -115,11 +169,11 @@ export default {
       },
       orderInfoId: '',
       marketList: [
-        { id: '1', orderNo: '123456', orderName: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '2', orderNo: '1234567', orderName: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '3', orderNo: '1234568', orderName: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        { id: '4', orderNo: '1234569', orderName: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '5', orderNo: '12345610', orderName: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
+        { id: '1', col_1: '123456', col_2: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '2', col_1: '1234567', col_2: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '3', col_1: '1234568', col_2: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
+        { id: '4', col_1: '1234569', col_2: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
+        { id: '5', col_1: '12345610', col_2: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
       ],
       currentHeader: {},
       currentRow: {},
@@ -156,6 +210,7 @@ export default {
       ],
       moduleList: [],
       moduleId: '',
+      currentModuleId: '',
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -167,27 +222,47 @@ export default {
 
   },
   beforeMount() {
-    this.loadTable()
+    this.initTable()
   },
   methods: {
-    loadTable() {
+    initTable() {
       // 初始化表数据
-      // 获取用户所有模板
       // 获取默认模板表头信息及行情列表信息
       this.marketLoading = true
+      // 查询默认表头
       const data = {
-        moduleId: this.moduleId,
-        pageNum: this.page.pageNumber,
-        pageSize: this.page.pageSize,
-        screeningForm: this.screeningFormList
+        dataMarket: '01'
       }
-      console.info(data)
-      // queryOrderInfoList({ page: this.page }).then(response => {
-      //   const { dataList, page } = response
-      //   this.page = page
-      //   this.marketList = dataList
+      queryDefaultCols(data).then(response => {
+        const { showCols } = response
+        console.info(showCols)
+        this.tableHeader = showCols
+      })
+      // 获取满足条件的行情数据
+      const data2 = {
+        page: this.page,
+        dataMarket: '01'
+      }
+      queryMarketData(data2).then(response => {
+        console.info(response)
+      })
       this.marketLoading = false
+    },
+    loadTable() {
+      // // 加载数据
+      // // 获取行情列表信息
+      // this.marketLoading = true
+      // // 获取满足条件的行情数据
+      // const data2 = {
+      //   page: this.page,
+      //   dataMarket: '01',
+      //   tempId: this.currentModuleId,
+      //   searchParam: this.screeningFormList
+      // }
+      // queryMarketData(data2).then(response => {
+      //   console.info(response)
       // })
+      // this.marketLoading = false
     },
     toUse() {
       // 应用模板
@@ -196,17 +271,13 @@ export default {
         this.$message('请选择模板！')
         return
       }
-      switch (val) {
-        case '1':
-          this.tableHeader = this.module_1
-          break
-        case '2':
-          this.tableHeader = this.module_2
-          break
-        case '3':
-          this.tableHeader = this.module_3
-          break
-      }
+      getTempById(val).then(res => {
+        console.info(res)
+        this.tableHeader = res.showCols
+      })
+      // 获取满足条件的行情数据
+      this.loadTable()
+      this.currentModuleId = this.moduleId
     },
     cellDblclick(row, column) {
       const title = column.property
@@ -228,15 +299,11 @@ export default {
       return row.remindTime === '08:20:00' && header.key === 'remindTime'
     },
     headerScreening(column) {
-      // 表头右击事件
-      // 取消浏览器默认右击事件
-      window.event.returnValue = false
+      // 表头点击事件
       // 清空筛选表单数据
       this.screeningFormReset()
-      console.info(column.property)
-      console.info(column)
-      const type = column.property
-      this.currentHeader.key = type
+      const key = column.property
+      this.currentHeader.key = key
       this.currentHeader.label = column.label
 
       // 判断该字段是否已进行筛选
@@ -245,17 +312,26 @@ export default {
         const form = this.screeningFormList[index].screeningForm
         this.screeningFormSet(form)
       }
+
+      const tab = this.tableHeader.filter(tab => tab.colName === key)
+      const type = tab[0].colType
+      // console.info('在这')
+      // console.info(type)
+
       switch (type) {
-        case 'orderNo':
+        case 'DATE':// 日期型
           this.formType = 1
           break
-        case 'orderName':
+        case 'NUMBER':// 数值型
           this.formType = 2
           break
-        case 'timeZone':
+        case 'STRING':// 字符型
           this.formType = 3
           break
-        case 'remindTime':
+        case 'EQSTRING':// 字符型（不能模糊查询）
+          this.formType = 3
+          break
+        case 'OPTION':// 可选型
           this.formType = 4
           break
       }
@@ -265,20 +341,40 @@ export default {
       // 确定筛选方法
       console.info(this.formType)
       this.screeningTable()
-      // switch (this.formType) {
-      //   case 1:
-      //     this.$refs.ScreeningForm.screening()
-      //     break
-      //   case 2:
-      //     this.$refs.ScreeningNumForm.screening()
-      //     break
-      //   case 3:
-      //     this.$refs.ScreeningStringForm.screening()
-      //     break
-      //   case 4:
-      //     this.$refs.ScreeningCheckboxForm.screening()
-      //     break
-      // }
+    },
+    cancel() {
+      // 取消筛选
+      // 清楚筛选表单信息
+      this.screeningFormReset()
+      // 清楚当前需筛选的表头信息
+      this.currentHeader = {}
+      // 关闭弹窗
+      this.screeningFormVisible = false
+    },
+    screeningTable() {
+      // 确定筛选
+      // console.info('父组件')
+      const screeningForm = this.$store.state.screeningDate.screeningForm
+      // 判断该字段是否已进行筛选
+      const index = this.isScreeningByheader(this.screeningFormList)
+      if (index != null && index !== '') {
+        this.screeningFormList[index].screeningForm = screeningForm
+      } else {
+        const screening = {}
+        screening.headerKey = this.currentHeader.key
+        screening.headerLabel = this.currentHeader.label
+        screening.screeningForm = screeningForm
+        this.screeningFormList.push(screening)
+      }
+      // console.info('搜索条件集合')
+      // console.info(this.screeningFormList)
+      // 清楚筛选表单信息
+      this.screeningFormReset()
+      // 清楚当前需筛选的表头信息
+      this.currentHeader = {}
+      // 关闭弹窗
+      this.screeningFormVisible = false
+      this.loadTable()
     },
     updateCell() {
       // 确定修改方法
@@ -298,15 +394,7 @@ export default {
       this.currentRow = {}
       this.currentHeader = {}
       this.updateFormVisible = false
-    },
-    cancel() {
-      // 取消筛选
-      // 清楚筛选表单信息
-      this.screeningFormReset()
-      // 清楚当前需筛选的表头信息
-      this.currentHeader = {}
-      // 关闭弹窗
-      this.screeningFormVisible = false
+      this.loadTable()
     },
     updateCancel() {
       // 取消修改方法
@@ -314,31 +402,6 @@ export default {
       this.currentRow = {}
       this.currentHeader = {}
       this.updateFormVisible = false
-    },
-    screeningTable() {
-      // 确定筛选返回函数
-      console.info('父组件')
-      const screeningForm = this.$store.state.screeningDate.screeningForm
-      // 判断该字段是否已进行筛选
-      const index = this.isScreeningByheader(this.screeningFormList)
-      if (index != null && index !== '') {
-        this.screeningFormList[index].screeningForm = screeningForm
-      } else {
-        const screening = {}
-        screening.headerKey = this.currentHeader.key
-        screening.headerLabel = this.currentHeader.label
-        screening.screeningForm = screeningForm
-        this.screeningFormList.push(screening)
-      }
-      console.info('搜索条件集合')
-      console.info(this.screeningFormList)
-      // 清楚筛选表单信息
-      this.screeningFormReset()
-      // 清楚当前需筛选的表头信息
-      this.currentHeader = {}
-      // 关闭弹窗
-      this.screeningFormVisible = false
-      this.loadTable()
     },
     screeningCallBack() {
     },
@@ -365,14 +428,92 @@ export default {
       this.$store.commit('screeningDate/setScreeningDate', form)
     },
     loadModuleList(val) {
-      // 加载所有报价模板
+      // 加载所有模板
       if (val) {
-        this.moduleList = [
-          { value: '1', label: '模板一' },
-          { value: '2', label: '模板二' },
-          { value: '3', label: '模板三' }
-        ]
+        const data = {
+          page: {
+            pageNumber: 1,
+            pageSize: 100
+          },
+          dataMarket: '01'
+        }
+        getTempList(data).then(res => {
+          console.info(res)
+          this.moduleList = res.dataList
+        })
       }
+    },
+
+    editCurrentModule() {
+      // 表头右击
+      // 取消浏览器默认右击事件
+      window.event.returnValue = false
+      if (this.currentModuleId !== '') {
+        const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
+        this.editModuleForm.moduleName = module[0].tempName
+        console.info(this.editModuleForm)
+        this.tableHeader.map(res => this.editTableHeaders.push(res))
+        this.editModuleIsOpen = true
+        this.$nextTick(() => {
+          this.editTableHeader.map(obj => {
+            this.$refs.editTable.toggleRowSelection(obj, true)
+          })
+        })
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    topMoved(row) {
+      // 模板编辑框表头上移
+      // console.info('上移')
+      // console.info(row)
+      // 成交表头上移
+      const obj = this.editTableHeader.filter(mod => mod.colName === row.colName)
+      const index = this.editTableHeader.indexOf(obj[0])
+      if (index > 0) {
+        const temp = this.editTableHeader[index]
+        this.editTableHeader[index] = this.editTableHeader[index - 1]
+        this.editTableHeader[index - 1] = temp
+      } else {
+        this.$message('这是第一个了！')
+      }
+    },
+    bottomMoved(row) {
+      // 模板编辑框表头下移
+      // console.info('下移')
+      // console.info(row)
+      // 成交表头上移
+      const obj = this.editTableHeader.filter(mod => mod.colName === row.colName)
+      const index = this.editTableHeader.indexOf(obj[0])
+      if (index < (this.editTableHeader.length - 1)) {
+        const temp = this.editTableHeader[index]
+        this.editTableHeader[index] = this.editTableHeader[index + 1]
+        this.editTableHeader[index + 1] = temp
+      } else {
+        this.$message('这是最后一个了！')
+      }
+    },
+    saveEditCell() {
+      console.info(this.offerSelection)
+      const data = {
+        moduleId: this.currentModuleId,
+        moduleName: this.editModuleForm.moduleName,
+        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeader.filter(v => this.multipleSelection.indexOf(v) !== -1)
+      }
+      console.info(data)
+      this.editModuleIsOpen = false
+      // 根据返回的模板id查询表头信息
+      // getTempById(val).then(res => {
+      //   console.info(res)
+      //   this.tableHeader = res.showCols
+      // })
+      // 获取满足条件的行情数据
+      this.loadTable()
+      this.currentModuleId = this.moduleId
+    },
+    editCancel() {
+      this.editModuleIsOpen = false
     }
   }
 
