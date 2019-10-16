@@ -91,7 +91,12 @@
     </el-dialog>
 
     <!-- 远期N/K值 -->
-    <div class="filter-container" style="padding-top: 40px">
+    <div
+      v-if="curvePrdNkListVisible"
+      :visible.sync="curvePrdNkListVisible"
+      class="filter-container"
+      style="padding-top: 40px"
+    >
       <label>远期N/K值： </label>
       <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item" :disabled="disabled">
         <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key" />
@@ -104,7 +109,14 @@
       </el-button>
     </div>
 
-    <el-table :data="curvePrdNkList" border highlight-current-row style="width: 820px;">
+    <el-table
+      v-if="curvePrdNkListVisible"
+      :visible.sync="curvePrdNkListVisible"
+      :data="curvePrdNkList"
+      border
+      highlight-current-row
+      style="width: 820px;"
+    >
       <el-table-column label="N值" width="150px">
         <template slot-scope="scope" prop="nvalue">
           <span>{{ scope.row.nvalue }}</span>
@@ -142,39 +154,41 @@
       :close-on-click-modal="false"
       append-to-body
     >
-      <el-col :span="20" :offset="2">
-        <el-form
-          ref="curvePrdNkForm"
-          :model="curvePrdNkFormTmp"
-          :rules="curvePrdNkRules"
-          label-position="left"
-          label-width="60px"
-        >
-          <el-row>
-            <el-col :span="11">
-              <el-form-item label="N值" prop="nvalue">
-                <el-input v-model="curvePrdNkFormTmp.nvalue" type="number" :disabled="disabled" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="11" :offset="2">
-              <el-form-item label="K值" prop="kvalue">
-                <el-input v-model="curvePrdNkFormTmp.kvalue" type="number" :disabled="disabled" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="curvePrdNkFormTmp.remark" type="textarea" />
-          </el-form-item>
-        </el-form>
-      </el-col>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="curvePrdNkFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="addCurvePrdNk('curvePrdNkForm')">
-          确认
-        </el-button>
-      </div>
+      <el-form
+        ref="curvePrdNkForm"
+        :model="curvePrdNkFormTmp"
+        :rules="curvePrdNkRules"
+        label-position="left"
+        label-width="60px"
+      >
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="N值" prop="nvalue">
+              <el-input v-model="curvePrdNkFormTmp.nvalue" type="number" :disabled="disabled" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11" :offset="2">
+            <el-form-item label="K值" prop="kvalue">
+              <el-input v-model="curvePrdNkFormTmp.kvalue" type="number" :disabled="disabled" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="curvePrdNkFormTmp.remark" type="textarea" />
+        </el-form-item>
+      </el-form>
+      <el-row>
+        <el-col :span="6" offset="19">
+          <div >
+            <el-button @click="curvePrdNkFormVisible = false">
+              取消
+            </el-button>
+            <el-button type="primary" @click="addCurvePrdNk('curvePrdNkForm')">
+              确认
+            </el-button>
+          </div>
+        </el-col>
+      </el-row>
     </el-dialog>
 
   </div>
@@ -195,7 +209,7 @@ import {
 export default {
   name: 'CurvePrdKd',
   directives: { waves },
-  props: ['productId', 'disabled'],
+  props: ['productId', 'disabled','productInfo'],
   data() {
     // eslint-disable-next-line no-unused-vars
     var comparison = (rule, value, callback) => {
@@ -251,7 +265,8 @@ export default {
         remark: ''
       },
       prdKdList: [],
-      forwardFlagModsList: []
+      forwardFlagModsList: [],
+      curvePrdNkListVisible: true
     }
   },
   computed: {
@@ -284,6 +299,12 @@ export default {
     this.getCurvePrdNkList()
 
     this.init()
+    var forwardFlag = this.productInfo.forwardFlag
+    if(forwardFlag=='Y'){
+      this.curvePrdNkListVisible = true
+    }else{
+      this.curvePrdNkListVisible = false
+    }
   },
   methods: {
     async init() {
@@ -428,6 +449,7 @@ export default {
       return this.curvePrdKdList
     },
     obtainCurvePrdNkList() {
+      debugger
       for (var i = 0; i < this.curvePrdNkList.length; i++) {
         this.curvePrdNkList[i].curveId = this.productId
       }
@@ -465,7 +487,7 @@ export default {
       if (sampleIntervalUp !== 0 && !sampleIntervalUp) {
         this.$message({
           type: 'error',
-          message: '区间下限上能为空'
+          message: '区间上限上能为空'
         })
         return false
       }

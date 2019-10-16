@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增不参与估值设置</el-button>
+      <el-input
+        v-model="search_bondId_LIKE"
+        style="width: 20%"
+        clearable
+        placeholder="输入资产编码/资产简称"
+        prefix-icon="el-icon-search"
+      />
+      <el-button type="primary" @click="loadTable">查询</el-button>
+      <el-button type="primary" @click="toAdd">添加</el-button>
       <el-upload
         style="display: inline-block;"
         :action="uploadUrl"
@@ -51,6 +59,16 @@
         width="100"
       />
       <el-table-column
+        prop="marketId"
+        label="流通场所"
+        show-overflow-tooltip
+        width="100"
+      >
+        <template slot-scope="{row}">
+          {{ convertMarket(row.marketId) }}
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="cause"
         label="不参与原因"
         show-overflow-tooltip
@@ -70,7 +88,7 @@
       />
       <el-table-column
         prop="dateEnd"
-        label="自动释放日期"
+        label="自动释放时间点"
         show-overflow-tooltip
         width="120"
       />
@@ -140,6 +158,7 @@
         ref="BondsNonpForm"
         :bonds-nonp-data="bondsNonpData"
         :business-id="bondsNonpId"
+        :csin-disabled="csinDisabled"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -163,10 +182,12 @@ export default {
     return {
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       bondsNonpFormVisible: false,
+      csinDisabled: false,
       bondsNonpId: '',
       bondsNonpList: [],
       bondFilterList: [],
       bondsNonpData: {},
+      search_bondId_LIKE: '',
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -191,7 +212,8 @@ export default {
   },
   methods: {
     loadTable() {
-      queryBondsNonpList({ page: this.page }).then(response => {
+      const query = this.search_bondId_LIKE ? { search_bondId_LIKE: this.search_bondId_LIKE } : {}
+      queryBondsNonpList(Object.assign(query, { page: this.page })).then(response => {
         const { dataList, page } = response
         this.page = page
         this.bondsNonpList = dataList
@@ -200,8 +222,16 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+    convertMarket(val) {
+      let res = ''
+      val = val.split(',')
+      for (const x in val) {
+        res += this.$dft('MARKET', val[x]) + '  '
+      }
+      return res
+    },
     selectToBatch(row, index) {
-      return row.busiStatus === '02' || row.busiStatus === '03'
+      return row.approveStatus !== '01'
     },
     save() {
       this.$refs.BondsNonpForm.save()
@@ -213,6 +243,7 @@ export default {
     toDetail(id) {
       this.bondsNonpId = id
       this.bondsNonpFormVisible = true
+      this.csinDisabled = true
     },
     toDelete(id) {
       this.$confirm('确认移出此规则?', '提示', {
@@ -260,6 +291,7 @@ export default {
       this.bondsNonpId = ''
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
       this.bondsNonpFormVisible = true
+      this.csinDisabled = false
     },
     saveCallBack() {
       this.bondsNonpFormVisible = false

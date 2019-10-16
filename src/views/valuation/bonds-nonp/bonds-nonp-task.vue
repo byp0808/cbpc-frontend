@@ -4,6 +4,7 @@
       ref="refApprovalDialog"
       :business-id="businessNo"
       :disabled="disabled"
+      :csin-disabled="disabled"
     />
     <div class="button-box-fixed">
       <el-button type="primary" @click="taskSubmit('02')">审批通过</el-button>

@@ -175,6 +175,7 @@
       <CurvePrdKd
         ref="curvePrdKd"
         :product-id="productId"
+        :product-info="productInfo"
         :disabled="disabled"
       />
       <div class="text-center">
@@ -198,7 +199,7 @@
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
-        <h3>确认产品</h3>
+        <h3>确认产品  编制曲线编码：{{this.productInfo.curvePrdCode}}</h3>
       </div>
       <CurveProductDefConfirm
         ref="refCurveProductDefConfirm"
@@ -604,6 +605,14 @@ export default {
         return false
       }
 
+      if(this.productInfo.forwardFlag=='Y'&&curvePrdNkList.length<=0){
+        this.$message({
+          message: '远期NK值列表不能为空！',
+          type: 'error',
+          showClose: true
+        })
+        return false
+      }
       var data = {
         curvePrdKdList: curvePrdKdList,
         curvePrdNkList: curvePrdNkList

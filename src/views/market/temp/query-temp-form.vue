@@ -498,22 +498,19 @@ export default {
     getOneAllcols(val) {
       if (val === '01') {
         // 查询初始字段信息、数字型字段列表
-        var data = {}
-        data.dataMarket = this.marketTempInfo.dataMarket
-        data.showArea = this.marketTempInfo.showArea
-        getMarketColsInfo(data).then(reponse => {
-          const { numberCols, colData } = reponse
-          this.colData = colData
-          this.relationColsOptions = numberCols
-          this.setColDataResult()
-        })
+        this.queryColsInfo('1')
       }
     },
     getTwoAllcols(val) {
       // 查询初始字段信息、数字型字段列表
+      this.queryColsInfo('2')
+    },
+    queryColsInfo(marketLevel) {
       var data = {}
       data.dataMarket = this.marketTempInfo.dataMarket
-      data.showArea = this.marketTempInfo.showArea
+      if (marketLevel === '2') {
+        data.showArea = this.marketTempInfo.showArea
+      }
       getMarketColsInfo(data).then(reponse => {
         const { numberCols, colData } = reponse
         this.colData = colData

@@ -27,17 +27,17 @@
         </el-table-column>
         <el-table-column label="日间估价全价（元）" align="center" width="160px">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.fullPriceInterDay }}</span>
           </template>
         </el-table-column>
         <el-table-column label="日间应计利息（元）" align="center" width="160px">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.accruedInterestInterDay }}</span>
           </template>
         </el-table-column>
         <el-table-column label="估价净价（元）" align="center" width="160px">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.netPrice }}</span>
           </template>
         </el-table-column>
         <el-table-column label="估价收益率（%）" align="center" width="160px">
@@ -47,17 +47,17 @@
         </el-table-column>
         <el-table-column label="日终估价全价（元）" align="center" width="160px">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.fullPriceEndDay }}</span>
           </template>
         </el-table-column>
         <el-table-column label="日终应计利息（元）" align="center" width="160px">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.accruedInterestEndDay }}</span>
           </template>
         </el-table-column>
         <el-table-column label="可信度" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.reliability }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -94,24 +94,24 @@ export default {
   },
   data() {
     return {
-      selectionList: []
+      selectionList: [],
+      taskList: []
     }
   },
   methods: {
-    // load() {
-
-    // },
     handleSelectionChange(val) {
       if (val.length > 0) {
         val.map(v => {
-          this.selectionList.push(v.id)
+          this.selectionList.push(v.bondId)
+          // this.taskList.push({ bondId: v.bondId })
         })
         this.selectionList = Array.from(new Set(this.selectionList))
         this.$emit('selectionList', this.selectionList)
+        this.$emit('taskList', val)
       } else {
         this.selectionList = []
+        this.taskList = []
       }
-      console.log('val', this.selectionList)
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize

@@ -24,11 +24,10 @@
               <el-form-item label="批次计算时间" prop="compTime">
                 <el-time-select
                   v-model="orderInfoForm.compTime"
-                  value-format="HH:mm:ss"
                   :disabled="disabled"
                   placeholder="请选择批次计算时间"
                   style="width: 100%"
-                  :picker-options="{ start: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'00:00'}` , end:'23:30', step:'00:30' }"
+                  :picker-options="{ start:'00:00', end: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'23:30'}` , step:'00:30'}"
                 />
               </el-form-item>
             </div>
@@ -51,11 +50,10 @@
               <el-form-item label="批次提醒时间" prop="remindTime">
                 <el-time-select
                   v-model="orderInfoForm.remindTime"
-                  value-format="HH:mm:ss"
                   :disabled="disabled"
                   placeholder="请选择批次提醒时间"
                   style="width: 100%"
-                  :picker-options="{ start:'00:00', end: `${orderInfoForm.compTime?orderInfoForm.compTime:'23:30'}` , step:'00:30'}"
+                  :picker-options="{ start: `${orderInfoForm.compTime?orderInfoForm.compTime:'00:00'}` , end:'23:30', step:'00:30' }"
                 />
               </el-form-item>
             </div>

@@ -13,12 +13,14 @@
       </el-form-item>
       <el-form-item
         v-for="(personnel, index) in ruleInfo.distRuleList"
-        :key="personnel"
+        :key="index"
         :label="'人员' + (index+1)"
-        required
       >
         <el-col :span="10">
-          <el-form-item>
+          <el-form-item
+            :prop="'distRuleList.'+index+'.userId'"
+            :rules="{ required: true, message: '请选择分配人员', trigger: 'change' }"
+          >
             <el-select v-model="personnel.userId" filterable placeholder="请选择人员" :disabled="disabled">
               <el-option
                 v-for="item in personnelList"
@@ -30,7 +32,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="10">
-          <el-form-item>
+          <el-form-item
+            :prop="'distRuleList.'+index+'.distRatio'"
+            :rules="{ required: true, message: '请输入分配比例', trigger: 'blur' }"
+          >
             <el-input v-model="personnel.distRatio" placeholder="请输入分配比例" :disabled="disabled" />
           </el-form-item>
         </el-col>

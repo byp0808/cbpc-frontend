@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column label="曲线编制状态">
           <template slot-scope="{ row }">
-            <DictColumn :dict-name="'curveBuild'" :column-data="row.curveBuildStatus" />
+            <span>{{ row.curveBuildStatusIn }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -62,13 +62,12 @@
         </el-table-column>
         <el-table-column label="优先级" width="60">
           <template slot-scope="{ row }">
-            <!--            <DictColumn :name="PRIORITY" :data="row.priority" />-->
             <span>{{ row.priority }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
           <template slot-scope="{ row }">
-            <el-button v-if="0 + row.curveBuildStatus > 1 && 0 + row.curveBuildStatus < 4" type="primary" size="mini" @click="refund(row)">
+            <el-button v-if="0 + row.curveBuildStatusIn > 1 && 0 + row.curveBuildStatusIn < 4" type="primary" size="mini" @click="refund(row)">
               退回
             </el-button>
             <el-button type="primary" size="mini" @click="openBuild(row)">
@@ -86,10 +85,9 @@
 import { selectCurve, selectCurveTask, refundCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 import openWindow from '@/utils/open-window'
-import DictColumn from './components/DictColumn'
 export default {
   name: 'MyTaskList',
-  components: { Pagination, DictColumn },
+  components: { Pagination },
   data() {
     return {
       task: {

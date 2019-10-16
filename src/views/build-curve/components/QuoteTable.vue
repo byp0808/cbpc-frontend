@@ -8,6 +8,16 @@ import { getMean, getMedian, getMode } from '@/utils/math'
 
 export default {
   components: { List },
+  props: {
+    data: {
+      type: Array,
+      default: () => []
+    },
+    limit: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       list: [{
@@ -63,7 +73,7 @@ export default {
         num: arr.length,
         avg: getMean(values),
         mid: getMedian(values),
-        plu: getMode(values).length < 1 ? 0 : getMode(values)[0],
+        plu: getMode(values).length < 1 ? 0 : getMode(values),
         max: Math.max.apply(Math, values),
         min: Math.min.apply(Math, values)
       })

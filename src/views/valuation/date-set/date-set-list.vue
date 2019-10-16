@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增首次估值日设置</el-button>
+      <el-button type="primary" @click="toAdd">新增规则</el-button>
     </div>
     <el-table
       ref="refDateSetTable"
@@ -14,12 +14,6 @@
         width="55"
       />
       <el-table-column
-        prop="id"
-        label="规则ID"
-        show-overflow-tooltip
-        width="160"
-      />
-      <el-table-column
         prop="ruleName"
         label="规则名称"
         show-overflow-tooltip
@@ -28,7 +22,6 @@
       <el-table-column
         prop="ruleDesc"
         label="规则说明"
-        width="400"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -38,7 +31,7 @@
       <el-table-column
         prop="firstDateType"
         label="首次估值日"
-        width="160"
+        width="200"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -48,7 +41,7 @@
       <el-table-column
         prop="approveStatus"
         label="审核状态"
-        width="120"
+        width="100"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -156,10 +149,10 @@ export default {
     dateSetFormat() {
       return function(row) {
         let type = ''
-        if (row.firstDateType !== '01') {
-          type += this.$dft('FIRST_DATE_TYPE', row.firstDateType) + '+' + row.delayDays + '天'
+        if (row.firstDateType === '03') {
+          type += '上市日或起息日+' + row.delayDays + '天优先'
         } else {
-          type = '起息日'
+          type = this.$dft('FIRST_DATE_TYPE', row.firstDateType)
         }
 
         return type

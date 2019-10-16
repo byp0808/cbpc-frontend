@@ -11,8 +11,8 @@
             <el-radio :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
           </template>
         </el-table-column>
-        <el-table-column prop="taskRangeName" label="规则描述" min-width="30%" show-overflow-tooltip />
-        <el-table-column prop="filterId" label="规则详细" min-width="40%" show-overflow-tooltip>
+        <el-table-column prop="taskRangeName" label="范围名称" min-width="30%" show-overflow-tooltip />
+        <el-table-column prop="filterId" label="范围描述" min-width="40%" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ ruleDetail(scope.row.filterId) }}</span>
           </template>
