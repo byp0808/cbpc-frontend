@@ -102,7 +102,6 @@
             :fetch-suggestions="queryPersonSearch"
             placeholder="请输入责任人"
             :trigger-on-focus="false"
-            @select="handlePersonSelect"
           />
         </el-form-item>
       </el-form>
@@ -218,9 +217,10 @@ export default {
         ids.push(this.selection.id)
       }
       updateCurveTask({ ids, assign: this.person.userId, assignName: this.person.username }).then(() => {
+        this.$message.success('保存成功')
+        this.dialogFormVisible = false
         this.getList()
       })
-      this.dialogFormVisible = false
     },
     claim(item) {
       chaimCurveTask({ ids: item.id }).then(() => {
