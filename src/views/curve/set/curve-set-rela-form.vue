@@ -6,7 +6,7 @@
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="tempMain" label-width="150px">
               <el-form-item label="曲线产品名称">
-                <el-select v-model="tempMain.curveId" style="width: 100%" filterable :disabled="curveSelectDisable" placeholder="请选择曲线">
+                <el-select ref="curveIdSelect" v-model="tempMain.curveId" style="width: 100%" filterable :disabled="curveSelectDisable" @change="curveSelect" placeholder="请选择曲线">
                   <el-option
                     v-for="item in curveList"
                     :key="item.value"
@@ -34,6 +34,9 @@
             </el-form-item>
           </el-form>
         </el-col>
+        <div class="btn-zone">
+          <el-button type="primary" @click="saveAll">保存</el-button>
+        </div>
       </el-row>
     </el-card>
     <el-card>
@@ -182,7 +185,7 @@ import CurveSetRelaFormTable from '@/views/curve/set/curve-set-rela-form-table.v
 import { queryCurvePrdOrderKtList } from '@/api/curve/curve-product-order.js'
 import { getCurveProductIdOptions } from '@/api/curve/curve-product-list.js'
 import { getOrderListOptions } from '@/api/curve/curve-product-order.js'
-import { resolveProductGrade2Num, sortStandSlip } from '@/api/curve/curve-set-rela.js'
+import { resolveProductGrade2Num, sortStandSlip, saveRelaTempMain } from '@/api/curve/curve-set-rela.js'
 
 export default {
   name: 'CurveSetRelaForm',
@@ -196,6 +199,7 @@ export default {
       curveSelectDisable: false,
       curveList: [],
       orderList: [],
+      tmp_curveId: '', // 选择的主曲线ID
       tempMain: {},
       tmp_tempInfo: {}, // 曲线模板信息
       // tempList tempKdList tempPrdList
@@ -220,32 +224,6 @@ export default {
   computed: {
     curveName() {
       return this.getCurveName(this.tmp_tempInfo.curveId)
-    }
-  },
-  watch: {
-    'tempMain.curveId'(newValue, oldValue) {
-      // 判断列表中是否已经存在自身曲线
-      // 存在，则更新，不存在新增
-      var exists = false
-      var _curveInfo = {}
-      for (var item of this.tmp_quZSList) {
-        if (item.type === '1') {
-          exists = true
-          _curveInfo = item
-          break
-        }
-      }
-      if (exists) {
-        _curveInfo.curveId = newValue
-      } else {
-        // tmp_quZSList 添加记录
-        this.tmp_quZSList.push({
-          curveId: newValue,
-          orderId: '',
-          dayType: '',
-          type: '1' // 0-其他 1-自身
-        })
-      }
     }
   },
   beforeMount() {
@@ -310,6 +288,35 @@ export default {
         }
       }
       return {}
+    },
+    curveSelect(newValue) {
+      console.info('newValue:' + newValue + ',oldValue:' + this.tmp_curveId)
+      if (this.tempList && this.tempList.length > 0) {
+        if (this.tmp_curveId && this.tmp_curveId !== newValue) {
+          this.$confirm('修改曲线后当前页面编辑数据会清空,是否确认修改', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+          }).then(({ value }) => {
+            this.tempList = []
+            this.relaFormTableList = []
+            this.tempKdList = []
+            this.tempPrdList = []
+            this.tmp_curveId = newValue
+            this.$refs.curveIdSelect.blur()
+          }).catch(() => {
+            console.info('cancle')
+            this.tempMain.curveId = this.tmp_curveId
+            this.$refs.curveIdSelect.blur()
+            return false
+          })
+        } else {
+          this.tmp_curveId = newValue
+          this.$refs.curveIdSelect.blur()
+        }
+      } else {
+        this.tmp_curveId = newValue
+        this.$refs.curveIdSelect.blur()
+      }
     },
     sortCurveByReferFlag(a, b) {
       var a_referFlag = a.referFlag
@@ -579,6 +586,25 @@ export default {
         return false
       }
 
+      // 判断是否有族系区
+      let haveZuXiQu = false
+      for (let i = 0; i < this.tmp_quXJList.length; i++) {
+        const referFlag = this.tmp_quXJList[i].referFlag
+        if (referFlag === 'Y') {
+          haveZuXiQu = true
+          break
+        }
+      }
+      if (!haveZuXiQu) {
+        this.$message({
+          message: '请添加族系区曲线',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+
       // 从缓存中获取最新数据, 缓存数据即为保存时，发送后台数据
       // tempInfo tmp_quXJList 均为临时编辑数据，点击生成曲线关系时，需要同步缓存数据
       // tempList: [], // 曲线关系模板 日期类型+批次+(0-其他曲线)  1-自身曲线 最多两条，一条是自身，一条是自身倒挂
@@ -612,7 +638,7 @@ export default {
       // 获取所有曲线的关键期限
       var ids = [curveId]
       var columnProp = [{ key: 0, prop: 'standSlip', label: '曲线产品名称/关键期限' }] // { key: 'standSlip', label: '曲线产品名称' },
-
+      var prdList = []
       let i = 0
       for (; i < this.tmp_quXJList.length; i++) {
         const curveId = this.tmp_quXJList[i].curveId
@@ -620,6 +646,7 @@ export default {
         columnProp.push({
           key: (i + 1), prop: curveId, label: this.getCurveName(curveId)
         })
+        prdList.push({ tempId: tempInfo.id, curveId: curveId, referFlag: this.tmp_quXJList[i].referFlag })
       }
       if (tempInfo.spreadFlag === 'Y') {
         for (let j = 0; j < this.tmp_quXJList.length; j++) {
@@ -696,11 +723,13 @@ export default {
         oldTempInfo.tempInfo = tempInfo
         oldTempInfo.dataList = dataList
         oldTempInfo.columnProp = columnProp
+        oldTempInfo.prdList = prdList
       } else {
         this.relaFormTableList.push({
           tempInfo: tempInfo,
           dataList: dataList,
-          columnProp: columnProp
+          columnProp: columnProp,
+          prdList: prdList
         })
       }
       // 更新
@@ -835,27 +864,12 @@ export default {
 
       // 组装表头
       var columnProp = [{ key: 0, prop: 'standSlip', label: '曲线产品名称/关键期限' }] // { key: 'standSlip', label: '曲线产品名称' },
-      // // tmp_quZSList 添加记录
-      // this.tmp_quZSList.push({
-      //   curveId: '',
-      //   orderId: this.tempSelfFormInfo.orderId,
-      //   dayType: this.tempSelfFormInfo.dayType,
-      //   type: '0' // 0-其他 1-自身
-      // })
-      debugger
+      var prdList = [] // 关系产品表
       for (let i = 0; i < this.tmp_quZSList.length; i++) {
-        // eslint-disable-next-line no-unused-vars
         const item = this.tmp_quZSList[i]
         // 曲线
-        if (item.type === '1') {
-          columnProp.push({
-            key: (i + 1), prop: curveId, label: this.getCurveName(item.curveId)
-          })
-        } else {
-          columnProp.push({
-            key: (i + 1), prop: '', label: this.showLabel(item), dayType: item.dayType, orderId: item.dayType
-          })
-        }
+        columnProp.push({ key: (i + 1), prop: '' + (i + 1), label: this.showLabel(item), dayType: item.dayType, orderId: item.dayType })
+        prdList.push({ tempId: tempInfo.id, dayType: item.dayType, orderId: item.dayType })
       }
       // 获取当前曲线关键期限
       var curentCurveOrderKt = []
@@ -872,6 +886,8 @@ export default {
       })
       curentCurveOrderKt.sort(sortStandSlip)
       console.info('当前曲线关键期限:' + JSON.stringify(curentCurveOrderKt))
+      console.info('columnProp:' + JSON.stringify(columnProp))
+      console.info('prdList:' + JSON.stringify(prdList))
 
       const dataList = []
       for (const item of curentCurveOrderKt) {
@@ -890,13 +906,15 @@ export default {
       }
       if (exist) {
         oldTempInfo.tempInfo = tempInfo
-        oldTempInfo.dataList = dataList
         oldTempInfo.columnProp = columnProp
+        oldTempInfo.dataList = dataList
+        oldTempInfo.prdList = prdList
       } else {
         this.relaFormTableList.push({
           tempInfo: tempInfo,
+          columnProp: columnProp,
           dataList: dataList,
-          columnProp: columnProp
+          prdList: prdList
         })
       }
 
@@ -908,6 +926,66 @@ export default {
         setTimeout(function() {
           // 显示后一项
           relaFormTableCarousel.setActiveItem(curInitialIndex)
+        })
+      })
+    },
+    // 保存
+    saveAll() {
+      console.info('generatCurveRelaZs...saveAll:')
+      var curveId = this.tempMain.curveId
+      if (!curveId) {
+        this.$message({
+          message: '请选择一条曲线',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+
+      var _tempList = []
+      var _prdList = []
+      var _kdList = []
+      // 从  取关键期限
+      const list = this.$refs.refCurveSetRelaFormTable
+      if (list && list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i]
+          const kdList = item.getSeletedKd() // 关键期限
+          const relaFormTable = item.getRelaFormTable() // 包含tempInfo prdList
+          const tempInfo = relaFormTable.tempInfo
+          if (!tempInfo.name) {
+            this.$message({
+              message: '第[' + (i + 1) + ']个矩阵名称不能为空',
+              type: 'warning',
+              showClose: true,
+              duration: 2000
+            })
+            return false
+          }
+          _tempList.push(tempInfo)
+          _prdList = _prdList.concat(relaFormTable.prdList)
+          _kdList = _kdList.concat(kdList)
+        }
+      }
+      // 获取 kdlist prdList
+      // this.relaFormTableList
+      // 获取tempMainInfo
+      var data = {
+        tempMain: this.tempMain,
+        curveRelaTempList: _tempList,
+        curveRelaTempPrdList: _prdList,
+        curveRelaTempKTList: _kdList
+      }
+
+      console.info(data)
+      console.info(JSON.stringify(data))
+      // 保存
+      saveRelaTempMain(data).then(response => {
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
         })
       })
     }
