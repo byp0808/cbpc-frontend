@@ -86,6 +86,10 @@ const taskRouter = {
       path: 'report-task',
       component: () => import('@/views/valuation/report/report-task.vue'),
       name: 'ReportTask'
+    }, {
+      path: 'tempfilter-task',
+      component: () => import('@/views/common/bond-filter/filter-task.vue'),
+      name: 'TempFilterTask'
     }
   ]
 }
