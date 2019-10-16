@@ -152,8 +152,8 @@
             </el-table-column>
           </el-table>
           <div class="btn-zone">
-            <el-button type="primary" @click="generatCurveRela">生成自身曲线关系</el-button>
-            <el-button type="primary" @click="generatCurveRela">生成自身倒挂检验关系</el-button>
+            <el-button type="primary" @click="generatCurveRelaZs('N')">生成自身曲线关系</el-button>
+            <el-button type="primary" @click="generatCurveRelaZs('Y')">生成自身倒挂检验关系</el-button>
           </div>
         </el-col>
       </el-row>
@@ -611,7 +611,7 @@ export default {
 
       // 获取所有曲线的关键期限
       var ids = [curveId]
-      var columnProp = [{ key: 0, prop: 'standSlip', label: '曲线产品名称' }] // { key: 'standSlip', label: '曲线产品名称' },
+      var columnProp = [{ key: 0, prop: 'standSlip', label: '曲线产品名称/关键期限' }] // { key: 'standSlip', label: '曲线产品名称' },
 
       let i = 0
       for (; i < this.tmp_quXJList.length; i++) {
@@ -703,6 +703,16 @@ export default {
           columnProp: columnProp
         })
       }
+      // 更新
+      // this.curInitialIndex
+      var curInitialIndex = this.curInitialIndex
+      var relaFormTableCarousel = this.$refs.relaFormTableCarousel
+      this.$nextTick(() => {
+        setTimeout(function() {
+          // 显示后一项
+          relaFormTableCarousel.setActiveItem(curInitialIndex)
+        })
+      })
     },
     // 卡片切换
     carouselChange(newValue, oldValue) {
@@ -770,6 +780,135 @@ export default {
           // 显示后一项
           relaFormTableCarousel.next()
         }, 100)
+      })
+    },
+    // 生成自身曲线关系、倒挂检验关系
+    async generatCurveRelaZs(inversionFlag) {
+      console.info('generatCurveRelaZs...inversionFlag(Y为倒挂):' + inversionFlag)
+      var curveId = this.tempMain.curveId
+      if (!curveId) {
+        this.$message({
+          message: '请选择一条曲线',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+
+      // 判断
+      if (!this.tempSelfFormInfo.dayType) {
+        this.$message({
+          message: '选择自身曲线关系日期类型不能为空',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+      if (!this.tempSelfFormInfo.orderId) {
+        this.$message({
+          message: '选择自身曲线关系批次不能为空',
+          type: 'warning',
+          showClose: true,
+          duration: 2000
+        })
+        return false
+      }
+      //
+      var tempInfo = null
+      for (var item of this.tempList) {
+        // type: 1-本身
+        if (item.type === '1' && item.inversionFlag === inversionFlag) {
+          tempInfo = item
+        }
+      }
+      if (!tempInfo) {
+        tempInfo = {
+          id: 'TMP_' + new Date().getTime(),
+          type: '1', // 模板类型 1-自身
+          inversionFlag: inversionFlag
+        }
+        // 新增记录，保存至缓存
+        this.tempList.push(tempInfo)
+      }
+
+      // 组装表头
+      var columnProp = [{ key: 0, prop: 'standSlip', label: '曲线产品名称/关键期限' }] // { key: 'standSlip', label: '曲线产品名称' },
+      // // tmp_quZSList 添加记录
+      // this.tmp_quZSList.push({
+      //   curveId: '',
+      //   orderId: this.tempSelfFormInfo.orderId,
+      //   dayType: this.tempSelfFormInfo.dayType,
+      //   type: '0' // 0-其他 1-自身
+      // })
+      debugger
+      for (let i = 0; i < this.tmp_quZSList.length; i++) {
+        // eslint-disable-next-line no-unused-vars
+        const item = this.tmp_quZSList[i]
+        // 曲线
+        if (item.type === '1') {
+          columnProp.push({
+            key: (i + 1), prop: curveId, label: this.getCurveName(item.curveId)
+          })
+        } else {
+          columnProp.push({
+            key: (i + 1), prop: '', label: this.showLabel(item), dayType: item.dayType, orderId: item.dayType
+          })
+        }
+      }
+      // 获取当前曲线关键期限
+      var curentCurveOrderKt = []
+      await queryCurvePrdOrderKtList({ curveId: curveId, orderId: this.tmp_tempInfo.orderId }).then(response => {
+        const list = response
+        if (list && list.length > 0) {
+          for (var i = 0; i < list.length; i++) {
+            var item = list[i]
+            if (curentCurveOrderKt.indexOf(Number(item.standSlip)) < 0) {
+              curentCurveOrderKt.push(Number(item.standSlip))
+            }
+          }
+        }
+      })
+      curentCurveOrderKt.sort(sortStandSlip)
+      console.info('当前曲线关键期限:' + JSON.stringify(curentCurveOrderKt))
+
+      const dataList = []
+      for (const item of curentCurveOrderKt) {
+        dataList.push({ standSlip: item })
+      }
+
+      // 判断relaFormTableList是否已经存在记录，如果存在，则更新
+      var exist = false
+      var oldTempInfo = {}
+      for (const item of this.relaFormTableList) {
+        if (tempInfo.id === item.tempInfo.id) {
+          exist = true
+          oldTempInfo = item
+          break
+        }
+      }
+      if (exist) {
+        oldTempInfo.tempInfo = tempInfo
+        oldTempInfo.dataList = dataList
+        oldTempInfo.columnProp = columnProp
+      } else {
+        this.relaFormTableList.push({
+          tempInfo: tempInfo,
+          dataList: dataList,
+          columnProp: columnProp
+        })
+      }
+
+      // 更新
+      // this.curInitialIndex
+      var curInitialIndex = this.curInitialIndex
+      var relaFormTableCarousel = this.$refs.relaFormTableCarousel
+      this.$nextTick(() => {
+        setTimeout(function() {
+          // 显示后一项
+          relaFormTableCarousel.setActiveItem(curInitialIndex)
+        })
       })
     }
   }
