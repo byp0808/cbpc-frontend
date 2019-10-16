@@ -35,6 +35,30 @@ export function resolveProductGrade2Num(grade) {
   return grade
 }
 
-export function sortStandSlip(a,b) {
+export function sortStandSlip(a, b) {
   return Number(a) - Number(b)
+}
+
+export function queryCurveSetRela(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/findCurveRelaTemp`,
+    method: 'post',
+    data
+  })
+}
+
+export function delcurveSetRela(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/deleteCurveRelaTemp`,
+    method: 'post',
+    data
+  })
+}
+
+export function storageCurveSetRela(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/insertCurveRelaTemp`,
+    method: 'post',
+    data
+  })
 }
