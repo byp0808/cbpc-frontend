@@ -316,26 +316,17 @@ export default {
           'pageSize': 100000
         }
       }
+      await prdKdModsList(data).then(response => {
+        if (response && response.dataList) {
+          this.prdKdList = response.dataList
+        }
+      })
 
-      try{
-        await prdKdModsList(data).then(response => {
-          if (response && response.dataList) {
-            this.prdKdList = response.dataList
-          }
-        })
-      }catch (e) {
-        console.error(e)
-      }
-
-      try{
-        await forwardFlagModsList(data).then(response => {
-          if (response && response.dataList) {
-            this.forwardFlagModsList = response.dataList
-          }
-        })
-      }catch (e) {
-        console.error(e)
-      }
+      await forwardFlagModsList(data).then(response => {
+        if (response && response.dataList) {
+          this.forwardFlagModsList = response.dataList
+        }
+      })
     },
     optioins: optioins,
     getCurvePrdKdList() {

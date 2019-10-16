@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { selectCurve, selectCurveTask, refundCurveTask } from '@/api/curve/curve-task'
+import { selectCurve, selectMyCurveTask, refundCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 import openWindow from '@/utils/open-window'
 export default {
@@ -118,7 +118,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      selectCurveTask({ data: this.task, page: this.listQuery }).then(response => {
+      selectMyCurveTask({ data: this.task, page: this.listQuery }).then(response => {
         this.list = response.dataList
         this.total = response.page.totalRecord
         this.listLoading = false

@@ -11,3 +11,12 @@ export function queryValuation(data) {
     }
   )
 }
+// 查询估值点差方案
+export function queryValuationScheme() {
+  return request(
+    {
+      url: `${basic_api_valuation}/query/query-valuation-scheme`,
+      method: 'post'
+    }
+  )
+}

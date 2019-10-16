@@ -75,19 +75,6 @@
         </el-table-column>
       </el-table>
     </div>
-    <div>
-      <!-- <el-pagination
-        style="margin-top:20px"
-        align="center"
-        :current-page="page.pageNumber"
-        :page-sizes="[10, 20, 30, 40, 50]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalRecord"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      /> -->
-    </div>
   </div>
 </template>
 <script>
@@ -111,12 +98,7 @@ export default {
       ruleSetFormVisible: false,
       taskRangeId: '',
       selectionList: [],
-      list: [],
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
-      }
+      list: []
     }
   },
   methods: {
@@ -131,14 +113,6 @@ export default {
         this.selectionList = []
       }
     }
-    // handleSizeChange(pageSize) {
-    //   this.page.pageSize = pageSize
-    //   this.load()
-    // },
-    // handleCurrentChange(currentPage) {
-    //   this.page.pageNumber = currentPage
-    //   this.load()
-    // }
   }
 }
 </script>

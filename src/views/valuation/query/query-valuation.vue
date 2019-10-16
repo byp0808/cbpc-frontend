@@ -60,7 +60,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :span="8">
+        <el-col :span="6">
           <el-form-item label="对应收益率曲线">
             <el-select v-model="formData.yieldCurve" placeholder="请选择收益率曲线">
               <el-option label="区域一" value="shanghai" />
@@ -90,6 +90,11 @@
           <el-form-item>
             <el-button type="primary" @click="resetForm">重置</el-button>
           </el-form-item>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" :loading="loading" @click="download">
+            <i class="el-icon-download el-icon--left">下载</i>
+          </el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -275,7 +280,6 @@
         width="150"
       />
     </el-table>
-    <el-button type="primary" :loading="loading" @click="download"><i class="el-icon-download el-icon--left">下载</i></el-button>
     <el-pagination
       align="center"
       :current-page="page.pageNumber"

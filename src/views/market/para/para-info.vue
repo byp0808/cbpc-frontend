@@ -8,13 +8,13 @@
             <el-input v-model="paraform.para_1.paraValue" type="number" style="width:100px" /> 天
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="7">
           <el-form-item prop="para_2" label="单笔数额区间:">
             <el-input v-model="paraform.para_2.minParaValue" type="number" style="width:80px" /> 到
             <el-input v-model="paraform.para_2.maxParaValue" type="number" style="width:80px" /> (万元)
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="7">
           <el-form-item prop="para_3" label="对敲价差区间:">
             <el-input v-model="paraform.para_3.minParaValue" type="number" style="width:80px" /> 到
             <el-input v-model="paraform.para_3.maxParaValue" type="number" style="width:80px" /> (万元)
@@ -27,13 +27,13 @@
             <el-input v-model="paraform.para_4.paraValue" type="number" style="width:100px" /> 天
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="7">
           <el-form-item prop="para_5" label="单笔数额区间:">
             <el-input v-model="paraform.para_5.minParaValue" type="number" style="width:80px" /> 到
             <el-input v-model="paraform.para_5.maxParaValue" type="number" style="width:80px" /> (万元)
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="7">
           <el-form-item prop="para_6" label="对敲价差区间:">
             <el-input v-model="paraform.para_6.minParaValue" type="number" style="width:80px" /> 到
             <el-input v-model="paraform.para_6.maxParaValue" type="number" style="width:80px" /> (万元)
@@ -168,6 +168,7 @@ export default {
   },
   methods: {
     onSubmit(formName) {
+      // console.log("onSubmit")
       this.$refs.Paraform.validate((valid) => {
         if (valid) {
           this.matchedParaList = []
