@@ -17,7 +17,7 @@
         <el-row :gutter="24">
           <el-col :span="8">
             <el-form-item label="曲线产品名称" prop="productName">
-              <el-input v-model="productInfo.productName" :disabled="disabled" type="text" />
+              <el-input v-model="productInfo.productName" :disabled="disabled" type="text"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -129,6 +129,12 @@
               <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
                 <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
+              <el-popover placement="top-start" title="" width="250" trigger="hover" data-html="true" >
+                <div>
+                  注：利率类型的设置会影响后续功能<br>1.曲线行情对敲判断<br> 2.曲线方案初始化<br> 3.盯市点差调整
+                </div>
+                <i slot="reference" class="el-icon-info curveBuildTypePopover" />
+              </el-popover>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -169,6 +175,7 @@
       <CurvePrdKd
         ref="curvePrdKd"
         :product-id="productId"
+        :product-info="productInfo"
         :disabled="disabled"
       />
       <div class="text-center">
@@ -192,7 +199,7 @@
     </el-card>
     <el-card v-if="stepActive === 4" class="box-card margin-top">
       <div slot="header" class="clearfix card-head">
-        <h3>确认产品</h3>
+        <h3>确认产品  编制曲线编码：{{this.productInfo.curvePrdCode}}</h3>
       </div>
       <CurveProductDefConfirm
         ref="refCurveProductDefConfirm"
@@ -200,7 +207,7 @@
         :op-type="opType"
       />
       <div class="text-center">
-        <el-button type="primary" :disabled="disabled" @click="curvePrdConfirm">保存</el-button>
+        <el-button type="primary" :disabled="disabled" @click="curvePrdConfirm">确认</el-button>
       </div>
     </el-card>
   </div>
@@ -274,15 +281,15 @@ export default {
       productInfoRules: {
         productName: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+          { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
         ],
         productShortName: [
           { required: true, message: '请输入产品简称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 25 个字符', trigger: 'blur' }
+          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
         ],
         productEnglishName: [
           { required: true, message: '请输入产品英文名称', trigger: 'blur' },
-          { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+          { min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
         ],
         sort: [
           { required: true, message: '排序不能为空' },
@@ -307,7 +314,7 @@ export default {
           { validator: checkCurveEndTime, trigger: 'change' }
         ],
         remark: [
-          { min: 0, max: 200, message: '长度在 1 到 200 个字符', trigger: 'blur' }
+          { min: 0, max: 300, message: '长度在 1 到 300 个字符', trigger: 'blur' }
         ],
         referRate: [
           { required: true, message: '请选择曲线基准利率', trigger: 'change' }
@@ -427,6 +434,18 @@ export default {
           showClose: true
         })
         return
+      }
+
+      // 如果是修改已审批通过的产品，则只允许先保存第一步，再操作后续步骤
+      if (this.opType === 'EDIT' && '02' === this.productInfo.approveStatus) {
+        if (index > 0) {
+          this.$message({
+            message: '请先保存基本信息！',
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
       }
 
       this.stepActive = index
@@ -569,7 +588,7 @@ export default {
             var nextItem = curvePrdKdList[i + 1]
             if (item.sampleIntervalUp > nextItem.sampleIntervalDown) {
               this.$message({
-                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于tx' + (i + 2) + '条区间下限',
+                message: '关键期限,第' + (i + 1) + '条区间上限,不能大于第' + (i + 2) + '条区间下限',
                 type: 'error',
                 showClose: true
               })
@@ -586,6 +605,14 @@ export default {
         return false
       }
 
+      if(this.productInfo.forwardFlag=='Y'&&curvePrdNkList.length<=0){
+        this.$message({
+          message: '远期NK值列表不能为空！',
+          type: 'error',
+          showClose: true
+        })
+        return false
+      }
       var data = {
         curvePrdKdList: curvePrdKdList,
         curvePrdNkList: curvePrdNkList
@@ -617,7 +644,7 @@ export default {
         this.stepActive++
         this.$emit('confirmCurveInfoCallBack')
         this.$message({
-          message: '操作成功！',
+          message: '产品'+this.productInfo.productName+'完成装备！',
           type: 'success',
           showClose: true
         })
@@ -650,5 +677,13 @@ export default {
   }
   .baseinfo .el-select .el-select__tags>span{
     display: block;
+  }
+  .curveBuildTypePopover{
+    color: red;
+    float: left;
+    position: absolute;
+    top: 4px;
+    left: -13px;
+    font-size: 12px;
   }
 </style>

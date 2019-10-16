@@ -56,7 +56,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="scope">
-          {{ $dft("APPROVE_SATAUS", scope.row.status) }}
+          {{ $dft("APPROVE_STATUS", scope.row.status) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -170,6 +170,7 @@ export default {
         inputValue: this.tempName
       }).then(({ value }) => {
         this.$refs.refTmpBondFilter.save(value)
+        this.bondFilterVisible = false
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -197,7 +198,6 @@ export default {
       })
     },
     ruleDetail(index) {
-      console.log(this.bondTempFilters.dataList[index].rules)
       const list = this.bondTempFilters.dataList[index].rules
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
@@ -212,7 +212,7 @@ export default {
       const list = this.bondTempFilters.dataList[index].white
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
-        ruleDetail += value.bondNo
+        ruleDetail += value.csin
         if (key < list.length - 1) {
           ruleDetail += ', '
         }
@@ -223,7 +223,7 @@ export default {
       const list = this.bondTempFilters.dataList[index].black
       let ruleDetail = ''
       this.$lodash.forEach(list, function(value, key) {
-        ruleDetail += value.bondNo
+        ruleDetail += value.csin
         if (key < list.length - 1) {
           ruleDetail += ', '
         }
@@ -231,16 +231,17 @@ export default {
       return ruleDetail
     },
     toDetail(id, disabled) {
-      console.log('toDetail' + id + disabled)
       this.tempId = id
       this.disabled = disabled
       this.bondFilterVisible = true
     },
     toAdd() {
       this.bondFilterVisible = true
+      this.disabled = false
     },
     toAddNew() {
       this.tempId = null
+      this.disabled = false
       this.$refs.refTblBondFilter.clearSelection()
       this.bondFilterVisible = true
     },
@@ -249,14 +250,8 @@ export default {
       this.loadTable()
     },
     handleSelectionChange(row) {
-      this.tempId = row.map(i => {
-        return i.tempId
-      })
-      this.tempName = row.map(i => {
-        return i.tempName
-      })
-      console.log(this.tempId)
-      console.log(this.tempName)
+      this.tempId = row[0].tempId
+      this.tempName = row[0].tempName
     }
   }
 }

@@ -11,7 +11,7 @@
               <el-input v-model="marketTempInfo.remark" :disabled="disabled" type="textarea" />
             </el-form-item>
             <el-form-item label="数据行情" class="blackItem" prop="dataMarket">
-              <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px" :disabled="disabled">
+              <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px" :disabled="disabled || tempInfodisabled" @change="getOneAllcols">
                 <el-option v-for="item in dataMarketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -20,8 +20,9 @@
                 v-model="marketTempInfo.showArea"
                 value-key="value"
                 style="width:160px"
-                :disabled="disabled || marketTempInfo.dataMarket==='01'?true:false"
+                :disabled="disabled || marketTempInfo.dataMarket==='01'?true:false || tempInfodisabled"
                 clearable
+                @change="getTwoAllcols"
               >
                 <el-option v-for="item in showAreaOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
@@ -61,7 +62,7 @@
               >
                 <template slot-scope="scope">
                   <el-button
-                    v-if="checkColType(scope.row.colType)"
+                    v-if="checkColType(scope.row.colCategory)"
                     :disabled="disabled"
                     type="text"
                     size="small"
@@ -70,7 +71,7 @@
                     调整
                   </el-button>
                   <el-button
-                    v-if="checkColType(scope.row.colType)"
+                    v-if="checkColType(scope.row.colCategory)"
                     :disabled="disabled"
                     type="text"
                     size="small"
@@ -151,8 +152,8 @@
                     <el-input v-model="extendColInfo.computeExp" type="textarea" :disabled="disabled" rows="3" style="width:350px" />
                   </el-form-item>
                   <el-form-item label="添加至" class="blackItem">&emsp;&emsp;
-                    <el-select v-model="extendColInfo.colType" value-key="value" size="mini" style="width:160px" :disabled="disabled">
-                      <el-option v-for="item in colTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-select v-model="extendColInfo.colCategory" value-key="value" size="mini" style="width:160px" :disabled="disabled">
+                      <el-option label="扩展字段" value="02" />
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -197,7 +198,7 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
-import { saveMarketTemp, getMarketTemp } from '@/api/market/market-temp.js'
+import { saveMarketTemp, getMarketTemp, getMarketColsInfo } from '@/api/market/market-temp.js'
 
 export default {
   name: 'MarketTempForm',
@@ -206,6 +207,7 @@ export default {
   data() {
     return {
       disabled: '',
+      tempInfodisabled: '',
       tempInfoRules: {
         tempName: [
           { required: true, message: '请输入模板名称', trigger: 'blur' },
@@ -221,21 +223,13 @@ export default {
       },
       marketTempFormVisible: false,
       extendColInfo: {
-        baseColChiName: {}
+        baseColChiName: {},
+        colCategory: '02'
       },
       colData: [],
       colDataResult: [],
       multipleSelection: [],
-      relationColsOptions: [
-        {
-          code: 'ZQDM',
-          value: '债券代码'
-        },
-        {
-          code: 'ZQJC',
-          value: '债券简称'
-        }
-      ]
+      relationColsOptions: []
     }
   },
   computed: {
@@ -249,7 +243,7 @@ export default {
       // console.log(optioins(this, 'OPER_TYPE'))
       return optioins(this, 'OPER_TYPE')
     },
-    colTypeOptions() {
+    colCategoryOptions() {
       return optioins(this, 'COL_TYPE')
     },
     marketTempInfo: {
@@ -263,12 +257,20 @@ export default {
   },
   beforeMount() {
     if (this.businessId) {
+      this.tempInfodisabled = true
       getMarketTemp(this.businessId).then(reponse => {
         const { marketTempInfo, colData } = reponse
         this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
         this.colData = colData
         // this.extendColInfo = {}
         this.setColDataResult()
+      })
+      var data = {}
+      data.dataMarket = this.marketTempInfo.dataMarket
+      data.showArea = this.marketTempInfo.showArea
+      getMarketColsInfo(data).then(reponse => {
+        const { numberCols } = reponse
+        this.relationColsOptions = numberCols
       })
       if (this.opType === 'VIEW') {
         this.disabled = true
@@ -277,6 +279,7 @@ export default {
       }
     } else {
       this.disabled = false
+      this.tempInfodisabled = false
     }
   },
   mounted() {
@@ -324,14 +327,14 @@ export default {
         })
         return false
       }
-      if (!this.extendColInfo.colType) {
+      if (!this.extendColInfo.colCategory) {
         this.$message({
           message: '请选择通用/扩展字段',
           type: 'error'
         })
         return false
       }
-      if (this.extendColInfo.colType === '02') {
+      if (this.extendColInfo.colCategory === '02') {
         if (!this.extendColInfo.operatorType || !this.extendColInfo.computeExp || !this.extendColInfo.colChiName) {
           this.$message({
             message: '扩展字段字段名、运算符、计算方式不能为空',
@@ -343,9 +346,9 @@ export default {
       if (this.extendColInfo.index != null) {
         var index = this.extendColInfo.index
         var that = this
-        that.colData[index].colType = this.extendColInfo.colType
+        that.colData[index].colCategory = this.extendColInfo.colCategory
         that.colData[index].relationCol = this.extendColInfo.relationCol
-        if (this.extendColInfo.colType === '01') {
+        if (this.extendColInfo.colCategory === '01') {
           that.colData[index].colChiName = this.extendColInfo.baseColChiName
         } else {
           that.colData[index].colChiName = this.extendColInfo.colChiName
@@ -356,26 +359,29 @@ export default {
         this.extendColInfo.index = null
       } else {
         var colChiName = ''
-        if (this.extendColInfo.colType === '01') {
+        if (this.extendColInfo.colCategory === '01') {
           colChiName = this.extendColInfo.baseColChiName
         } else {
           colChiName = this.extendColInfo.colChiName
         }
+        var tableName = this.colData[0].tableName
         this.colData.push({
           colChiName: colChiName,
           showOrhide: true,
-          colType: this.extendColInfo.colType,
+          colCategory: this.extendColInfo.colCategory,
           relationCol: this.extendColInfo.relationCol,
           operatorType: this.extendColInfo.operatorType,
-          computeExp: this.extendColInfo.computeExp
+          computeExp: this.extendColInfo.computeExp,
+          tableName: tableName
         })
         this.colDataResult.push({
           colChiName: colChiName,
           showOrhide: true,
-          colType: this.extendColInfo.colType,
+          colCategory: this.extendColInfo.colCategory,
           relationCol: this.extendColInfo.relationCol,
           operatorType: this.extendColInfo.operatorType,
-          computeExp: this.extendColInfo.computeExp
+          computeExp: this.extendColInfo.computeExp,
+          tableName: tableName
         })
       }
       // console.log(this.colData)
@@ -417,14 +423,14 @@ export default {
           relationCol: '',
           operatorType: '',
           computeExp: '',
-          colType: '',
+          colCategory: '',
           index: ''
         }
         that.extendColInfo.colChiName = row.colChiName
         that.extendColInfo.relationCol = row.relationCol
         that.extendColInfo.operatorType = row.operatorType
         that.extendColInfo.computeExp = row.computeExp
-        that.extendColInfo.colType = row.colType
+        that.extendColInfo.colCategory = row.colCategory
         that.extendColInfo.index = index
       } else {
         // that.extendColInfo = {}
@@ -432,7 +438,7 @@ export default {
         that.extendColInfo.relationCol = row.relationCol
         that.extendColInfo.operatorType = row.operatorType
         that.extendColInfo.computeExp = row.computeExp
-        that.extendColInfo.colType = row.colType
+        that.extendColInfo.colCategory = row.colCategory
         that.extendColInfo.index = index
       }
     },
@@ -441,9 +447,9 @@ export default {
       that.colData.splice(index, 1)
       this.setColDataResult()
     },
-    checkColType(colType) {
-      // console.log(colType)
-      if (colType === '01') {
+    checkColType(colCategory) {
+      // console.log(colCategory)
+      if (colCategory === '01' || !colCategory) {
         return false
       }
       return true
@@ -488,6 +494,29 @@ export default {
       })
       this.extendColInfo.baseColChiName = obj.value
       console.log(this.extendColInfo.baseColChiName)
+    },
+    getOneAllcols(val) {
+      if (val === '01') {
+        // 查询初始字段信息、数字型字段列表
+        this.queryColsInfo('1')
+      }
+    },
+    getTwoAllcols(val) {
+      // 查询初始字段信息、数字型字段列表
+      this.queryColsInfo('2')
+    },
+    queryColsInfo(marketLevel) {
+      var data = {}
+      data.dataMarket = this.marketTempInfo.dataMarket
+      if (marketLevel === '2') {
+        data.showArea = this.marketTempInfo.showArea
+      }
+      getMarketColsInfo(data).then(reponse => {
+        const { numberCols, colData } = reponse
+        this.colData = colData
+        this.relationColsOptions = numberCols
+        this.setColDataResult()
+      })
     }
   }
 }

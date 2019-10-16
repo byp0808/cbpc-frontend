@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAdd">新增规则</el-button>
+      <el-button type="primary" class="float-left" @click="toAdd">新增规则</el-button>
+      <el-button type="primary" class="float-left" @click="copyAdd">复制新增</el-button>
     </div>
     <el-table
       ref="refNkTempTable"
@@ -10,6 +11,7 @@
       style="width: 1286px"
       border
       @selection-change="handleSelectionChange"
+      @row-click="clickRow"
     >
       <el-table-column
         type="selection"
@@ -84,6 +86,7 @@
         ref="NkTempForm"
         :nk-temp-data="nkTempData"
         :business-id="nkTempId"
+        :is-copy="isCopy"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -105,7 +108,10 @@ export default {
   data() {
     return {
       nkTempFormVisible: false,
+      isCopy: false,
+      flag: false,
       nkTempId: '',
+      tmpNkTempId: '',
       nkTempList: [],
       nkTempData: {},
       page: {
@@ -131,6 +137,19 @@ export default {
     this.loadTable()
   },
   methods: {
+    clickRow(row) {
+      if (this.tmpNkTempId === '') {
+        this.tmpNkTempId = row.id
+      }
+      this.nkTempId = row.id
+      this.flag = !this.flag
+      this.$refs.refNkTempTable.toggleRowSelection(row, this.flag)
+      if (this.tmpNkTempId !== row.id) {
+        this.$refs.refNkTempTable.clearSelection()
+        this.$refs.refNkTempTable.toggleRowSelection(row, true)
+        this.tmpNkTempId = row.id
+      }
+    },
     loadTable() {
       querynkTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
@@ -145,7 +164,14 @@ export default {
       return true
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      if (val.length > 1) {
+        this.$refs.refNkTempTable.clearSelection()
+        this.$refs.refNkTempTable.toggleRowSelection(val[1], true)
+      } else if (val.length === 0) {
+        this.nkTempId = ''
+      } else {
+        this.nkTempId = val[0].id
+      }
     },
     save(formName) {
       this.nkTempId = ''
@@ -156,7 +182,9 @@ export default {
       this.nkTempFormVisible = false
     },
     toDetail(id) {
+      // console.log("toDetail")
       this.nkTempId = id
+      this.isCopy = false
       this.nkTempFormVisible = true
     },
     toDelete(id) {
@@ -180,6 +208,18 @@ export default {
       this.nkTempId = ''
       this.$store.commit('nkTemp/setnkTempInfo', {})
       this.nkTempFormVisible = true
+    },
+    copyAdd() {
+      if (this.nkTempId === '') {
+        this.$message({
+          type: 'warning',
+          message: '请选中要复制的远期期限模板'
+        })
+      } else {
+        this.disabled = false
+        this.isCopy = true
+        this.nkTempFormVisible = true
+      }
     },
     saveCallBack() {
       this.nkTempFormVisible = false

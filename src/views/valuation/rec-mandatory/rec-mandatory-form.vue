@@ -9,16 +9,13 @@
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="规则ID">
-                <el-input v-model="recMandatoryInfo.id" disabled />
+                <el-input v-model="recMandatoryInfo.id" type="text" disabled maxlength="100" show-word-limit />
               </el-form-item>
               <el-form-item
                 label="规则名称"
                 prop="ruleName"
-                :rules="[
-                  { required: true, message: '请输入规则名称', trigger: 'blur' },
-                ]"
               >
-                <el-input v-model="recMandatoryInfo.ruleName" :disabled="disabled" />
+                <el-input v-model="recMandatoryInfo.ruleName" :disabled="disabled" placeholder="请输入规则名称" />
               </el-form-item>
             </div>
           </el-col>
@@ -30,11 +27,8 @@
               <el-form-item
                 label="强制推荐方向："
                 prop="recoDirection"
-                :rules="[
-                  { required: true, message: '请选择强制推荐方向', trigger: 'change' },
-                ]"
               >
-                <el-select v-model="recMandatoryInfo.recoDirection" filterable placeholder="请选择强制推荐方向" style="width: 100%" :disabled="disabled">
+                <el-select v-model="recMandatoryInfo.recoDirection" filterable placeholder="请选择" style="width: 100%" :disabled="disabled">
                   <el-option
                     v-for="(name, key) in $dict('RECO_DIRECTION')"
                     :key="key"
@@ -49,6 +43,15 @@
             <div class="grid-content bg-purple">
               <el-form-item label="最后操作时间">
                 <el-input v-model="recMandatoryInfo.lastUpdTs" disabled />
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="16">
+            <div class="grid-content bg-purple">
+              <el-form-item label="备注">
+                <el-input v-model="recMandatoryInfo.remark" type="textarea" :disabled="disabled" placeholder="输入备注内容" maxlength="100" show-word-limit />
               </el-form-item>
             </div>
           </el-col>
@@ -81,6 +84,14 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     return {
+      rules: {
+        ruleName: [
+          { required: true, message: '请输入规则名称', trigger: 'blur' }
+        ],
+        recoDirection: [
+          { required: true, message: '请选择强制推荐方向', trigger: 'change' }
+        ]
+      }
     }
   },
   computed: {
@@ -104,26 +115,40 @@ export default {
     }
   },
   methods: {
-    save() {
-      const bondFilterInfo = this.$refs.refBondFilter.getData()
-      const data = {
-        recForce: this.recMandatoryInfo,
-        bondFilterInfo: bondFilterInfo
-      }
-      this.$refs.recMandatoryInfo.validate((valid) => {
-        if (valid) {
-          saveRecMandatory(data).then(response => {
-            this.$emit('saveCallBack')
-            this.$message({
-              message: '保存成功！',
-              type: 'success',
-              showClose: true
-            })
-          })
-        } else {
-          this.$message.warning('表单校验不通过，请检查！')
-        }
+    saveBusi(req) {
+      saveRecMandatory(req).then(response => {
+        this.$emit('saveCallBack')
+        this.$message({
+          message: '保存成功！',
+          type: 'success',
+          showClose: true
+        })
       })
+    },
+    save() {
+      // 草稿状态，确定按钮直接返回父页面
+      const busiStatus = this.recMandatoryInfo.busiStatus
+      if (busiStatus === '04') {
+        this.$emit('saveCallBack')
+      } else {
+        this.$refs.recMandatoryInfo.validate((valid) => {
+          if (valid) {
+            // 校验筛选器结果
+            const that = this
+            this.$refs.refBondFilter.getData('VAL00003').then(function(data) {
+              if (data) {
+                const req = {
+                  recForce: that.recMandatoryInfo,
+                  bondFilterInfo: data
+                }
+                that.saveBusi(req)
+              }
+            })
+          } else {
+            this.$message.warning('表单校验不通过，请检查！')
+          }
+        })
+      }
     }
   }
 }

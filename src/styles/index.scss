@@ -360,3 +360,15 @@ label {
   }
 }
 
+
+.text-smaller {
+  font: {
+    weight: unset;
+    size: 12px;
+  };
+}
+
+.text-placeholder {
+  color: #c0c4cc;
+}
+

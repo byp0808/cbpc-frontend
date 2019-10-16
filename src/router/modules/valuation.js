@@ -78,7 +78,7 @@ const valuationRouter = {
     }, {
       path: 'taskAllocation-list',
       component: () => import('@/views/valuation/task-allocation/task-allocation-tab.vue'),
-      name: 'ValuationTaskAllocationList',
+      name: 'TaskAllocation',
       meta: { title: '设置任务分配规则', noCache: true, roles: ['ValuationTaskAllocationList'] }
     }, {
       path: '/scheme-form',
@@ -104,7 +104,16 @@ const valuationRouter = {
       path: 'query-countValuation',
       component: () => import('@/views/valuation/query/query-countValuation.vue'),
       name: 'QueryValuation',
-      meta: { title: '查询估值点差方案', noCache: true, roles: ['QueryCountValuation'] }
+      meta: { title: '查询估值方案', noCache: true, roles: ['QueryCountValuation'] }
+    }, {
+      path: 'report-manage',
+      component: () => import('@/views/valuation/report/report-manage.vue'),
+      name: 'ReportManage',
+      meta: { title: '生成报告', noCache: true, roles: ['ReportManage'] }
+    }, {
+      path: 'report-form',
+      component: () => import('@/views/valuation/report/report-form.vue'),
+      name: 'ReportForm'
     }
   ]
 }

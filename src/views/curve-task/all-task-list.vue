@@ -20,6 +20,17 @@
           </el-col>
           <el-col :span="8" :offset="8">
             <el-button-group>
+              <el-upload
+                style="display: inline-block;"
+                action=""
+                :multiple="false"
+                name="attach"
+                :http-request="upload"
+                :show-file-list="false"
+                :accept="'excel'"
+              >
+                <el-button type="primary">上传曲线方案</el-button>
+              </el-upload>
               <el-button type="primary" icon="el-icon-refresh" @click="getList" />
               <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
             </el-button-group>
@@ -47,7 +58,7 @@
         </el-table-column>
         <el-table-column label="曲线编制状态">
           <template slot-scope="{ row }">
-            <DictColumn :dict-name="'curveBuild'" :column-data="row.curveBuildStatus" />
+            <span>{{ row.curveBuildStatusIn }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -62,19 +73,18 @@
         </el-table-column>
         <el-table-column label="优先级" width="60">
           <template slot-scope="{ row }">
-            <!--            <DictColumn :name="PRIORITY" :data="row.priority" />-->
             <span>{{ row.priority }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
           <template slot-scope="{ row }">
-            <el-button v-if="row.curveBuildStatus === '1'" type="primary" size="mini" @click="openDialog(row)">
+            <el-button v-if="row.curveBuildStatusIn === '1'" type="primary" size="mini" @click="openDialog(row)">
               分配
             </el-button>
-            <el-button v-else-if="row.curveBuildStatus === '2'" type="primary" size="mini" @click="openDialog(row)">
+            <el-button v-else-if="row.curveBuildStatusIn === '2'" type="primary" size="mini" @click="openDialog(row)">
               重新分配
             </el-button>
-            <el-button v-if="0 + row.curveBuildStatus > 0 && 0 + row.curveBuildStatus < 3" type="primary" size="mini" @click="claim(row)">
+            <el-button v-if="0 + row.curveBuildStatusIn > 0 && 0 + row.curveBuildStatusIn < 3" type="primary" size="mini" @click="claim(row)">
               认领
             </el-button>
           </template>
@@ -92,7 +102,6 @@
             :fetch-suggestions="queryPersonSearch"
             placeholder="请输入责任人"
             :trigger-on-focus="false"
-            @select="handlePersonSelect"
           />
         </el-form-item>
       </el-form>
@@ -107,10 +116,11 @@
 <script>
 import { selectCurve, selectCurveTask, updateCurveTask, selectPerson, chaimCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
-import DictColumn from './components/DictColumn'
+import { uploadFile } from '@/utils/request-client'
+import { basic_api_curve } from '@/api/base-api'
 export default {
   name: 'AllTaskList',
-  components: { Pagination, DictColumn },
+  components: { Pagination },
   data() {
     return {
       task: {
@@ -174,6 +184,16 @@ export default {
     handleSelect(item) {
       this.task.search_curveId_EQ = item.value
     },
+    queryPersonSearch(queryString, cb) {
+      selectPerson(queryString).then(response => {
+        const results = response.data.list
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
+    },
+    handlePersonSelect(item) {
+      this.person.userId = item.value
+    },
     openDialog(item, val) {
       this.isMultiple = val || false
       if (!this.isMultiple) this.selection = item
@@ -187,16 +207,6 @@ export default {
       }
       this.dialogFormVisible = true
     },
-    queryPersonSearch(queryString, cb) {
-      selectPerson(queryString).then(response => {
-        const results = response.data.list
-        // 调用 callback 返回建议列表的数据
-        cb(results)
-      })
-    },
-    handlePersonSelect(item) {
-      this.person.userId = item.value
-    },
     distribute() {
       const ids = []
       if (this.isMultiple) {
@@ -207,14 +217,30 @@ export default {
         ids.push(this.selection.id)
       }
       updateCurveTask({ ids, assign: this.person.userId, assignName: this.person.username }).then(() => {
+        this.$message.success('保存成功')
+        this.dialogFormVisible = false
         this.getList()
       })
-      this.dialogFormVisible = false
     },
     claim(item) {
       chaimCurveTask({ ids: item.id }).then(() => {
         this.getList()
       })
+    },
+    upload(param) {
+      const data = new FormData()
+      data.append('files', param.file)
+      uploadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/uploadCurveSolutions', data)
+        .then(() => {
+          this.$message({
+            showClose: true,
+            message: '上传成功。',
+            type: 'success'
+          })
+        })
+        .catch(() => {
+          this.$message.error('只能上传.xls或.xlsx结尾的文件')
+        })
     }
   }
 }

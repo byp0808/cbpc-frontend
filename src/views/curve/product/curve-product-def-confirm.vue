@@ -97,6 +97,7 @@ export default {
       const curveOrderId = item.curveOrderId
       console.info(curveId, curveOrderId)
 
+      debugger
       item.curveSampleNumberVisible = true
       item.curveSampleNumber = 123
     }

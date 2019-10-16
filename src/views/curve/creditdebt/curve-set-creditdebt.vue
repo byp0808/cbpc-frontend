@@ -6,28 +6,28 @@
       </el-button>
     </div>
 
-    <el-table :data="curveHomologyDtoList" tooltip-effect="dark" style="width: 100%">
-      <el-table-column label="曲线名称" width="400px">
+    <el-table :data="initCaseList" tooltip-effect="dark" style="width: 100%">
+      <el-table-column label="曲线名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.productName }}</span>
+          <span>{{ scope.row.ccdcCurvePrdInfo.productName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="初始化方案" width="290px" align="center">
+      <el-table-column label="初始化方案" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">详情</span>
+          <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, initCaseList)">详情</span>
         </template>
       </el-table-column>
-      <el-table-column label="复核状态" width="150px" align="center">
+      <el-table-column label="复核状态" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.approveStatus }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList)">
+          <el-button type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, initCaseList)">
             修改
           </el-button>
-          <el-button type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">
+          <el-button type="text" size="big" @click="curveHomologyDtoDel(scope.$index, initCaseList)">
             删除
           </el-button>
         </template>
@@ -51,7 +51,7 @@
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="storageCurveHomology()">
+        <el-button type="primary" @click="storageInit()">
           确定
         </el-button>
       </div>
@@ -61,9 +61,9 @@
 
 <script>
 import {
-  querycurveHomologyDto,
-  storageHomology,
-  delcurveHomologyDto
+  getInitPageList,
+  storageInitList,
+  delInitList
 } from '@/api/curve/curve-product-list.js'
 import Creditdebt from '@/views/curve/creditdebt/creditdebt.vue'
 
@@ -74,10 +74,11 @@ export default {
   },
   data() {
     return {
-      curveHomologyDtoList: [],
+      initCaseList: [],
       temp: {
         curveId: '',
         approveStatus: '',
+        productName: '',
         lastUpdBy: '',
         lastUpdTs: ''
       },
@@ -89,13 +90,13 @@ export default {
     }
   },
   created() {
-    this.getCurveHomologyDtoList()
+    this.getinitCaseList()
   },
   methods: {
-    // 查询dto列表
-    getCurveHomologyDtoList() {
-      querycurveHomologyDto({ page: this.page }).then(response => {
-        this.curveHomologyDtoList = response.dataList
+    // 查询初始化方案列表
+    getinitCaseList() {
+      getInitPageList({ page: this.page }).then(response => {
+        this.initCaseList = response.dataList
         setTimeout(1.5 * 1000)
       })
     },
@@ -104,23 +105,23 @@ export default {
     curveHomologyCreate() {
       this.temp = []
       this.dialogFormVisible = true
-      this.$refs.creditdebt.jinZhiXuanZe = false
-      this.$refs.creditdebt.curveHomologyShow = false
-      this.$refs.creditdebt.curveHomologyXing = false
-      this.$refs.creditdebt.bankMessage = []
-      this.$refs.creditdebt.bankMessage2 = []
+      // this.$refs.creditdebt.jinzhiXuanZe = false
+      // this.$refs.creditdebt.curveHomologyShow = true
+      // this.$refs.creditdebt.curveHomologyXing = true
+      // this.$refs.creditdebt.bankMessage = []
+      // this.$refs.creditdebt.bankMessage2 = []
     },
-    // dto列表修改操作
+    // 列表修改操作
     curveHomologyDtoEdit(index, rows) {
       this.temp = rows[index]
       this.dialogFormVisible = true
-      this.$refs.creditdebt.jinZhiXuanZe = true
+      this.$refs.creditdebt.jinzhiXuanZe = true
       this.$refs.creditdebt.curveHomologyShow = false
       this.$refs.creditdebt.curveHomologyXing = false
     },
-    // dto列表删除
+    // 列表删除
     curveHomologyDtoDel(index, rows) {
-      delcurveHomologyDto(rows[index]).then(response => {
+      delInitList(rows[index]).then(response => {
         rows.splice(index, 1)
         this.$message({
           message: '操作成功！',
@@ -129,15 +130,15 @@ export default {
         })
       })
     },
-    storageCurveHomology() {
+    storageInit() {
       debugger
       var data = this.$refs.creditdebt.obtainCurveHomology()
-      if (!data.curveHomologyList) {
-        alert('请选择同调曲线！')
+      if (!data.standSlipList) {
+        alert('请选择曲线！')
         return
       }
-      storageHomology(data).then(response => {
-        this.curveHomologyDtoList.unshift(this.temp)
+      storageInitList(data).then(response => {
+        this.initCaseList.unshift(this.temp)
         this.dialogFormVisible = false
         this.$message({
           message: '操作成功！',
@@ -148,11 +149,11 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.getCurveHomologyDtoList()
+      this.getinitCaseList()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.getCurveHomologyDtoList()
+      this.getinitCaseList()
     }
   }
 }

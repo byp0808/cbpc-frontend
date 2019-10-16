@@ -10,26 +10,20 @@
       tooltip-effect="dark"
       style="width: 100%"
     >
-      <el-table-column align="center" label="选择" min-width="5%">
+      <el-table-column align="center" label="选择" min-width="15%">
         <template slot-scope="scope">
           <el-radio v-model="radio" :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
-        prop="id"
-        label="估值曲线规则ID"
-        show-overflow-tooltip
-        width="145"
-      />
-      <el-table-column
         prop="ruleName"
-        label="估值曲线规则描述"
+        label="规则名称"
         show-overflow-tooltip
-        width="165"
+        width="160"
       />
       <el-table-column
         prop="bondFilterId"
-        label="详细信息"
+        label="规则说明"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -39,7 +33,7 @@
       <el-table-column
         prop="curveId"
         label="估值曲线"
-        width="260"
+        width="140"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
@@ -47,9 +41,15 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="approveStatus"
-        label="复核状态"
+        prop="remark"
+        label="备注"
         width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        prop="approveStatus"
+        label="状态"
+        width="100"
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
@@ -72,6 +72,7 @@
             编辑
           </el-button>
           <el-button
+            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -106,7 +107,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="recCurveFormVisible" width="92%" title="新增估值曲线推荐规则" :visible.sync="recCurveFormVisible">
+    <el-dialog v-if="recCurveFormVisible" width="92%" title="设置估值曲线推荐规则" :visible.sync="recCurveFormVisible">
       <RecCurveForm
         ref="refRecCurveForm"
         :rec-curve-data="recCurveData"

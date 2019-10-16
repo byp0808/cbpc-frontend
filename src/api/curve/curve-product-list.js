@@ -3,6 +3,11 @@ import { basic_api_curve, basic_api_market } from '@/api/base-api.js'
 
 // 查询曲线产品列表,获取下拉
 export function getCurveList(data) {
+  if (!data) {
+    data = { search_approveStatus_EQ: '02' }
+  } else {
+    data.search_approveStatus_EQ = '02'
+  }
   return request({
     url: `${basic_api_curve}/curveProduct/curveList`,
     method: 'post',
@@ -63,7 +68,7 @@ export function getCurveProduct(id) {
 // 获取曲线产品列表，仅包含曲线产品，key为曲线产品编号
 export function getCurveProductOptions() {
   var options = []
-  getCurveList({}).then(response => {
+  getCurveList({ search_approveStatus_EQ: '02' }).then(response => {
     var datalist = response
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
@@ -83,7 +88,7 @@ export function getCurveProductIdOptions() {
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]
-        options.push({ value: data.curveId, label: data.productName })
+        options.push({ value: data.curveId, label: data.productName, curveId: data.curveId, productName: data.productName, productGrade: data.productGrade })
       }
     }
   })
@@ -237,12 +242,17 @@ export function prdKdModsList(data) {
 // TODO 改为接口获取值
 export function forwardFlagModsList() {
   console.info('远期NK模板列表，后期需要改为接口')
-  return [
-    { label: '模板一', key: '0001' },
-    { label: '模板二', key: '0002' },
-    { label: '模板三', key: '0003' },
-    { label: '模板四', key: '0004' }
-  ]
+  // return [
+  //   { label: '模板一', key: '0001' },
+  //   { label: '模板二', key: '0002' },
+  //   { label: '模板三', key: '0003' },
+  //   { label: '模板四', key: '0004' }
+  // ]
+  return request({
+    url: `${basic_api_market}/curve-temp/nk-list`,
+    method: 'post',
+    data
+  })
 }
 
 // 根据远期NK模板ID，获取列表
@@ -254,4 +264,94 @@ export function getCurvePrdNkListByModId(id) {
     { nvalue: '12', kvalue: '33', operateTs: 1568968332449, remark: '' },
     { nvalue: '13', kvalue: '0', operateTs: 1568968332449, remark: '' }
   ]
+}
+
+// 获取信用债初始化方案列表
+export function getInitPageList(data) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/initPageList`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取信用债初始化方案公式列表
+export function getInitFormulaList(data) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/initFormulaList`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取信用债初始化方案明细列表
+export function getInitDetailList(data) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/initDetailList`,
+    method: 'post',
+    data
+  })
+}
+
+// 根据ID获取初始化方案记录
+export function getInitIdlList(id) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/getInit/${id}`,
+    method: 'get'
+  })
+}
+
+// 保存初始化方案信息
+export function storageInitList(data) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/save`,
+    method: 'post',
+    data
+  })
+}
+
+// 审批流程完成
+export function getTaskFinsih(data) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/taskFinsih`,
+    method: 'post',
+    data
+  })
+}
+
+// 删除方案信息
+export function delInitList(id) {
+  return request({
+    url: `${basic_api_curve}/curveSetInit/delete` + id,
+    method: 'delete'
+  })
+}
+// 获取初始化列表，仅包含曲线产品，key为曲线产品编号
+export function getCurveInitOptions() {
+  var options = []
+  getCurveList({}).then(response => {
+    var datalist = response
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ data })
+      }
+    }
+  })
+  return options
+}
+
+// 获取初始化列表，仅包含曲线产品，key为曲线产品编号
+export function getDetalInitOptions() {
+  var options = []
+  getInitDetailList({}).then(response => {
+    var datalist = response
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ data })
+      }
+    }
+  })
+  return options
 }

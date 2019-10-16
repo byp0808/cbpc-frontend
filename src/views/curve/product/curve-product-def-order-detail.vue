@@ -113,16 +113,16 @@
       <h4>自动编制规则:</h4>
     </div>
     <el-row>
-      <el-select v-model="autoRule" placeholder="请选择自动编制规则" :disabled="disabled">
+      <el-select v-model="curvePrdOrder.orderAutoBuildRule" placeholder="请选择自动编制规则" :disabled="disabled">
         <el-option v-for="item in autoRuleOptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button type="primary" @click="toSetRule">设置</el-button>
     </el-row>
 
-    <el-dialog :lock-scroll="lockScroll" :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
+    <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curve-order-id="item.curveOrderId" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -137,7 +137,7 @@
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
             <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
               <template slot-scope="{row}">
-                <el-input v-model.number="row.curveWeight" class="edit-input" size="small" style="width: 50px" /> %
+                <el-input type="number" v-model="row.curveWeight" class="edit-input" size="small" style="width: 70px" /> %
               </template>
             </el-table-column>
             <el-table-column prop="" label="批次" width="140" show-overflow-tooltip>
@@ -155,7 +155,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click.native.prevent="curvePrdOrderAutoList.splice(scope.$index, 1)"
+                  @click.native.prevent="deleteCurvePrdOrderAutoList(scope.$index)"
                 >
                   删除
                 </el-button>
@@ -164,7 +164,7 @@
           </el-table>
         </el-col>
         <el-col :span="6" :offset="3">
-          <el-button type="primary" @click="preview">预览</el-button>
+          <el-button type="primary" @click="preview('BTN')">预览</el-button>
           <el-table
             ref="curvePrdOrderAutoKtList"
             :data="curvePrdOrderAutoKtList"
@@ -203,7 +203,7 @@ export default {
       curvePubTypeSelected: [],
       publishStepSizeSelected: [],
       // 自动编制规则
-      autoRule: '1',
+      // autoRule: '1',
       // 自动编制规则弹窗
       addAutoRuleFormVisible: false,
       // 自动编制规则-选择曲线
@@ -337,11 +337,25 @@ export default {
     },
     // 删除关键期限
     deleteCurvePrdKd(index, row) {
-      this.curvePrdKdList.splice(index, 1)
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        this.curvePrdKdList.splice(index, 1)
+      }).catch(() => {
+        console.info('cancle')
+      })
     },
     // 规则设置
     toSetRule() {
       console.info('========tosetrule==========')
+      if (!this.curvePrdOrder.orderAutoBuildRule) {
+        this.$message({
+          type: 'error',
+          message: '请选择自动编制规则'
+        })
+        return false
+      }
       this.addAutoRuleFormVisible = true
       // init auto kt
       this.preview('toSetRule')
@@ -402,6 +416,7 @@ export default {
     preview(from) {
       console.info('preview')
 
+      // 右侧关键期限列表
       this.curvePrdOrderAutoKtList = []
       // 查询关键期限列表
       queryPrdOrderKts({ curveIds: this.getAutoCurveIds().join(',') }).then(response => {
@@ -417,19 +432,22 @@ export default {
           }
         }
 
-        if (from !== 'toSetRule') {
+        // 预览按钮点击，重置勾选框
+        if (from === 'BTN') {
           // 增加当前产品关键期限
           if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
             for (let i = 0; i < this.curvePrdKdList.length; i++) {
               const item = this.curvePrdKdList[i]
-
+              // 添加不存在的
               if (standSlipArray.indexOf(item.standSlip) < 0) {
                 this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
               }
+              this.prdOrderAutoKdsKeys.push(item.standSlip)
             }
           }
         }
 
+        this.curvePrdOrderAutoKtList.sort((a, b) => Number(a.standSlip) - Number(b.standSlip))
         // 增加自动勾选内容 prdOrderAutoKdsKeys
         // eslint-disable-next-line no-redeclare
         for (var i = 0; i < this.curvePrdOrderAutoKtList.length; i++) {
@@ -476,6 +494,17 @@ export default {
     // 加载上一批次信息
     loadLastOrder(index) {
       this.$emit('locaLastOrder', index)
+    },
+    // 删除自动编制条件
+    deleteCurvePrdOrderAutoList(index) {
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        this.curvePrdOrderAutoList.splice(index, 1)
+      }).catch(() => {
+        console.info('cancle')
+      })
     }
   }
 }

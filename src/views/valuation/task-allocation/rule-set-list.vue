@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin: 10px">
       <el-button type="primary" class="float-left" @click="addRule">新增规则</el-button>
-      <el-button type="primary" class="float-left">规则重复性校验</el-button>
+      <!--      <el-button type="primary" class="float-left">规则重复性校验</el-button>-->
     </div>
     <div>
       <el-table ref="multipleTable" :data="taskRangeList" tooltip-effect="dark">
@@ -11,8 +11,8 @@
             <el-radio :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
           </template>
         </el-table-column>
-        <el-table-column prop="taskRangeName" label="规则描述" min-width="30%" show-overflow-tooltip />
-        <el-table-column prop="filterId" label="规则详细" min-width="40%" show-overflow-tooltip>
+        <el-table-column prop="taskRangeName" label="范围名称" min-width="30%" show-overflow-tooltip />
+        <el-table-column prop="filterId" label="范围描述" min-width="40%" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ ruleDetail(scope.row.filterId) }}</span>
           </template>
@@ -28,8 +28,8 @@
             </el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="deleteInfo(scope.row.id)">删除
             </el-button>
-            <el-button type="text" size="small" @click="stop(scope.row.id)">{{ statusText(scope.row.busiStatus) }}
-            </el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

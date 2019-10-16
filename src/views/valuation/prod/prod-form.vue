@@ -55,7 +55,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="上市日" prop="checkDate">
+              <el-form-item label="上市日" prop="listingDate">
                 <el-date-picker
                   v-model="prodInfo.listingDate"
                   align="right"
@@ -80,13 +80,14 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="停产日" prop="checkDate">
+              <el-form-item label="停产日" prop="delistingDate">
                 <el-date-picker
                   v-model="prodInfo.delistingDate"
                   prop="delistingDate"
                   align="right"
                   type="date"
                   placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
                   style="width: 100%"
                   @change="delistingDateChange"
                 />
@@ -292,6 +293,7 @@
       >
         <div slot="header" class="clearfix card-head">
           <span>{{ batch.orderName }}</span>
+	        <span class="text-smaller text-placeholder">[当前债券总数: 60000]</span>
         </div>
         <el-table
           :data="confirm[batch.id].statusData"
@@ -369,17 +371,22 @@ export default {
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { validator: this.checkProdName, trigger: 'blur' }
         ],
-        checkDate: [
-          { validator: this.checkDate, trigger: 'blur' }
+        listingDate: [
+          { required: true, message: '请选择上市日', trigger: 'change' },
+          { validator: this.checkDate, trigger: 'change' }
+        ],
+        delistingDate: [
+          { required: true, message: '请选择停产日', trigger: 'change' },
+          { validator: this.checkDate, trigger: 'change' }
         ],
         prodBasic: [
-          { required: true, message: '请选择基础产品', trigger: 'blur' }
+          { required: true, message: '请选择基础产品', trigger: 'change' }
         ],
         prodMarket: [
           { required: true, message: '请选择市场', trigger: 'blur' }
         ],
         currency: [
-          { required: true, message: '请选择币种', trigger: 'blur' }
+          { type: 'array', required: true, message: '请选择至少一种币种', trigger: 'change' }
         ]
       }
     }
@@ -446,9 +453,10 @@ export default {
     },
     fmtIndexName() {
       return function(indexId) {
-        const index = this.$lodash.findIndex(this.compIndices, { id: indexId })
+        const indices = this.$lodash.concat(this.compIndices, this.basicIndices)
+        const index = this.$lodash.findIndex(indices, { id: indexId })
         if (index >= 0) {
-          return this.compIndices[index].name
+          return indices[index].name
         } else {
           return ''
         }
@@ -746,9 +754,17 @@ export default {
         const data = { prodId: that.prodId, indexId: value, indexType: '02' }
         dataList.push(data)
       })
+	    if (!dataList || dataList.length === 0) {
+        this.$message.error('请选择产品指标')
+		    return false
+	    }
       this.save({ valuationProdIndices: dataList }, '产品计算指标')
     },
     saveWay() {
+      if (!this.valuationWay || this.valuationWay.length === 0) {
+        this.$message.error('请选择估值场景')
+        return false
+      }
       const that = this
       const dataList = []
       this.$lodash.each(this.valuationWay, function(way, index) {
@@ -761,6 +777,10 @@ export default {
       this.save({ valuationProdMethods: dataList }, '估值场景')
     },
     saveBatchIndices() {
+      if (!this.batchesChoiceIndices || this.batchesChoiceIndices.length === 0) {
+        this.$message.error('请选择批次计算发布指标')
+        return false
+      }
       this.save({ valuationProdBatchIndices: this.batchesChoiceIndices }, '批次发布指标')
     },
     taskStart() {
@@ -768,7 +788,7 @@ export default {
         businessNo: this.prodId,
         businessName: '估值产品定义',
         businessRouter: 'ValuationProdTask',
-        taskName: '估值产品定义'
+        taskName: `估值产品定义-${this.prodInfo.prodName}`
       }).then(response => {
         this.$message({
           showClose: true,
@@ -796,25 +816,26 @@ export default {
     checkDate(rule, value, callback) {
       const listingDate = this.prodInfo.listingDate
       const delistingDate = this.prodInfo.delistingDate
-      if (this.$moment(delistingDate).isBefore(listingDate) || this.$moment(delistingDate).isSame(listingDate)) {
-        callback(new Error('停产日不能早于上市日期'))
-      } else {
-        callback()
+      if (listingDate && delistingDate) {
+        if (this.$moment(delistingDate).isBefore(listingDate) || this.$moment(delistingDate).isSame(listingDate)) {
+          callback(new Error('停产日不能早于上市日期'))
+        }
       }
+      callback()
     },
     listingDateChange(val) {
       // 上市日变更触发 产品状态变更
       const prodInfo = this.$store.state.valuationProd.prodInfo
       const nowDate = this.$moment(new Date()).add('year', 0).format('YYYY-MM-DD')
-      if (this.$moment(val).isAfter(nowDate) || this.$moment(val).isSame(nowDate)) {
-        prodInfo.prodStatus = '2'
-      } else if (prodInfo.delistingDate && (this.$moment(prodInfo.delistingDate).isBefore(nowDate) || this.$moment(prodInfo.delistingDate).isSame(nowDate))) {
+      if (prodInfo.delistingDate && (this.$moment(prodInfo.delistingDate).isBefore(nowDate) || this.$moment(prodInfo.delistingDate).isSame(nowDate))) {
         prodInfo.prodStatus = '3'
+      } else if (this.$moment(val).isBefore(nowDate) || this.$moment(val).isSame(nowDate)) {
+        prodInfo.prodStatus = '2'
       } else {
         prodInfo.prodStatus = '1'
       }
       this.$store.commit('valuationProd/setProdInfo', prodInfo)
-      this.$refs['prodBasicForm'].validateField('checkDate')
+      this.$refs['prodBasicForm'].validateField('delistingDate')
     },
     delistingDateChange(val) {
       const prodInfo = this.$store.state.valuationProd.prodInfo
@@ -824,6 +845,7 @@ export default {
       } else {
         this.listingDateChange(this.prodInfo.listingDate)
       }
+      this.$refs['prodBasicForm'].validateField('listingDate')
     }
   }
 }

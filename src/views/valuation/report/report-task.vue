@@ -1,0 +1,60 @@
+<template>
+  <div class="app-container">
+    <ReportForm
+      ref="refApprovalDialog"
+      :business-id="businessNo"
+    />
+    <div class="button-box-fixed">
+      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
+      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
+      <el-button @click="backPage">取 消</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+import ReportForm from '@/views/valuation/report/report-form.vue'
+import { taskSubmit } from '@/api/valuation/report.js'
+export default {
+  name: 'ReportTask',
+  components: {
+    ReportForm
+  },
+  data() {
+    return {
+      businessNo: ''
+    }
+  },
+  beforeMount() {
+    this.businessNo = this.$store.state.task.businessNo
+  },
+  mounted() {
+    this.$store.commit('task/clear')
+  },
+  methods: {
+    backPage() {
+      this.$store.dispatch('homePage/queryTaskList')
+      this.$router.push({ path: '/' })
+    },
+    taskSubmit(status) {
+      taskSubmit({
+        businessNo: this.businessNo,
+        taskStatus: status,
+        taskOpinions: '',
+        taskType: '02'
+      }).then(response => {
+        this.$message({
+          message: '提交成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.backPage()
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

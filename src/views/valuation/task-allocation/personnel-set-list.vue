@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin: 10px">
-      <el-button type="primary" class="float-left" @click="add">新增人员设置</el-button>
+      <el-button type="primary" class="float-left" @click="add">新增任务规则</el-button>
     </div>
     <div>
       <el-table ref="multipleTable" :data="taskAllocationList" tooltip-effect="dark">
@@ -10,7 +10,7 @@
             <el-radio :label="scope.row.taskRangeId" class="textRadio">&nbsp;</el-radio>
           </template>
         </el-table-column>
-        <el-table-column prop="taskRangeName" label="规则名称" min-width="35%" show-overflow-tooltip />
+        <el-table-column prop="taskRangeName" label="范围名称" min-width="35%" show-overflow-tooltip />
         <el-table-column prop="userId" label="分配人员" min-width="35%" show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{ ruleDetail(scope.row.taskRangeId) }}</span>
@@ -25,7 +25,8 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.taskRangeId)">设置</el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
-            <el-button type="text" size="small" @click="stop(scope.row.taskRangeId)">{{ statusText(scope.row.busiStatus) }}</el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -170,10 +171,11 @@ export default {
       this.load()
     },
     ruleDetail(taskRangeId) {
+      const that = this
       const ruleList = this.$lodash.get(this.distRatioList, taskRangeId)
       let ruleDetail = ''
       this.$lodash.forEach(ruleList, function(value, key) {
-        ruleDetail += value.userId + ':' + value.distRatio + '%'
+        ruleDetail += that.personnelList[that.$lodash.findIndex(that.personnelList, ['userId', value.userId])].userName + ':' + value.distRatio + '%'
         if (key < ruleList.length - 1) {
           ruleDetail += ', '
         }

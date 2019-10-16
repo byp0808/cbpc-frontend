@@ -90,3 +90,12 @@ export function updateTaskRules(data) {
     data: data
   })
 }
+
+// 查询曲线批次
+export function queryOrder(data) {
+  return request({
+    url: `${basic_api_curve}` + '/curve/queryOrder',
+    method: 'post',
+    data: data
+  })
+}

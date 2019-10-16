@@ -13,21 +13,22 @@
                 class="inline-input"
                 :value-key="'label'"
                 :fetch-suggestions="querySearch"
+                :trigger-on-focus="false"
                 placeholder="请输入曲线名称"
                 @select="handleSelect"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="批次" prop="search_curveOrderId_EQ">
-              <el-select v-model="task.search_curveOrderId_EQ">
-                <el-option
-                  v-for="item in order.options"
-                  :key="item.curveOrderId"
-                  :label="item.curveOrderId"
-                  :value="item.curveOrderId"
-                />
-              </el-select>
+            <el-form-item label="批次" prop="search_orderName_LIKE">
+              <el-autocomplete
+                v-model="task.search_orderName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch"
+                placeholder="请输入批次名称"
+                @select="handleSelect"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -77,12 +78,17 @@
         </el-table-column>
         <el-table-column label="批次">
           <template slot-scope="{ row }">
-            <span>{{ row.curveOrderName }}</span>
+            <span>{{ row.orderName }}</span>
           </template>
         </el-table-column>
         <el-table-column label="批次状态">
           <template slot-scope="{ row }">
             <span>{{ makeValid(row.validFlag) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="审批状态">
+          <template slot-scope="{ row }">
+            <span>{{ row.approveStatus }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -93,7 +99,7 @@
         <el-table-column align="center" label="操作" width="180">
           <template slot-scope="{ row }">
             <el-button type="primary" size="mini" @click="openDialog(row)">
-              保存
+              修改
             </el-button>
           </template>
         </el-table-column>
@@ -123,7 +129,7 @@
 </template>
 
 <script>
-import { queryCurveTaskRules, selectCurve, selectCurveOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
+import { queryCurveTaskRules, queryOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
 import { basic_api_curve } from '@/api/base-api'
 import Pagination from '@/components/Pagination'
 import { downloadFile, uploadFile } from '@/utils/request-client'
@@ -135,7 +141,7 @@ export default {
     return {
       task: {
         search_productName_LIKE: '',
-        search_curveId_EQ: '',
+        search_orderName_LIKE: '',
         search_curveOrderId_EQ: '',
         search_assignName_LIKE: '',
         search_assign_EQ: ''
@@ -181,32 +187,24 @@ export default {
       const dict = { Y: '启用', N: '禁用' }
       return dict[value]
     },
-    getCurveList() {
-      selectCurve({ page: { pageNumber: 1, pageSize: 10 }}).then(response => {
-        this.curveList = response.dataList.map(i => {
-          return { value: i.curveId, label: i.productName }
-        })
-      })
+    handleSelect() {
+
     },
+
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
     querySearch(queryString, cb) {
-      const data = queryString ? { search_productName_LIKE: queryString } : {}
-      selectCurve(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
+      const data = queryString ? { search_orderName_LIKE: queryString } : {}
+      queryOrder(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
         const results = response.dataList.map(i => {
-          return { value: i.curveId, label: i.productName }
+          return { value: i.orderId, label: i.orderName }
         })
         // 调用 callback 返回建议列表的数据
         cb(results)
       })
     },
-    handleSelect(item) {
-      this.task.search_curveId_EQ = item.value
-      selectCurveOrder({ curveId: item.value }).then(response => {
-        this.order.options = response
-      })
-    },
+
     queryPersonSearch(queryString, cb) {
       const data = queryString ? { userName: queryString } : {}
       selectPerson(data).then(response => {
@@ -247,9 +245,10 @@ export default {
         data.push(i)
       }
       updateTaskRules(data).then(() => {
+        this.$message.success('保存成功')
+        this.dialogFormVisible = false
         this.getList()
       })
-      this.dialogFormVisible = false
     },
     download() {
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks')
@@ -266,7 +265,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('上传失败，请联系管理员')
+          this.$message.error('只能上传.xls或.xlsx结尾的文件')
         })
     }
   }
