@@ -39,7 +39,16 @@ export default {
   watch: {
   },
   beforeMount() {
-
+  },
+  updated() {
+    var checkKdList = this.relaFormTable.checkKdList
+    if (checkKdList && checkKdList.length) {
+      for (const item of this.relaFormTable.dataList) {
+        if (checkKdList.indexOf(item.standSlip) >= 0) {
+          this.$refs.multipleTable.toggleRowSelection(item, true) // 默认选中
+        }
+      }
+    }
   },
   methods: {
     handleSelectionChange(items) {

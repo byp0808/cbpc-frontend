@@ -48,3 +48,38 @@ export function saveRelaTempMain(data) {
     data
   })
 }
+
+// 根据tempMainId 获取关系主表
+export function getRelaTempMain(id) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/get/` + id,
+    method: 'get'
+  })
+}
+
+// 获取关系模板列表
+export function tempList(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/tempList`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取关系模板产品列表
+export function prdList(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/prdList`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取关系模板关键期限列表
+export function kdList(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/kdList`,
+    method: 'post',
+    data
+  })
+}
