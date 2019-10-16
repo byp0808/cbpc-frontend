@@ -168,6 +168,7 @@ export default {
   },
   methods: {
     onSubmit(formName) {
+      // console.log("onSubmit")
       this.$refs.Paraform.validate((valid) => {
         if (valid) {
           this.matchedParaList = []

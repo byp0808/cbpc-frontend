@@ -182,6 +182,7 @@ export default {
       this.nkTempFormVisible = false
     },
     toDetail(id) {
+      // console.log("toDetail")
       this.nkTempId = id
       this.isCopy = false
       this.nkTempFormVisible = true

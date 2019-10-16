@@ -183,6 +183,7 @@ export default {
       this.kdTempFormVisible = false
     },
     toDetail(id) {
+      // console.log("toDetail")
       this.kdTempId = id
       this.isCopy = false
       this.kdTempFormVisible = true
