@@ -1,6 +1,6 @@
 import request from '@/utils/app-request'
 
-const basic_api_curve = '/pi-curve'
+import { basic_api_curve } from '@/api/base-api.js'
 
 // 计算历史分位点
 export function computeHisIndex(data) {

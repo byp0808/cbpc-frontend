@@ -56,7 +56,7 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.prdId)"
+            @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.rowNo)"
           >
             查看
           </el-button>
@@ -81,7 +81,7 @@
             type="text"
             size="small"
             :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
-            @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.prdId)"
+            @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
           </el-button>
