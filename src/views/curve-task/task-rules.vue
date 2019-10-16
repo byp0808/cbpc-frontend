@@ -187,6 +187,9 @@ export default {
       const dict = { Y: '启用', N: '禁用' }
       return dict[value]
     },
+    handleSelect() {
+
+    },
 
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -242,9 +245,10 @@ export default {
         data.push(i)
       }
       updateTaskRules(data).then(() => {
+        this.$message.success('保存成功')
+        this.dialogFormVisible = false
         this.getList()
       })
-      this.dialogFormVisible = false
     },
     download() {
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks')
