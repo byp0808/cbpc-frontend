@@ -35,6 +35,7 @@ export function resolveProductGrade2Num(grade) {
   return grade
 }
 
+// 排序关键期限
 export function sortStandSlip(a, b) {
   return Number(a) - Number(b)
 }
@@ -55,7 +56,8 @@ export function delcurveSetRela(data) {
   })
 }
 
-export function storageCurveSetRela(data) {
+// 保存
+export function saveRelaTempMain(data) {
   return request({
     url: `${basic_api_curve}/curveRelaTemp/insertCurveRelaTemp`,
     method: 'post',
