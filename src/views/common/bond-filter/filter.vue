@@ -66,7 +66,7 @@
           </el-card>
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
-              <span>筛选结果</span>
+              <span>筛选结果<span class="text-smaller text-placeholder">共{{bondListResult.length}}条</span></span>
               <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
