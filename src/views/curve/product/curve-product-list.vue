@@ -10,15 +10,15 @@
         <el-form-item label="曲线编码">
           <el-input v-model="queryForm.prdCode" placeholder="曲线编码" />
         </el-form-item>
-        <el-form-item label="曲线发布时间">
+        <el-form-item label="上市日">
           <el-col :span="11">
-            <el-form-item prop="curveStartTime">
+            <el-form-item prop="curveStartTime1">
               <el-date-picker v-model="queryForm.curveStartTime1" type="date" placeholder="选择日期" style="width: 100%;" />
             </el-form-item>
           </el-col>
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
-            <el-form-item prop="curveEndTime">
+            <el-form-item prop="curveStartTime2">
               <el-date-picker v-model="queryForm.curveStartTime2" type="date" placeholder="选择日期" style="width: 100%;" />
             </el-form-item>
           </el-col>
