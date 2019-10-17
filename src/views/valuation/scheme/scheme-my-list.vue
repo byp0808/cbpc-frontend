@@ -407,39 +407,39 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <el-dialog v-loading="Dialog.c" :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="860px">
+    <el-dialog v-loading="Dialog.c" :visible.sync="batchAdjustDialog.c" title="批量调整目标信用点差" width="1000px">
       <el-form>
         <el-form-item label="目标流动性点差">
           <el-radio-group v-model="radio" style="margin-top:-40px" @change="radioChange">
             <div class="moveLeft">
               <el-radio label="1">常规调整</el-radio>
-              <el-input v-model="valuationScheme.spreadValue" :disabled="radio!== '1'" type="number" style="width:20%" clearable />
+              <el-input-number v-model="valuationScheme.spreadValue" :disabled="radio!== '1'" type="number" style="width:20%" clearable />
             </div>
             <div style="margin-top:10px">
               <el-row :gutter="0">
                 <el-col :span="5" style="margin-top:10px">
                   <el-radio class="moveLeft" label="2">多次调整</el-radio>
                 </el-col>
-                <el-col :span="6" :offset="1">
+                <el-col :span="6">
                   <el-form-item label="初始点差:">
-                    <el-input v-model="valuationScheme.spreadStart" :disabled="radio!== '2'" type="number" style="width:50%" clearable />
+                    <el-input-number v-model="valuationScheme.spreadStart" :disabled="radio!== '2'" :min="-99999" :max="99999" style="width:60%" clearable />
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="最终点差:">
-                    <el-input v-model="valuationScheme.spreadEnd" :disabled="radio!== '2'" type="number" style="width:50%" clearable />
+                    <el-input-number v-model="valuationScheme.spreadEnd" :disabled="radio!== '2'" :min="-99999" :max="99999" style="width:60%" clearable />
                   </el-form-item>
                 </el-col>
-                <el-col :span="6">
+                <el-col :span="7">
                   <el-form-item label="调整幅度:">
-                    <el-input v-model="valuationScheme.cdsAdjValue" :disabled="radio!== '2'" type="number" style="width:45%" clearable /> BP/天
+                    <el-input-number v-model="valuationScheme.cdsAdjValue" :disabled="radio!== '2'" style="width:50%" clearable /> BP/天
                   </el-form-item>
                 </el-col>
               </el-row>
             </div>
             <div style="margin-top:10px">
               <el-radio class="moveLeft" label="3">相对点差</el-radio>
-              <el-input v-model="valuationScheme.relaSpread" :disabled="radio!== '3'" type="number" style="width:20%" clearable />
+              <el-input-number v-model="valuationScheme.relaSpread" :disabled="radio!== '3'" type="number" :min="0" :max="100" style="width:20%" clearable />
             </div>
           </el-radio-group>
         </el-form-item>
@@ -456,7 +456,7 @@
     <el-dialog v-loading="Dialog.d" :visible.sync="batchAdjustDialog.d" title="批量调整目标流动性点差">
       <el-form>
         <el-form-item label="目标流动性点差">
-          <el-input v-model="valuationScheme.flAdjValue" type="number" style="width:50%" clearable />
+          <el-input-number v-model="valuationScheme.flAdjValue" :min="-99999" :max="99999" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -471,7 +471,7 @@
     <el-dialog v-loading="Dialog.e" :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
       <el-form>
         <el-form-item label="目标其他点差">
-          <el-input v-model="valuationScheme.otAdjValue" type="number" style="width:50%" clearable />
+          <el-input-number v-model="valuationScheme.otAdjValue" :min="-99999" :max="99999" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -719,6 +719,7 @@ export default {
     },
     radioChange(e) {
       this.radio = e
+      this.valuationScheme = {}
     },
     tabName(param) {
       switch (param) {

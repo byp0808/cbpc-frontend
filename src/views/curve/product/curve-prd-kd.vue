@@ -624,18 +624,24 @@ export default {
             })
             return false
           }
+          debugger
+          var index = this.curvePrdNkForm_index
           // NK值对,不可重复
           for (var i = 0; i < this.curvePrdNkList.length; i++) {
-            if (nvalue == this.curvePrdNkList[i].nvalue &&
+            // 不和本行数据进行比对
+            if(i==index) {
+
+            } else {
+              if (nvalue == this.curvePrdNkList[i].nvalue &&
                 kvalue == this.curvePrdNkList[i].kvalue) {
-              this.$message({
-                type: 'error',
-                message: 'NK值对,不可重复'
-              })
-              return false
+                this.$message({
+                  type: 'error',
+                  message: 'NK值对,不可重复'
+                })
+                return false
+              }
             }
           }
-          var index = this.curvePrdNkForm_index
           if (index || index === 0) {
             // n,k值保留一位小数
             var _nvalue = Number(this.curvePrdNkFormTmp.nvalue)
