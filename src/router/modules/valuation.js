@@ -114,6 +114,11 @@ const valuationRouter = {
       path: 'report-form',
       component: () => import('@/views/valuation/report/report-form.vue'),
       name: 'ReportForm'
+    }, {
+      path: 'val-quality-index',
+      component: () => import('@/views/valuation/quality/val-quality-index.vue'),
+      name: 'ValQualityIndex',
+      meta: { title: '质检报告', noCache: true }
     }
   ]
 }
