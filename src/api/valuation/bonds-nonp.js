@@ -1,5 +1,6 @@
 import request from '@/utils/app-request'
 import { basic_api_valuation } from '@/api/base-api.js'
+import { upload } from '@/utils/file-request.js'
 
 export function queryBondsNonpList(data) {
   return request({
@@ -20,6 +21,13 @@ export function saveBondsNonp(data) {
   return request({
     url: `${basic_api_valuation}/bonds-nonp/save`,
     method: 'post',
+    data
+  })
+}
+
+export function uploadFile(data) {
+  return upload({
+    url: `${basic_api_valuation}/bonds-nonp/batch-in`,
     data
   })
 }

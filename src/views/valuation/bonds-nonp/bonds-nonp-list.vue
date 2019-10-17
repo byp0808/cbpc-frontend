@@ -11,12 +11,15 @@
       <el-button type="primary" @click="loadTable">查询</el-button>
       <el-button type="primary" @click="toAdd">添加</el-button>
       <el-upload
+        ref="uploadZone"
+        class="upload-demo"
         style="display: inline-block;"
-        :action="uploadUrl"
+        action=""
+        accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         :multiple="false"
-        name="attach"
-        :on-success="uploadSuccess"
         :show-file-list="false"
+        :limit="1"
+        :http-request="toBatchUpload"
       >
         <el-button type="primary">批量添加</el-button>
       </el-upload>
@@ -171,8 +174,7 @@
 
 <script>
 import BondsNonpForm from '@/views/valuation/bonds-nonp/bonds-nonp-form.vue'
-import { queryBondsNonpList, deleteBondsNonp, switchStatus } from '@/api/valuation/bonds-nonp.js'
-import { basic_api_valuation } from '../../../api/base-api'
+import { queryBondsNonpList, deleteBondsNonp, switchStatus, uploadFile } from '@/api/valuation/bonds-nonp.js'
 export default {
   name: 'BondNonpList',
   components: {
@@ -180,7 +182,6 @@ export default {
   },
   data() {
     return {
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       bondsNonpFormVisible: false,
       csinDisabled: false,
       bondsNonpId: '',
@@ -188,6 +189,9 @@ export default {
       bondFilterList: [],
       bondsNonpData: {},
       search_bondId_LIKE: '',
+      file: {
+        attach: ''
+      },
       page: {
         pageNumber: 1,
         pageSize: 10
@@ -293,6 +297,35 @@ export default {
       this.bondsNonpFormVisible = true
       this.csinDisabled = false
     },
+    toBatchUpload(item) {
+      this.file.attach = item.file
+      const fd = new FormData()
+      fd.append('data.attach', this.file.attach)
+      uploadFile(fd).then(res => {
+        if (res.respCode === 'YBL100002003') {
+          this.$confirm(res.respMsg, '提示', {
+            confirmButtonText: '忽略并继续',
+            cancelButtonText: '取消',
+            type: 'info'
+          }).then(() => {
+            fd.append('data.busiCode', '01')
+            uploadFile(fd).then(res => {
+              this.$refs.uploadZone.clearFiles()
+              this.$message.success('批量上传成功')
+              this.loadTable()
+            })
+          }).catch(() => {
+          })
+        } else {
+          this.$refs.uploadZone.clearFiles()
+          this.$message.success('批量上传成功')
+          this.loadTable()
+        }
+      }).catch(() => {
+        this.$refs.uploadZone.clearFiles()
+        this.$message.error('上传失败，请联系管理员')
+      })
+    },
     saveCallBack() {
       this.bondsNonpFormVisible = false
       this.loadTable()
@@ -310,9 +343,6 @@ export default {
     },
     isShowChangeStatusBtn(status) {
       return status === '02' || status === '03'
-    },
-    uploadSuccess() {
-      this.$message.success('批量添加成功')
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize

@@ -1,10 +1,10 @@
 <template>
   <!--  数值型-->
   <div class="" style="width: 600px">
-    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
+    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px" :rules="numFormRules">
       <el-row :gutter="76" align="left">
         <div class="grid-content bg-purple">
-          <el-form-item label="">
+          <el-form-item label="" prop="screeningNum">
             <el-row :gutter="22">
               <el-col :span="4">
                 <el-radio v-model="radio" label="1">数值</el-radio>
@@ -64,7 +64,12 @@ export default {
       radio: '1',
       disable_1: false,
       disable_2: true,
-      isScreened: false
+      isScreened: false,
+      numFormRules: {
+        screeningNum: [
+          { required: true, message: '请输入数值', trigger: 'blur' },
+          { type: 'number', required: true, message: '请输入数字', trigger: 'blur' }]
+      }
     }
   },
   computed: {

@@ -336,7 +336,7 @@ export default {
       currentRow: {},
       // 当前头
       currentHeader: {},
-      formType: 1,
+      formType: 0,
       screeningFormVisible: false,
       updateFormVisible: false,
       // 报价表
@@ -714,6 +714,17 @@ export default {
       // 成交表表头右击
       // 取消浏览器默认右击事件
       window.event.returnValue = false
+      // 清空表头及多选项旧数据
+      this.editOfferTableHeaders = []
+      this.editTableHeaders = []
+      this.$nextTick(() => {
+        this.editOfferTableHeaders.map(obj => {
+          this.$refs.editOfferTable.toggleRowSelection(obj, true)
+        })
+        this.editTableHeaders.map(obj => {
+          this.$refs.editTable.toggleRowSelection(obj, true)
+        })
+      })
       if (this.currentModuleId !== '') {
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
@@ -722,6 +733,7 @@ export default {
         this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
         this.tableHeader.map(res => this.editTableHeaders.push(res))
         this.editModuleIsOpen = true
+        // 表头默认全选
         this.$nextTick(() => {
           this.editOfferTableHeaders.map(obj => {
             this.$refs.editOfferTable.toggleRowSelection(obj, true)
