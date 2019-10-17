@@ -99,3 +99,12 @@ export function kdList(data) {
     data
   })
 }
+
+// 审批完成
+export function submitTask(data) {
+  return request({
+    url: `${basic_api_curve}/curveRelaTemp/submitTask`,
+    method: 'post',
+    data
+  })
+}

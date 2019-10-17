@@ -54,6 +54,7 @@
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
+            v-if="scope.row.relationId === null "
             type="text"
             size="small"
             @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.rowNo)"
@@ -61,34 +62,36 @@
             查看
           </el-button>
           <el-button
-            v-if="scope.row.PRD_REL_VERSION_ID === null "
+            v-if="scope.row.relationId != null "
             type="text"
             size="small"
-            :visible.sync="scope.row.PRD_REL_VERSION_ID === null "
+            :visible.sync="scope.row.relationId === null "
             @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.rowNo)"
           >
             查看修改前
           </el-button>
           <el-button
-            v-if="scope.row.PRD_REL_VERSION_ID != null "
+            v-if="scope.row.relationId != null "
             type="text"
             size="small"
-            @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.rowNo)"
+            @click.native.prevent="toAddProduct('VIEW',scope.row.prdType,scope.row.relationId)"
           >
-            查看修改后
+            修改后
           </el-button>
           <el-button
+            v-if="scope.row.relationId === null "
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
           </el-button>
           <el-button
+            v-if="scope.row.relationId === null "
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
             @click.native.prevent="handleDelete(scope)"
           >
             删除
@@ -164,7 +167,7 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
-import ValuationProdForm from '@/views/valuation/prod/prod-form.vue'
+import ValuationProdForm from '@/views/valuation/prod/prod-detail.vue'
 import { queryALlProductList, queryProdByID } from '@/api/common/prod-list.js'
 
 import { delCurveSample } from '@/api/curve/curve-sample.js'
@@ -264,20 +267,24 @@ export default {
           // 产品ID
           this.productId = item.rowNo
           this.addCurveSampleFormVisible = true
-        } else {
+        } else if (item.prdType === 'CURVE') {
           // 产品ID
           this.productId = item.rowNo
           this.addCurveProductDefFormVisible = true
+        } else {
+          this.productId = item.rowNo
+          this.addValuationProductDefFormVisible = true
         }
       } else if (opType === 'EDIT' || opType === 'VIEW') {
         if (prdType === 'CURVE_SAMPLE') {
-          // 产品ID
           this.productId = rowId
           this.addCurveSampleFormVisible = true
-        } else {
-          // 产品ID
+        } else if (prdType === 'CURVE') {
           this.productId = rowId
           this.addCurveProductDefFormVisible = true
+        } else {
+          this.productId = rowId
+          this.addValuationProductDefFormVisible = true
         }
       } else if (opType === 'ADD') {
         this.addProductFormVisible = true
