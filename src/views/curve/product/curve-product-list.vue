@@ -1,9 +1,32 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAddCurveProduct('ADD')">新增</el-button>
-      <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+        <el-button type="primary" style="margin-right: 10px" @click="toAddCurveProduct('ADD')">新增</el-button>
+        <el-button v-if="false" type="primary" @click="toAddCurveProduct('COPY')">复制新增</el-button>
+        <el-form-item label="曲线产品名称">
+          <el-input v-model="queryForm.productName" placeholder="曲线产品名称" />
+        </el-form-item>
+        <el-form-item label="曲线编码">
+          <el-input v-model="queryForm.prdCode" placeholder="曲线编码" />
+        </el-form-item>
+        <el-form-item label="曲线发布时间">
+          <el-col :span="11">
+            <el-form-item prop="curveStartTime">
+              <el-date-picker v-model="queryForm.curveStartTime1" type="date" placeholder="选择日期" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-form-item prop="curveEndTime">
+              <el-date-picker v-model="queryForm.curveStartTime2" type="date" placeholder="选择日期" style="width: 100%;" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <el-table
       ref="multipleTable"
@@ -165,7 +188,13 @@ export default {
       addCurveSampleFormVisible: false,
       // 曲线产品定义
       addCurveProductDefFormVisible: false,
-      multipleSelection: '' // 选择记录
+      multipleSelection: '', // 选择记录
+      queryForm: {
+        productName: '',
+        prdCode: '',
+        curveStartTime1: '',
+        curveStartTime2: ''
+      }
     }
   },
   computed: {
@@ -198,7 +227,26 @@ export default {
       this.multipleSelection = items
     },
     queryCurveProductList() {
-      queryCurveProductList({ page: this.productList.page }).then(response => {
+      var curveStartTime1
+      var curveStartTime2
+      if (this.queryForm.curveStartTime1) {
+        curveStartTime1 = this.switchTimeFormat(this.queryForm.curveStartTime1)
+      } else {
+        curveStartTime1 = ''
+      }
+      if (this.queryForm.curveStartTime2) {
+        curveStartTime2 = this.switchTimeFormat(this.queryForm.curveStartTime2)
+      } else {
+        curveStartTime2 = ''
+      }
+      var data = {
+        productName: this.queryForm.productName,
+        prdCode: this.queryForm.prdCode,
+        curveStartTime1: curveStartTime1,
+        curveStartTime2: curveStartTime2,
+        page: this.productList.page
+      }
+      queryCurveProductList(data).then(response => {
         console.info('queryCurveProductList.queryCurveProductList...')
         const { dataList, page } = response
         this.productList.dataList = dataList
@@ -312,6 +360,19 @@ export default {
       console.info('confirmCurveInfoCallBack')
       this.addCurveProductDefFormVisible = false
       this.queryCurveProductList()
+    },
+    switchTimeFormat(time) {
+      const dateTime = new Date(time)
+      const year = dateTime.getFullYear()
+      const month = dateTime.getMonth() + 1
+      const date = dateTime.getDate()
+      const hour = dateTime.getHours()
+      const minute = dateTime.getMinutes()
+      const second = dateTime.getSeconds()
+      return year + '-' + this.addZero(month) + '-' + this.addZero(date) + ' ' + this.addZero(hour) + ':' + this.addZero(minute) + ':' + this.addZero(second)
+    },
+    addZero(v) {
+      return v < 10 ? '0' + v : v
     }
   }
 }
