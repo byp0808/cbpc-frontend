@@ -339,7 +339,7 @@ export default {
       this.loading = true
       window.setTimeout(function() {
         that.loading = false
-      }, 1500)
+      }, 1800)
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-query-valuation')
     },
     handleSizeChange(pageSize) {
