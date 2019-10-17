@@ -395,9 +395,9 @@ export default {
           return this.$message('别着急, 您的文件还没有上传哦')
         }
         const fd = new FormData()
-        fd.append('attach', this.excelFile)
-        fd.append('batchId', this.volumeAdd.batchId)
-        fd.append('cause', this.volumeAdd.cause)
+        fd.append('data.attach', this.excelFile)
+        fd.append('data.batchId', this.volumeAdd.batchId)
+        fd.append('data.cause', this.volumeAdd.cause)
         console.log('fd', fd.getAll('attach'))
         addBatchTask(fd).then(res => {
           console.log('22', res)

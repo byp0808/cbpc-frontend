@@ -102,7 +102,7 @@
         <el-form-item label="展示区域">
           <el-table
             ref="editTable"
-            :data="editTableHeader"
+            :data="editTableHeaders"
             tooltip-effect="dark"
             style="width: 100%"
             :show-header="isShowHeader"
@@ -140,7 +140,8 @@ import ScreeningForm from '@/views/market/primary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
+// import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
+import { queryDefaultCols, getTempList, getTempById } from '@/api/market/market.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -158,10 +159,10 @@ export default {
       },
       multipleSelection: [],
       isShowHeader: false,
-      editTableHeader: [],
+      editTableHeaders: [],
 
       marketLoading: false,
-      formType: 1,
+      formType: 0,
       screeningFormVisible: false,
       updateFormVisible: false,
       updateForm: {
@@ -215,7 +216,9 @@ export default {
         pageNumber: 1,
         pageSize: 10
       },
-      screeningFormList: []
+      screeningFormList: [],
+      // 最终筛选数据（传送给服务器）
+      searchParam: []
     }
   },
   computed: {
@@ -238,20 +241,23 @@ export default {
         console.info(showCols)
         this.tableHeader = showCols
       })
-      // 获取满足条件的行情数据
-      const data2 = {
-        page: this.page,
-        dataMarket: '01'
-      }
-      queryMarketData(data2).then(response => {
-        console.info(response)
-      })
+      // // 获取满足条件的行情数据
+      // const data2 = {
+      //   page: this.page,
+      //   dataMarket: '01'
+      // }
+      // queryMarketData(data2).then(response => {
+      //   console.info(response)
+      // })
       this.marketLoading = false
     },
     loadTable() {
-      // // 加载数据
-      // // 获取行情列表信息
-      // this.marketLoading = true
+      // 加载数据
+      // 获取行情列表信息
+      this.marketLoading = true
+
+      // 处理删选数据格式
+
       // // 获取满足条件的行情数据
       // const data2 = {
       //   page: this.page,
@@ -262,7 +268,7 @@ export default {
       // queryMarketData(data2).then(response => {
       //   console.info(response)
       // })
-      // this.marketLoading = false
+      this.marketLoading = false
     },
     toUse() {
       // 应用模板
@@ -339,7 +345,7 @@ export default {
     },
     screening() {
       // 确定筛选方法
-      console.info(this.formType)
+      // console.info(this.formType)
       this.screeningTable()
     },
     cancel() {
@@ -366,8 +372,8 @@ export default {
         screening.screeningForm = screeningForm
         this.screeningFormList.push(screening)
       }
-      // console.info('搜索条件集合')
-      // console.info(this.screeningFormList)
+      console.info('搜索条件集合')
+      console.info(this.screeningFormList)
       // 清楚筛选表单信息
       this.screeningFormReset()
       // 清楚当前需筛选的表头信息
@@ -403,6 +409,195 @@ export default {
       this.currentHeader = {}
       this.updateFormVisible = false
     },
+    loadModuleList(val) {
+      // 加载所有模板
+      if (val) {
+        const data = {
+          page: {
+            pageNumber: 1,
+            pageSize: 100
+          },
+          dataMarket: '01'
+        }
+        getTempList(data).then(res => {
+          console.info(res)
+          this.moduleList = res.dataList
+        })
+      }
+    },
+
+    editCurrentModule() {
+      // 表头右击
+      // 取消浏览器默认右击事件
+      window.event.returnValue = false
+      // 清空表头及多选项旧数据
+      this.editTableHeaders = []
+      this.editTableHeaders.map(obj => {
+        this.$refs.editTable.toggleRowSelection(obj, true)
+      })
+      if (this.currentModuleId !== '') {
+        const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
+        this.editModuleForm.moduleName = module[0].tempName
+        console.info(this.editModuleForm)
+        this.tableHeader.map(res => this.editTableHeaders.push(res))
+        this.editModuleIsOpen = true
+        // 表头默认全选
+        this.$nextTick(() => {
+          this.editTableHeaders.map(obj => {
+            this.$refs.editTable.toggleRowSelection(obj, true)
+          })
+        })
+      }
+    },
+    topMoved(row) {
+      // 模板编辑框表头上移
+      // console.info('上移')
+      // console.info(row)
+      // 成交表头上移
+      const obj = this.editTableHeaders.filter(mod => mod.colName === row.colName)
+      const index = this.editTableHeaders.indexOf(obj[0])
+      if (index > 0) {
+        const temp = this.editTableHeaders[index]
+        this.editTableHeaders[index] = this.editTableHeaders[index - 1]
+        this.editTableHeaders[index - 1] = temp
+      } else {
+        this.$message('这是第一个了！')
+      }
+    },
+    bottomMoved(row) {
+      // 模板编辑框表头下移
+      // console.info('下移')
+      // console.info(row)
+      // 成交表头上移
+      const obj = this.editTableHeaders.filter(mod => mod.colName === row.colName)
+      const index = this.editTableHeaders.indexOf(obj[0])
+      if (index < (this.editTableHeaders.length - 1)) {
+        const temp = this.editTableHeaders[index]
+        this.editTableHeaders[index] = this.editTableHeaders[index + 1]
+        this.editTableHeaders[index + 1] = temp
+      } else {
+        this.$message('这是最后一个了！')
+      }
+    },
+    saveEditCell() {
+      console.info(this.offerSelection)
+      const data = {
+        moduleId: this.currentModuleId,
+        moduleName: this.editModuleForm.moduleName,
+        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
+      }
+      console.info(data)
+      this.editModuleIsOpen = false
+      // 根据返回的模板id查询表头信息
+      // getTempById(val).then(res => {
+      //   console.info(res)
+      //   this.tableHeader = res.showCols
+      // })
+      // 获取满足条件的行情数据
+      this.loadTable()
+      this.currentModuleId = this.moduleId
+    },
+    editCancel() {
+      this.editTableHeaders = []
+      this.$nextTick(() => {
+        this.editTableHeaders.map(obj => {
+          this.$refs.editTable.toggleRowSelection(obj, true)
+        })
+      })
+      this.editModuleIsOpen = false
+    },
+
+    // formatScreeningForm(value) {
+    //   // 处理筛选数据格式
+    //   value.map(val => {
+    //     // 判断表头类型
+    //     const headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+    //     const type = headers[0].colType
+    //     const obj = {}
+    //     const data = val.screeningForm
+    //     switch (type) {
+    //       case 'DATE':// 日期型
+    //         obj.colName = val.headerKey
+    //         obj.colType = 'DATE'
+    //         if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
+    //           // 范围
+    //           obj.operator = 'BETWEEN'
+    //           obj.value = data.dateRange[0] + ',' + data.dateRange[1]
+    //         } else {
+    //           // 单日
+    //           obj.operator = 'EQ'
+    //           obj.value = data.singleDate
+    //         }
+    //         if (typeof data.screeningSort !== 'undefined') {
+    //           obj.sort = data.screeningSort
+    //         }
+    //         break
+    //       case 'NUMBER':// 数值型
+    //         obj.colName = val.headerKey
+    //         obj.colType = 'NUMBER'
+    //         if (typeof data.screeningNum === 'undefined') {
+    //           // 范围
+    //           obj.operator = 'BETWEEN'
+    //           if (typeof data.startNum === 'undefined') {
+    //             obj.value = ','
+    //           } else {
+    //             obj.value = data.startNum + ','
+    //           }
+    //           if (typeof data.endNum !== 'undefined') {
+    //             obj.value = obj.value + data.endNum
+    //           }
+    //         } else {
+    //           if (data.absoluteValue) {
+    //             obj.operator = 'ABSEQ'
+    //           } else {
+    //             obj.operator = 'EQ'
+    //           }
+    //           obj.value = data.singleDate
+    //         }
+    //         if (typeof data.screeningSort !== 'undefined') {
+    //           obj.sort = data.screeningSort
+    //         }
+    //         break
+    //       case 'STRING':// 字符型
+    //         obj.colName = val.headerKey
+    //         obj.colType = 'STRING'
+    //         // 单日
+    //         obj.operator = 'LIKE'
+    //         obj.value = data.screeningString
+    //         if (typeof data.screeningSort !== 'undefined') {
+    //           obj.sort = data.screeningSort
+    //         }
+    //         break
+    //       case 'EQSTRING':// 字符型（不能模糊查询）
+    //         obj.colName = val.headerKey
+    //         obj.colType = 'EQSTRING'
+    //         // 单日
+    //         obj.operator = 'EQ'
+    //         obj.value = data.screeningString
+    //         if (typeof data.screeningSort !== 'undefined') {
+    //           obj.sort = data.screeningSort
+    //         }
+    //         break
+    //       case 'OPTION':// 可选型
+    //         obj.colName = val.headerKey
+    //         obj.colType = 'OPTION'
+    //         if (typeof data.screeningCheckString === 'undefined') {
+    //           if (typeof data.screeningChecked === 'undefined') {
+    //             obj.operator = 'IN'
+    //             obj.value = ''
+    //             if (data.screeningChecked.length > 0) {
+    //
+    //             }
+    //           }
+    //         } else {
+    //           obj.operator = 'LIKE'
+    //           obj.value = data.screeningCheckString
+    //         }
+    //         break
+    //     }
+    //     this.searchParam.push(obj)
+    //   })
+    // },
     screeningCallBack() {
     },
     isScreeningByheader(val) {
@@ -427,93 +622,8 @@ export default {
     screeningFormSet(form) {
       this.$store.commit('screeningDate/setScreeningDate', form)
     },
-    loadModuleList(val) {
-      // 加载所有模板
-      if (val) {
-        const data = {
-          page: {
-            pageNumber: 1,
-            pageSize: 100
-          },
-          dataMarket: '01'
-        }
-        getTempList(data).then(res => {
-          console.info(res)
-          this.moduleList = res.dataList
-        })
-      }
-    },
-
-    editCurrentModule() {
-      // 表头右击
-      // 取消浏览器默认右击事件
-      window.event.returnValue = false
-      if (this.currentModuleId !== '') {
-        const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
-        this.editModuleForm.moduleName = module[0].tempName
-        console.info(this.editModuleForm)
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
-        this.editModuleIsOpen = true
-        this.$nextTick(() => {
-          this.editTableHeader.map(obj => {
-            this.$refs.editTable.toggleRowSelection(obj, true)
-          })
-        })
-      }
-    },
     handleSelectionChange(val) {
       this.multipleSelection = val
-    },
-    topMoved(row) {
-      // 模板编辑框表头上移
-      // console.info('上移')
-      // console.info(row)
-      // 成交表头上移
-      const obj = this.editTableHeader.filter(mod => mod.colName === row.colName)
-      const index = this.editTableHeader.indexOf(obj[0])
-      if (index > 0) {
-        const temp = this.editTableHeader[index]
-        this.editTableHeader[index] = this.editTableHeader[index - 1]
-        this.editTableHeader[index - 1] = temp
-      } else {
-        this.$message('这是第一个了！')
-      }
-    },
-    bottomMoved(row) {
-      // 模板编辑框表头下移
-      // console.info('下移')
-      // console.info(row)
-      // 成交表头上移
-      const obj = this.editTableHeader.filter(mod => mod.colName === row.colName)
-      const index = this.editTableHeader.indexOf(obj[0])
-      if (index < (this.editTableHeader.length - 1)) {
-        const temp = this.editTableHeader[index]
-        this.editTableHeader[index] = this.editTableHeader[index + 1]
-        this.editTableHeader[index + 1] = temp
-      } else {
-        this.$message('这是最后一个了！')
-      }
-    },
-    saveEditCell() {
-      console.info(this.offerSelection)
-      const data = {
-        moduleId: this.currentModuleId,
-        moduleName: this.editModuleForm.moduleName,
-        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeader.filter(v => this.multipleSelection.indexOf(v) !== -1)
-      }
-      console.info(data)
-      this.editModuleIsOpen = false
-      // 根据返回的模板id查询表头信息
-      // getTempById(val).then(res => {
-      //   console.info(res)
-      //   this.tableHeader = res.showCols
-      // })
-      // 获取满足条件的行情数据
-      this.loadTable()
-      this.currentModuleId = this.moduleId
-    },
-    editCancel() {
-      this.editModuleIsOpen = false
     }
   }
 

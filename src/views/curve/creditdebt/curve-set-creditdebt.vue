@@ -80,7 +80,9 @@ export default {
         approveStatus: '',
         productName: '',
         lastUpdBy: '',
-        lastUpdTs: ''
+        lastUpdTs: '',
+        standSlip: ''
+
       },
       dialogFormVisible: false,
       page: {
@@ -114,6 +116,7 @@ export default {
     // 列表修改操作
     curveHomologyDtoEdit(index, rows) {
       this.temp = rows[index]
+      // this.temp.standSlipList = rows[index].standSlipList
       this.dialogFormVisible = true
       this.$refs.creditdebt.jinzhiXuanZe = true
       this.$refs.creditdebt.curveHomologyShow = false
@@ -131,7 +134,6 @@ export default {
       })
     },
     storageInit() {
-      debugger
       var data = this.$refs.creditdebt.obtainCurveHomology()
       if (!data.standSlipList) {
         alert('请选择曲线！')

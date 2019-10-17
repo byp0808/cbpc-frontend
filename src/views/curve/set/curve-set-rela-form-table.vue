@@ -6,7 +6,7 @@
       </el-col>
       <el-col :span="12" :offset="2">
         <el-button type="primary" :disabled="this.index === 0 ? true : disabled" @click="moveToPri">前移</el-button>
-        <el-button type="primary" @click="relaFormTableDelete">删除关系</el-button>
+        <el-button type="primary" :disabled="disabled" @click="relaFormTableDelete">删除关系</el-button>
         <el-button type="primary" :disabled="this.last ? true : disabled" @click="moveToNext">后移</el-button>
       </el-col>
     </el-row>
@@ -16,8 +16,8 @@
       tooltip-effect="dark"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column v-for="(item) in relaFormTable.columnProp" :key="item.key" :prop="item.prop" :label="item.label" width="140" />
+      <el-table-column type="selection" width="55" :selectable="selectable" />
+      <el-table-column v-for="(item) in relaFormTable.columnProp" :key="item.key" :prop="item.prop" :label="item.label" />
     </el-table>
   </div>
 </template>
@@ -27,10 +27,9 @@ export default {
   name: 'CurveSetRelaFormTable',
   components: {
   },
-  props: ['relaFormTable', 'index', 'last'],
+  props: ['relaFormTable', 'index', 'last', 'disabled'],
   data() {
     return {
-      disabled: false,
       multipleSelection: [],
       tableName: '',
       bak: ''
@@ -51,6 +50,12 @@ export default {
     }
   },
   methods: {
+    selectable(row, index) {
+      if (this.disabled) {
+        return false
+      }
+      return true
+    },
     handleSelectionChange(items) {
       this.multipleSelection = items
     },
@@ -65,6 +70,17 @@ export default {
     // 后移
     moveToNext() {
       this.$emit('moveToNext', this.index)
+    },
+    getSeletedKd() {
+      var selectedKd = []
+      for (const index in this.multipleSelection) {
+        const item = this.multipleSelection[index]
+        selectedKd.push({ standSlip: item.standSlip, tempId: this.relaFormTable.tempInfo.id })
+      }
+      return selectedKd
+    },
+    getRelaFormTable() {
+      return this.relaFormTable
     }
   }
 }

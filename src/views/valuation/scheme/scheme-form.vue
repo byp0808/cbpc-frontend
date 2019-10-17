@@ -15,7 +15,7 @@
               </el-select>
             </el-form-item>
             <el-form-item class="placeholder" label="对应估值方法">
-              <span>{{getValWay.codeValue}}</span>
+              <span>{{ getValWay.codeValue }}</span>
             </el-form-item>
           </div>
         </el-col>
@@ -23,14 +23,14 @@
       <template>
         <SchemeNormal
           v-if="schemeInfo.valuScene === '01'"
-          :schemeInfo="schemeInfo"
           ref="SchemeNormal"
+          :scheme-info="schemeInfo"
         />
         <div v-else-if="schemeInfo.valuScene === '02'">
           <el-row>
-            <el-col :span="5">
+            <el-col :span="7">
               <el-form-item class="display-inline" label="回收率">
-                <el-input-number size="small" v-model="name" :min="1" :max="10" />
+                <el-input-number v-model="recovery" size="small" :min="1" :max="10" />
                 <span class="unit">%</span>
               </el-form-item>
             </el-col>
@@ -56,6 +56,7 @@ export default {
   data() {
     return {
       valWays: [],
+      recovery: '',
       schemeInfo: {
         bondId: '12344345',
         curveId: 'curve2',
@@ -63,7 +64,7 @@ export default {
         marketGrade: '',
         cdsPremAdjType: '01',
         cdsPremAdjWay: '01',
-        recoDire: ''
+        recoDire: '01'
       },
       isCover: true
     }
@@ -87,6 +88,30 @@ export default {
       const schemeInfo = this.$refs.SchemeNormal.getData()
       schemeInfo.valuationScheme.valuScene = this.schemeInfo.valuScene
       schemeInfo.valuationScheme.bondId = this.schemeInfo.bondId
+      console.log('schemeInfo', schemeInfo)
+      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '01' && !schemeInfo.valuationScheme.spreadValue) {
+        return this.$message.warning('请输入点差')
+      }
+      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '02') {
+        if (!schemeInfo.spreadStart) {
+          return this.$message.warning('请输入初始点差')
+        }
+        if (!schemeInfo.spreadEnd) {
+          return this.$message.warning('请输入最终点差')
+        }
+        if (!schemeInfo.cdsAdjValue) {
+          return this.$message.warning('请输入调整幅度')
+        }
+      }
+      if (schemeInfo.valuationScheme.cdsPremAdjWay === '02' && !schemeInfo.valuationScheme.relaSpread) {
+        return this.$message.warning('请输入相对点差')
+      }
+      if (!schemeInfo.valuationScheme.flAdjValue) {
+        return this.$message.warning('请输入目标流动性点差')
+      }
+      if (!schemeInfo.valuationScheme.otAdjValue) {
+        return this.$message.warning('请输入目标其他点差')
+      }
       save(schemeInfo).then(response => {
         this.$message({
           showClose: true,
