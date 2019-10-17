@@ -4,11 +4,11 @@
       <el-row>
         <el-col :span="12">
           <el-form-item label="开始日期及批次期">
-            <el-date-picker v-model="formData.startTime" type="date" placeholder="选择日期" clearable />
+            <el-date-picker v-model="formData.startDate" type="date" placeholder="选择日期" clearable />
             <span>-</span>
-            <el-select v-model="formData.batchId" placeholder="请选择">
+            <el-select v-model="formData.batchId" placeholder="选择批次">
               <el-option
-                v-for="item in interestLine"
+                v-for="item in startBatchs"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -18,9 +18,9 @@
         </el-col>
         <el-col :span="7">
           <el-form-item label="对应收益率曲线">
-            <el-select v-model="formData.line" placeholder="请选择" clearable style="margin-left:12px">
+            <el-select v-model="formData.yieldCurve" placeholder="请选择" clearable style="margin-left:12px">
               <el-option
-                v-for="item in interestLine"
+                v-for="item in yieldCurves"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -30,18 +30,18 @@
         </el-col>
         <el-col :span="5">
           <el-form-item label="债券代码">
-            <el-input v-model="formData.test" style="width:60%" clearable />
+            <el-input v-model="formData.CSIN" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="结束日期及批次期">
-            <el-date-picker v-model="formData.endTime" type="date" placeholder="选择日期" clearable />
+            <el-date-picker v-model="formData.endDate" type="date" placeholder="选择日期" clearable />
             <span>-</span>
             <el-select v-model="formData.batchId" placeholder="请选择">
               <el-option
-                v-for="item in interestLine"
+                v-for="item in endBatchs"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -51,9 +51,9 @@
         </el-col>
         <el-col :span="7">
           <el-form-item label="估值方法">
-            <el-select v-model="formData.line" placeholder="请选择" clearable style="width:60%" :disabled="disable">
+            <el-select v-model="formData.valuationMetnod" placeholder="请选择" clearable style="width:60%" :disabled="disable">
               <el-option
-                v-for="item in interestLine"
+                v-for="item in valuationMetnods"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -63,19 +63,19 @@
         </el-col>
         <el-col :span="5">
           <el-form-item label="债券简称">
-            <el-input v-model="formData.test" style="width:60%" clearable />
+            <el-input v-model="formData.bondShort" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="5">
           <el-form-item label="债券品种">
-            <el-input v-model="formData.test" style="width:60%" clearable :disabled="disable" />
+            <el-input v-model="formData.bondQuality" style="width:60%" clearable :disabled="disable" />
           </el-form-item>
         </el-col>
         <el-col :span="5">
           <el-form-item label="发行人">
-            <el-input v-model="formData.test" style="width:60%" clearable :disabled="disable" />
+            <el-input v-model="formData.publisher" style="width:60%" clearable :disabled="disable" />
           </el-form-item>
         </el-col>
         <el-col :span="2">
@@ -136,14 +136,38 @@ export default {
       loading: false,
       activeElement: '01',
       disable: false,
+      // 表单数据
       formData: {
-        startTime: '',
-        endTime: '',
-        bondsPublisher: ''
+        startDate: '', // 开始日期
+        endDate: '', // 结束日期
+        startBatch: '', // 开始批次
+        endBatch: '', // 结束批次
+        bondShort: '', // 债券简称
+        CSIN: '', // 债券代码
+        bondQuality: '', // 债券品种
+        yieldCurve: '', // 收益率曲线
+        valuationMetnod: '', // 估值方法
+        publisher: '' // 发行人
       },
+      // 开始批次
+      startBatchs: [
+        { value: '1', label: '8：00' },
+        { value: '2', label: '9：00' }
+      ],
+      // 结束批次
+      endBatchs: [
+        { value: '1', label: '8：00' },
+        { value: '2', label: '9：00' }
+      ],
       // 收益率曲线
-      interestLine: [
-        { label: '曲线1', value: '10' }
+      yieldCurves: [
+        { value: '1', label: '中债收益率' },
+        { value: '2', label: '其他收益率' }
+      ],
+      // 估值方法
+      valuationMetnods: [
+        { value: '1', label: '估值方法1' },
+        { value: '2', label: '估值方法2' }
       ],
       page: {
         pageNumber: 1,
@@ -161,7 +185,8 @@ export default {
     },
     // 加载点差方案列表
     loadMethodList() {
-      queryValuationScheme().then(response => {
+      queryValuationScheme(this.formData).then(response => {
+        // const { dataList, page } = response
         const { dataList } = response
         this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
         // this.page = page
@@ -169,7 +194,8 @@ export default {
     },
     // 加载人工估值列表
     loadPeopleList() {
-      queryPeopleValuation().then(response => {
+      queryPeopleValuation(this.formData).then(response => {
+        // const { dataList, page } = response
         const { dataList } = response
         this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
         // this.page = page
