@@ -66,9 +66,9 @@ export default {
       disable_2: true,
       isScreened: false,
       numFormRules: {
-        screeningNum: [
-          { required: true, message: '请输入数值', trigger: 'blur' },
-          { type: 'number', required: true, message: '请输入数字', trigger: 'blur' }]
+        // screeningNum: [
+        //   { required: true, message: '请输入数值', trigger: 'blur' },
+        //   { type: 'number', required: true, message: '请输入数字', trigger: 'blur' }]
       }
     }
   },
