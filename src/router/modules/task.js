@@ -90,6 +90,10 @@ const taskRouter = {
       path: 'tempfilter-task',
       component: () => import('@/views/common/bond-filter/filter-task.vue'),
       name: 'TempFilterTask'
+    },{
+      path: 'curve-set-rela-task',
+      component: () => import('@/views/curve/set/curve-set-rela-task.vue'),
+      name: 'CurveSetRelaTask'
     }
   ]
 }

@@ -34,7 +34,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <div class="btn-zone">
+        <div class="btn-zone" hidden>
           <el-button type="primary" @click="saveAll">保存</el-button>
         </div>
       </el-row>
@@ -86,7 +86,7 @@
               </el-col>
               <el-col :span="6">
                 <el-dropdown @command="handleCommandAddToZone">
-                  <el-button type="primary">
+                  <el-button type="primary" :disabled="disabled">
                     添加至<i class="el-icon-arrow-down el-icon--right" />
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
@@ -112,14 +112,14 @@
             </el-table-column>
             <el-table-column label="操作" width="150">
               <template slot-scope="scope">
-                <i class="operation el-icon-caret-top" @click="quXJMove(scope.$index, 'UP')" />
-                <i class="operation el-icon-caret-bottom" @click="quXJMove(scope.$index, 'DOWN')" />
-                <i class="operation el-icon-delete" @click="quXJMove(scope.$index, 'DEL')" />
+                <i v-if="!disabled" class="operation el-icon-caret-top" :disabled="disabled" @click="quXJMove(scope.$index, 'UP')" />
+                <i v-if="!disabled" class="operation el-icon-caret-bottom" :disabled="disabled" @click="quXJMove(scope.$index, 'DOWN')" />
+                <i v-if="!disabled" class="operation el-icon-delete" :disabled="disabled" @click="quXJMove(scope.$index, 'DEL')" />
               </template>
             </el-table-column>
           </el-table>
           <div class="btn-zone">
-            <el-button type="primary" @click="generatCurveRela">生成曲线间关系</el-button>
+            <el-button type="primary" :disabled="disabled" @click="generatCurveRela">生成曲线间关系</el-button>
           </div>
         </el-col>
         <el-col :span="12">
@@ -128,7 +128,7 @@
               <el-col :span="6">
                 <el-form-item prop="dayType">
                   <el-select v-model="tempSelfFormInfo.dayType" :disabled=" !tempMain.curveId ? true : disabled">
-                    <el-option v-for="(name, key) in $dict('CURVE_DAY_TYPE_SLF')" :key="key" :label="name" :value="key" />
+                    <el-option v-for="(name, key) in $dict('CURVE_DAY_TYPE')" :key="key" :label="name" :value="key" />
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -140,7 +140,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="4">
-                <el-button type="primary" @click="addToSelf">添加</el-button>
+                <el-button type="primary" :disabled="disabled" @click="addToSelf">添加</el-button>
               </el-col>
             </el-form-item>
           </el-form>
@@ -152,19 +152,19 @@
             </el-table-column>
             <el-table-column label="" width="150">
               <template slot-scope="scope">
-                <i class="operation el-icon-caret-top" @click="quZSMove(scope.$index, 'UP')" />
-                <i class="operation el-icon-caret-bottom" @click="quZSMove(scope.$index, 'DOWN')" />
-                <i class="operation el-icon-delete" @click="quZSMove(scope.$index, 'DEL')" />
+                <i v-if="!disabled" class="operation el-icon-caret-top" :disabled="disabled" @click="quZSMove(scope.$index, 'UP')" />
+                <i v-if="!disabled" class="operation el-icon-caret-bottom" :disabled="disabled" @click="quZSMove(scope.$index, 'DOWN')" />
+                <i v-if="!disabled" class="operation el-icon-delete" :disabled="disabled" @click="quZSMove(scope.$index, 'DEL')" />
               </template>
             </el-table-column>
           </el-table>
           <div class="btn-zone">
-            <el-button type="primary" @click="generatCurveRelaZs('N')">生成自身曲线关系</el-button>
-            <el-button type="primary" @click="generatCurveRelaZs('Y')">生成自身倒挂检验关系</el-button>
+            <el-button type="primary" :disabled="disabled" @click="generatCurveRelaZs('N')">生成自身曲线关系</el-button>
+            <el-button type="primary" :disabled="disabled" @click="generatCurveRelaZs('Y')">生成自身倒挂检验关系</el-button>
           </div>
         </el-col>
       </el-row>
-      <el-carousel ref="relaFormTableCarousel" :interval="0" :initial-index="initialIndex" :autoplay="false" trigger="click" :loop="false" indicator-position="outside" type="card" height="440px" @change="carouselChange">
+      <el-carousel style="margin-top: 20px" ref="relaFormTableCarousel" :interval="0" :initial-index="initialIndex" :autoplay="false" trigger="click" :loop="false" indicator-position="outside" type="card" height="440px" @change="carouselChange">
         <el-carousel-item v-for="(item, index) in relaFormTableList" :key="index" style="height: 400px;overflow: scroll">
           <CurveSetRelaFormTable
             ref="refCurveSetRelaFormTable"
@@ -173,6 +173,7 @@
             :rela-form-table="item"
             :data-list="item.dataList"
             :column-prop="item.columnProp"
+            :disabled="disabled"
             @relaFormTableDelete="relaFormTableDelete"
             @moveToPri="moveToPri"
             @moveToNext="moveToNext"
@@ -233,17 +234,23 @@ export default {
   },
   beforeMount() {
     console.info('===curve-set-rela-form.vue. beforeMount===tempMainId:' + this.tempMainId + ',opType:' + this.opType + ',businessId:' + this.businessId)
-    this.tempMainId = '4028882c6dd3c73b016dd480814b003d'
+    // this.tempMainId = '4028882c6dd3c73b016dd480814b003d'
+
+    // 采用弹出界面方式
+    // if (this.$store.state.curveSetRela.tempMainId) {
+    //   this.tempMainId = this.$store.state.curveSetRela.tempMainId
+    // }
+    console.info('===this.tempMainId:' + this.tempMainId)
     // 先加载列表
     this.curveList = getCurveProductIdOptions()
     let tempMainId = ''
     if (this.tempMainId) {
       if (this.opType === 'VIEW') {
         this.disabled = true
-        this.curveSelectDisable = true
       } else {
         this.disabled = false
       }
+      this.curveSelectDisable = true
       tempMainId = this.tempMainId
     } else if (this.businessId) {
       this.disabled = true
@@ -424,7 +431,7 @@ export default {
     showLabel(row) {
       console.info('showLabel:' + JSON.stringify(row))
 
-      return this.$dft('CURVE_DAY_TYPE_SLF', row.dayType) + '-' + this.getOrderName(row.orderId)
+      return this.$dft('CURVE_DAY_TYPE', row.dayType) + '-' + this.getOrderName(row.orderId)
       // if (row.type === '0') { // 其他
       //   return this.$dft('CURVE_DAY_TYPE_SLF', row.dayType) + '-' + this.getOrderName(row.orderId)
       // } else if (row.type === '1') { // 其他
@@ -1208,6 +1215,7 @@ export default {
           type: 'success',
           showClose: true
         })
+        this.$emit('saveCallBack')
       })
     }
   }
