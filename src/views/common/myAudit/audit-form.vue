@@ -45,23 +45,23 @@
     >
       <el-table-column label="申请人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
+          <span>{{ scope.row.taskStartUserName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="事件名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.businessName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="事件明细" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small">{{ scope.row.info }}</el-button>
+          <el-button type="text" size="small">{{ scope.row.taskName }}</el-button>
           <!-- <a style="border-bottom:1px solid #333">{{ scope.row.info }}</a> -->
         </template>
       </el-table-column>
       <el-table-column label="申请时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <span>{{ scope.row.createdTs }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核时间" align="center">
@@ -102,7 +102,7 @@
   </div>
 </template>
 <script>
-
+import { queryTaskList } from '@/api/common/home-page.js'
 export default {
   name: 'AuditForm',
   components: {
@@ -151,14 +151,22 @@ export default {
     }
   },
   watch: {
-    activeName(val) {
-      this.activeName = val
-      console.log('thisd', this.activeName)
+    activeName: {
+      handler(newVal, oldVal) {
+        this.getList()
+	    },
+      immediate: true
     }
   },
   methods: {
     getList() {
-
+      queryTaskList({ search_taskType_EQ: this.activeName, page: this.page }).then(
+        response => {
+          const { dataList, page } = response
+	        this.allList = dataList
+	        this.page = page
+        }
+      )
     },
     selectDate(e) {
       console.log('e', e)
