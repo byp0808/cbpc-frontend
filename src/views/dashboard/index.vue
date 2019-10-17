@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <!--<component :is="currentRole" />-->
     <el-row :gutter="10">
-      <el-col :span="sidebar.opened? 16 : 14">
+      <el-col :span="sidebar.opened? 13 : 12">
         <el-card style="margin-top:15px">
           <div class="title">
             <span style="padding-right:20px;color:#09f;font-size:24px"><svg-icon icon-class="computer" /></span>
@@ -15,19 +15,19 @@
             <h3>工作日历</h3>
           </div>
           <el-row :gutter="10">
-            <el-col :span="21">
-              <div class="grid-content bg-purple">
-                <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
-                  <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
-                    <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{ day.day }}</span>
-                    <div class="flex-grow overflow-y-scroll">
-                      <el-tag v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" hit size="small" :type="getTagType(index)">{{ getSubName(m) }}</el-tag>
-                    </div>
-                  </div>
-                </v-calendar>
-              </div>
-            </el-col>
-            <el-col :span="3">
+	          <div style="width: 520px;display: inline-block;vertical-align:top;">
+		          <div class="grid-content bg-purple" style="">
+			          <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
+				          <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
+					          <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{ day.day }}</span>
+					          <div class="flex-grow overflow-y-scroll">
+						          <el-tag v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" hit size="small" :type="getTagType(index)">{{ getSubName(m) }}</el-tag>
+					          </div>
+				          </div>
+			          </v-calendar>
+		          </div>
+	          </div>
+            <div style="display: inline-block; vertical-align:top; margin-left: 10px;">
               <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting" />
               <ul style="margin-top:50px">
                 <li v-for=" (m, index) in calendar.my" :key="index" style="margin-top:15px">
@@ -35,7 +35,7 @@
                   <span class="remark">{{ getCalendarName(m) }}</span>
                 </li>
               </ul>
-            </el-col>
+            </div>
           </el-row>
         </el-card>
         <el-card class="box-card margin-top">
@@ -95,8 +95,8 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="sidebar.opened? 8 : 10">
-        <el-card class="box-card margin-top calendar-job scroll-box">
+      <el-col :span="sidebar.opened? 11 : 12">
+        <el-card class="box-card margin-top calendar-job">
           <div slot="header" class="clearfix card-head">
             <h3>我的消息</h3>
           </div>
@@ -407,7 +407,7 @@ export default {
     --day-border: 1px solid #b8c2cc;
     --day-border-highlight: 1px solid #b8c2cc;
     --day-width: 70px;
-    --day-height: 82px;
+    --day-height: 76px;
     --weekday-bg: #f8fafc;
     --weekday-border: 1px solid #eaeaea;
     border-radius: 0;
@@ -430,15 +430,16 @@ export default {
       height: var(--day-height);
       min-width: var(--day-width);
       background-color: #fff;
-      width: 82px;
+      width: 74px;
       ::-webkit-scrollbar {display:none}
       .el-tag--small {
-        line-height: 22px;
+        line-height: 16px;
         padding: 0 2px 0 2px;
+	      height: 20px;
       }
       .el-tag {
         /*line-height: 26px;*/
-        margin: {right: 3px};
+        margin: {left: 1.5px; right: 1.5px};
         border: {
           width: 1px;
         };
