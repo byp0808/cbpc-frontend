@@ -131,7 +131,7 @@ export default {
               })
             } else {
               this.$message({
-                message: '分配任务综合应为100！',
+                message: '分配任务总和应为100！',
                 type: 'error',
                 showClose: true
               })
