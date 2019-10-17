@@ -353,12 +353,13 @@
     </el-dialog>
     <el-dialog :visible.sync="adjustDialog" :title="countTitle" width="1200px">
       <el-tabs v-model="activeName" type="card" @tab-click="tabClick">
-        <el-tab-pane v-for="item in tabPaneList" :key="item.name" :label="item.label" :name="item.name">
-          <transition name="el-fade-in-linear">
-            <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
-          </transition>
-        </el-tab-pane>
+        <el-tab-pane v-for="item in tabPaneList" :key="item.name" :label="item.label" :name="item.name" />
       </el-tabs>
+      <transition name="el-fade-in-linear">
+        <div>
+          <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
+        </div>
+      </transition>
     </el-dialog>
     <el-dialog :visible.sync="oppositeDialog" title="对敲券人工识别" width="1000px">
       <opposite-form :is-opposite="islookOpposite" />
