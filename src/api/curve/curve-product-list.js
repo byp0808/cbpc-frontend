@@ -240,7 +240,7 @@ export function prdKdModsList(data) {
 
 // 远期NK模板列表
 // TODO 改为接口获取值
-export function forwardFlagModsList() {
+export function forwardFlagModsList(data) {
   console.info('远期NK模板列表，后期需要改为接口')
   // return [
   //   { label: '模板一', key: '0001' },
