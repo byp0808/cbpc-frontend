@@ -15,20 +15,18 @@
       </el-table-column>
       <el-table-column label="曲线间关系" width="290px" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveSetRelaEdit(scope.$index, curveSetRelaList)">详情</span>
+          <span class="link-type" @click="curveSetRelaEdit(scope.$index, curveSetRelaList, 'VIEW')">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
-        <template slot-scope="scope">
-          <span v-if="scope.row.approveStatus==='01'">待审核</span>
-          <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-          <span v-else>审批不通过</span>
+        <template slot-scope="{row}">
+          {{ $dft("APPROVE_STATUS", row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveSetRelaEdit(scope.$index, curveSetRelaList)">
+          <el-button v-else type="text" size="big" @click="curveSetRelaEdit(scope.$index, curveSetRelaList, 'EDIT')">
             编辑
           </el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
@@ -46,10 +44,12 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog :visible.sync="dialogFormVisible" width="80%">
+    <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="90%">
       <CurveSetRelaForm
-        ref="curveSetRela"
+        ref="refCurveSetRelaForm"
         :temp-main-id="tempMainId"
+        :op-type="opType"
+        @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -66,7 +66,6 @@
 <script>
 import {
   queryCurveSetRela,
-  saveRelaTempMain,
   delcurveSetRela
 } from '@/api/curve/curve-set-rela.js'
 import CurveSetRelaForm from '@/views/curve/set/curve-set-rela-form.vue'
@@ -78,6 +77,7 @@ export default {
   },
   data() {
     return {
+      opType: '',
       curveSetRelaList: [],
       tempMainId: '',
       temp: {
@@ -97,6 +97,14 @@ export default {
     this.getCurveSetRelaList()
   },
   methods: {
+    handleSizeChange(pageSize) {
+      this.page.pageSize = pageSize
+      this.getCurveSetRelaList()
+    },
+    handleCurrentChange(currentPage) {
+      this.page.pageNumber = currentPage
+      this.getCurveSetRelaList()
+    },
     // 查询dto列表
     getCurveSetRelaList() {
       queryCurveSetRela({ page: this.page }).then(response => {
@@ -113,22 +121,37 @@ export default {
     curveRelaTempCreate() {
       this.temp = []
       this.dialogFormVisible = true
+      this.opType = 'ADD'
+      this.tempMainId = ''
+      // this.$router.push({ name: 'CurveSetRelaForm' })
     },
     // dto列表修改操作
-    curveSetRelaEdit(index, rows) {
+    curveSetRelaEdit(index, rows, opType) {
+      this.opType = opType
       this.temp = rows[index]
       this.tempMainId = this.temp.tempMainId
+
       this.dialogFormVisible = true
+      // this.$store.commit('curveSetRela/setTempMainId', this.temp.tempMainId)
+      // this.$store.commit('curveSetRela/setOpType', 'EDIT')
+      // this.$router.push({ name: 'CurveSetRelaForm' })
     },
     // dto列表删除
     curveSetRelaDel(index, rows) {
-      delcurveSetRela(rows[index]).then(response => {
-        rows.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        delcurveSetRela(rows[index]).then(response => {
+          rows.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     disableEdit() {
@@ -138,39 +161,13 @@ export default {
       })
     },
     storageCurveSetRela() {
-      console.info(this.$refs.curveSetRela.tmp_tempInfo)
-      var tmp_tempInfo = this.$refs.curveSetRela.tmp_tempInfo
-      var tempList = this.$refs.curveSetRela.tempList
-      if (tmp_tempInfo.length <= 0) {
-        this.$message({
-          type: 'warning',
-          message: '无可提交数据'
-        })
-        return
-      }
-      if (tempList.length <= 0) {
-        this.$message({
-          type: 'warning',
-          message: '请选择曲线关系模板'
-        })
-        return
-      }
-      saveRelaTempMain(tmp_tempInfo).then(response => {
-        // this.curveCurveSetRelaList.unshift(this.temp)
-        this.dialogFormVisible = false
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
-        })
-      })
+      console.info('保存关系信息')
+      // saveAll
+      this.$refs.refCurveSetRelaForm.saveAll()
     },
-    handleSizeChange(pageSize) {
-      this.page.pageSize = pageSize
-      this.getCurveSetRelaList()
-    },
-    handleCurrentChange(currentPage) {
-      this.page.pageNumber = currentPage
+    saveCallBack() {
+      console.info('保存成功，回调函数，刷新页面')
+      this.dialogFormVisible = false
       this.getCurveSetRelaList()
     }
   }
