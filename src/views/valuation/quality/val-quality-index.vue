@@ -52,11 +52,13 @@
       <div slot="header" class="clearfix card-head">
         <h3>净价波动</h3>
       </div>
+      <ValNetPrcShkList ref="jjbd" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'sylbd'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>收益率波动</h3>
       </div>
+      <ValYieldShkList ref="sylbd" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -99,13 +101,17 @@
 
 <script>
 import ValNumChgList from '@/views/valuation/quality/val-num-chg-list.vue'
+import ValNetPrcShkList from '@/views/valuation/quality/val-netprc-shk-list.vue'
+import ValYieldShkList from '@/views/valuation/quality/val-yield-shk-list.vue'
 import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
 
 export default {
   name: 'ValQualityIndex',
   components: {
-    ValNumChgList
+    ValNumChgList,
+    ValNetPrcShkList,
+    ValYieldShkList
   },
   props: {
     orderId: {},
