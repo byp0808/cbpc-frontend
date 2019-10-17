@@ -119,10 +119,11 @@ export default {
             Object.keys(temp[value]).forEach(key => {
               temp[value][key] = 0
             })
+          } else {
+            Object.keys(temp[value]).forEach(key => {
+              temp[value][key] = subtract(temp[value][key], temp[value - 1][key])
+            })
           }
-          Object.keys(temp[value]).forEach(key => {
-            temp[value][key] = subtract(temp[value][key], temp[value - 1][key])
-          })
         })
         return this.slips.map(v => _.assign({ standSlip: v }, temp[v]))
       }
