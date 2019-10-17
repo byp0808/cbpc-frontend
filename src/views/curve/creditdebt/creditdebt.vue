@@ -129,7 +129,7 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="选择同调曲线" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 80%">
+                          <el-select v-model="temp.depCurveId" placeholder="请选择曲线" style="width: 80%" @change="loadCurvePrdKd">
                             <el-option v-for="item in selectDepCurve" :key="item.data.curveId" :label="item.data.productName" :value="item.data.curveId" />
                           </el-select>
                         </el-form-item>
@@ -138,8 +138,8 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="关键期限" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.standSlip" placeholder="请选择曲线" style="width: 80%">
-                            <el-option v-for="item in selectStandSlip" :key="item.value" :label="item.label" :value="item.value" />
+                          <el-select v-model="temp.id" placeholder="请选择期限" style="width: 80%">
+                            <el-option v-for="item in selectStandSlip" :key="item.id" :label="item.standSlip" :value="item.id" />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -147,8 +147,8 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="指标" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.depInd" placeholder="请选择曲线" style="width: 80%">
-                            <el-option v-for="item in selectDepId" :key="item.value" :label="item.label" :value="item.value" />
+                          <el-select v-model="temp.depInd" placeholder="请选择指标" style="width: 80%">
+                            <el-option v-for="item in selectDepInd" :key="item.value" :label="item.label" :value="item.value" />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -157,7 +157,7 @@
                   <el-row :gutter="5" style="margin-top:5px">
                     <el-col :span="9">
                       <el-form-item>
-                        <el-select v-model="temp.sceneFormulaType" placeholder="请选择" style="height:20px;width: 100%">
+                        <el-select v-model="reloperators" placeholder="请选择" style="height:20px;width: 100%">
                           <el-option v-for="item in selectFormulaType" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                       </el-form-item>
@@ -209,7 +209,7 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="关键期限" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.standSlip" placeholder="请选择曲线" style="width: 80%">
+                          <el-select v-model="temp.standSlip" placeholder="请选择期限" style="width: 80%">
                             <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
                           </el-select>
                         </el-form-item>
@@ -218,7 +218,7 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="指标" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.depInd" placeholder="请选择曲线" style="width: 80%">
+                          <el-select v-model="temp.depInd" placeholder="请选择指标" style="width: 80%">
                             <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
                           </el-select>
                         </el-form-item>
@@ -280,12 +280,37 @@ export default {
       bankMessage2: [],
       selectCurve: [],
       selectDepCurve: [],
+      selectFormulaType: [{
+        value: '选项1',
+        label: '>'
+      }, {
+        value: '选项2',
+        label: '<'
+      }, {
+        value: '选项3',
+        label: '>='
+      }, {
+        value: '选项4',
+        label: '<='
+      }, {
+        value: '选项5',
+        label: '=='
+      }, {
+        value: '选项6',
+        label: '!='
+      }, {
+        value: '选项7',
+        label: '<>'
+      }],
       standSlipList: [],
+      selectStandSlip: [],
       tableData: [],
+      selectmulaIndex: -1, // 当前选中的值
       currentRow: null,
       jinzhiXuanZe: false,
-      curveHomologyShow: true,
-      curveHomologyXing: true
+      curveHomologyShow: false,
+      curveHomologyXing: false,
+      reloperators: ''
 
     }
   },
@@ -295,25 +320,20 @@ export default {
     // 先加载列表
     this.selectCurve = getCurveInitOptions()
     this.selectDepCurve = getCurveInitOptions()
-    this.selectStandSlip = getDetalInitOptions()
-    this.selectDepId = getDetalInitOptions()
-    this.selectFormulaType = getDetalInitOptions()
-    console.info(this.selectDepCurve)
+    this.selectDepInd = getDetalInitOptions()
+    console.info(this.selectDepInd)
     console.info('初始化')
-  },
-  created() {
-    this.getStandSlipList()
-    this.getTableData()
-    this.getInitData()
   },
   methods: {
     loadCurvePrdKd(value) {
       if (value) {
-        console.info('来了')
+        console.info('下拉')
         console.info(this)
         this.getStandSlipList({
           curveId: this.temp.curveId,
-          standSlip: this.standSlip
+          standSlip: this.standSlip,
+          depCurveId: this.depCurveId,
+          id: this.id
         })
       }
     },
@@ -325,19 +345,9 @@ export default {
         console.info(response)
       })
     },
-    // 选择曲线
-    // getStandSlipList() {
-    //   const id =this.temp.curveId
-    //   getInitIdlList(id).then(response => {
-    //     this.standSlipList = response.ccdcCurvePrdInfo
-    //   })
-    // },
     // 查询场景行为列表
-    getTableData() {
-      const that = {
-        curveId: this.temp.curveId
-      }
-      getInitFormulaList(that).then(response => {
+    getTableData(data) {
+      getInitFormulaList(data).then(response => {
         this.tableData = response
         console.info('中间')
         console.info(response)
@@ -351,6 +361,8 @@ export default {
       getInitDetailList(that).then(response => {
         this.tableData = response
         console.info('右边')
+        console.info(this)
+        console.info(that)
         console.info(response)
       })
     },
@@ -375,7 +387,7 @@ export default {
       this.curveHomologyShow = true
       if (index > 0) {
         this.standSlipList.push({
-          standSlip: this.standSlipList.standSlip
+          standSlip: this.standSlipList[index - 1].standSlip
         })
         this.getTableData({
           curveId: this.temp.curveId
@@ -384,13 +396,19 @@ export default {
     },
 
     // 修改场景和行为
-    curveHomologyXiuGai(id) {
+    curveHomologyXiuGai(index, rows) {
       this.curveHomologyXing = true
+      this.selectStandSlip = this.standSlipList
     },
 
     // 新增场景行为
     curveHomologyXinZeng() {
       this.curveHomologyXing = true
+      this.selectStandSlip = this.standSlipList
+      this.getInitData({
+        curveId: this.temp.curveId,
+        standSlip: this.standSlip
+      })
     },
 
     // 添加一个场景
@@ -418,8 +436,10 @@ export default {
     },
     // 保存场景行为
     addDetalInit() {
+      const tpm = this.selectDepCurve.filter(val => val.data.curveId === this.temp.depCurveId)
+      const qx = this.selectStandSlip.filter(val => val.id === this.temp.id)
       this.tableData.push({
-        sceneFormula: this.sceneFormula,
+        sceneFormula: this.temp.percent + '*' + '[' + tpm[0].data.productName + qx[0].standSlip + ']',
         actionFormula: this.actionFormula
       })
     },

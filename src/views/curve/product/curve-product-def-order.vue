@@ -14,7 +14,7 @@
           <el-table-column prop="orderName" label="批次名称" width="200" show-overflow-tooltip />
           <el-table-column prop="compTimeStr" label="批次发布时间段" width="160" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.compTime }}~{{ scope.row.pubTime }}
+              {{ scope.row.compTime }}~{{ scope.row.remindTime }}
             </template>
           </el-table-column>
         </el-table>

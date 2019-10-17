@@ -21,13 +21,14 @@ const curveRouter = {
     }, {
       path: 'curve-set-rela',
       component: () => import('@/views/curve/set/curve-set-rela.vue'),
-      name: 'CurveSetHisIndex',
+      name: 'CurveSetRela',
       meta: { title: '曲线关系模板', noCache: true, roles: ['CurveSetHisIndex'] }
     }, {
       path: 'curve-set-rela-form',
       component: () => import('@/views/curve/set/curve-set-rela-form.vue'),
       name: 'CurveSetRelaForm',
-      meta: { title: '曲线关系模板', noCache: true, roles: ['CurveSetHisIndex'] }
+      hidden: true,
+      meta: { title: '曲线关系模板', noCache: true, breadcrumb: false }
     }, {
       path: 'curve-set-hisindex',
       component: () => import('@/views/curve/set/curve-set-hisindex.vue'),

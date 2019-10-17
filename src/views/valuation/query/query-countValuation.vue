@@ -8,7 +8,7 @@
             <span>-</span>
             <el-select v-model="formData.batchId" placeholder="请选择">
               <el-option
-                v-for="item in options"
+                v-for="item in interestLine"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -41,7 +41,7 @@
             <span>-</span>
             <el-select v-model="formData.batchId" placeholder="请选择">
               <el-option
-                v-for="item in options"
+                v-for="item in interestLine"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -122,7 +122,7 @@
 <script>
 import MethodList from '@/views/valuation/query/method-list.vue'
 import PeopleList from '@/views/valuation/query/people-list.vue'
-import { queryValuationScheme } from '@/api/valuation/query.js'
+import { queryValuationScheme, queryPeopleValuation } from '@/api/valuation/query.js'
 import { basic_api_valuation } from '@/api/base-api'
 import { downloadFile } from '@/utils/request-client'
 export default {
@@ -164,17 +164,20 @@ export default {
       queryValuationScheme().then(response => {
         const { dataList } = response
         this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
+        // this.page = page
       })
     },
     // 加载人工估值列表
     loadPeopleList() {
-      queryValuationScheme().then(response => {
+      queryPeopleValuation().then(response => {
         const { dataList } = response
         this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
+        // this.page = page
       })
     },
     handleSelect(e) {
       this.disable = this.activeElement !== '01'
+      this.load()
     },
     resetForm() {
       this.$refs['refForm'].resetFields()
@@ -182,10 +185,13 @@ export default {
     download() {
       const that = this
       this.loading = true
+      // 模拟网络延时使按钮处于加载状态
       window.setTimeout(function() {
         that.loading = false
       }, 1500)
-      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-valuation-scheme')
+      this.activeElement === '01'
+        ? downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-valuation-scheme')
+        : downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-people-valuation')
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize

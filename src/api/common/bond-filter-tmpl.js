@@ -72,3 +72,12 @@ export function deleteByTempId(data) {
     data
   })
 }
+
+// 审核模板
+export function reviewTmplFilter(data) {
+  return request({
+    url: `${basic_api_market}/tmpl-filter/review-filter`,
+    method: 'post',
+    data: data
+  })
+}

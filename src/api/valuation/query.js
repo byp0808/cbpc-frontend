@@ -20,3 +20,12 @@ export function queryValuationScheme() {
     }
   )
 }
+// 查询人工估值
+export function queryPeopleValuation() {
+  return request(
+    {
+      url: `${basic_api_valuation}/query/query-people-valuation`,
+      method: 'post'
+    }
+  )
+}
