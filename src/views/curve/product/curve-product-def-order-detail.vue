@@ -14,7 +14,7 @@
       </el-form-item>
       <el-form-item label="该批次所需计算方式">
         <el-radio-group v-model="curvePrdOrder.computedType">
-          <el-radio v-for="item in computedTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in computedTypeOption" :key="item.value" :disabled="computedTypeDisabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需发布方式">
@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curve-order-id="item.curveOrderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -137,7 +137,7 @@
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
             <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
               <template slot-scope="{row}">
-                <el-input type="number" v-model="row.curveWeight" class="edit-input" size="small" style="width: 70px" /> %
+                <el-input v-model="row.curveWeight" type="number" class="edit-input" size="small" style="width: 70px" /> %
               </template>
             </el-table-column>
             <el-table-column prop="" label="批次" width="140" show-overflow-tooltip>
@@ -214,6 +214,8 @@ export default {
       curvePrdOrderAutoKtList: [],
       // 自动编制关键期限，勾选内容
       prdOrderAutoKdsKeys: [],
+      // 计算方式disable
+      computedTypeDisabled: false,
       // 发布方式disable
       publishTypeDisabled: false
     }
@@ -256,6 +258,17 @@ export default {
       return optioins(this, 'AUTO_RULE')
     }
   },
+  watch: {
+    'curvePrdOrder.buildType'(newVal, oldVal) {
+      this.disableCheck()
+    },
+    'curvePrdOrder.computedType'(newVal, oldVal) {
+      this.disableCheck()
+    },
+    'curvePrdOrder.publishType'(newVal, oldVal) {
+      this.disableCheck()
+    }
+  },
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
 
@@ -292,6 +305,7 @@ export default {
         this.prdOrderAutoKdsKeys.push(this.prdOrderAutoKds[i].standSlip)
       }
     }
+    this.disableCheck()
   },
   methods: {
     // 获取获取批次信息
@@ -512,11 +526,25 @@ export default {
       // eslint-disable-next-line eqeqeq
       // 如果编制方式选择 人工干预编制，发布方式默认选择人工发布，且置灰
       // eslint-disable-next-line eqeqeq
+      debugger
       if (this.curvePrdOrder.buildType === '1') {
+        this.curvePrdOrder.computedType = '1'
         this.curvePrdOrder.publishType = '1'
+        this.computedTypeDisabled = true
         this.publishTypeDisabled = true
-      } else {
-        this.publishTypeDisabled = false
+      } else if (this.curvePrdOrder.buildType === '2') {
+        this.computedTypeDisabled = false
+        if (this.curvePrdOrder.computedType === '1') {
+          this.publishTypeDisabled = true
+          this.curvePrdOrder.publishType = '1'
+        } else {
+          this.publishTypeDisabled = true
+          this.curvePrdOrder.publishType = '2'
+        }
+      }
+      if (this.disabled) {
+        this.computedTypeDisabled = true
+        this.publishTypeDisabled = true
       }
     }
   }
