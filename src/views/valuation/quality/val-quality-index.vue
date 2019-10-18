@@ -40,7 +40,7 @@
       <div slot="header" class="clearfix card-head">
         <h3>总览</h3>
       </div>
-      <!--<CurveQualityOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />-->
+      <ValOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'rkbd'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -105,6 +105,7 @@
 </template>
 
 <script>
+import ValOverallList from '@/views/valuation/quality/val-overall-list.vue'
 import ValNumChgList from '@/views/valuation/quality/val-num-chg-list.vue'
 import ValNetPrcShkList from '@/views/valuation/quality/val-netprc-shk-list.vue'
 import ValYieldShkList from '@/views/valuation/quality/val-yield-shk-list.vue'
@@ -119,6 +120,7 @@ import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 export default {
   name: 'ValQualityIndex',
   components: {
+    ValOverallList,
     ValNumChgList,
     ValNetPrcShkList,
     ValYieldShkList,
