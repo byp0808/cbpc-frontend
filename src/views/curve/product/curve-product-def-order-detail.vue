@@ -513,7 +513,8 @@ export default {
     disableCheck() {
       // eslint-disable-next-line eqeqeq
       // 如果编制方式选择 人工干预编制，发布方式默认选择人工发布，且置灰
-      if (this.curvePrdOrder.buildType == '1') {
+      // eslint-disable-next-line eqeqeq
+      if (this.curvePrdOrder.buildType === '1') {
         this.curvePrdOrder.publishType = '1'
         this.publishTypeDisabled = true
       } else {
