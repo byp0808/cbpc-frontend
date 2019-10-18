@@ -64,11 +64,13 @@
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
+      <ValFTQList ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'yjlxbj'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>应计利息报警</h3>
       </div>
+      <ValAccIntrstAlertList ref="yjlxbj" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'gzwl'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -103,6 +105,8 @@
 import ValNumChgList from '@/views/valuation/quality/val-num-chg-list.vue'
 import ValNetPrcShkList from '@/views/valuation/quality/val-netprc-shk-list.vue'
 import ValYieldShkList from '@/views/valuation/quality/val-yield-shk-list.vue'
+import ValAccIntrstAlertList from '@/views/valuation/quality/val-intrst-alert-list.vue'
+import ValFTQList from '@/views/valuation/quality/val-ftq-list.vue'
 import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
 
@@ -111,7 +115,9 @@ export default {
   components: {
     ValNumChgList,
     ValNetPrcShkList,
-    ValYieldShkList
+    ValYieldShkList,
+    ValAccIntrstAlertList,
+    ValFTQList
   },
   props: {
     orderId: {},
