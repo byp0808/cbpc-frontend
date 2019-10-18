@@ -43,28 +43,28 @@
           v-if="formType===1"
           ref="ScreeningForm"
           :business-id="orderInfoId"
-          @dateCallBack="screeningCallBack"
+          @dateCallBack="screeningTable"
         />
         <!--数字类型-->
         <ScreeningNumForm
           v-if="formType===2"
           ref="ScreeningNumForm"
           :business-id="orderInfoId"
-          @dateCallBack="screeningCallBack"
+          @dateCallBack="screeningTable"
         />
         <!--字符类型-->
         <ScreeningStringForm
           v-if="formType===3"
           ref="ScreeningStringForm"
           :business-id="orderInfoId"
-          @dateCallBack="screeningCallBack"
+          @dateCallBack="screeningTable"
         />
         <!--可选类-->
         <ScreeningCheckboxForm
           v-if="formType===4"
           ref="ScreeningCheckboxForm"
           :business-id="orderInfoId"
-          @dateCallBack="screeningCallBack"
+          @dateCallBack="screeningTable"
         />
       </keep-alive>
       <div slot="footer" class="dialog-footer">
@@ -140,7 +140,7 @@ import ScreeningForm from '@/views/market/primary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -247,7 +247,7 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        this.page = response.page
+        // this.page = response.page
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -259,6 +259,8 @@ export default {
       this.searchParam = []
       // 处理删选数据格式
       this.formatScreeningForm(this.screeningFormList)
+      console.info('处理后')
+      console.info(this.searchParam)
       // 获取满足条件的行情数据
       const data2 = {
         page: this.page,
@@ -268,7 +270,7 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        this.page = response.page
+        // this.page = response.page
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -285,6 +287,8 @@ export default {
         console.info(res)
         this.tableHeader = res.showCols
       })
+      // 清空筛选数据
+      this.screeningFormList = []
       // 获取满足条件的行情数据
       this.loadTable()
       this.currentModuleId = this.moduleId
@@ -350,7 +354,20 @@ export default {
     screening() {
       // 确定筛选方法
       // console.info(this.formType)
-      this.screeningTable()
+      switch (this.formType) {
+        case 1:
+          this.$refs.ScreeningForm.screening()
+          break
+        case 2:
+          this.$refs.ScreeningNumForm.screening()
+          break
+        case 3:
+          this.$refs.ScreeningStringForm.screening()
+          break
+        case 4:
+          this.$refs.ScreeningCheckboxForm.screening()
+          break
+      }
     },
     cancel() {
       // 取消筛选
@@ -378,13 +395,13 @@ export default {
       }
       console.info('搜索条件集合')
       console.info(this.screeningFormList)
+      this.loadTable()
       // 清楚筛选表单信息
       this.screeningFormReset()
       // 清楚当前需筛选的表头信息
       this.currentHeader = {}
       // 关闭弹窗
       this.screeningFormVisible = false
-      this.loadTable()
     },
     updateCell() {
       // 确定修改方法
@@ -431,7 +448,7 @@ export default {
     },
 
     editCurrentModule() {
-      // 表头右击
+      // 编辑当前模板
       // 取消浏览器默认右击事件
       window.event.returnValue = false
       // 清空表头及多选项旧数据
@@ -485,21 +502,31 @@ export default {
     },
     saveEditCell() {
       console.info(this.offerSelection)
+      const modules = this.moduleList.filter(mod => mod.id === this.currentModuleId)
+      const module = modules[0]
+      if (this.editModuleForm.moduleName !== module.tempName) {
+        module.id = ''
+        module.tempName = this.editModuleForm.moduleName
+      }
       const data = {
-        moduleId: this.currentModuleId,
-        moduleName: this.editModuleForm.moduleName,
-        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
+        marketTempInfo: module,
+        colData: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
       }
       console.info(data)
+      let newTempId = this.currentModuleId
+      saveTempInfo(data).theme(res => {
+        console.info(res)
+        newTempId = res.tempId
+      })
       this.editModuleIsOpen = false
       // 根据返回的模板id查询表头信息
-      // getTempById(val).then(res => {
-      //   console.info(res)
-      //   this.tableHeader = res.showCols
-      // })
+      getTempById(newTempId).then(res => {
+        console.info(res)
+        this.tableHeader = res.showCols
+      })
       // 获取满足条件的行情数据
       this.loadTable()
-      this.currentModuleId = this.moduleId
+      this.currentModuleId = newTempId
     },
     editCancel() {
       this.editTableHeaders = []
@@ -526,14 +553,16 @@ export default {
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
               obj.operator = 'BETWEEN'
-              obj.value = data.dateRange[0] + ',' + data.dateRange[1]
+              if (typeof data.dateRange !== 'undefined') {
+                obj.value = (data.dateRange)[0] + ',' + (data.dateRange)[1]
+              }
             } else {
               // 单日
               obj.operator = 'EQ'
               obj.value = data.singleDate
             }
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'NUMBER':// 数值型
@@ -542,13 +571,11 @@ export default {
             if (typeof data.screeningNum === 'undefined') {
               // 范围
               obj.operator = 'BETWEEN'
-              if (typeof data.startNum === 'undefined') {
-                obj.value = ','
-              } else {
-                obj.value = data.startNum + ','
+              if (typeof data.startNum !== 'undefined') {
+                obj.startvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
-                obj.value = obj.value + data.endNum
+                obj.endvalue = data.endNum + ''
               }
             } else {
               if (data.absoluteValue) {
@@ -556,10 +583,10 @@ export default {
               } else {
                 obj.operator = 'EQ'
               }
-              obj.value = data.singleDate
+              obj.value = data.screeningNum + ''
             }
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'STRING':// 字符型
@@ -569,7 +596,7 @@ export default {
             obj.operator = 'LIKE'
             obj.value = data.screeningString
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
@@ -579,7 +606,7 @@ export default {
             obj.operator = 'EQ'
             obj.value = data.screeningString
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'OPTION':// 可选型

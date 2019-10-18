@@ -47,11 +47,11 @@ export default {
     }
   },
   methods: {
-    // screening() {
-    //   const data = this.screeningForm
-    //   console.info(data)
-    //   this.$emit('dateCallBack')
-    // },
+    screening() {
+      const data = this.screeningForm
+      console.info(data)
+      this.$emit('dateCallBack')
+    },
     reset() {
       this.$store.commit('screeningDate/setScreeningDate', {})
     },

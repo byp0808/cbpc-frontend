@@ -281,8 +281,7 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
-// import { queryDefaultCols, getTempList, getTempById } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'SecondaryMarketList',
@@ -452,7 +451,7 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        this.offerPage = response.page
+        // this.offerPage = response.page
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -479,7 +478,7 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        this.page = response.page
+        // this.page = response.page
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -504,7 +503,7 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        this.offerPage = response.page
+        // this.offerPage = response.page
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -586,6 +585,8 @@ export default {
         console.info(res)
         this.offerTableHeader = res.showCols
       })
+      // 清空筛选数据
+      this.offerScreeningFormList = []
       // 获取满足条件的行情数据
       this.offerLoadTable()
       this.offerCurrentModuleId = this.offerModuleId
@@ -635,7 +636,7 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        this.page = response.page
+        // this.page = response.page
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -714,6 +715,8 @@ export default {
         console.info(res)
         this.tableHeader = res.showCols
       })
+      // 清空筛选数据
+      this.screeningFormList = []
       // 获取满足条件的行情数据
       this.loadTable()
       this.currentModuleId = this.moduleId
@@ -764,12 +767,19 @@ export default {
     },
     screening() {
       // 确定筛选方法
-      if (this.currentTable === 1) {
-        // 报价表
-        this.offerScreeningTable()
-      } else {
-        // 成交表
-        this.screeningTable()
+      switch (this.formType) {
+        case 1:
+          this.$refs.ScreeningForm.screening()
+          break
+        case 2:
+          this.$refs.ScreeningNumForm.screening()
+          break
+        case 3:
+          this.$refs.ScreeningStringForm.screening()
+          break
+        case 4:
+          this.$refs.ScreeningCheckboxForm.screening()
+          break
       }
     },
     offerScreeningTable() {
@@ -861,6 +871,13 @@ export default {
       this.updateFormVisible = false
     },
     screeningCallBack() {
+      if (this.currentTable === 1) {
+        // 报价表
+        this.offerScreeningTable()
+      } else {
+        // 成交表
+        this.screeningTable()
+      }
     },
     isScreeningByHeader(val) {
       // 根据当前表头查询是否已添加到搜索条件集合
@@ -1000,6 +1017,59 @@ export default {
     },
     saveEditCell() {
       console.info(this.offerSelection)
+      if (this.activeName === 'first') {
+        // 编辑当前成交模板
+        const modules = this.moduleList.filter(mod => mod.id === this.currentModuleId)
+        const module = modules[0]
+        if (this.editModuleForm.moduleName !== module.tempName) {
+          module.id = ''
+          module.tempName = this.editModuleForm.moduleName
+        }
+        const data = {
+          marketTempInfo: module,
+          colData: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
+        }
+        let newTempId = this.currentModuleId
+        saveTempInfo(data).theme(res => {
+          console.info(res)
+          newTempId = res.tempId
+        })
+        this.editModuleIsOpen = false
+        // 根据返回的模板id查询表头信息
+        getTempById(newTempId).then(res => {
+          console.info(res)
+          this.tableHeader = res.showCols
+        })
+        // 获取满足条件的行情数据
+        this.loadTable()
+        this.currentModuleId = newTempId
+      } else if (this.activeName === 'second') {
+        // 编辑当前报价模板
+        const modules = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
+        const module = modules[0]
+        if (this.editModuleForm.offerModuleName !== module.tempName) {
+          module.id = ''
+          module.tempName = this.editModuleForm.offerModuleName
+        }
+        const data = {
+          marketTempInfo: module,
+          colData: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
+        }
+        let newTempId = this.offerCurrentModuleId
+        saveTempInfo(data).theme(res => {
+          console.info(res)
+          newTempId = res.tempId
+        })
+        this.editModuleIsOpen = false
+        // 根据返回的模板id查询表头信息
+        getTempById(newTempId).then(res => {
+          console.info(res)
+          this.offerTableHeader = res.showCols
+        })
+        // 获取满足条件的行情数据
+        this.offerLoadTable()
+        this.offerCurrentModuleId = newTempId
+      }
       const data = {
         moduleId: this.currentModuleId,
         moduleName: this.editModuleForm.moduleName,
@@ -1039,14 +1109,16 @@ export default {
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
               obj.operator = 'BETWEEN'
-              obj.value = data.dateRange[0] + ',' + data.dateRange[1]
+              if (typeof data.dateRange !== 'undefined') {
+                obj.value = (data.dateRange)[0] + ',' + (data.dateRange)[1]
+              }
             } else {
               // 单日
               obj.operator = 'EQ'
               obj.value = data.singleDate
             }
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'NUMBER':// 数值型
@@ -1055,13 +1127,11 @@ export default {
             if (typeof data.screeningNum === 'undefined') {
               // 范围
               obj.operator = 'BETWEEN'
-              if (typeof data.startNum === 'undefined') {
-                obj.value = ','
-              } else {
-                obj.value = data.startNum + ','
+              if (typeof data.startNum !== 'undefined') {
+                obj.startvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
-                obj.value = obj.value + data.endNum
+                obj.endvalue = data.endNum + ''
               }
             } else {
               if (data.absoluteValue) {
@@ -1069,10 +1139,10 @@ export default {
               } else {
                 obj.operator = 'EQ'
               }
-              obj.value = data.singleDate
+              obj.value = data.screeningNum + ''
             }
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'STRING':// 字符型
@@ -1082,7 +1152,7 @@ export default {
             obj.operator = 'LIKE'
             obj.value = data.screeningString
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
@@ -1092,7 +1162,7 @@ export default {
             obj.operator = 'EQ'
             obj.value = data.screeningString
             if (typeof data.screeningSort !== 'undefined') {
-              obj.sort = data.screeningSort
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
             }
             break
           case 'OPTION':// 可选型
