@@ -32,7 +32,7 @@
           {{ scope.row.residualMaturity }}
         </template>
       </el-table-column>
-      <el-table-column prop="qcKind" label="质检类别" width="100" show-overflow-tooltip>
+      <el-table-column prop="qcKind" label="质检类别" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.qcKind }}
         </template>
