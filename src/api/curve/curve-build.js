@@ -55,10 +55,55 @@ export function queryRelationsCurveYield(data) {
   })
 }
 
+// 查询曲线同调曲线
+export function queryHomology(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/queryHomoCurveKeyTerm',
+    method: 'post',
+    data: data
+  })
+}
+
+// 保存曲线编制方案
+export function saveCurveBuild(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/saveCurveBuild',
+    method: 'post',
+    data: data
+  })
+}
+
 // 计算曲线历史分位点
 export function queryHistoryDivision(data) {
   return request({
     url: `${basic_api_curve}` + '/curveSet/computeHisIndex',
+    method: 'post',
+    data: data
+  })
+}
+
+// 确认曲线编制方案
+export function confirmBuild(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/confirmCurveBuild',
+    method: 'post',
+    data: data
+  })
+}
+
+// 退回曲线编制方案
+export function refundBuild(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/refundCurveBuild',
+    method: 'post',
+    data: data
+  })
+}
+
+// 重置曲线编制方案
+export function resetBuild(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/resetCurveBuild',
     method: 'post',
     data: data
   })

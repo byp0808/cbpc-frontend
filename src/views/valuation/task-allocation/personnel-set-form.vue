@@ -65,7 +65,7 @@
 import { addTaskAllocation, queryTaskRangeSelects, taskAllocation, personnelList } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetForm',
-  props: ['taskRangeId', 'disabled'],
+  props: ['groupId', 'disabled'],
   data() {
     return {
       // 任务范围列表
@@ -75,6 +75,7 @@ export default {
       // 任务分配规则对象
       ruleInfo: {
         taskRangeId: '', // 任务范围Id
+        gropuId: '',
         distRuleList: [{ userId: '', distRatio: '' }], // 人员-分配比例 列表
         lastUpdBy: '', // 最后更新者
         lastUpdTs: '' // 最后更新时间
@@ -88,8 +89,8 @@ export default {
     personnelList('00001').then(response => {
       this.personnelList = response
     })
-    if (this.taskRangeId) {
-      taskAllocation(this.taskRangeId).then(response => {
+    if (this.groupId) {
+      taskAllocation(this.groupId).then(response => {
         this.ruleInfo = response
       })
     }

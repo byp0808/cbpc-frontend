@@ -82,9 +82,9 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="流通场所">
-            <el-select v-model="formData.maket" placeholder="选择流通场所">
+            <el-select v-model="formData.market" placeholder="选择流通场所">
               <el-option
-                v-for="item in makets"
+                v-for="item in markets"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -299,7 +299,7 @@
     <el-pagination
       align="center"
       :current-page="page.pageNumber"
-      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-sizes="[5,10, 20, 30, 40, 50]"
       :page-size="page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="page.totalRecord"
@@ -329,7 +329,7 @@ export default {
         CSIN: '', // 债券代码
         bondQuality: '', // 债券品种
         yieldCurve: '', // 收益率曲线
-        maket: '', // 流通场所
+        market: '', // 流通场所
         publisher: '' // 发行人
       },
       // 开始批次
@@ -358,7 +358,7 @@ export default {
         { value: '2', label: '其他收益率' }
       ],
       // 流通场所
-      makets: [
+      markets: [
         { value: '1', label: '上交所' },
         { value: '2', label: '香港' }
       ],

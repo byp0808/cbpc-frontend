@@ -132,7 +132,7 @@
 import { queryCurveTaskRules, queryOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
 import { basic_api_curve } from '@/api/base-api'
 import Pagination from '@/components/Pagination'
-import { downloadFile, uploadFile } from '@/utils/request-client'
+import { downloadFile, upload } from '@/utils/file-request'
 
 export default {
   name: 'TaskRules',
@@ -256,7 +256,7 @@ export default {
     upload(param) {
       const data = new FormData()
       data.append('files', param.file)
-      uploadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/importCurveTasks', data)
+      upload(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/importCurveTasks', data)
         .then(() => {
           this.$message({
             showClose: true,
