@@ -178,6 +178,7 @@ export default {
   data() {
     return {
       disabled: false,
+      selectCurve: [],
       initInfo: {
         curveId: ''
       }, // 初始化方案信息
