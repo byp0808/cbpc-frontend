@@ -2,6 +2,15 @@ import request from '@/utils/app-request'
 
 const basic_api_valuation = '/pi-valuation'
 
+// 查询估值产品总览质检报告
+export function qryOverallQcRpt(data) {
+  return request({
+    url: `${basic_api_valuation}` + '/vql/quality/qryOverallQcRpt',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询估值产品入库变动质检报告
 export function qryValNumChgQcRpt(data) {
   return request({
@@ -59,7 +68,7 @@ export function qryValNetPrcQcRpt(data) {
 // 查询估值产品估值为0质检报告
 export function qryValValQcRpt(data) {
   return request({
-    url: `${basic_api_valuation}` + '/vql/quality/qryValNumChgQcRpt',
+    url: `${basic_api_valuation}` + '/vql/quality/qryValValQcRpt',
     method: 'post',
     data: data
   })

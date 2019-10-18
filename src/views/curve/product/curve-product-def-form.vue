@@ -470,7 +470,7 @@ export default {
         this.productInfo.forwardFlag = 'Y'
       }
       if (!this.productInfo.validFlag) {
-        this.productInfo.validFlag = 'N'
+        this.productInfo.validFlag = 'Y'
       }
       return this.productInfo
     },
