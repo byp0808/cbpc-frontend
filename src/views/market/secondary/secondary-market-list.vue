@@ -281,7 +281,7 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'SecondaryMarketList',
@@ -331,20 +331,9 @@ export default {
       screeningFormVisible: false,
       updateFormVisible: false,
       // 报价表
-      offerMarketList: [
-        { id: '1', col_1: '123456', col_2: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '2', col_1: '1234567', col_2: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '3', col_1: '1234568', col_2: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        { id: '4', col_1: '1234569', col_2: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '5', col_1: '12345610', col_2: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
-      ],
-      offerTableHeader: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '7' }
-      ],
+      offerMarketList: [],
+      offerTableHeader: [],
+      offerColData: [],
       offerPage: {
         pageNumber: 1,
         pageSize: 10
@@ -358,19 +347,9 @@ export default {
       updateForm: {
         updateContent: ''
       },
-      marketList: [
-        { id: '1', col_1: '123456', col_2: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '2', col_1: '1234567', col_2: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '3', col_1: '1234568', col_2: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        { id: '4', col_1: '1234569', col_2: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '5', col_1: '12345610', col_2: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
-      ],
-      tableHeader: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '4', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
+      marketList: [],
+      tableHeader: [],
+      colData: [],
       moduleList: [],
       moduleId: '',
       currentModuleId: '',
@@ -379,43 +358,7 @@ export default {
         pageSize: 10
       },
       screeningFormList: [],
-      marketLoading: false,
-
-      // 表头模板（死数据）
-      module_1: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_2: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '6', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_3: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '6', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '7', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '8', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '9', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '10', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '11', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '12', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '13', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '14', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '15', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '16', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '17', key: 'remindTime', label: '提醒时间', THType: '8' }
-      ]
+      marketLoading: false
     }
   },
   beforeMount() {
@@ -439,9 +382,11 @@ export default {
         showArea: '01'
       }
       queryDefaultCols(data).then(response => {
-        const { showCols } = response
-        console.info(showCols)
+        const { showCols, colData } = response
+        // console.info(showCols)
+        // console.info(colData)
         this.offerTableHeader = showCols
+        this.offerColData = colData
       })
       // 获取满足条件的行情数据
       const data2 = {
@@ -450,7 +395,7 @@ export default {
         shawArea: '01'
       }
       queryMarketData(data2).then(response => {
-        console.info(response)
+        // console.info(response)
         // this.offerPage = response.page
         this.offerMarketList = response.dataList
       })
@@ -466,9 +411,11 @@ export default {
         showArea: '02'
       }
       queryDefaultCols(data).then(response => {
-        const { showCols } = response
-        console.info(showCols)
+        const { showCols, colData } = response
+        // console.info(showCols)
+        // console.info(colData)
         this.tableHeader = showCols
+        this.colData = colData
       })
       // 获取满足条件的行情数据
       const data2 = {
@@ -554,8 +501,10 @@ export default {
       // 报价表格双击事件
       this.currentTable = 1
       const title = column.property
+      const tabs = this.offerTableHeader.filter(tab => tab.colName === title)
+      const tab = tabs[0]
       console.info(row[title])
-      if (!row[title].isNull) {
+      if (tab.modiFlag === 'Y') {
         this.currentRow = row
         this.currentHeader.key = column.property
         this.currentHeader.label = column.label
@@ -572,7 +521,9 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      const modifiedCols = row.modifiedCols
+      const mods = modifiedCols.filter(val => val.colName === header.key)
+      return mods.length > 0
     },
     offerToUse() {
       // 应用报价表模板
@@ -582,8 +533,10 @@ export default {
         return
       }
       getTempById(val).then(res => {
-        console.info(res)
-        this.offerTableHeader = res.showCols
+        const { showCols, colData } = res
+        console.info(showCols)
+        this.offerTableHeader = showCols
+        this.offerColData = colData
       })
       // 清空筛选数据
       this.offerScreeningFormList = []
@@ -591,8 +544,8 @@ export default {
       this.offerLoadTable()
       this.offerCurrentModuleId = this.offerModuleId
     },
-    // 报价表头右击事件
     offerEditCurrentModule() {
+      // 报价表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
       if (this.offerCurrentModuleId !== '') {
@@ -600,11 +553,17 @@ export default {
         const module = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
         console.info(module)
         this.editModuleForm.offerModuleName = module[0].tempName
-        this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
-        console.info('报价')
-        console.info(this.offerTableHeader)
-        console.info(this.tableHeader)
+
+        const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        tableHeaderDetail.map(res => this.editTableHeaders.push(res))
+
+        // this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
+        // this.tableHeader.map(res => this.editTableHeaders.push(res))
+        // console.info('报价')
+        // console.info(this.offerTableHeader)
+        // console.info(this.tableHeader)
         this.editModuleIsOpen = true
         this.$nextTick(() => {
           this.editOfferTableHeaders.map(obj => {
@@ -683,8 +642,10 @@ export default {
       // 成交表格双击事件
       this.currentTable = 2
       const title = column.property
+      const tabs = this.tableHeader.filter(tab => tab.colName === title)
+      const tab = tabs[0]
       console.info(row[title])
-      if (!row[title].isNull) {
+      if (tab.modiFlag === 'Y') {
         console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -702,7 +663,9 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      const modifiedCols = row.modifiedCols
+      const mods = modifiedCols.filter(val => val.colName === header.key)
+      return mods.length > 0
     },
     toUse() {
       // 应用成交表模板
@@ -712,8 +675,10 @@ export default {
         return
       }
       getTempById(val).then(res => {
-        console.info(res)
-        this.tableHeader = res.showCols
+        const { showCols, colData } = res
+        console.info(showCols)
+        this.tableHeader = showCols
+        this.colData = colData
       })
       // 清空筛选数据
       this.screeningFormList = []
@@ -741,8 +706,12 @@ export default {
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
         console.info(this.editModuleForm)
-        this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
+
+        const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        tableHeaderDetail.map(res => this.editTableHeaders.push(res))
+
         this.editModuleIsOpen = true
         // 表头默认全选
         this.$nextTick(() => {
@@ -849,21 +818,47 @@ export default {
     updateCell() {
       // 确定修改方法
       const content = this.updateForm.updateContent
-      alert('确定修改')
-      alert(content)
-      const data = {
-        currentHeader: this.currentHeader,
-        currentRow: this.currentRow,
-        content: content
-      }
       if (this.currentTable === 1) {
         // 报价表
+        const headers = this.offerTableHeader.filter(tab => tab.colName === this.currentHeader.key)
+        // console.info('确定修改')
+        // alert(content)
+        const data = {
+          currentHeader: headers[0],
+          currentRow: this.currentRow,
+          content: content
+        }
         console.info('报价表修改')
         console.info(data)
+        saveMarketData(data).then(res => {
+          console.info(res)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+        this.offerLoadTable()
       } else {
         // 成交表
+        const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
+        // console.info('确定修改')
+        // alert(content)
+        const data = {
+          currentHeader: headers[0],
+          currentRow: this.currentRow,
+
+          content: content
+        }
         console.info('成交表修改')
         console.info(data)
+        saveMarketData(data).then(res => {
+          console.info(res)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+        this.loadTable()
       }
       this.updateForm.updateContent = ''
       this.currentRow = {}
@@ -1037,8 +1032,10 @@ export default {
         this.editModuleIsOpen = false
         // 根据返回的模板id查询表头信息
         getTempById(newTempId).then(res => {
-          console.info(res)
-          this.tableHeader = res.showCols
+          const { showCols, colData } = res
+          console.info(showCols)
+          this.tableHeader = showCols
+          this.colData = colData
         })
         // 获取满足条件的行情数据
         this.loadTable()
@@ -1063,22 +1060,24 @@ export default {
         this.editModuleIsOpen = false
         // 根据返回的模板id查询表头信息
         getTempById(newTempId).then(res => {
-          console.info(res)
-          this.offerTableHeader = res.showCols
+          const { showCols, colData } = res
+          console.info(showCols)
+          this.offerTableHeader = showCols
+          this.offerColData = colData
         })
         // 获取满足条件的行情数据
         this.offerLoadTable()
         this.offerCurrentModuleId = newTempId
       }
-      const data = {
-        moduleId: this.currentModuleId,
-        moduleName: this.editModuleForm.moduleName,
-        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1),
-        offerModuleId: this.offerCurrentModuleId,
-        offerModuleName: this.editModuleForm.offerModuleName,
-        offerModuleHeaders: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
-      }
-      console.info(data)
+      // const data = {
+      //   moduleId: this.currentModuleId,
+      //   moduleName: this.editModuleForm.moduleName,
+      //   moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1),
+      //   offerModuleId: this.offerCurrentModuleId,
+      //   offerModuleName: this.editModuleForm.offerModuleName,
+      //   offerModuleHeaders: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
+      // }
+      // console.info(data)
       this.editModuleIsOpen = false
     },
     editCancel() {

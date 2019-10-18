@@ -129,8 +129,8 @@
       <el-row>
         <el-col :span="14">
           <el-table
-            ref="curvePrdOrderAutoList"
-            :data="curvePrdOrderAutoList"
+            ref="tmp_curvePrdOrderAutoList"
+            :data="tmp_curvePrdOrderAutoList"
             tooltip-effect="dark"
             style="width: 100%"
           >
@@ -170,6 +170,7 @@
             :data="curvePrdOrderAutoKtList"
             tooltip-effect="dark"
             style="width: 100%"
+            @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" :selectable="prdOrderAutoKtSelectable" />
             <el-table-column prop="standSlip" label="关键期限" width="140" show-overflow-tooltip />
@@ -214,6 +215,8 @@ export default {
       curvePrdOrderAutoKtList: [],
       // 自动编制关键期限，勾选内容
       prdOrderAutoKdsKeys: [],
+      tmp_prdOrderAutoKdsKeys: [], // 编辑时修改数据
+      tmp_curvePrdOrderAutoList: [], // 编辑时自动编制列表，保存后，同步curvePrdOrderAutoList
       // 发布方式disable
       publishTypeDisabled: false
     }
@@ -272,9 +275,6 @@ export default {
         this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
       }
     }
-    if (!this.curvePrdOrderAutoList) {
-      this.curvePrdOrderAutoList = []
-    }
 
     getCurveOrderList({ orderId: this.orderData.orderId }).then(response => {
       console.info('queryCurveProductList.queryCurveProductList...')
@@ -318,7 +318,7 @@ export default {
     },
     // 获取自动编制
     getPrdOrderAutoList() {
-      return this.curvePrdOrderAutoList
+      return this.tmp_curvePrdOrderAutoList
     },
     // 获取自动编制关键期限
     getPrdOrderAutoKtList() {
@@ -359,6 +359,15 @@ export default {
         return false
       }
       this.addAutoRuleFormVisible = true
+
+      // 默认从缓存中获取数据
+      this.tmp_curvePrdOrderAutoList = []
+      if (this.curvePrdOrderAutoList) {
+        for (const item of this.curvePrdOrderAutoList) {
+          var newItem = _.assign({}, item)
+          this.tmp_curvePrdOrderAutoList.push(newItem)
+        }
+      }
       // init auto kt
       this.preview('toSetRule')
     },
@@ -383,7 +392,7 @@ export default {
       }
       var curveOrderId = this.$refs.autoRuleCurve.selected.$attrs.curveOrderId
 
-      this.curvePrdOrderAutoList.push({
+      this.tmp_curvePrdOrderAutoList.push({
         curveOrderId: this.orderData.curveOrderId, // 曲线批次ID
         curveOrderName: this.orderData.orderName, // 曲线批次ID，批次名称
         curveWeight: '', // 权重
@@ -396,8 +405,8 @@ export default {
     },
     // 检查曲线ID
     checkPrdOrderAuto(curveId) {
-      for (var i = 0; i < this.curvePrdOrderAutoList.length; i++) {
-        var item = this.curvePrdOrderAutoList[i]
+      for (var i = 0; i < this.tmp_curvePrdOrderAutoList.length; i++) {
+        var item = this.tmp_curvePrdOrderAutoList[i]
         if (item.curveId === curveId) {
           return false
         }
@@ -407,9 +416,9 @@ export default {
     // 获取列表中曲线ID
     getAutoCurveIds() {
       var ids = []
-      if (this.curvePrdOrderAutoList && this.curvePrdOrderAutoList.length > 0) {
-        for (let i = 0; i < this.curvePrdOrderAutoList.length; i++) {
-          ids.push(this.curvePrdOrderAutoList[i].curveId)
+      if (this.tmp_curvePrdOrderAutoList && this.tmp_curvePrdOrderAutoList.length > 0) {
+        for (let i = 0; i < this.tmp_curvePrdOrderAutoList.length; i++) {
+          ids.push(this.tmp_curvePrdOrderAutoList[i].curveId)
         }
       }
       return ids
@@ -417,7 +426,11 @@ export default {
     // 预览
     preview(from) {
       console.info('preview')
-
+      //
+      this.tmp_prdOrderAutoKdsKeys = []
+      this.prdOrderAutoKdsKeys.forEach((item, index) => {
+        this.tmp_prdOrderAutoKdsKeys.push(item)
+      })
       // 右侧关键期限列表
       this.curvePrdOrderAutoKtList = []
       // 查询关键期限列表
@@ -435,16 +448,18 @@ export default {
         }
 
         // 预览按钮点击，重置勾选框
-        if (from === 'BTN') {
-          // 增加当前产品关键期限
-          if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
-            for (let i = 0; i < this.curvePrdKdList.length; i++) {
-              const item = this.curvePrdKdList[i]
-              // 添加不存在的
-              if (standSlipArray.indexOf(item.standSlip) < 0) {
-                this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
-              }
-              this.prdOrderAutoKdsKeys.push(item.standSlip)
+
+        // 增加当前产品关键期限
+        if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
+          for (let i = 0; i < this.curvePrdKdList.length; i++) {
+            const item = this.curvePrdKdList[i]
+            // 添加不存在的
+            if (standSlipArray.indexOf(item.standSlip) < 0) {
+              this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
+            }
+            // 预览默认选中当前产品
+            if (from === 'BTN') {
+              this.tmp_prdOrderAutoKdsKeys.push(item.standSlip)
             }
           }
         }
@@ -455,7 +470,7 @@ export default {
         for (var i = 0; i < this.curvePrdOrderAutoKtList.length; i++) {
           const item = this.curvePrdOrderAutoKtList[i]
 
-          if (this.prdOrderAutoKdsKeys.indexOf(item.standSlip) >= 0) {
+          if (this.tmp_prdOrderAutoKdsKeys.indexOf(item.standSlip) >= 0) {
             this.$refs.curvePrdOrderAutoKtList.toggleRowSelection(item, true) // 默认选中
           }
         }
@@ -476,7 +491,7 @@ export default {
     },
     // 保存自动编制
     saveOrderAuto() {
-      var list = this.curvePrdOrderAutoList
+      var list = this.tmp_curvePrdOrderAutoList
       if (list && list.length > 0) {
         for (let i = 0; i < list.length; i++) {
           var item = list[i]
@@ -491,6 +506,15 @@ export default {
           }
         }
       }
+      // 同步选择的关键期限
+      this.prdOrderAutoKdsKeys = this.getPrdOrderAutoKtListSelected()
+      this.curvePrdOrderAutoList.length = 0
+      if (this.tmp_curvePrdOrderAutoList) {
+        for (const item of this.tmp_curvePrdOrderAutoList) {
+          var newItem = _.assign({}, item)
+          this.curvePrdOrderAutoList.push(newItem)
+        }
+      }
       this.addAutoRuleFormVisible = false
     },
     // 加载上一批次信息
@@ -503,7 +527,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({ value }) => {
-        this.curvePrdOrderAutoList.splice(index, 1)
+        this.tmp_curvePrdOrderAutoList.splice(index, 1)
       }).catch(() => {
         console.info('cancle')
       })
@@ -518,6 +542,9 @@ export default {
       } else {
         this.publishTypeDisabled = false
       }
+    },
+    handleSelectionChange(items) {
+      this.multipleSelection = items
     }
   }
 }
