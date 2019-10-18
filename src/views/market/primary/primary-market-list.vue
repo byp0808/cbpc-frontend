@@ -514,7 +514,7 @@ export default {
       }
       console.info(data)
       let newTempId = this.currentModuleId
-      saveTempInfo(data).theme(res => {
+      saveTempInfo(data).then(res => {
         console.info(res)
         newTempId = res.tempId
       })

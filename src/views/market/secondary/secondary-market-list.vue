@@ -1030,7 +1030,7 @@ export default {
           colData: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
         }
         let newTempId = this.currentModuleId
-        saveTempInfo(data).theme(res => {
+        saveTempInfo(data).then(res => {
           console.info(res)
           newTempId = res.tempId
         })
@@ -1056,7 +1056,7 @@ export default {
           colData: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
         }
         let newTempId = this.offerCurrentModuleId
-        saveTempInfo(data).theme(res => {
+        saveTempInfo(data).then(res => {
           console.info(res)
           newTempId = res.tempId
         })
