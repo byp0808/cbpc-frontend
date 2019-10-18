@@ -183,6 +183,7 @@ export default {
         { id: '3', key: 'timeZone', label: '时区', THType: '5' },
         { id: '4', key: 'remindTime', label: '提醒时间', THType: '6' }
       ],
+      colData: [],
       module_1: [
         { id: '1', key: 'orderNo', label: '批次', THType: '1' },
         { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
@@ -236,9 +237,10 @@ export default {
         dataMarket: '01'
       }
       queryDefaultCols(data).then(response => {
-        const { showCols } = response
+        const { colData, showCols } = response
         console.info(showCols)
         this.tableHeader = showCols
+        this.colData = colData
       })
       // 获取满足条件的行情数据
       const data2 = {
@@ -284,8 +286,10 @@ export default {
         return
       }
       getTempById(val).then(res => {
+        const { colData, showCols } = res
         console.info(res)
-        this.tableHeader = res.showCols
+        this.tableHeader = showCols
+        this.colData = colData
       })
       // 清空筛选数据
       this.screeningFormList = []
@@ -460,7 +464,12 @@ export default {
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
         console.info(this.editModuleForm)
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        // console.info('详细')
+        // console.info(this.tableHeader)
+        // console.info(this.colData)
+        // console.info(tableHeaderDetail)
+        tableHeaderDetail.map(res => this.editTableHeaders.push(res))
         this.editModuleIsOpen = true
         // 表头默认全选
         this.$nextTick(() => {
@@ -501,7 +510,6 @@ export default {
       }
     },
     saveEditCell() {
-      console.info(this.offerSelection)
       const modules = this.moduleList.filter(mod => mod.id === this.currentModuleId)
       const module = modules[0]
       if (this.editModuleForm.moduleName !== module.tempName) {
@@ -521,8 +529,10 @@ export default {
       this.editModuleIsOpen = false
       // 根据返回的模板id查询表头信息
       getTempById(newTempId).then(res => {
+        const { colData, showCols } = res
         console.info(res)
-        this.tableHeader = res.showCols
+        this.tableHeader = showCols
+        this.colData = colData
       })
       // 获取满足条件的行情数据
       this.loadTable()
