@@ -36,9 +36,8 @@
     <el-table
       :data="allList"
       style="width: 100%"
-      max-height="300"
+      max-height="400"
       :header-cell-style="{background:'#f6f6f6'}"
-      tooltip-effect="dark"
       border
       fit
       highlight-current-row
@@ -53,10 +52,10 @@
           <span>{{ scope.row.businessName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="事件明细" align="center">
+      <el-table-column label="事件明细" align="center" width="160px">
         <template slot-scope="scope">
-          <el-button type="text" size="small">{{ scope.row.taskName }}</el-button>
-          <!-- <a style="border-bottom:1px solid #333">{{ scope.row.info }}</a> -->
+          <!-- <el-button type="text" size="small">{{ scope.row.taskName }}</el-button> -->
+          <span style="color:#09f;font-size:14px;cursor: pointer;" class="detail">{{ scope.row.taskName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" align="center">
@@ -90,11 +89,11 @@
       <el-pagination
         style="margin-top:20px"
         align="center"
-        :current-page="page.pageNumber"
+        :current-page="params.page.pageNumber"
         :page-sizes="[10, 20, 30, 40, 50]"
-        :page-size="page.pageSize"
+        :page-size="params.page.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalRecord"
+        :total="params.page.totalRecord"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -112,7 +111,7 @@ export default {
     activeName: {
       type: String,
       default: function() {
-        return '01'
+        return ''
       }
     }
   },
@@ -143,10 +142,17 @@ export default {
         { name: '复核通过', value: '04' }
       ],
       allList: [],
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
+      // page: {
+      //   pageNumber: 1,
+      //   pageSize: 10,
+      //   totalRecord: 0
+      // },
+      params: {
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       }
     }
   },
@@ -154,17 +160,18 @@ export default {
     activeName: {
       handler(newVal, oldVal) {
         this.getList()
-	    },
+      },
       immediate: true
     }
   },
   methods: {
     getList() {
-      queryTaskList({ search_taskType_EQ: this.activeName, page: this.page }).then(
+      this.params.search_taskType_EQ = this.activeName
+      queryTaskList(this.params).then(
         response => {
           const { dataList, page } = response
-	        this.allList = dataList
-	        this.page = page
+          this.allList = dataList
+          this.params.page = page
         }
       )
     },
@@ -178,11 +185,11 @@ export default {
     handleSelectionChange(val) {
     },
     handleSizeChange(pageSize) {
-      this.page.pageSize = pageSize
+      this.params.page.pageSize = pageSize
       this.getList()
     },
     handleCurrentChange(currentPage) {
-      this.page.pageNumber = currentPage
+      this.params.page.pageNumber = currentPage
       this.getList()
     }
   }
@@ -206,6 +213,9 @@ export default {
  }
  .noBorder {
      border:none;
+ }
+ .detail {
+   cursor: pointer;
  }
  }
 

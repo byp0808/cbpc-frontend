@@ -89,27 +89,30 @@ export default {
       schemeInfo.valuationScheme.valuScene = this.schemeInfo.valuScene
       schemeInfo.valuationScheme.bondId = this.schemeInfo.bondId
       console.log('schemeInfo', schemeInfo)
-      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '01' && !schemeInfo.valuationScheme.spreadValue) {
+      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '01' && !schemeInfo.valuationScheme.spreadValue && schemeInfo.valuationScheme.spreadValue !== 0) {
         return this.$message.warning('请输入点差')
       }
       if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '02') {
-        if (!schemeInfo.spreadStart) {
+        if (!schemeInfo.spreadStart && schemeInfo.spreadStart !== 0) {
           return this.$message.warning('请输入初始点差')
         }
-        if (!schemeInfo.spreadEnd) {
+        if (!schemeInfo.spreadEnd && schemeInfo.spreadEnd !== 0) {
           return this.$message.warning('请输入最终点差')
         }
-        if (!schemeInfo.cdsAdjValue) {
+        if (schemeInfo.spreadStart >= schemeInfo.spreadEnd) {
+          return this.$message.warning('最终点差应大于初始点差')
+        }
+        if (!schemeInfo.cdsAdjValue && schemeInfo.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
       }
-      if (schemeInfo.valuationScheme.cdsPremAdjWay === '02' && !schemeInfo.valuationScheme.relaSpread) {
+      if (schemeInfo.valuationScheme.cdsPremAdjWay === '02' && !schemeInfo.valuationScheme.relaSpread && schemeInfo.valuationScheme.relaSpread !== 0) {
         return this.$message.warning('请输入相对点差')
       }
-      if (!schemeInfo.valuationScheme.flAdjValue) {
+      if (!schemeInfo.valuationScheme.flAdjValue && schemeInfo.valuationScheme.flAdjValue !== 0) {
         return this.$message.warning('请输入目标流动性点差')
       }
-      if (!schemeInfo.valuationScheme.otAdjValue) {
+      if (!schemeInfo.valuationScheme.otAdjValue && schemeInfo.valuationScheme.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
       save(schemeInfo).then(response => {
