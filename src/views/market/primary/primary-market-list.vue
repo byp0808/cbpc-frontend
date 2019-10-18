@@ -316,7 +316,9 @@ export default {
       // console.info(row)
       // console.info('头')
       // console.info(header)
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      const modifiedCols = row.modifiedCols
+      const mods = modifiedCols.filter(val => val.colName === header.key)
+      return mods.length > 0
     },
     headerScreening(column) {
       // 表头点击事件

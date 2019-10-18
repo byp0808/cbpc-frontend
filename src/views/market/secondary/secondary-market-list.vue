@@ -521,7 +521,9 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      const modifiedCols = row.modifiedCols
+      const mods = modifiedCols.filter(val => val.colName === header.key)
+      return mods.length > 0
     },
     offerToUse() {
       // 应用报价表模板
@@ -661,7 +663,9 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      const modifiedCols = row.modifiedCols
+      const mods = modifiedCols.filter(val => val.colName === header.key)
+      return mods.length > 0
     },
     toUse() {
       // 应用成交表模板
