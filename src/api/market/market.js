@@ -36,3 +36,12 @@ export function getTempById(id) {
   })
 }
 
+// 保存模板信息
+export function saveTempInfo(data) {
+  return request({
+    url: `${basic_api_market}/market-temp/save`,
+    method: 'post',
+    data
+  })
+}
+

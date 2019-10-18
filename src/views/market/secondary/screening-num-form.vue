@@ -1,10 +1,10 @@
 <template>
   <!--  数值型-->
   <div class="" style="width: 600px">
-    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
+    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px" :rules="numFormRules">
       <el-row :gutter="76" align="left">
         <div class="grid-content bg-purple">
-          <el-form-item label="">
+          <el-form-item label="" prop="screeningNum">
             <el-row :gutter="22">
               <el-col :span="4">
                 <el-radio v-model="radio" label="1">数值</el-radio>
@@ -25,11 +25,15 @@
                 <el-radio v-model="radio" label="2">范围</el-radio>
               </el-col>
               <el-col :span="4">
-                <el-input v-model="screeningForm.startNum" style="width: 80px" :disabled="disable_2" />
+                <el-form-item prop="startNum">
+                  <el-input v-model.number="screeningForm.startNum" style="width: 80px" :disabled="disable_2" />
+                </el-form-item>
               </el-col>
               <el-col :span="1" align="center">~</el-col>
               <el-col :span="4">
-                <el-input v-model="screeningForm.endNum" style="width: 80px" :disabled="disable_2" />
+                <el-form-item prop="endNum">
+                  <el-input v-model.number="screeningForm.endNum" style="width: 80px" :disabled="disable_2" />
+                </el-form-item>
               </el-col>
               <el-col :span="2">BP</el-col>
             </el-row>
@@ -63,7 +67,12 @@ export default {
       radio: '1',
       disable_1: false,
       disable_2: true,
-      isScreened: false
+      isScreened: false,
+      numFormRules: {
+        screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
+        startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
+        endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }]
+      }
     }
   },
   computed: {
@@ -87,6 +96,16 @@ export default {
     }
   },
   methods: {
+    screening() {
+      this.$refs['screeningForm'].validate((valid) => {
+        if (valid) {
+          this.$emit('dateCallBack')
+        } else {
+          this.$message('error submit!!')
+          return false
+        }
+      })
+    },
     radioChange(curVal, oldVal) {
       if (curVal !== oldVal) {
         this.disable_1 = !this.disable_1
