@@ -265,7 +265,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('只能上传.xls或.xlsx结尾的文件')
+          this.$message.error('上传失败')
         })
     }
   }
