@@ -151,12 +151,7 @@ export default {
       if (busiStatus === '04') {
         this.$emit('saveCallBack')
       } else {
-        const data = this.bondsNonpInfo
-        // let marketStr
-        // for (const id in data.marketId) {
-        //   marketStr += data.marketId[id] + ';'
-        // }
-        // data.marketId = marketStr.substr(0, marketStr.length - 1)
+        const data = Object.assign({}, this.bondsNonpInfo)
         data.marketId = this.bondsNonpInfo.marketId.toString()
         this.$refs.bondsNonpInfo.validate((valid) => {
           if (valid) {

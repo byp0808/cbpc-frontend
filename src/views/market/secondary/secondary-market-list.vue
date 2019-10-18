@@ -151,12 +151,13 @@
                 collapse-tags
                 filterable
                 placeholder="请选择"
+                @visible-change="getcurveNames"
               >
                 <el-option
-                  v-for="item in curveNames"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in curveList"
+                  :key="item.curveId"
+                  :label="item.productName"
+                  :value="item.productName"
                 />
               </el-select>
             </el-col>
@@ -280,8 +281,8 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-// import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
-import { queryDefaultCols, getTempList, getTempById } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
+import { getCurveList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -317,17 +318,7 @@ export default {
       checkAll: true,
       referenceTypes: ['样本券维度', '估值曲线维度'],
       isIndeterminate: false,
-      curveNames: [
-        { value: '1', label: '曲线一' },
-        { value: '2', label: '曲线二' },
-        { value: '3', label: '曲线三' },
-        { value: '4', label: '曲线四' },
-        { value: '5', label: '曲线五' },
-        { value: '6', label: '曲线六' },
-        { value: '7', label: '曲线七' },
-        { value: '8', label: '曲线八' },
-        { value: '9', label: '曲线九' }
-      ],
+      curveList: [],
       // 查询是否打开
       drawerIsOpen: false,
       // 当前表:1报价表，2成交表
@@ -336,24 +327,13 @@ export default {
       currentRow: {},
       // 当前头
       currentHeader: {},
-      formType: 1,
+      formType: 0,
       screeningFormVisible: false,
       updateFormVisible: false,
       // 报价表
-      offerMarketList: [
-        { id: '1', col_1: '123456', col_2: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '2', col_1: '1234567', col_2: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '3', col_1: '1234568', col_2: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        { id: '4', col_1: '1234569', col_2: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '5', col_1: '12345610', col_2: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
-      ],
-      offerTableHeader: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '7' }
-      ],
+      offerMarketList: [],
+      offerTableHeader: [],
+      offerColData: [],
       offerPage: {
         pageNumber: 1,
         pageSize: 10
@@ -367,19 +347,9 @@ export default {
       updateForm: {
         updateContent: ''
       },
-      marketList: [
-        { id: '1', col_1: '123456', col_2: 'name1', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '2', col_1: '1234567', col_2: 'name2', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '3', col_1: '1234568', col_2: 'name3', timeZone: 'GMT_E_0800', remindTime: '08:20:00' },
-        { id: '4', col_1: '1234569', col_2: 'name4', timeZone: 'GMT_E_0800', remindTime: '10:10:00' },
-        { id: '5', col_1: '12345610', col_2: 'name5', timeZone: 'GMT_E_0800', remindTime: '10:10:00' }
-      ],
-      tableHeader: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '4', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
+      marketList: [],
+      tableHeader: [],
+      colData: [],
       moduleList: [],
       moduleId: '',
       currentModuleId: '',
@@ -388,43 +358,7 @@ export default {
         pageSize: 10
       },
       screeningFormList: [],
-      marketLoading: false,
-
-      // 表头模板（死数据）
-      module_1: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_2: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '6', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_3: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '6', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '7', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '8', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '9', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '10', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '11', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '12', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '13', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '14', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '15', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '16', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '17', key: 'remindTime', label: '提醒时间', THType: '8' }
-      ]
+      marketLoading: false
     }
   },
   beforeMount() {
@@ -448,19 +382,22 @@ export default {
         showArea: '01'
       }
       queryDefaultCols(data).then(response => {
-        const { showCols } = response
+        const { showCols, colData } = response
         console.info(showCols)
         this.offerTableHeader = showCols
+        this.offerColData = colData
       })
-      // // 获取满足条件的行情数据
-      // const data2 = {
-      //   page: this.page,
-      //   dataMarket: '02',
-      //   shawArea: '01'
-      // }
-      // queryMarketData(data2).then(response => {
-      //   console.info(response)
-      // })
+      // 获取满足条件的行情数据
+      const data2 = {
+        page: this.offerPage,
+        dataMarket: '02',
+        shawArea: '01'
+      }
+      queryMarketData(data2).then(response => {
+        console.info(response)
+        // this.offerPage = response.page
+        this.offerMarketList = response.dataList
+      })
       this.offerMarketLoading = false
     },
     initCJTable() {
@@ -473,40 +410,49 @@ export default {
         showArea: '02'
       }
       queryDefaultCols(data).then(response => {
-        const { showCols } = response
+        const { showCols, colData } = response
         console.info(showCols)
         this.tableHeader = showCols
+        this.colData = colData
       })
-      // // 获取满足条件的行情数据
-      // const data2 = {
-      //   page: this.page,
-      //   dataMarket: '02',
-      //   showArea: '02'
-      // }
-      // queryMarketData(data2).then(response => {
-      //   console.info(response)
-      // })
+      // 获取满足条件的行情数据
+      const data2 = {
+        page: this.page,
+        dataMarket: '02',
+        showArea: '02'
+      }
+      queryMarketData(data2).then(response => {
+        console.info(response)
+        // this.page = response.page
+        this.marketList = response.dataList
+      })
       this.marketLoading = false
     },
 
     // 报价
     offerLoadTable() {
-      // // 加载报价表数据
-      // // 获取行情列表信息
-      // this.offerMarketLoading = true
-      // // 获取满足条件的行情数据
-      // const data = {
-      //   page: this.offerPage,
-      //   dataMarket: '02',
-      //   showArea: '01',
-      //   tempId: this.offerCurrentModuleId,
-      //   searchParam: this.offerScreeningFormList,
-      //   queryForm: this.queryForm
-      // }
-      // queryMarketData(data).then(response => {
-      //   console.info(response)
-      // })
-      // this.offerMarketLoading = false
+      // 加载报价表数据
+      // 获取行情列表信息
+      this.offerMarketLoading = true
+      this.searchParam = []
+      // 处理筛选数据格式
+      this.formatScreeningForm(this.offerScreeningFormList)
+      // 获取满足条件的行情数据
+      const data = {
+        page: this.offerPage,
+        dataMarket: '02',
+        showArea: '01',
+        tempId: this.offerCurrentModuleId,
+        searchParam: this.searchParam,
+        queryForm: this.queryForm
+      }
+      queryMarketData(data).then(response => {
+        console.info(response)
+        // this.offerPage = response.page
+        this.offerMarketList = response.dataList
+      })
+      this.offerMarketLoading = false
+      this.searchParam = []
     },
     offerHeaderScreening(column) {
       // 报价表头点击事件
@@ -581,15 +527,19 @@ export default {
         return
       }
       getTempById(val).then(res => {
-        console.info(res)
-        this.offerTableHeader = res.showCols
+        const { showCols, colData } = res
+        console.info(showCols)
+        this.offerTableHeader = showCols
+        this.offerColData = colData
       })
+      // 清空筛选数据
+      this.offerScreeningFormList = []
       // 获取满足条件的行情数据
       this.offerLoadTable()
       this.offerCurrentModuleId = this.offerModuleId
     },
-    // 报价表头右击事件
     offerEditCurrentModule() {
+      // 报价表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
       if (this.offerCurrentModuleId !== '') {
@@ -597,11 +547,17 @@ export default {
         const module = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
         console.info(module)
         this.editModuleForm.offerModuleName = module[0].tempName
-        this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
-        console.info('报价')
-        console.info(this.offerTableHeader)
-        console.info(this.tableHeader)
+
+        const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        tableHeaderDetail.map(res => this.editTableHeaders.push(res))
+
+        // this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
+        // this.tableHeader.map(res => this.editTableHeaders.push(res))
+        // console.info('报价')
+        // console.info(this.offerTableHeader)
+        // console.info(this.tableHeader)
         this.editModuleIsOpen = true
         this.$nextTick(() => {
           this.editOfferTableHeaders.map(obj => {
@@ -616,22 +572,28 @@ export default {
 
     // 成交表
     loadTable() {
-      // // 加载成交表数据
-      // // 获取行情列表信息
-      // this.marketLoading = true
-      // // 获取满足条件的行情数据
-      // const data = {
-      //   page: this.page,
-      //   dataMarket: '02',
-      //   showArea: '02',
-      //   tempId: this.currentModuleId,
-      //   searchParam: this.screeningFormList,
-      //   queryForm: this.queryForm
-      // }
-      // queryMarketData(data).then(response => {
-      //   console.info(response)
-      // })
-      // this.marketLoading = false
+      // 加载成交表数据
+      // 获取行情列表信息
+      this.marketLoading = true
+      this.searchParam = []
+      // 处理筛选数据
+      this.formatScreeningForm(this.screeningFormList)
+      // 获取满足条件的行情数据
+      const data = {
+        page: this.page,
+        dataMarket: '02',
+        showArea: '02',
+        tempId: this.currentModuleId,
+        searchParam: this.searchParam,
+        queryForm: this.queryForm
+      }
+      queryMarketData(data).then(response => {
+        console.info(response)
+        // this.page = response.page
+        this.marketList = response.dataList
+      })
+      this.marketLoading = false
+      this.searchParam = []
     },
     headerScreening(column) {
       // 成交表头点击事件
@@ -703,9 +665,13 @@ export default {
         return
       }
       getTempById(val).then(res => {
-        console.info(res)
-        this.tableHeader = res.showCols
+        const { showCols, colData } = res
+        console.info(showCols)
+        this.tableHeader = showCols
+        this.colData = colData
       })
+      // 清空筛选数据
+      this.screeningFormList = []
       // 获取满足条件的行情数据
       this.loadTable()
       this.currentModuleId = this.moduleId
@@ -714,14 +680,30 @@ export default {
       // 成交表表头右击
       // 取消浏览器默认右击事件
       window.event.returnValue = false
+      // 清空表头及多选项旧数据
+      this.editOfferTableHeaders = []
+      this.editTableHeaders = []
+      this.$nextTick(() => {
+        this.editOfferTableHeaders.map(obj => {
+          this.$refs.editOfferTable.toggleRowSelection(obj, true)
+        })
+        this.editTableHeaders.map(obj => {
+          this.$refs.editTable.toggleRowSelection(obj, true)
+        })
+      })
       if (this.currentModuleId !== '') {
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
         console.info(this.editModuleForm)
-        this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
-        this.tableHeader.map(res => this.editTableHeaders.push(res))
+
+        const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
+        tableHeaderDetail.map(res => this.editTableHeaders.push(res))
+
         this.editModuleIsOpen = true
+        // 表头默认全选
         this.$nextTick(() => {
           this.editOfferTableHeaders.map(obj => {
             this.$refs.editOfferTable.toggleRowSelection(obj, true)
@@ -744,12 +726,19 @@ export default {
     },
     screening() {
       // 确定筛选方法
-      if (this.currentTable === 1) {
-        // 报价表
-        this.offerScreeningTable()
-      } else {
-        // 成交表
-        this.screeningTable()
+      switch (this.formType) {
+        case 1:
+          this.$refs.ScreeningForm.screening()
+          break
+        case 2:
+          this.$refs.ScreeningNumForm.screening()
+          break
+        case 3:
+          this.$refs.ScreeningStringForm.screening()
+          break
+        case 4:
+          this.$refs.ScreeningCheckboxForm.screening()
+          break
       }
     },
     offerScreeningTable() {
@@ -841,6 +830,13 @@ export default {
       this.updateFormVisible = false
     },
     screeningCallBack() {
+      if (this.currentTable === 1) {
+        // 报价表
+        this.offerScreeningTable()
+      } else {
+        // 成交表
+        this.screeningTable()
+      }
     },
     isScreeningByHeader(val) {
       // 根据当前表头查询是否已添加到搜索条件集合
@@ -980,15 +976,72 @@ export default {
     },
     saveEditCell() {
       console.info(this.offerSelection)
-      const data = {
-        moduleId: this.currentModuleId,
-        moduleName: this.editModuleForm.moduleName,
-        moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1),
-        offerModuleId: this.offerCurrentModuleId,
-        offerModuleName: this.editModuleForm.offerModuleName,
-        offerModuleHeaders: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
+      if (this.activeName === 'first') {
+        // 编辑当前成交模板
+        const modules = this.moduleList.filter(mod => mod.id === this.currentModuleId)
+        const module = modules[0]
+        if (this.editModuleForm.moduleName !== module.tempName) {
+          module.id = ''
+          module.tempName = this.editModuleForm.moduleName
+        }
+        const data = {
+          marketTempInfo: module,
+          colData: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
+        }
+        let newTempId = this.currentModuleId
+        saveTempInfo(data).then(res => {
+          console.info(res)
+          newTempId = res.tempId
+        })
+        this.editModuleIsOpen = false
+        // 根据返回的模板id查询表头信息
+        getTempById(newTempId).then(res => {
+          const { showCols, colData } = res
+          console.info(showCols)
+          this.tableHeader = showCols
+          this.colData = colData
+        })
+        // 获取满足条件的行情数据
+        this.loadTable()
+        this.currentModuleId = newTempId
+      } else if (this.activeName === 'second') {
+        // 编辑当前报价模板
+        const modules = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
+        const module = modules[0]
+        if (this.editModuleForm.offerModuleName !== module.tempName) {
+          module.id = ''
+          module.tempName = this.editModuleForm.offerModuleName
+        }
+        const data = {
+          marketTempInfo: module,
+          colData: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
+        }
+        let newTempId = this.offerCurrentModuleId
+        saveTempInfo(data).then(res => {
+          console.info(res)
+          newTempId = res.tempId
+        })
+        this.editModuleIsOpen = false
+        // 根据返回的模板id查询表头信息
+        getTempById(newTempId).then(res => {
+          const { showCols, colData } = res
+          console.info(showCols)
+          this.offerTableHeader = showCols
+          this.offerColData = colData
+        })
+        // 获取满足条件的行情数据
+        this.offerLoadTable()
+        this.offerCurrentModuleId = newTempId
       }
-      console.info(data)
+      // const data = {
+      //   moduleId: this.currentModuleId,
+      //   moduleName: this.editModuleForm.moduleName,
+      //   moduleHeaders: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1),
+      //   offerModuleId: this.offerCurrentModuleId,
+      //   offerModuleName: this.editModuleForm.offerModuleName,
+      //   offerModuleHeaders: this.offerCurrentModuleId === '' ? [] : this.editOfferTableHeaders.filter(v => this.offerSelection.indexOf(v) !== -1)
+      // }
+      // console.info(data)
       this.editModuleIsOpen = false
     },
     editCancel() {
@@ -1003,6 +1056,109 @@ export default {
         })
       })
       this.editModuleIsOpen = false
+    },
+    formatScreeningForm(value) {
+      // 处理筛选数据格式
+      value.map(val => {
+        // 判断表头类型
+        const headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        const type = headers[0].colType
+        const obj = {}
+        const data = val.screeningForm
+        switch (type) {
+          case 'DATE':// 日期型
+            obj.colName = val.headerKey
+            obj.colType = 'DATE'
+            if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
+              // 范围
+              obj.operator = 'BETWEEN'
+              if (typeof data.dateRange !== 'undefined') {
+                obj.value = (data.dateRange)[0] + ',' + (data.dateRange)[1]
+              }
+            } else {
+              // 单日
+              obj.operator = 'EQ'
+              obj.value = data.singleDate
+            }
+            if (typeof data.screeningSort !== 'undefined') {
+              obj.sort = obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
+            }
+            break
+          case 'NUMBER':// 数值型
+            obj.colName = val.headerKey
+            obj.colType = 'NUMBER'
+            if (typeof data.screeningNum === 'undefined') {
+              // 范围
+              obj.operator = 'BETWEEN'
+              if (typeof data.startNum !== 'undefined') {
+                obj.startvalue = data.startNum + ''
+              }
+              if (typeof data.endNum !== 'undefined') {
+                obj.endvalue = data.endNum + ''
+              }
+            } else {
+              if (data.absoluteValue) {
+                obj.operator = 'ABSEQ'
+              } else {
+                obj.operator = 'EQ'
+              }
+              obj.value = data.screeningNum + ''
+            }
+            if (typeof data.screeningSort !== 'undefined') {
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
+            }
+            break
+          case 'STRING':// 字符型
+            obj.colName = val.headerKey
+            obj.colType = 'STRING'
+            // 单日
+            obj.operator = 'LIKE'
+            obj.value = data.screeningString
+            if (typeof data.screeningSort !== 'undefined') {
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
+            }
+            break
+          case 'EQSTRING':// 字符型（不能模糊查询）
+            obj.colName = val.headerKey
+            obj.colType = 'EQSTRING'
+            // 单日
+            obj.operator = 'EQ'
+            obj.value = data.screeningString
+            if (typeof data.screeningSort !== 'undefined') {
+              obj.sort = data.screeningSort === '1' ? 'ASC' : 'DESC'
+            }
+            break
+          case 'OPTION':// 可选型
+            obj.colName = val.headerKey
+            obj.colType = 'OPTION'
+            if (typeof data.screeningCheckString === 'undefined') {
+              if (typeof data.screeningChecked === 'undefined') {
+                obj.operator = 'IN'
+                obj.value = ''
+                if (data.screeningChecked.length > 0) {
+                  for (let i = 0; i < data.screeningChecked.length; i++) {
+                    if (i === (data.screeningChecked.length - 1)) {
+                      obj.value = obj.value + data.screeningChecked[i]
+                    } else {
+                      obj.value = obj.value + data.screeningChecked[i] + ','
+                    }
+                  }
+                }
+              }
+            } else {
+              obj.operator = 'LIKE'
+              obj.value = data.screeningCheckString
+            }
+            break
+        }
+        this.searchParam.push(obj)
+      })
+    },
+    getcurveNames() {
+      // 加载曲线列表
+      getCurveList().then(response => {
+        this.curveList = response
+      })
     }
   }
 

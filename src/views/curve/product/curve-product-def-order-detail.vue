@@ -8,7 +8,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需编制方式">
-        <el-radio-group v-model="curvePrdOrder.buildType">
+        <el-radio-group v-model="curvePrdOrder.buildType" @change="disableCheck">
           <el-radio v-for="item in buildTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="该批次所需发布方式">
         <el-radio-group v-model="curvePrdOrder.publishType">
-          <el-radio v-for="item in publishTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in publishTypeOption" :key="item.value" :disabled="publishTypeDisabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="曲线发布类型">
@@ -213,7 +213,9 @@ export default {
       // 曲线产品自动编制关键期限
       curvePrdOrderAutoKtList: [],
       // 自动编制关键期限，勾选内容
-      prdOrderAutoKdsKeys: []
+      prdOrderAutoKdsKeys: [],
+      // 发布方式disable
+      publishTypeDisabled: false
     }
   },
   computed: {
@@ -505,6 +507,17 @@ export default {
       }).catch(() => {
         console.info('cancle')
       })
+    },
+    disableCheck() {
+      // eslint-disable-next-line eqeqeq
+      // 如果编制方式选择 人工干预编制，发布方式默认选择人工发布，且置灰
+      // eslint-disable-next-line eqeqeq
+      if (this.curvePrdOrder.buildType === '1') {
+        this.curvePrdOrder.publishType = '1'
+        this.publishTypeDisabled = true
+      } else {
+        this.publishTypeDisabled = false
+      }
     }
   }
 }

@@ -12,20 +12,22 @@ export function queryValuation(data) {
   )
 }
 // 查询估值点差方案
-export function queryValuationScheme() {
+export function queryValuationScheme(data) {
   return request(
     {
       url: `${basic_api_valuation}/query/query-valuation-scheme`,
-      method: 'post'
+      method: 'post',
+      data: data
     }
   )
 }
 // 查询人工估值
-export function queryPeopleValuation() {
+export function queryPeopleValuation(data) {
   return request(
     {
       url: `${basic_api_valuation}/query/query-people-valuation`,
-      method: 'post'
+      method: 'post',
+      data: data
     }
   )
 }

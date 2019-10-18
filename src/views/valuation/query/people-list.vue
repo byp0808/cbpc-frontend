@@ -13,7 +13,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column align="center" label="全选" type="selection" />
-        <el-table-column label="估值日期" align="center">
+        <el-table-column label="估值日期" width="180" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.cptDate }}</span>
           </template>
@@ -35,7 +35,7 @@
         </el-table-column>
         <el-table-column label="债券代码" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.CSIN }}</span>
+            <span>{{ scope.row.csin }}</span>
           </template>
         </el-table-column>
         <el-table-column label="日间估价全价（元）" align="center" width="160px">
