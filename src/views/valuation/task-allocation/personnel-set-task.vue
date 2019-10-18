@@ -3,7 +3,7 @@
     <PersonnelSetForm
       ref="refPersonnelSetForm"
       :disabled="disabled"
-      :task-range-id="businessNo"
+      :group-id="businessNo"
     />
     <div class="button-box-fixed">
       <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
