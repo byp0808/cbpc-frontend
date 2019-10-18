@@ -14,7 +14,7 @@
             </el-select>
           </el-form-item>
           <el-form-item class="placeholder" label="推荐曲线">
-            <span>{{getCurveName(recCurveName)}}</span>
+            <span>{{ getCurveName(recCurveName) }}</span>
           </el-form-item>
         </div>
       </el-col>
@@ -31,7 +31,7 @@
             </el-select>
           </el-form-item>
           <el-form-item class="placeholder" label="存量隐含评级">
-            <span>{{stockMarketGrade}}</span>
+            <span>{{ stockMarketGrade }}</span>
           </el-form-item>
         </div>
       </el-col>
@@ -47,7 +47,7 @@
     <el-row :gutter="10">
       <el-card class="box-card margin-top">
         <el-form-item label="调整方式">
-          <el-select size="small" v-model="normalInfo.valuationScheme.cdsPremAdjWay" placeholder="请选择">
+          <el-select v-model="normalInfo.valuationScheme.cdsPremAdjWay" size="small" placeholder="请选择">
             <el-option
               v-for="(name, key) in $dict('ADJ_WAY')"
               :key="key"
@@ -59,7 +59,7 @@
         <template>
           <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '01'">
             <el-form-item label="调整类型" class="display-inline">
-              <el-select with="80%" size="small"  v-model="normalInfo.valuationScheme.cdsPremAdjType" placeholder="请选择">
+              <el-select v-model="normalInfo.valuationScheme.cdsPremAdjType" with="80%" size="small" placeholder="请选择">
                 <el-option
                   v-for="(name, key) in $dict('ADJ_TYPE')"
                   :key="key"
@@ -69,103 +69,106 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="normalInfo.valuationScheme.cdsPremAdjType === '01'" class="display-inline" label="点差">
-              <el-input-number size="small" v-model="normalInfo.valuationScheme.spreadValue"/>
+              <el-input-number v-model="normalInfo.valuationScheme.spreadValue" size="small" :min="-99999" :max="99999" />
             </el-form-item>
             <template v-else-if="normalInfo.valuationScheme.cdsPremAdjType === '02'">
               <el-form-item label="初始点差" class="display-inline">
-                <el-input-number size="small" v-model="normalInfo.spreadStart" @change="handleChange" />
+                <el-input-number v-model="normalInfo.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
               </el-form-item>
               <el-form-item label="最终点差" class="display-inline">
-                <el-input-number size="small" v-model="normalInfo.spreadEnd" @change="handleChange" />
+                <el-input-number v-model="normalInfo.spreadEnd" size="small" :min="-99999" :max="99999" @change="handleChange" />
               </el-form-item>
               <el-form-item label="调整幅度" class="display-inline">
-                <el-input-number size="small" v-model="normalInfo.cdsAdjValue" @change="handleChange" /><span class="unit">/批</span>
+                <el-input-number v-model="normalInfo.cdsAdjValue" size="small" @change="handleChange" /><span class="unit">/批</span>
               </el-form-item>
             </template>
             <el-row>
-              <el-button @click="spreadTrial" size="small" type="primary" style="margin: 0 0 20px 0">试算</el-button>
+              <el-button size="small" type="primary" style="margin: 0 0 20px 0" @click="spreadTrial">试算</el-button>
               <el-table
+                ref="spreadTable01"
                 :data="normalInfo.schemeSpreads"
                 border
                 size="mini"
-                ref="spreadTable01"
               >
                 <el-table-column
-                  width="55">
+                  width="55"
+                >
                   <template slot-scope="{ row, $index }">
-                    <el-radio v-model="selectSpreadVal" :label="$index" @change="selectSpread">&nbsp</el-radio>
+                    <el-radio v-model="selectSpreadVal" :label="$index" @change="selectSpread">&nbsp;</el-radio>
                   </template>
                 </el-table-column>
                 <el-table-column
                   prop="ttmValue"
-                  label="待尝期">
-                </el-table-column>
+                  label="待尝期"
+                />
                 <el-table-column
                   prop="relaSpread"
                   label="相对点差"
-                  width="180">
-                </el-table-column>
+                  width="180"
+                />
                 <el-table-column
                   prop="dprice"
-                  label="全价">
-                </el-table-column>
+                  label="全价"
+                />
                 <el-table-column
                   prop="cprice"
-                  label="净价">
-                </el-table-column>
+                  label="净价"
+                />
                 <el-table-column
                   prop="yield"
-                  label="收益率">
-                </el-table-column>
+                  label="收益率"
+                />
                 <el-table-column
                   prop="recoDire"
-                  label="公式库推荐">
-                </el-table-column>
+                  label="公式库推荐"
+                />
               </el-table>
             </el-row>
           </div>
           <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '02'">
+            <!-- <el-form ref="relativeRule" :model="normalInfo.valuationScheme" :rules="relativeRule"> -->
             <el-form-item label="相对点差" class="display-inline">
-              <el-input-number size="small" v-model="normalInfo.valuationScheme.relaSpread" :min="1"/><span class="unit">%</span>
+              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" :min="0" :max="100" /><span class="unit">%</span>
             </el-form-item>
+            <!-- </el-form> -->
             <el-row>
               <el-button size="small" type="primary" style="margin: 0 0 20px 0">试算</el-button>
               <el-table
+                ref="spreadTable02"
                 :data="normalInfo.valuationScheme.schemeSpread"
                 border
                 size="mini"
-                ref="spreadTable02"
               >
                 <el-table-column
                   type="selection"
-                  width="55">
-                </el-table-column>
+                  width="55"
+                />
                 <el-table-column
                   prop="date"
                   label="待尝期"
-                  width="180">
-                </el-table-column>
+                  width="180"
+                />
                 <el-table-column
                   prop="name"
                   label="绝对点差"
-                  width="180">
-                </el-table-column>
+                  width="180"
+                />
                 <el-table-column
                   prop="address"
-                  label="全价">
-                </el-table-column>
+                  label="全价"
+                />
                 <el-table-column
                   prop="address"
-                  label="净价">
-                </el-table-column>
+                  label="净价"
+                />
                 <el-table-column
                   prop="address"
-                  label="收益率">
-                </el-table-column>
+                  label="收益率"
+                />
                 <el-table-column
                   prop="address"
-                  label="公式库推荐">
-                </el-table-column>
+                  label="公式库推荐"
+                />
               </el-table>
             </el-row>
           </div>
@@ -173,55 +176,58 @@
             <el-row>
               <div style="margin: 30px 0 20px 0">
                 <el-button size="small" type="">选择市场价格</el-button>
-                <el-button @click="spreadTrial" size="small" type="primary">试算</el-button>
+                <el-button size="small" type="primary" @click="spreadTrial">试算</el-button>
               </div>
               <el-table
+                ref="spreadTable03"
                 :data="normalInfo.valuationScheme.schemeSpread"
                 size="mini"
                 border
-                ref="spreadTable03"
               >
                 <el-table-column
                   type="selection"
-                  width="55">
-                </el-table-column>
+                  width="55"
+                />
                 <el-table-column
                   prop="date"
-                  label="待尝期">
-                </el-table-column>
+                  label="待尝期"
+                />
                 <el-table-column
                   prop="dPrice"
-                  label="全价">
+                  label="全价"
+                >
                   <template slot-scope="{ row }">
-                    <el-input size="mini" class="no-border" v-model="row.id"></el-input>
+                    <el-input v-model="row.id" size="mini" class="no-border" />
                   </template>
                 </el-table-column>
                 <el-table-column
                   prop="cPrice"
-                  label="净价">
+                  label="净价"
+                >
                   <template slot-scope="{ row }">
-                    <el-input size="mini" class="no-border" v-model="row.id"></el-input>
+                    <el-input v-model="row.id" size="mini" class="no-border" />
                   </template>
                 </el-table-column>
                 <el-table-column
                   prop="yield"
-                  label="收益率">
+                  label="收益率"
+                >
                   <template slot-scope="{ row }">
-                    <el-input size="mini" class="no-border" v-model="row.id"></el-input>
+                    <el-input v-model="row.id" size="mini" class="no-border" />
                   </template>
                 </el-table-column>
                 <el-table-column
                   prop="address"
-                  label="绝对点差">
-                </el-table-column>
+                  label="绝对点差"
+                />
                 <el-table-column
                   prop="address"
-                  label="相对点差 %">
-                </el-table-column>
+                  label="相对点差 %"
+                />
                 <el-table-column
                   prop="address"
-                  label="公式库推荐">
-                </el-table-column>
+                  label="公式库推荐"
+                />
               </el-table>
             </el-row>
           </div>
@@ -232,10 +238,10 @@
       <el-col :span="18">
         <el-card class="box-card margin-top">
           <el-form-item class="display-inline" label="目标流动性点差">
-            <el-input-number size="small" v-model="normalInfo.valuationScheme.flAdjValue" @change="handleChange" />
+            <el-input-number v-model="normalInfo.valuationScheme.flAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
           </el-form-item>
           <el-form-item class="display-inline" label="目标其他点差">
-            <el-input-number size="small" v-model="normalInfo.valuationScheme.otAdjValue" @change="handleChange" />
+            <el-input-number v-model="normalInfo.valuationScheme.otAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
           </el-form-item>
           <el-form-item class="display-inline" label="含权推荐方向">
             <el-select v-model="normalInfo.valuationScheme.recoDire" placeholder="请选择">
@@ -253,17 +259,21 @@
         <el-card class="box-card margin-top">
           <el-upload
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="3"
+            action=""
+            :before-upload="handlePreview"
+            name="attach"
+            :http-request="uploadFile"
             :on-exceed="handleExceed"
-            :file-list="fileList">
+            :before-remove="remove"
+            multiple
+            :limit="1"
+            accept=".xlsx,.pdf,.xls,.doc,.docx"
+            :file-list="fileList"
+          >
             <el-button size="small" type="primary">上传估值判断依据</el-button>
             <div slot="tip" class="el-upload__tip">只能上传world/excel/pdf文件，且不超过1MB</div>
           </el-upload>
+          <div v-if="showTime" class="uploadTime">上传时间：{{ updateTime }}</div>
         </el-card>
       </el-col>
     </el-row>
@@ -272,27 +282,32 @@
 
 <script>
 import { getCurveList, findCurveByMarketGrade, spreadTrial } from '@/api/valuation/scheme.js'
+import { basic_api_valuation } from '@/api/base-api.js'
+import { upload } from '../../../utils/file-request'
 export default {
   name: 'ValuationSchemeNormal',
+  components: {
+  },
   props: {
     schemeInfo: {
       type: Object,
       required: true
     }
   },
-  components: {
-  },
   data() {
     return {
       isCover: true,
       recCurveName: this.schemeInfo.curveId,
+      uploadUrl: `${basic_api_valuation}/scheme/upload`,
       stockMarketGrade: '存量隐含评级',
       selectSpreadVal: 1,
+      updateTime: '',
+      fileList: [],
+      showTime: false,
       normalInfo: {
         spreadStart: this.schemeInfo.spreadStart,
         spreadEnd: this.schemeInfo.spreadEnd,
         cdsAdjValue: this.schemeInfo.cdsAdjValue,
-
         valuationScheme: {
           curveId: this.schemeInfo.curveId,
           marketGrade: this.schemeInfo.marketGrade,
@@ -331,6 +346,43 @@ export default {
     selectSpread(index) {
       this.normalInfo.schemeSpreads[index].status = '1'
     },
+    // changePower(e) {
+    //   this.normalInfo.valuationScheme.recoDire = e
+    // },
+    uploadFile(data) {
+      // const date = new Date()
+      // const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + date.getHours() + ':' + date.getMinutes()
+      // this.fileList.push({ name: `${data.file.name}-${today}` })
+      const form = new FormData()
+      form.append('data', data.file)
+      upload({
+        url: this.uploadUrl,
+        data: form
+      }).then(response => {
+        data.onSuccess(response)
+        const date = new Date()
+        this.showTime = true
+        this.updateTime = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+      })
+    },
+    handleExceed() {
+      this.$message.warning('当前只能上传1个文件')
+    },
+    remove(e) { // 移除上传时间
+      if (e.status === 'success') {
+        this.showTime = false
+      }
+    },
+    handlePreview(data) {
+      console.log('data', data)
+      if (data.size > 8388608) {
+        this.$message.warning('上传的文件应小于1M')
+        return false
+      }
+    },
+    handleChange(e) {
+
+    },
     spreadTrial() {
       spreadTrial().then(response => {
         const { dataList } = response
@@ -351,4 +403,9 @@ export default {
     box-shadow: unset;
     -webkit-box-shadow: unset;
   }
+ .uploadTime {
+   font-size: 12px;
+   color: #999;
+   margin-top: 10px;
+ }
 </style>

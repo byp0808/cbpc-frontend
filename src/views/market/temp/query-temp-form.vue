@@ -343,6 +343,14 @@ export default {
           return false
         }
       }
+      // console.log(this.extendColInfo.operatorType, this.extendColInfo.computeExp)
+      if (this.extendColInfo.operatorType === '4' && this.extendColInfo.computeExp === '0') {
+        this.$message({
+          message: '除数不能为0',
+          type: 'error'
+        })
+        return false
+      }
       if (this.extendColInfo.index != null) {
         var index = this.extendColInfo.index
         var that = this
