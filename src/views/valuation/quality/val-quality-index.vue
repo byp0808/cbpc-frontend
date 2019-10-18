@@ -76,16 +76,19 @@
       <div slot="header" class="clearfix card-head">
         <h3>估值为0</h3>
       </div>
+      <ValValList ref="gzwl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'cbf'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>成本法</h3>
       </div>
+      <ValNetPrcList ref="cbf" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'cfgz'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>重复估值</h3>
       </div>
+      <ReValList ref="cfgz" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
 
     <!--<el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置估值质检参数" :visible.sync="orderSetFormVisible">-->
@@ -107,6 +110,9 @@ import ValNetPrcShkList from '@/views/valuation/quality/val-netprc-shk-list.vue'
 import ValYieldShkList from '@/views/valuation/quality/val-yield-shk-list.vue'
 import ValAccIntrstAlertList from '@/views/valuation/quality/val-intrst-alert-list.vue'
 import ValFTQList from '@/views/valuation/quality/val-ftq-list.vue'
+import ValNetPrcList from '@/views/valuation/quality/val-netprc-list.vue'
+import ValValList from '@/views/valuation/quality/val-val-list.vue'
+import ReValList from '@/views/valuation/quality/val-reval-list.vue'
 import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
 
@@ -117,7 +123,10 @@ export default {
     ValNetPrcShkList,
     ValYieldShkList,
     ValAccIntrstAlertList,
-    ValFTQList
+    ValFTQList,
+    ValNetPrcList,
+    ValValList,
+    ReValList
   },
   props: {
     orderId: {},

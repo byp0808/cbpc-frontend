@@ -59,7 +59,7 @@ export function qryValNetPrcQcRpt(data) {
 // 查询估值产品估值为0质检报告
 export function qryValValQcRpt(data) {
   return request({
-    url: `${basic_api_valuation}` + '/vql/quality/qryValNumChgQcRpt',
+    url: `${basic_api_valuation}` + '/vql/quality/qryValValQcRpt',
     method: 'post',
     data: data
   })
