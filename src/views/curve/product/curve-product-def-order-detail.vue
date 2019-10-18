@@ -8,7 +8,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需编制方式">
-        <el-radio-group v-model="curvePrdOrder.buildType">
+        <el-radio-group v-model="curvePrdOrder.buildType" @change="disableCheck">
           <el-radio v-for="item in buildTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -292,8 +292,6 @@ export default {
         this.prdOrderAutoKdsKeys.push(this.prdOrderAutoKds[i].standSlip)
       }
     }
-
-    this.disableCheck()
   },
   methods: {
     // 获取获取批次信息
