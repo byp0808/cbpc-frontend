@@ -521,9 +521,13 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     offerToUse() {
       // 应用报价表模板
@@ -663,9 +667,13 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     toUse() {
       // 应用成交表模板

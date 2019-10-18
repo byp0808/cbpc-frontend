@@ -316,9 +316,13 @@ export default {
       // console.info(row)
       // console.info('头')
       // console.info(header)
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     headerScreening(column) {
       // 表头点击事件
