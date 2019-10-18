@@ -504,7 +504,7 @@ export default {
       const tabs = this.offerTableHeader.filter(tab => tab.colName === title)
       const tab = tabs[0]
       console.info(row[title])
-      if (tab.modiFlag === 'y') {
+      if (tab.modiFlag === 'Y') {
         this.currentRow = row
         this.currentHeader.key = column.property
         this.currentHeader.label = column.label
@@ -643,7 +643,7 @@ export default {
       const tabs = this.tableHeader.filter(tab => tab.colName === title)
       const tab = tabs[0]
       console.info(row[title])
-      if (tab.modiFlag === 'y') {
+      if (tab.modiFlag === 'Y') {
         console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -842,6 +842,7 @@ export default {
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
+
           content: content
         }
         console.info('成交表修改')

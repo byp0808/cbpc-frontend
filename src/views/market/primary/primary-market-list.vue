@@ -302,7 +302,7 @@ export default {
       const tabs = this.tableHeader.filter(tab => tab.colName === title)
       const tab = tabs[0]
       console.info(row[title])
-      if (tab.modiFlag === 'y') {
+      if (tab.modiFlag === 'Y') {
         console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
