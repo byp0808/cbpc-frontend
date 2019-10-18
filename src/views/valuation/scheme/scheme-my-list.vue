@@ -353,12 +353,13 @@
     </el-dialog>
     <el-dialog :visible.sync="adjustDialog" :title="countTitle" width="1200px">
       <el-tabs v-model="activeName" type="card" @tab-click="tabClick">
-        <el-tab-pane v-for="item in tabPaneList" :key="item.name" :label="item.label" :name="item.name">
-          <transition name="el-fade-in-linear">
-            <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
-          </transition>
-        </el-tab-pane>
+        <el-tab-pane v-for="item in tabPaneList" :key="item.name" :label="item.label" :name="item.name" />
       </el-tabs>
+      <transition name="el-fade-in-linear">
+        <div>
+          <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
+        </div>
+      </transition>
     </el-dialog>
     <el-dialog :visible.sync="oppositeDialog" title="对敲券人工识别" width="1000px">
       <opposite-form :is-opposite="islookOpposite" />
@@ -794,14 +795,17 @@ export default {
         return this.$message.warning('请输入一种目标点差')
       }
       if (this.radio === '2') {
-        if (!this.valuationScheme.cdsAdjValue) {
+        if (!this.valuationScheme.cdsAdjValue && this.valuationScheme.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
-        if (!this.valuationScheme.spreadStart) {
+        if (!this.valuationScheme.spreadStart && this.valuationScheme.spreadStart !== 0) {
           return this.$message.warning('请输入初始点差')
         }
-        if (!this.valuationScheme.spreadEnd) {
+        if (!this.valuationScheme.spreadEnd && this.valuationScheme.spreadEnd !== 0) {
           return this.$message.warning('请输入最终点差')
+        }
+        if (this.valuationScheme.spreadStart >= this.valuationScheme.spreadEnd) {
+          return this.$message.warning('最终点差应大于初始点差')
         }
       }
       this.selectBondId()
@@ -818,7 +822,7 @@ export default {
       if (this.taskLists.length === 0) {
         return this.$message.warning('请至少选择一条任务进行调整')
       }
-      if (!this.valuationScheme.flAdjValue) {
+      if (!this.valuationScheme.flAdjValue && this.valuationScheme.flAdjValue !== 0) {
         return this.$message.warning('请输入目标流动性点差')
       }
       // this.valuationScheme.tasks = this.tasks
@@ -836,7 +840,7 @@ export default {
       if (this.taskLists.length === 0) {
         return this.$message.warning('请至少选择一条任务进行调整')
       }
-      if (!this.valuationScheme.otAdjValue) {
+      if (!this.valuationScheme.otAdjValue && this.valuationScheme.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
       // this.valuationScheme.tasks = this.tasks
