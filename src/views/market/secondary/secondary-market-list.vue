@@ -834,7 +834,10 @@ export default {
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
-          content: content
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '01'
         }
         console.info('报价表修改')
         console.info(data)
@@ -854,8 +857,10 @@ export default {
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
-
-          content: content
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '02'
         }
         console.info('成交表修改')
         console.info(data)

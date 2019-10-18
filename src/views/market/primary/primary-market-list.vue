@@ -425,7 +425,9 @@ export default {
       const data = {
         currentHeader: headers[0],
         currentRow: this.currentRow,
-        content: content
+        content: content,
+        tempId: this.currentModuleId,
+        dataMarket: '01'
       }
       console.info('一级行情表修改')
       console.info(data)
