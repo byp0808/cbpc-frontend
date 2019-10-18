@@ -795,14 +795,17 @@ export default {
         return this.$message.warning('请输入一种目标点差')
       }
       if (this.radio === '2') {
-        if (!this.valuationScheme.cdsAdjValue) {
+        if (!this.valuationScheme.cdsAdjValue && this.valuationScheme.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
-        if (!this.valuationScheme.spreadStart) {
+        if (!this.valuationScheme.spreadStart && this.valuationScheme.spreadStart !== 0) {
           return this.$message.warning('请输入初始点差')
         }
-        if (!this.valuationScheme.spreadEnd) {
+        if (!this.valuationScheme.spreadEnd && this.valuationScheme.spreadEnd !== 0) {
           return this.$message.warning('请输入最终点差')
+        }
+        if (this.valuationScheme.spreadStart >= this.valuationScheme.spreadEnd) {
+          return this.$message.warning('最终点差应大于初始点差')
         }
       }
       this.selectBondId()
@@ -819,7 +822,7 @@ export default {
       if (this.taskLists.length === 0) {
         return this.$message.warning('请至少选择一条任务进行调整')
       }
-      if (!this.valuationScheme.flAdjValue) {
+      if (!this.valuationScheme.flAdjValue && this.valuationScheme.flAdjValue !== 0) {
         return this.$message.warning('请输入目标流动性点差')
       }
       // this.valuationScheme.tasks = this.tasks
@@ -837,7 +840,7 @@ export default {
       if (this.taskLists.length === 0) {
         return this.$message.warning('请至少选择一条任务进行调整')
       }
-      if (!this.valuationScheme.otAdjValue) {
+      if (!this.valuationScheme.otAdjValue && this.valuationScheme.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
       // this.valuationScheme.tasks = this.tasks
