@@ -425,7 +425,13 @@ export default {
       })
     },
     handleDelete(index, rows) {
-      rows.splice(index, 1)
+      this.$confirm('确认删除此数据?', '提示', {
+        type: 'warning'
+      }).then(() => {
+        rows.splice(index, 1)
+      }).catch(() => {
+      })
+
     },
     // NK编辑
     handleEditNK(index, rows) {
