@@ -14,7 +14,7 @@
       </el-form-item>
       <el-form-item label="该批次所需计算方式">
         <el-radio-group v-model="curvePrdOrder.computedType">
-          <el-radio v-for="item in computedTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-radio>
+          <el-radio v-for="item in computedTypeOption" :key="item.value" :disabled="computedTypeDisabled" :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="该批次所需发布方式">
@@ -217,6 +217,8 @@ export default {
       prdOrderAutoKdsKeys: [],
       tmp_prdOrderAutoKdsKeys: [], // 编辑时修改数据
       tmp_curvePrdOrderAutoList: [], // 编辑时自动编制列表，保存后，同步curvePrdOrderAutoList
+      // 计算方式disable
+      computedTypeDisabled: false,
       // 发布方式disable
       publishTypeDisabled: false
     }
@@ -259,6 +261,17 @@ export default {
       return optioins(this, 'AUTO_RULE')
     }
   },
+  watch: {
+    'curvePrdOrder.buildType'(newVal, oldVal) {
+      this.disableCheck()
+    },
+    'curvePrdOrder.computedType'(newVal, oldVal) {
+      this.disableCheck()
+    },
+    'curvePrdOrder.publishType'(newVal, oldVal) {
+      this.disableCheck()
+    }
+  },
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
 
@@ -292,6 +305,7 @@ export default {
         this.prdOrderAutoKdsKeys.push(this.prdOrderAutoKds[i].standSlip)
       }
     }
+    this.disableCheck()
   },
   methods: {
     // 获取获取批次信息
@@ -405,8 +419,8 @@ export default {
     },
     // 检查曲线ID
     checkPrdOrderAuto(curveId) {
-      for (var i = 0; i < this.tmp_curvePrdOrderAutoList.length; i++) {
-        var item = this.tmp_curvePrdOrderAutoList[i]
+      for (var i = 0; i < this.curvePrdOrderAutoList.length; i++) {
+        var item = this.curvePrdOrderAutoList[i]
         if (item.curveId === curveId) {
           return false
         }
@@ -537,10 +551,23 @@ export default {
       // 如果编制方式选择 人工干预编制，发布方式默认选择人工发布，且置灰
       // eslint-disable-next-line eqeqeq
       if (this.curvePrdOrder.buildType === '1') {
+        this.curvePrdOrder.computedType = '1'
         this.curvePrdOrder.publishType = '1'
+        this.computedTypeDisabled = true
         this.publishTypeDisabled = true
-      } else {
-        this.publishTypeDisabled = false
+      } else if (this.curvePrdOrder.buildType === '2') {
+        this.computedTypeDisabled = false
+        if (this.curvePrdOrder.computedType === '1') {
+          this.publishTypeDisabled = true
+          this.curvePrdOrder.publishType = '1'
+        } else {
+          this.publishTypeDisabled = true
+          this.curvePrdOrder.publishType = '2'
+        }
+      }
+      if (this.disabled) {
+        this.computedTypeDisabled = true
+        this.publishTypeDisabled = true
       }
     },
     handleSelectionChange(items) {
