@@ -281,7 +281,7 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'SecondaryMarketList',
@@ -383,7 +383,8 @@ export default {
       }
       queryDefaultCols(data).then(response => {
         const { showCols, colData } = response
-        console.info(showCols)
+        // console.info(showCols)
+        // console.info(colData)
         this.offerTableHeader = showCols
         this.offerColData = colData
       })
@@ -394,7 +395,7 @@ export default {
         shawArea: '01'
       }
       queryMarketData(data2).then(response => {
-        console.info(response)
+        // console.info(response)
         // this.offerPage = response.page
         this.offerMarketList = response.dataList
       })
@@ -411,7 +412,8 @@ export default {
       }
       queryDefaultCols(data).then(response => {
         const { showCols, colData } = response
-        console.info(showCols)
+        // console.info(showCols)
+        // console.info(colData)
         this.tableHeader = showCols
         this.colData = colData
       })
@@ -499,8 +501,10 @@ export default {
       // 报价表格双击事件
       this.currentTable = 1
       const title = column.property
+      const tabs = this.offerTableHeader.filter(tab => tab.colName === title)
+      const tab = tabs[0]
       console.info(row[title])
-      if (!row[title].isNull) {
+      if (tab.modiFlag === 'Y') {
         this.currentRow = row
         this.currentHeader.key = column.property
         this.currentHeader.label = column.label
@@ -517,7 +521,13 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     offerToUse() {
       // 应用报价表模板
@@ -636,8 +646,10 @@ export default {
       // 成交表格双击事件
       this.currentTable = 2
       const title = column.property
+      const tabs = this.tableHeader.filter(tab => tab.colName === title)
+      const tab = tabs[0]
       console.info(row[title])
-      if (!row[title].isNull) {
+      if (tab.modiFlag === 'Y') {
         console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -655,7 +667,13 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     toUse() {
       // 应用成交表模板
@@ -808,21 +826,52 @@ export default {
     updateCell() {
       // 确定修改方法
       const content = this.updateForm.updateContent
-      alert('确定修改')
-      alert(content)
-      const data = {
-        currentHeader: this.currentHeader,
-        currentRow: this.currentRow,
-        content: content
-      }
       if (this.currentTable === 1) {
         // 报价表
+        const headers = this.offerTableHeader.filter(tab => tab.colName === this.currentHeader.key)
+        // console.info('确定修改')
+        // alert(content)
+        const data = {
+          currentHeader: headers[0],
+          currentRow: this.currentRow,
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '01'
+        }
         console.info('报价表修改')
         console.info(data)
+        saveMarketData(data).then(res => {
+          console.info(res)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+        this.offerLoadTable()
       } else {
         // 成交表
+        const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
+        // console.info('确定修改')
+        // alert(content)
+        const data = {
+          currentHeader: headers[0],
+          currentRow: this.currentRow,
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '02'
+        }
         console.info('成交表修改')
         console.info(data)
+        saveMarketData(data).then(res => {
+          console.info(res)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+        })
+        this.loadTable()
       }
       this.updateForm.updateContent = ''
       this.currentRow = {}

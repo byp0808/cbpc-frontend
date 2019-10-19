@@ -116,7 +116,7 @@
 <script>
 import { selectCurve, selectCurveTask, updateCurveTask, selectPerson, chaimCurveTask } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
-import { uploadFile } from '@/utils/request-client'
+import { upload } from '@/utils/file-request'
 import { basic_api_curve } from '@/api/base-api'
 export default {
   name: 'AllTaskList',
@@ -230,7 +230,7 @@ export default {
     upload(param) {
       const data = new FormData()
       data.append('files', param.file)
-      uploadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/uploadCurveSolutions', data)
+      upload(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/uploadCurveSolutions', data)
         .then(() => {
           this.$message({
             showClose: true,

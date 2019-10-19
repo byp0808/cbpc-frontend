@@ -13,7 +13,7 @@
         <el-table-column prop="taskRangeName" label="范围名称" min-width="35%" show-overflow-tooltip />
         <el-table-column prop="userId" label="分配人员" min-width="35%" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span>{{ ruleDetail(scope.row.taskRangeId) }}</span>
+            <span>{{ ruleDetail(scope.row.groupId) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
@@ -23,10 +23,10 @@
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
           <template slot-scope="scope">
-            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.taskRangeId)">设置</el-button>
-            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.taskRangeId)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.taskRangeId)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.taskRangeId)">启用</el-button>
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.groupId)">设置</el-button>
+            <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.groupId)">删除</el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.groupId)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.groupId)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,7 +47,7 @@
         <PersonnelSetForm
           ref="refPersonnelSetForm"
           :disabled="disabled"
-          :task-range-id="taskRangeId"
+          :group-id="groupId"
           @saveCallBack="saveCallBack"
         />
         <div slot="footer" class="dialog-footer">
@@ -72,7 +72,7 @@ export default {
       taskAllocationList: [],
       personnelList: [],
       distRatioList: [], // 人员任务分配列表
-      taskRangeId: '',
+      groupId: '',
       disabled: false,
       page: {
         pageNumber: 1,
@@ -120,7 +120,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delTaskAllocation({ taskRangeId: id }).then(response => {
+        delTaskAllocation({ groupId: id }).then(response => {
           this.load()
           this.$message({
             message: '删除成功！',
@@ -136,7 +136,7 @@ export default {
       })
     },
     start(id) {
-      editTaskAllocation({ taskRangeId: id, busiStatus: '02' }).then(response => {
+      editTaskAllocation({ groupId: id, busiStatus: '02' }).then(response => {
         console.log(id)
         this.load()
         this.$message({
@@ -147,7 +147,7 @@ export default {
       })
     },
     stop(id) {
-      editTaskAllocation({ taskRangeId: id, busiStatus: '03' }).then(response => {
+      editTaskAllocation({ groupId: id, busiStatus: '03' }).then(response => {
         this.load()
         this.$message({
           message: '已停用！',
@@ -157,12 +157,12 @@ export default {
       })
     },
     edit(id) {
-      this.taskRangeId = id
+      this.groupId = id
       this.disabled = false
       this.personnelFormVisible = true
     },
     add() {
-      this.taskRangeId = ''
+      this.groupId = ''
       this.disabled = false
       this.personnelFormVisible = true
     },
@@ -170,9 +170,9 @@ export default {
       this.personnelFormVisible = false
       this.load()
     },
-    ruleDetail(taskRangeId) {
+    ruleDetail(groupId) {
       const that = this
-      const ruleList = this.$lodash.get(this.distRatioList, taskRangeId)
+      const ruleList = this.$lodash.get(this.distRatioList, groupId)
       let ruleDetail = ''
       this.$lodash.forEach(ruleList, function(value, key) {
         ruleDetail += that.personnelList[that.$lodash.findIndex(that.personnelList, ['userId', value.userId])].userName + ':' + value.distRatio + '%'

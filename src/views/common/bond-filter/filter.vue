@@ -67,7 +67,7 @@
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
               <span>筛选结果<span class="text-smaller text-placeholder">共{{ bondListResult.length }}条</span></span>
-              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px" :disabled="disabled">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
             </div>
@@ -111,7 +111,7 @@
             <div slot="header" class="clearfix card-head">
               <div>黑名单</div>
               <div class="input-box">
-                <el-input v-model="input5" placeholder="请输入内容" size="mini">
+                <el-input v-model="input5" placeholder="请输入内容" size="mini" :disabled="disabled">
                   <el-button slot="append" icon="el-icon-search" />
                 </el-input>
               </div>
@@ -184,7 +184,7 @@
             <div slot="header" class="clearfix card-head">
               <div>白名单</div>
               <div class="input-box">
-                <el-input v-model="input5" placeholder="请输入内容" size="mini">
+                <el-input v-model="input5" placeholder="请输入内容" size="mini" :disabled="disabled">
                   <el-button slot="append" icon="el-icon-search" />
                 </el-input>
               </div>
@@ -241,7 +241,7 @@
       <el-col :span="8">
         <div class="grid-content bg-purple-light">
           <el-card class="box-card margin-top">
-            <el-input v-model="input5" placeholder="请输入内容" prefix-icon="el-icon-search">
+            <el-input v-model="input5" placeholder="请输入内容" prefix-icon="el-icon-search" :disabled="disabled">
               <el-button slot="append" icon="el-icon-search" />
             </el-input>
             <el-table

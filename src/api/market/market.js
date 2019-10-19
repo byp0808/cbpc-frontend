@@ -45,3 +45,12 @@ export function saveTempInfo(data) {
   })
 }
 
+// 保存模板信息
+export function saveMarketData(data) {
+  return request({
+    url: `${basic_api_market}/market-temp/saveMarketData`,
+    method: 'post',
+    data
+  })
+}
+
