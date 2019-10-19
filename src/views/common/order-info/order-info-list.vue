@@ -55,8 +55,8 @@
         show-overflow-tooltip
         width="160"
       >
-        <template slot-scope="{row}">
-          {{ $dft('MARKET', row.marketId) }}
+        <template slot-scope="">
+          中国市场
         </template>
       </el-table-column>
       <el-table-column

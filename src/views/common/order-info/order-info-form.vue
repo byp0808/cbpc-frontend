@@ -40,10 +40,10 @@
               <el-form-item label="所属市场" prop="marketId">
                 <el-select v-model="orderInfoForm.marketId" :disabled="disabled" placeholder="请选择所属市场" style="width: 100%">
                   <el-option
-                    v-for="(name, key) in $dict('MARKET')"
-                    :key="key"
-                    :label="name"
-                    :value="key"
+                    v-for="item in solidMarket"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key"
                   />
                 </el-select>
               </el-form-item>
@@ -122,6 +122,10 @@ export default {
       }
     }
     return {
+      solidMarket: [{
+        key: 'china',
+        name: '中国市场'
+      }],
       rules: {
         basePrd: [
           { required: true, message: '请选择所属基础产品', trigger: 'change' }
