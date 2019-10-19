@@ -1,4 +1,6 @@
 import request from '@/utils/app-request'
+// import { downloadFile, uploadFile } from '@/utils/request-client'
+import { downloadFile, upload } from '@/utils/file-request'
 
 const basic_api_valuation = '/pi-valuation'
 
@@ -97,6 +99,24 @@ export function setValQcParm(data) {
   return request({
     url: `${basic_api_valuation}` + '/param/quality/setValQcParm',
     method: 'post',
+    data: data
+  })
+}
+
+// 下载估值质检报告
+export function dwnlValQcRpt(data) {
+  downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/file/file/dwnlValQcRpt', data)
+  // downloadFile({
+  //   url: `${basic_api_curve}` + '/file/file/dwnlCurveQcRpt',
+  //   method: 'post',
+  //   data: data
+  // })
+}
+
+// 上传估值质检报告
+export function uplValQcRpt(data) {
+  upload({
+    url: `${basic_api_valuation}` + '/file/file/uplValQcRpt',
     data: data
   })
 }

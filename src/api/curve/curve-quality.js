@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import downloadFile from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request.js'
 
 const basic_api_curve = '/pi-curve'
 
@@ -77,7 +77,7 @@ export function qryCurveFTQcRpt(data) {
 
 // 下载曲线质检报告
 export function dwnlCurveQcRpt(data) {
-  downloadFile(`${basic_api_curve}` + '/file/file/dwnlCurveQcRpt', data)
+  downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/file/file/dwnlCurveQcRpt', data)
   // downloadFile({
   //   url: `${basic_api_curve}` + '/file/file/dwnlCurveQcRpt',
   //   method: 'post',
