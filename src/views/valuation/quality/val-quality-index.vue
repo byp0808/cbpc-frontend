@@ -24,6 +24,9 @@
         <i class="el-icon-download" title="下载" @click="download" />
         <i class="el-icon-setting" title="偏差值设置" @click="orderSet" />
       </el-form-item>
+      <el-form-item>
+        <ValQcUploadForm ref="upload" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      </el-form-item>
     </el-form>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane label="总览" name="zl" />
@@ -114,7 +117,8 @@ import ValFTQList from '@/views/valuation/quality/val-ftq-list.vue'
 import ValNetPrcList from '@/views/valuation/quality/val-netprc-list.vue'
 import ValValList from '@/views/valuation/quality/val-val-list.vue'
 import ReValList from '@/views/valuation/quality/val-reval-list.vue'
-import { dwnlCurveQcRpt } from '@/api/curve/curve-quality.js'
+import ValQcUploadForm from '@/views/valuation/quality/val-upload-excel.vue'
+import { dwnlValQcRpt, uplValQcRpt } from '@/api/valuation/val-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
 
 export default {
@@ -128,7 +132,8 @@ export default {
     ValFTQList,
     ValNetPrcList,
     ValValList,
-    ReValList
+    ReValList,
+    ValQcUploadForm
   },
   props: {
     orderId: {},
@@ -144,10 +149,10 @@ export default {
         taskDay: null,
         orderId: ''
       },
-      dwnlForm: {
-        compDate: '20190918',
-        batchId: 'B0002'
-      },
+      // dwnlForm: {
+      //   compDate: '20190918',
+      //   batchId: 'B0002'
+      // },
       activeName: 'zl'
     }
   },
@@ -210,7 +215,29 @@ export default {
     // 下载
     download() {
       console.info('download')
-      dwnlCurveQcRpt(this.dwnlForm)
+      const dwnlForm = {
+        compDate: this.queryForm.taskDay,
+        batchId: this.queryForm.orderId
+      }
+      dwnlValQcRpt(dwnlForm)
+    },
+    upload(param) {
+      console.info('param' + param)
+      const fd = new FormData()
+      fd.append('batchId', this.queryForm.orderId)
+      fd.append('compDate', this.queryForm.taskDay)
+      fd.append('attach', param)
+      uplValQcRpt(fd)
+    //     .then(() => {
+    //       this.$message({
+    //         showClose: true,
+    //         message: '上传成功。',
+    //         type: 'success'
+    //       })
+    //     })
+    //     .catch(() => {
+    //       this.$message.error('只能上传.xls或.xlsx结尾的文件')
+    //     })
     },
     // 估值质检参数设置
     orderSet() {
