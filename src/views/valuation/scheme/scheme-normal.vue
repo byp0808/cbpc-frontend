@@ -72,7 +72,7 @@
               <el-input-number v-model="normalInfo.valuationScheme.spreadValue" size="small" :min="-99999" :max="99999" />
             </el-form-item>
             <template v-else-if="normalInfo.valuationScheme.cdsPremAdjType === '02'">
-              <el-form-item label="初始点差" class="display-inline">
+              <el-form-item label="初始点差" class="display-inline" prop="spreadStart">
                 <el-input-number v-model="normalInfo.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
               </el-form-item>
               <el-form-item label="最终点差" class="display-inline">
@@ -362,7 +362,7 @@ export default {
         data.onSuccess(response)
         const date = new Date()
         this.showTime = true
-        this.updateTime = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+        this.updateTime = this.$moment(date).format('YYYY-MM-DD')
       })
     },
     handleExceed() {
@@ -384,6 +384,16 @@ export default {
 
     },
     spreadTrial() {
+      if (this.normalInfo.valuationScheme.cdsPremAdjWay === '01') {
+        if (this.normalInfo.valuationScheme.cdsPremAdjType === '01' && !this.normalInfo.valuationScheme.spreadValue) {
+          this.$message.warning('请填写点差')
+          return false
+        }
+        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02' && !this.normalInfo.spreadStart) {
+          this.$message.warning('请填写初始点差')
+          return false
+        }
+      }
       spreadTrial().then(response => {
         const { dataList } = response
         this.normalInfo.schemeSpreads = dataList

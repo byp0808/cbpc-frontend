@@ -66,7 +66,7 @@
           </el-card>
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
-              <span>筛选结果<span class="text-smaller text-placeholder">共{{bondListResult.length}}条</span></span>
+              <span>筛选结果<span class="text-smaller text-placeholder">共{{ bondListResult.length }}条</span></span>
               <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px" :disabled="disabled">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
@@ -143,22 +143,22 @@
                 label="债券名称"
                 show-overflow-tooltip
               >
-	              <template slot-scope="scope">
-		              <span v-if="scope.row.bondName">{{scope.row.bondName}}</span>
-		              <span v-else>{{scope.row.bondName}}</span>
-	              </template>
+                <template slot-scope="scope">
+                  <span v-if="scope.row.bondName">{{ scope.row.bondName }}</span>
+                  <span v-else>{{ scope.row.bondName }}</span>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="bondSource"
                 label="来源"
                 show-overflow-tooltip
               >
-	              <template slot="header" slot-scope="scope">
-		              <span>来源</span>
-		              <el-tooltip class="item" effect="dark" content="筛选结果300个,其他5000个" placement="right">
-			              <i class="el-icon-question"></i>
-		              </el-tooltip>
-	              </template>
+                <template slot="header">
+                  <span>来源</span>
+                  <el-tooltip class="item" effect="dark" content="筛选结果300个,其他5000个" placement="right">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="name"
@@ -285,6 +285,40 @@
         </div>
       </el-col>
     </el-row>
+    <el-dialog :visible.sync="setRuleDialog">
+      <el-row>
+        <el-col :span="18" :offset="2">
+          <el-input v-model="setRuleData" prefix-icon="el-icon-search" clearable @change="search" />
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="18" :offset="2">
+          <div class="checkBox-big">
+            <el-checkbox-group v-model="interest" @change="haveSelect">
+              <el-checkbox v-for="item in interestList" :key="item" :label="item">{{ item }}</el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="18" :offset="2">
+          <div class="line" />
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="18" :offset="2">
+          <el-tag v-for="item in selectionList" :key="item" style="margin-right:10px">{{ item }}</el-tag>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8" :offset="17">
+          <div class="dialog-footer">
+            <el-button @click="setRuleDialog = false">取 消</el-button>
+            <el-button type="primary" @click="saveRules">确 定</el-button>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -295,7 +329,17 @@ import { upload } from '../../../utils/file-request'
 
 export default {
   name: 'BondFilter',
-  props: ['filterId', 'disabled'],
+  // props: ['filterId', 'disabled'],
+  props: {
+    filterId: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       uploadUrl: `${basic_api_market}/bond-filter/batch-in`,
@@ -305,9 +349,14 @@ export default {
       },
       blackList: [],
       whiteList: [],
+      interest: [],
+      setRuleData: '',
+      interestList: ['上海', '北京', '广州', '深圳'],
+      selectionList: [],
       ruleList: [],
       bondListAll: [],
       bondListResult: [],
+      setRuleDialog: false,
       input5: ''
     }
   },
@@ -337,30 +386,42 @@ export default {
   methods: {
     upload(data) {
       const form = new FormData()
-	    form.append('attach', data.file)
+      form.append('attach', data.file)
       upload({
-	      url: this.uploadUrl,
+        url: this.uploadUrl,
         data: form
       }).then(response => {
         data.onSuccess(response)
       })
     },
+    haveSelect(e) {
+      this.selectionList = e
+    },
+    search() {
+
+    },
+    saveRules() {
+
+    },
     delRow(index, rows) {
       rows.splice(index, 1)
     },
-    setRuleValue(index, rows) {
-      this.$prompt('请输入指标值', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValue: rows[index].ruleValue
-      }).then(({ value }) => {
-        rows[index].ruleValue = value
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消输入'
-        })
-      })
+    // setRuleValue(index, rows) {
+    //   this.$prompt('请输入指标值', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     inputValue: rows[index].ruleValue
+    //   }).then(({ value }) => {
+    //     rows[index].ruleValue = value
+    //   }).catch(() => {
+    //     this.$message({
+    //       type: 'info',
+    //       message: '取消输入'
+    //     })
+    //   })
+    // },
+    setRuleValue() {
+      this.setRuleDialog = true
     },
     emptyRuleValue(index, rows) {
       this.$confirm('是否清空指标值', '提示', {
@@ -626,5 +687,24 @@ export default {
 .el-card.is-always-shadow {
   box-shadow: unset;
   -webkit-box-shadow: unset;
+}
+.line {
+  height: 2px;
+  background: #ccc;
+  margin: 40px 0 20px 0;
+}
+</style>
+<style lang="scss">
+.checkBox-big {
+  margin-top:30px;
+  border:1px solid #ccc;
+  padding:20px;
+.el-checkbox {
+  width:100%;
+  padding:10px 0;
+}
+.el-checkbox__label {
+  padding-left:50%;
+}
 }
 </style>

@@ -28,6 +28,11 @@ export default {
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
   },
+  created() {
+    if (this.$store.state.task.auditStatus) {
+      this.taskSubmit(this.$store.state.task.auditStatus)
+    }
+  },
   mounted() {
     this.$store.commit('task/clear')
   },
@@ -44,8 +49,12 @@ export default {
           type: 'success',
           showClose: true
         })
-        this.$store.dispatch('homePage/queryTaskList')
-        this.$router.push({ path: '/' })
+        if (this.$store.state.task.auditStatus) {
+          this.$router.push({ name: 'audit' })
+        } else {
+          this.$store.dispatch('homePage/queryTaskList')
+          this.$router.push({ path: '/' })
+        }
       })
     }
   }

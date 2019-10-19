@@ -316,9 +316,13 @@ export default {
       // console.info(row)
       // console.info('头')
       // console.info(header)
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     headerScreening(column) {
       // 表头点击事件
@@ -421,7 +425,9 @@ export default {
       const data = {
         currentHeader: headers[0],
         currentRow: this.currentRow,
-        content: content
+        content: content,
+        tempId: this.currentModuleId,
+        dataMarket: '01'
       }
       console.info('一级行情表修改')
       console.info(data)

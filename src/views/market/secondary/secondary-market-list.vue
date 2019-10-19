@@ -521,9 +521,13 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     offerToUse() {
       // 应用报价表模板
@@ -663,9 +667,13 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      const modifiedCols = row.modifiedCols
-      const mods = modifiedCols.filter(val => val.colName === header.key)
-      return mods.length > 0
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     toUse() {
       // 应用成交表模板
@@ -826,7 +834,10 @@ export default {
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
-          content: content
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '01'
         }
         console.info('报价表修改')
         console.info(data)
@@ -846,8 +857,10 @@ export default {
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
-
-          content: content
+          content: content,
+          tempId: this.currentModuleId,
+          dataMarket: '02',
+          showArea: '02'
         }
         console.info('成交表修改')
         console.info(data)

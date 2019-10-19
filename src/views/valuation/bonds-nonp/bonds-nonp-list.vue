@@ -140,7 +140,7 @@
             v-if="scope.row.relationId"
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.relationId)"
+            @click.native.prevent="toDetail(scope.row.relationId, '04')"
           >
             草稿
           </el-button>
@@ -162,6 +162,7 @@
         :bonds-nonp-data="bondsNonpData"
         :business-id="bondsNonpId"
         :csin-disabled="csinDisabled"
+        :disabled="disabled"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -184,6 +185,7 @@ export default {
     return {
       bondsNonpFormVisible: false,
       csinDisabled: false,
+      disabled: false,
       bondsNonpId: '',
       bondsNonpList: [],
       bondFilterList: [],
@@ -244,10 +246,13 @@ export default {
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
       this.bondsNonpFormVisible = false
     },
-    toDetail(id) {
+    toDetail(id, busiStatus) {
       this.bondsNonpId = id
       this.bondsNonpFormVisible = true
       this.csinDisabled = true
+      if (busiStatus === '04') {
+        this.disabled = true
+      }
     },
     toDelete(id) {
       this.$confirm('确认移出此规则?', '提示', {
@@ -296,6 +301,7 @@ export default {
       this.$store.commit('bondsNonp/setBondsNonpInfo', {})
       this.bondsNonpFormVisible = true
       this.csinDisabled = false
+      this.disabled = false
     },
     toBatchUpload(item) {
       this.file.attach = item.file
