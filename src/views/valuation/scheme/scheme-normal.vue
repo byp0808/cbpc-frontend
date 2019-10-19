@@ -362,7 +362,7 @@ export default {
         data.onSuccess(response)
         const date = new Date()
         this.showTime = true
-        this.updateTime = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+        this.updateTime = this.$moment(date).format('YYYY-MM-DD')
       })
     },
     handleExceed() {

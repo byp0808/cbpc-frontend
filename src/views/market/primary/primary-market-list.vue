@@ -140,7 +140,7 @@ import ScreeningForm from '@/views/market/primary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo } from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -299,8 +299,10 @@ export default {
     },
     cellDblclick(row, column) {
       const title = column.property
+      const tabs = this.tableHeader.filter(tab => tab.colName === title)
+      const tab = tabs[0]
       console.info(row[title])
-      if (!row[title].isNull) {
+      if (tab.modiFlag === 'Y') {
         console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -314,7 +316,13 @@ export default {
       // console.info(row)
       // console.info('头')
       // console.info(header)
-      return row.remindTime === '08:20:00' && header.key === 'remindTime'
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.filter(val => val.colName === header.key)
+        return mods.length > 0
+      } else {
+        return false
+      }
     },
     headerScreening(column) {
       // 表头点击事件
@@ -411,15 +419,25 @@ export default {
       // 确定修改方法
       // 确定修改方法
       const content = this.updateForm.updateContent
-      alert('确定修改')
-      alert(content)
+      const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
+      // console.info('确定修改')
+      // alert(content)
       const data = {
-        currentHeader: this.currentHeader,
+        currentHeader: headers[0],
         currentRow: this.currentRow,
-        content: content
+        content: content,
+        tempId: this.currentModuleId,
+        dataMarket: '01'
       }
       console.info('一级行情表修改')
       console.info(data)
+      saveMarketData(data).then(res => {
+        console.info(res)
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+      })
 
       this.updateForm.updateContent = ''
       this.currentRow = {}

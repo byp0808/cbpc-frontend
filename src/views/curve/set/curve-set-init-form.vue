@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" v-if="false" @click="save">保存</el-button>
+    <el-button v-if="false" type="primary" @click="save">保存</el-button>
     <el-row type="flex">
       <el-col class="initPanel initPanel_1" :span="8">
         <el-form ref="dataForm" label-position="left">

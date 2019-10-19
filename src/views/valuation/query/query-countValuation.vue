@@ -108,7 +108,7 @@
         style="margin-top:20px"
         align="center"
         :current-page="page.pageNumber"
-        :page-sizes="[10, 20, 30, 40, 50]"
+        :page-sizes="[5,10, 20, 30, 40, 50]"
         :page-size="page.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="page.totalRecord"
