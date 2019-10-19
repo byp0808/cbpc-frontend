@@ -102,6 +102,9 @@ export default {
         if (schemeInfo.spreadStart >= schemeInfo.spreadEnd) {
           return this.$message.warning('最终点差应大于初始点差')
         }
+        if (schemeInfo.cdsAdjValue >= (schemeInfo.spreadEnd - schemeInfo.spreadStart)) {
+          return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
+        }
         if (!schemeInfo.cdsAdjValue && schemeInfo.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
