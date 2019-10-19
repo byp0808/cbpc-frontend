@@ -80,8 +80,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button :type="scope.row.approveStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true">通过</el-button>
-          <el-button :type="scope.row.approveStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true">拒绝</el-button>
+          <el-button :type="scope.row.approveStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true" @click="audit(scope.row.businessNo, '02', scope.row.businessRouter)">通过</el-button>
+          <el-button :type="scope.row.approveStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true" @click="audit(scope.row.businessNo, '03', scope.row.businessRouter)">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -187,6 +187,11 @@ export default {
           this.params.page = page
         }
       )
+    },
+    audit(businessNo, auditStatus, router) {
+      this.$store.commit('task/setBusinessNo', businessNo)
+      this.$store.commit('task/setAuditStatus', auditStatus)
+      this.$router.push({ name: router })
     },
     selectDate(e) {
       console.log('e', e)
