@@ -9,3 +9,12 @@ export function queryTaskList(data) {
     data
   })
 }
+
+// 查询任务列表
+export function queryTasks(data) {
+  return request({
+    url: `${basic_api_market}/task/task-list`,
+    method: 'post',
+    data
+  })
+}

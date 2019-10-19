@@ -44,7 +44,7 @@
     >
       <el-table-column label="申请人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.taskStartUserName }}</span>
+          <span>{{ scope.row.startUser }}</span>
         </template>
       </el-table-column>
       <el-table-column label="事件名称" align="center">
@@ -60,22 +60,22 @@
       </el-table-column>
       <el-table-column label="申请时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createdTs }}</span>
+          <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.auditTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.maketId }}</span>
+          <span>{{ scope.row.auditUser }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <span> {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}</span>
+          <span> {{ $dft('APPROVE_STATUS', scope.row.taskStatus) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
@@ -101,7 +101,7 @@
   </div>
 </template>
 <script>
-import { queryTaskList } from '@/api/common/home-page.js'
+import { queryTasks } from '@/api/common/task.js'
 export default {
   name: 'AuditForm',
   components: {
@@ -117,29 +117,29 @@ export default {
   },
   data() {
     return {
-      isActive: '01',
-      auditActive: '01',
+      isActive: '',
+      auditActive: '',
       taskRangeId: '',
       selectionList: [],
       dateList: [
-        { name: '不限', value: '01' },
-        { name: '一周内', value: '02' },
-        { name: '两周内', value: '03' },
-        { name: '一个月内', value: '04' },
-        { name: '三个月内', value: '05' },
-        { name: '六个月内', value: '06' }
+        { name: '不限', value: '' },
+        { name: '一周内', value: 'weeks_1' },
+        { name: '两周内', value: 'weeks_2' },
+        { name: '一个月内', value: 'months_1' },
+        { name: '三个月内', value: 'months_3' },
+        { name: '六个月内', value: 'months_6' }
       ],
       auditStatus: [
-        { name: '不限', value: '01' },
+        { name: '不限', value: '' },
         { name: '审核通过', value: '02' },
-        { name: '未审核', value: '03' },
-        { name: '审核不通过', value: '04' }
+        { name: '未审核', value: '01' },
+        { name: '审核不通过', value: '03' }
       ],
       reviewStatus: [
-        { name: '不限', value: '01' },
-        { name: '待通过', value: '02' },
+        { name: '不限', value: '' },
+        { name: '待通过', value: '01' },
         { name: '复核不通过', value: '03' },
-        { name: '复核通过', value: '04' }
+        { name: '复核通过', value: '02' }
       ],
       allList: [],
       // page: {
@@ -167,7 +167,20 @@ export default {
   methods: {
     getList() {
       this.params.search_taskType_EQ = this.activeName
-      queryTaskList(this.params).then(
+	    if (this.isActive) {
+	      const dates = this.isActive.split('_')
+		    if (dates.length > 1) {
+          this.params.search_startTime_EQ = this.$moment(new Date()).add(dates[1], dates[0]).format('YYYY-MM-DD HH:mm:SS')
+		    }
+	    } else {
+        delete this.params.search_startTime_EQ
+	    }
+	    if (this.auditActive) {
+        this.params.search_taskStatus_EQ = this.auditActive
+      } else {
+	      delete this.params.search_taskStatus_EQ
+	    }
+      queryTasks(this.params).then(
         response => {
           const { dataList, page } = response
           this.allList = dataList
@@ -178,9 +191,11 @@ export default {
     selectDate(e) {
       console.log('e', e)
       this.isActive = e.value
+	    this.getList()
     },
     selectStatus(e) {
       this.auditActive = e.value
+      this.getList()
     },
     handleSelectionChange(val) {
     },
