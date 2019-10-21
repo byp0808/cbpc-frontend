@@ -2,11 +2,14 @@
   <div class="app-container">
     <el-form ref="refForm" :model="formData">
       <el-row>
-        <el-col :span="12">
-          <el-form-item label="开始日期及批次期">
+        <el-col :span="7">
+          <el-form-item label="开始日期及批次期" prop="startDate">
             <el-date-picker v-model="formData.startDate" type="date" placeholder="选择日期" clearable />
-            <span>-</span>
-            <el-select v-model="formData.batchId" placeholder="选择批次">
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item prop="startBatch">
+            <el-select v-model="formData.startBatch" placeholder="选择批次">
               <el-option
                 v-for="item in startBatchs"
                 :key="item.value"
@@ -17,7 +20,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="7">
-          <el-form-item label="对应收益率曲线">
+          <el-form-item label="对应收益率曲线" prop="yieldCurve">
             <el-select v-model="formData.yieldCurve" placeholder="请选择" clearable style="margin-left:12px">
               <el-option
                 v-for="item in yieldCurves"
@@ -29,17 +32,20 @@
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="债券代码">
+          <el-form-item label="债券代码" prop="CSIN">
             <el-input v-model="formData.CSIN" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12">
-          <el-form-item label="结束日期及批次期">
+        <el-col :span="7">
+          <el-form-item label="结束日期及批次期" prop="endDate">
             <el-date-picker v-model="formData.endDate" type="date" placeholder="选择日期" clearable />
-            <span>-</span>
-            <el-select v-model="formData.batchId" placeholder="请选择">
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item prop="endBatch">
+            <el-select v-model="formData.endBatch" placeholder="请选择">
               <el-option
                 v-for="item in endBatchs"
                 :key="item.value"
@@ -50,7 +56,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="7">
-          <el-form-item label="估值方法">
+          <el-form-item label="估值方法" prop="valuationMetnod">
             <el-select v-model="formData.valuationMetnod" placeholder="请选择" clearable style="width:60%" :disabled="disable">
               <el-option
                 v-for="item in valuationMetnods"
@@ -62,19 +68,19 @@
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="债券简称">
+          <el-form-item label="债券简称" prop="bondShort">
             <el-input v-model="formData.bondShort" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="5">
-          <el-form-item label="债券品种">
+          <el-form-item label="债券品种" prop="bondQuality">
             <el-input v-model="formData.bondQuality" style="width:60%" clearable :disabled="disable" />
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="发行人">
+          <el-form-item label="发行人" prop="publisher">
             <el-input v-model="formData.publisher" style="width:60%" clearable :disabled="disable" />
           </el-form-item>
         </el-col>
@@ -124,7 +130,7 @@ import MethodList from '@/views/valuation/query/method-list.vue'
 import PeopleList from '@/views/valuation/query/people-list.vue'
 import { queryValuationScheme, queryPeopleValuation } from '@/api/valuation/query.js'
 import { basic_api_valuation } from '@/api/base-api'
-import { downloadFile } from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request'
 export default {
   name: 'QueryCountValuation',
   components: {
@@ -203,6 +209,11 @@ export default {
     },
     handleSelect(e) {
       this.disable = this.activeElement !== '01'
+      if (this.activeElement === '02') {
+        this.formData.valuationMetnod = ''
+        this.formData.bondQuality = ''
+        this.formData.publisher = ''
+      }
       this.load()
     },
     resetForm() {
