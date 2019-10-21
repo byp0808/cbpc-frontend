@@ -396,7 +396,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         // console.info(response)
-        this.offerPage = response.page
+        if (typeof response.page !== 'undefined') {
+          this.offerPage = response.page
+        }
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -425,7 +427,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -451,7 +455,9 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        this.offerPage = response.page
+        if (typeof response.page !== 'undefined') {
+          this.offerPage = response.page
+        }
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -603,7 +609,9 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
