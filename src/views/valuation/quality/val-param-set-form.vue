@@ -5,33 +5,33 @@
     </el-tabs>
 
     <el-form :inline="true" label-width="250px">
-      <el-form-item label="利率类曲线收益率波动偏差阈值">
+      <el-form-item label="估值净价波动BP阈值">
         <el-col :span="15">
-          <el-input v-model="orderSet.curveCreditShkBp" type="nubmer" />
+          <el-input v-model="orderSet.valNetPrcShkBp" type="nubmer" />
         </el-col>
         <el-col :span="5">
           BP
         </el-col>
       </el-form-item>
-      <el-form-item label="利率类曲线收益率波动偏差阈值">
+      <el-form-item label="估值净价波动百分比阈值">
         <el-col :span="15">
-          <el-input v-model="orderSet.curveCreditShkPercent" type="nubmer" />
+          <el-input v-model="orderSet.valNetPrcShkPercent" type="nubmer" />
         </el-col>
         <el-co :span="5">
           %
         </el-co>
       </el-form-item>
-      <el-form-item label="信用类曲线收益率波动偏差阈值">
+      <el-form-item label="估值收益率波动BP阈值">
         <el-col :span="15">
-          <el-input v-model="orderSet.curveRateShkBp" type="nubmer" />
+          <el-input v-model="orderSet.valYieldShkBp" type="nubmer" />
         </el-col>
         <el-col :span="5">
           BP
         </el-col>
       </el-form-item>
-      <el-form-item label="信用类曲线收益率波动偏差阈值">
+      <el-form-item label="估值收益率波动百分比阈值">
         <el-col :span="15">
-          <el-input v-model="orderSet.curveRateShkPercent" type="nubmer" />
+          <el-input v-model="orderSet.valYieldShkPercent" type="nubmer" />
         </el-col>
         <el-col :span="5">
           %
@@ -42,11 +42,10 @@
 </template>
 
 <script>
-// import { optioins } from '@/api/curve/code-type.js'
-import { qryCurveQcParm, setCurveQcParm } from '@/api/curve/curve-quality.js'
+import { qryValQcParm, setValQcParm } from '@/api/valuation/val-quality.js'
 
 export default {
-  name: 'CurveOrderCheckSetForm',
+  name: 'ValParamSetForm',
   props: {
     orderList: {
       type: Array,
@@ -58,43 +57,43 @@ export default {
       activeName: '',
       orderSet: {
         batchId: '',
-        curveCreditShkBp: '',
-        curveCreditShkPercent: '',
-        curveRateShkBp: '',
-        curveRateShkPercent: ''
+        valNetPrcShkBp: '',
+        valNetPrcShkPercent: '',
+        valYieldShkBp: '',
+        valYieldShkPercent: ''
       }, // 批次设置信息
       form: {}
     }
   },
   beforeMount() {
-    console.info('curve-order-check-set-form.vue beforeMount:')
+    console.info('val-param-set-form.vue beforeMount:')
     if (this.orderList && this.orderList.length > 0) {
       this.activeName = this.orderList[0].id
     }
-    this.qryCurveQcParm()
+    this.qryValQcParm()
   },
   methods: {
     // tab点击事件
     handleClick(tab, event) {
       console.log(tab, event)
-      console.info('curve-order-check-set-form.vue handleClick:')
+      console.info('val-param-set-form.vue handleClick:')
       this.activeName = this.orderList[0].id
-      this.qryCurveQcParm()
+      this.qryValQcParm()
     },
 
-    qryCurveQcParm() {
+    qryValQcParm() {
       const requestData = {
         batchId: this.activeName
       }
-      qryCurveQcParm(requestData).then(response => {
-        console.info('qryCurveQcParm.qryCurveQcParm...')
+      qryValQcParm(requestData).then(response => {
+        console.info('qryValQcParm.qryValQcParm...')
         this.orderSet = response
       })
     },
 
-    setCurveQcParm() {
-      setCurveQcParm(this.orderSet).then(response => {
-        console.info('setCurveQcParm.setCurveQcParm...')
+    setValQcParm() {
+      setValQcParm(this.orderSet).then(response => {
+        console.info('setValQcParm.setValQcParm...')
       })
     }
   }
