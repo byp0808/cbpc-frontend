@@ -18,12 +18,12 @@ const curveRouter = {
       component: () => import('@/views/curve/product/curve-product-list.vue'),
       name: 'CurveProduct',
       meta: { title: '曲线产品', noCache: true, roles: ['CurveProduct'] }
-    },{
+    }, {
       path: 'curve-set-init',
       component: () => import('@/views/curve/set/curve-set-init.vue'),
       name: 'CurveSetInit',
       meta: { title: '设置信用债初始化方案', noCache: true }
-    },{
+    }, {
       path: 'curve-set-rela',
       component: () => import('@/views/curve/set/curve-set-rela.vue'),
       name: 'CurveSetRela',

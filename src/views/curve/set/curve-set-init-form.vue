@@ -174,7 +174,7 @@ export default {
   components: {
     CurveSetInitDetailForm
   },
-  props: ['initId', 'opType', 'businessId'],
+  props: ['initId', 'opType', 'businessId', 'creatIndexId'],
   data() {
     return {
       disabled: false,
@@ -199,8 +199,7 @@ export default {
         actionFormulaType: '', // 行为算号
         actionFormulaValue: 0, // 行为结果值
         formulaId: '' // 公式主键，用于判断新增、修改记录
-      },
-      temp: ''
+      }
     }
   },
   computed: {
@@ -243,13 +242,21 @@ export default {
       if (!this.initId) {
         return
       }
+      // 新建规则时清空
+      if (this.creatIndexId === 'creat') {
+        this.initInfo = {}
+        console.info('active')
+        this.curveSelectDisable = false
+        this.disabled = false
+      } else {
+        // 获取初始化方案信息
+        await getInitId(this.initId).then(response => {
+          if (response) {
+            this.initInfo = response
+          }
+        })
+      }
 
-      // 获取初始化方案信息
-      await getInitId(this.initId).then(response => {
-        if (response) {
-          this.initInfo = response
-        }
-      })
       if (!this.initInfo) {
         this.initInfo = {}
         return
@@ -273,6 +280,19 @@ export default {
       })
       console.info('公式列表\n' + JSON.stringify(this.formulaList))
       console.info('场景行为明细列表\n' + JSON.stringify(this.detailList))
+
+      // 公式列表默认显示第一期限方案
+      if (this.curentCurveOrderKt.length > 0) {
+        this.initstandSlipSet(0)
+        this.formulaEditList = [this.formulaEditList[0]]
+        console.info('中间' + this.formulaEditList)
+        if (this.formulaEditList.length > 0) {
+          this.curveHomologyXiuGai(0)
+          this.detailForm = this.formulaEditList[0]
+        }
+        this.curveHomologyShow = true
+        this.detaiColVisible = true
+      }
     },
     // 获取当前曲线关键期限列表
     async getCurrentCurveKd() {
@@ -300,7 +320,18 @@ export default {
           standSlip: tmp_standSlip[i]
         })
       }
-
+      // 公式列表默认显示第一期限方案  新建
+      if (this.curentCurveOrderKt.length > 0) {
+        this.initstandSlipSet(0)
+        this.formulaEditList = [this.formulaEditList[0]]
+        console.info('中间' + this.formulaEditList)
+        if (this.formulaEditList.length > 0) {
+          this.curveHomologyXiuGai(0)
+          this.detailForm = this.formulaEditList[0]
+        }
+        this.curveHomologyShow = true
+        this.detaiColVisible = true
+      }
       return this.curentCurveOrderKt
     },
     getCurveName(id) {
@@ -377,11 +408,23 @@ export default {
     // 复制并设置
     initstandSlipCopy(index) {
       this.curveHomologyShow = true
-      if (index > 0) {
-        this.standSlipList.push({
-          standSlip: this.standSlipList[index - 1].standSlip
-        })
+      this.detaiColVisible = false
+      this.detailForm = {}
+      this.tmp_actionList = []
+      this.tmp_sceneList = []
+
+      var row = this.curentCurveOrderKt[index - 1]
+      this.currentSelectStandSlip = row.standSlip
+      console.info('当前选中关键期限:' + this.currentSelectStandSlip)
+      // 从缓存中获取公式列表
+      console.info(this)
+      this.formulaEditList = []
+      for (const item of this.formulaList) {
+        if (('' + this.currentSelectStandSlip) === ('' + item.standSlip)) {
+          this.formulaEditList.push(item)
+        }
       }
+      this.curentCurveOrderKt[index] = this.curentCurveOrderKt[index - 1]
     },
     // 修改场景和行为
     curveHomologyXiuGai(index) {
@@ -401,6 +444,7 @@ export default {
       this.tmp_actionList = []
       // 获取场景、行为
       this.detailList.forEach((item, index) => {
+        // eslint-disable-next-line no-undef
         var newItem = _.assign({}, item)
         if (('' + newItem.standSlip) === ('' + this.currentSelectStandSlip) && newItem.formulaId === this.detailForm.formulaId) {
           if (newItem.formulaType === '1') {
@@ -569,7 +613,7 @@ export default {
           if (formula) {
             formula += ' + '
           }
-          formula += item.percent + ' * [' + item.depCurveId + '|' + item.standSlip + '' + item.depInd + ']'
+          formula += item.percent / 100 + ' # [' + item.depCurveId + '|' + item.standSlip + '' + item.depInd + ']'
         }
       }
       return formula

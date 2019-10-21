@@ -118,6 +118,24 @@ export default {
       if (!schemeInfo.valuationScheme.otAdjValue && schemeInfo.valuationScheme.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
+      if (schemeInfo.valuationScheme.spreadValue >= 99999 || schemeInfo.valuationScheme.spreadValue <= -99999) {
+        return this.$message.warning('点差范围是-99999~+99999,请重新输入')
+      }
+      if (schemeInfo.valuationScheme.relaSpread > 100 || schemeInfo.valuationScheme.relaSpread < 0) {
+        return this.$message.warning('相对点差范围是0~100,请重新输入')
+      }
+      if (schemeInfo.valuationScheme.flAdjValue >= 99999 || schemeInfo.valuationScheme.flAdjValue <= -99999) {
+        return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
+      }
+      if (schemeInfo.valuationScheme.otAdjValue >= 99999 || schemeInfo.valuationScheme.otAdjValue <= -99999) {
+        return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
+      }
+      if (schemeInfo.valuationScheme.spreadStart >= 99999 || schemeInfo.valuationScheme.spreadStart <= -99999) {
+        return this.$message.warning('初始点差范围是-99999~+99999,请重新输入')
+      }
+      if (schemeInfo.valuationScheme.spreadEnd >= 99999 || schemeInfo.valuationScheme.spreadEnd <= -99999) {
+        return this.$message.warning('最终点差范围是-99999~+99999,请重新输入')
+      }
       save(schemeInfo).then(response => {
         this.$message({
           showClose: true,

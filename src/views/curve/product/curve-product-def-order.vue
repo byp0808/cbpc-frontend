@@ -40,6 +40,7 @@
               :curve-prd-order-auto-list="tabItem.curvePrdOrderAutoList"
               :auto-prd-order-kts="tabItem.autoPrdOrderKts"
               :prd-order-auto-kds="tabItem.prdOrderAutoKds"
+              :product-info="productInfo"
               @locaLastOrder="locaLastOrder"
             />
           </el-tab-pane>
@@ -60,7 +61,7 @@ export default {
   components: {
     CurveProductDefOrderDetailForm
   },
-  props: ['productId', 'opType', 'disabled'],
+  props: ['productId', 'opType', 'disabled', 'productInfo'],
   data() {
     return {
       productIdLocal: '',
@@ -86,6 +87,7 @@ export default {
     this.productIdLocal = this.productId
     // this.productIdLocal = '4028b8816d18e4c2016d1915bdc70004'
     console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
+    this.productInfo
     this.init()
   },
   methods: {

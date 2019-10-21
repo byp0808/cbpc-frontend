@@ -190,6 +190,7 @@
         ref="refCurveProductDefOrderForm"
         :product-id="productId"
         :disabled="disabled"
+        :product-info="productInfo"
         :op-type="opType"
         @saveOrderCallBack="saveOrderCallBack"
       />

@@ -293,7 +293,7 @@
       >
         <div slot="header" class="clearfix card-head">
           <span>{{ batch.orderName }}</span>
-	        <span class="text-smaller text-placeholder">[当前债券总数: 60000]</span>
+          <span class="text-smaller text-placeholder">[当前债券总数: 60000]</span>
         </div>
         <el-table
           :data="confirm[batch.id].statusData"
@@ -324,7 +324,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveProd, confirmProd, indicesProd, detailProd, taskStart, checkProdName } from '@/api/valuation/prod.js'
+import { saveProd, confirmProd, indicesProd, detailProd, taskStart, checkProdName, getStandard } from '@/api/valuation/prod.js'
 export default {
   name: 'ValuationProdForm',
   components: {
@@ -338,6 +338,8 @@ export default {
       valuationWay: [],
       batchesChoiceTemp: [],
       batchesChoiceIndices: [],
+      compIndices: [],
+      // compIndicesResult: [],
       prodIndices: [],
       confirm: {},
       confirmBatches: [],
@@ -405,11 +407,11 @@ export default {
         return this.$store.state.valuationProd.prodIndices.basicIndices
       }
     },
-    compIndices: {
-      get() {
-        return this.$store.state.valuationProd.prodIndices.compIndices
-      }
-    },
+    // compIndices: {
+    //   get() {
+    //     return this.$store.state.valuationProd.prodIndices.compIndices
+    //   }
+    // },
     basicIndicesResult: {
       get() {
         return this.$store.state.valuationProd.prodIndices.basicIndicesResult
@@ -448,7 +450,7 @@ export default {
       }
     },
     batchProdIndices() {
-      console.log(this.$store.state.valuationProd.batchIndices.batchProdIndices)
+      console.log('batchProdIndices', this.$store.state.valuationProd.batchIndices.batchProdIndices)
       return this.$store.state.valuationProd.batchIndices.batchProdIndices
     },
     fmtIndexName() {
@@ -471,6 +473,7 @@ export default {
   },
   beforeMount() {
     this.initData()
+    // this.getStandard()
     if (this.$store.state.valuationProd.prodId) {
       this.prodId = this.$store.state.valuationProd.prodId
       this.initDetailData()
@@ -478,6 +481,7 @@ export default {
   },
   mounted() {
     this.$store.commit('valuationProd/setProdId', '')
+    console.log('batchesChoice', this.batchesChoice)
   },
   methods: {
     go(index) {
@@ -505,6 +509,13 @@ export default {
         this.initDetailData()
         this.stepActive = index
       }
+    },
+    getStandard() {
+      getStandard({ paraType: 'BONND_CPT_INDEX' }).then(res => {
+        res.map(v => {
+          this.compIndices.push({ name: v.paraValue, id: v.paraName })
+        })
+      })
     },
     back() {
       if (this.stepActive-- < 0) this.stepActive = 5
@@ -589,6 +600,7 @@ export default {
         }
         that.$store.commit('valuationProd/setProdInfo', valuationProd)
       } else if (this.stepActive === 2) {
+        this.getStandard()
         if (valuationProdIndices && valuationProdIndices.length > 0) {
           const compIndicesResult = []
           const basicIndicesResult = []
@@ -754,10 +766,11 @@ export default {
         const data = { prodId: that.prodId, indexId: value, indexType: '02' }
         dataList.push(data)
       })
-	    if (!dataList || dataList.length === 0) {
+      console.log('333', this.compIndicesResult)
+      if (!dataList || dataList.length === 0) {
         this.$message.error('请选择产品指标')
-		    return false
-	    }
+        return false
+      }
       this.save({ valuationProdIndices: dataList }, '产品计算指标')
     },
     saveWay() {
