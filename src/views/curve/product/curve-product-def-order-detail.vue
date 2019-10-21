@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :disabled="true" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
@@ -67,7 +67,7 @@
           <div class="switch-item">
             <label class="switch-label">开始</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -75,7 +75,7 @@
           <div class="switch-item">
             <label class="switch-label">结束</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -113,10 +113,10 @@
       <h4>自动编制规则:</h4>
     </div>
     <el-row>
-      <el-select v-model="curvePrdOrder.orderAutoBuildRule" placeholder="请选择自动编制规则" :disabled="disabled">
+      <el-select v-model="curvePrdOrder.orderAutoBuildRule" placeholder="请选择自动编制规则" :disabled="orderAutoBuildRuleDisabled">
         <el-option v-for="item in autoRuleOptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-button type="primary" @click="toSetRule">设置</el-button>
+      <el-button type="primary" @click="toSetRule" :disabled="toSetRuleDisabled">设置</el-button>
     </el-row>
 
     <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
@@ -135,7 +135,7 @@
             style="width: 100%"
           >
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
-            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
+            <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip type="number">
               <template slot-scope="{row}">
                 <el-input v-model="row.curveWeight" type="number" class="edit-input" size="small" style="width: 70px" /> %
               </template>
@@ -156,6 +156,7 @@
                   type="text"
                   size="small"
                   @click.native.prevent="deleteCurvePrdOrderAutoList(scope.$index)"
+                  :disabled="disabled"
                 >
                   删除
                 </el-button>
@@ -194,7 +195,7 @@ export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
   },
-  props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds'],
+  props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds', 'productInfo'],
   data() {
     return {
       lockScroll: true,
@@ -221,7 +222,11 @@ export default {
       // 计算方式disable
       computedTypeDisabled: false,
       // 发布方式disable
-      publishTypeDisabled: false
+      publishTypeDisabled: false,
+      // 自动编制规则disable
+      orderAutoBuildRuleDisabled: false,
+      // 设置disable
+      toSetRuleDisabled: false
     }
   },
   computed: {
@@ -283,7 +288,20 @@ export default {
         this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
       }
       if (this.curvePrdOrder.curvePubType) {
-        this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+        debugger
+        var maturityFlag = this.productInfo.maturityFlag
+        var spotFlag = this.productInfo.spotFlag
+        var forwardFlag = this.productInfo.forwardFlag
+        if (maturityFlag === 'Y') {
+          this.curvePubTypeSelected.push('1')
+        }
+        if (spotFlag === 'Y') {
+          this.curvePubTypeSelected.push('2')
+        }
+        if (forwardFlag === 'Y') {
+          this.curvePubTypeSelected.push('3')
+        }
+        // this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
       }
       if (this.curvePrdOrder.publishStepSize) {
         this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
@@ -581,16 +599,18 @@ export default {
       })
     },
     disableCheck() {
-      // eslint-disable-next-line eqeqeq
       // 如果编制方式选择 人工干预编制，发布方式默认选择人工发布，且置灰
-      // eslint-disable-next-line eqeqeq
       if (this.curvePrdOrder.buildType === '1') {
         this.curvePrdOrder.computedType = '1'
         this.curvePrdOrder.publishType = '1'
         this.computedTypeDisabled = true
         this.publishTypeDisabled = true
+        this.orderAutoBuildRuleDisabled = true
+        this.toSetRuleDisabled = true
       } else if (this.curvePrdOrder.buildType === '2') {
         this.computedTypeDisabled = false
+        this.orderAutoBuildRuleDisabled = false
+        this.toSetRuleDisabled = false
         if (this.curvePrdOrder.computedType === '1') {
           this.publishTypeDisabled = true
           this.curvePrdOrder.publishType = '1'
@@ -602,10 +622,21 @@ export default {
       if (this.disabled) {
         this.computedTypeDisabled = true
         this.publishTypeDisabled = true
+        this.orderAutoBuildRuleDisabled = true
       }
     },
     handleSelectionChange(items) {
       this.multipleSelection = items
+    },
+    dateComparison() {
+      var orderClosedSt = this.curvePrdOrder.orderClosedSt
+      var orderClosedEt = this.curvePrdOrder.orderClosedEt
+      if (orderClosedSt > orderClosedEt && orderClosedSt && orderClosedEt) {
+        this.$message({
+          type: 'error',
+          message: '结束时间要大于开始时间！'
+        })
+      }
     }
   }
 }
