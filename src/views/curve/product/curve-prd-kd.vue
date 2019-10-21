@@ -314,7 +314,8 @@ export default {
         'page': {
           'pageNumber': 1,
           'pageSize': 100000
-        }
+        },
+        'approveStatus': '02'
       }
       await prdKdModsList(data).then(response => {
         if (response && response.dataList) {

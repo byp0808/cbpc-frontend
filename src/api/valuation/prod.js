@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import { basic_api_valuation, basic_api_market } from '@/api/base-api.js'
+import { basic_api_valuation, basic_api_market, basic_api_portal } from '@/api/base-api.js'
 
 // 产品管关联的指标
 export function prodList(data) {
@@ -111,6 +111,14 @@ export function queryValuationWay(data) {
 export function queryBatches(data) {
   return request({
     url: `${basic_api_market}/order/all-list`,
+    method: 'post',
+    data
+  })
+}
+// 计算指标
+export function getStandard(data) {
+  return request({
+    url: `${basic_api_portal}/sys/sys-para/getByType`,
     method: 'post',
     data
   })

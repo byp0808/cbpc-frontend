@@ -47,11 +47,12 @@ export function updateCurveTask(data) {
 }
 
 // 认领曲线任务
-export function chaimCurveTask(data) {
+export function chaimCurveTask(id) {
+  console.log('1111111111' + id)
   return request({
-    url: `${basic_api_curve}` + '/curve/claimCurveTask',
-    method: 'post',
-    data: data
+    url: `${basic_api_curve}/curve/claimCurveTask/` + id,
+    method: 'get',
+    params: { id: id }
   })
 }
 

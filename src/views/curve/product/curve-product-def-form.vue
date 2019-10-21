@@ -74,6 +74,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
+            <el-form-item label="曲线族系">
+              <el-select v-model="productInfo.productType" placeholder="请选择曲线族系" :disabled="disabled">
+                <el-option v-for="item in prdTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
             <el-form-item label="编制日历" prop="createCalendars">
               <el-select v-model="productInfo.createCalendars" multiple placeholder="请选择编制日历" :disabled="disabled" @change="selectTrigger('createCalendar')">
                 <el-option v-for="item in calendarOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -190,6 +197,7 @@
         ref="refCurveProductDefOrderForm"
         :product-id="productId"
         :disabled="disabled"
+        :product-info="productInfo"
         :op-type="opType"
         @saveOrderCallBack="saveOrderCallBack"
       />
@@ -352,6 +360,9 @@ export default {
     },
     prdStatusOptions() {
       return optioins(this, 'CURVE_PRODCUT_SATAUS')
+    },
+    prdTypeOptions() {
+      return optioins(this, 'PRODUCT_TYPE')
     },
     productInfo: {
       get() {

@@ -128,7 +128,7 @@
           <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '02'">
             <!-- <el-form ref="relativeRule" :model="normalInfo.valuationScheme" :rules="relativeRule"> -->
             <el-form-item label="相对点差" class="display-inline">
-              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" :min="0" :max="100" /><span class="unit">%</span>
+              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" /><span class="unit">%</span>
             </el-form-item>
             <!-- </el-form> -->
             <el-row>

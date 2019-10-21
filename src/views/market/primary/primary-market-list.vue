@@ -224,7 +224,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -247,7 +249,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -316,8 +320,6 @@ export default {
 
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
 
       switch (type) {
         case 'DATE':// 日期型
@@ -334,6 +336,9 @@ export default {
           break
         case 'OPTION':// 可选型
           this.formType = 4
+          break
+        default:// 自定义字段不予筛选
+          this.formType = 0
           break
       }
       this.screeningFormVisible = true
