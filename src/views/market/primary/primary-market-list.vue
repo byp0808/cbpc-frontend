@@ -184,31 +184,6 @@ export default {
         { id: '4', key: 'remindTime', label: '提醒时间', THType: '6' }
       ],
       colData: [],
-      module_1: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_2: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '6', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_3: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '6', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '7', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '8', key: 'remindTime', label: '提醒时间', THType: '8' }
-      ],
       moduleList: [],
       moduleId: '',
       currentModuleId: '',
