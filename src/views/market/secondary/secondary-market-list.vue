@@ -40,7 +40,7 @@
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
       >
-        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -69,7 +69,7 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -438,6 +438,7 @@ export default {
       this.offerMarketLoading = true
       this.searchParam = []
       // 处理筛选数据格式
+      console.info(this.offerScreeningFormList)
       this.formatScreeningForm(this.offerScreeningFormList)
       // 获取满足条件的行情数据
       const data = {
@@ -493,6 +494,9 @@ export default {
           break
         case 'OPTION':// 可选型
           this.formType = 4
+          break
+        default: // 自定义字段不予筛选
+          this.formType = 0
           break
       }
       this.screeningFormVisible = true
@@ -1110,7 +1114,13 @@ export default {
       // 处理筛选数据格式
       value.map(val => {
         // 判断表头类型
-        const headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        let headers = []
+        if (this.currentTable === 1) {
+          headers = this.offerTableHeader.filter(tab => tab.colName === val.headerKey)
+        } else {
+          headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        }
+        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm

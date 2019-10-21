@@ -593,9 +593,11 @@ export default {
 
         // 区域变更时，最变更区域，同区域内，则位置移动
         if (curent_item.referFlag === last_item.referFlag) {
+          var curent_grade = this.getProductGrade(curent_item.curveId)
+          var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
-          if (resolveProductGrade2Num(curent_item.productGrade) < resolveProductGrade2Num(last_item.productGrade)) {
-            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_item.productGrade},低于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+          if (resolveProductGrade2Num(curent_grade) < resolveProductGrade2Num(last_grade)) {
+            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},低于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
             this.$confirm(msg, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
@@ -632,9 +634,11 @@ export default {
         const last_item = this.tmp_quXJList[index + 1]
         // 区域变更时，最变更区域，同区域内，则位置移动
         if (curent_item.referFlag === last_item.referFlag) {
+          var curent_grade = this.getProductGrade(curent_item.curveId)
+          var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
-          if (resolveProductGrade2Num(curent_item.productGrade) > resolveProductGrade2Num(last_item.productGrade)) {
-            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_item.productGrade},高于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+          if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
+            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
             this.$confirm(msg2, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
@@ -816,10 +820,23 @@ export default {
       var tempInfo = null
       for (var item of this.tempList) {
         if (item.type === '0' && item.dayType === this.tmp_tempInfo.dayType && item.orderId === this.tmp_tempInfo.orderId) {
-          tempInfo = item
-          tempInfo.spreadFlag = this.tmp_tempInfo.spreadFlag
-          tempInfo.spreadDatType = this.tmp_tempInfo.spreadDatType
-          tempInfo.spreadOrderId = this.tmp_tempInfo.spreadOrderId
+          // 是否利差必须相同
+          // 如果选择 利差，则利差日期类型、利差批次必须相同
+          if (item.spreadFlag === this.tmp_tempInfo.spreadFlag) {
+            if (this.tmp_tempInfo.spreadFlag === 'Y') {
+              if (item.spreadDatType === this.tmp_tempInfo.spreadDatType && item.spreadOrderId === this.tmp_tempInfo.spreadOrderId) {
+                tempInfo = item
+                tempInfo.spreadFlag = this.tmp_tempInfo.spreadFlag
+                tempInfo.spreadDatType = this.tmp_tempInfo.spreadDatType
+                tempInfo.spreadOrderId = this.tmp_tempInfo.spreadOrderId
+              }
+            } else {
+              tempInfo = item
+              tempInfo.spreadFlag = this.tmp_tempInfo.spreadFlag
+              tempInfo.spreadDatType = this.tmp_tempInfo.spreadDatType
+              tempInfo.spreadOrderId = this.tmp_tempInfo.spreadOrderId
+            }
+          }
         }
       }
       if (!tempInfo) {

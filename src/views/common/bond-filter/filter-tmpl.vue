@@ -525,8 +525,9 @@ export default {
     bwListCheck(dataList, data) {
       return this.$lodash.findIndex(dataList, { bondNo: data.bondNo })
     },
-    getData(tempName) {
+    getData(id, tempName) {
       return {
+        id: id,
         filterName: tempName,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
         rules: this.ruleList
@@ -545,8 +546,8 @@ export default {
         // this.queryBondsList()
       }
     },
-    save(tempName) {
-      addTempList(this.getData(tempName)).then(response => {
+    save(id, tempName) {
+      addTempList(this.getData(id, tempName)).then(response => {
         this.$emit('saveCallBack')
         this.$message({
           message: '保存成功！',

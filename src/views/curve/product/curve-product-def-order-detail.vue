@@ -190,7 +190,7 @@
 <script>
 import { optioins } from '@/api/curve/code-type.js'
 import { getCurveOrderList } from '@/api/curve/curve-product-list.js'
-import { queryPrdOrderKts } from '@/api/curve/curve-product-order.js'
+import { queryPrdOrderKtInfoList } from '@/api/curve/curve-product-order.js'
 export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
@@ -216,6 +216,7 @@ export default {
       curvePrdOrderAutoKtList: [],
       // 自动编制关键期限，勾选内容
       prdOrderAutoKdsKeys: [],
+      curveKdsIntersection: [], // 所有曲线关键期限交集
       tmp_prdOrderAutoKdsKeys: [], // 编辑时修改数据
       tmp_curvePrdOrderAutoList: [], // 编辑时自动编制列表，保存后，同步curvePrdOrderAutoList
       // 计算方式disable
@@ -456,7 +457,7 @@ export default {
       return ids
     },
     // 预览
-    preview(from) {
+    async preview(from) {
       console.info('preview')
       //
       this.tmp_prdOrderAutoKdsKeys = []
@@ -465,34 +466,66 @@ export default {
       })
       // 右侧关键期限列表
       this.curvePrdOrderAutoKtList = []
+      var ids = this.getAutoCurveIds()
+      var curvekdArray = {}
+      const standSlipArray = []
+
       // 查询关键期限列表
-      queryPrdOrderKts({ curveIds: this.getAutoCurveIds().join(',') }).then(response => {
+      await queryPrdOrderKtInfoList({ curveIds: ids.join(',') }).then(response => {
         const list = response
-        const standSlipArray = []
+
         if (list && list.length > 0) {
           for (var i = 0; i < list.length; i++) {
             var item = list[i]
-            if (this.curvePrdOrderAutoKtList.indexOf(item) < 0) {
-              this.curvePrdOrderAutoKtList.push({ standSlip: item })
-              standSlipArray.push(item)
+            const standSlip = item.standSlip
+            const _tmp_curveId = item.curveId
+            // 循环每一曲线关键期限，需要取交集
+            var curveKd = curvekdArray[_tmp_curveId]
+            if (!curveKd) {
+              curveKd = []
+              curvekdArray[_tmp_curveId] = curveKd
+            }
+            curveKd.push(standSlip)
+
+            // 过滤重复关键期限
+            if (standSlipArray.indexOf(standSlip) < 0) {
+              this.curvePrdOrderAutoKtList.push({ standSlip: standSlip })
+              standSlipArray.push(standSlip)
             }
           }
         }
-
+        console.info('所有曲线关键期限:' + JSON.stringify(curvekdArray))
         // 预览按钮点击，重置勾选框
 
         // 增加当前产品关键期限
+        this.curveKdsIntersection = []
         if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
           for (let i = 0; i < this.curvePrdKdList.length; i++) {
             const item = this.curvePrdKdList[i]
+            this.curveKdsIntersection.push(item.standSlip)
             // 添加不存在的
             if (standSlipArray.indexOf(item.standSlip) < 0) {
               this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
             }
-            // 预览默认选中当前产品
-            if (from === 'BTN') {
-              this.tmp_prdOrderAutoKdsKeys.push(item.standSlip)
-            }
+          }
+        }
+        console.info('当前曲线关键期限:' + JSON.stringify(this.curveKdsIntersection))
+
+        // 所有曲线的交集
+        for (const _tmp_curveKd of ids) {
+          let kds = curvekdArray[_tmp_curveKd]
+          if (!kds) {
+            kds = []
+          }
+          this.curveKdsIntersection = _.intersection(this.curveKdsIntersection, kds)
+        }
+        console.info('所有关键期限交集:' + JSON.stringify(this.curveKdsIntersection))
+
+        // 预览默认选中交集
+        if (from === 'BTN') {
+          this.tmp_prdOrderAutoKdsKeys = []
+          for (const standSlip of this.curveKdsIntersection) {
+            this.tmp_prdOrderAutoKdsKeys.push(standSlip)
           }
         }
 
@@ -511,10 +544,11 @@ export default {
     // 是否可选
     prdOrderAutoKtSelectable(row, index) {
       console.info('prdOrderAutoKtSelectable')
-      if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
-        for (var i = 0; i < this.curvePrdKdList.length; i++) {
-          const item = this.curvePrdKdList[i]
-          if (item.standSlip === row.standSlip) {
+      // 只有交集关键期限可选
+      if (this.curveKdsIntersection && this.curveKdsIntersection.length > 0) {
+        for (var i = 0; i < this.curveKdsIntersection.length; i++) {
+          const item = this.curveKdsIntersection[i]
+          if (item === row.standSlip) {
             return true
           }
         }

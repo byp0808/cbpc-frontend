@@ -2,10 +2,13 @@
   <div class="app-container">
     <el-form ref="refForm" :model="formData">
       <el-row :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="开始日期及批次期">
+        <el-col :span="7">
+          <el-form-item label="开始日期及批次期" prop="startDate">
             <el-date-picker v-model="formData.startDate" type="date" placeholder="选择日期" />
-            <span>-</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item prop="startBatch">
             <el-select v-model="formData.startBatch" placeholder="选择批次">
               <el-option
                 v-for="item in startBatchs"
@@ -17,7 +20,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="付息方式">
+          <el-form-item label="付息方式" prop="payingInterest">
             <el-select v-model="formData.payingInterest" placeholder="选择付息方式">
               <el-option
                 v-for="item in payingInterests"
@@ -29,16 +32,19 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="债券简称">
+          <el-form-item label="债券简称" prop="bondShort">
             <el-input v-model="formData.bondShort" style="width: 72%" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="结束日期及批次期">
+        <el-col :span="7">
+          <el-form-item label="结束日期及批次期" prop="endDate">
             <el-date-picker v-model="formData.endDate" type="date" placeholder="选择日期" />
-            <span>-</span>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item prop="endBatch">
             <el-select v-model="formData.endBatch" placeholder="选择批次">
               <el-option
                 v-for="item in endBatchs"
@@ -50,7 +56,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="债券品种">
+          <el-form-item label="债券品种" prop="bondQuality">
             <el-select v-model="formData.bondQuality" placeholder="选择债券品种">
               <el-option
                 v-for="item in bondQualitys"
@@ -62,15 +68,15 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="债券代码">
+          <el-form-item label="债券代码" prop="CSIN">
             <el-input v-model="formData.CSIN" style="width: 72%" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="10">
         <el-col :span="6">
-          <el-form-item label="对应收益率曲线">
-            <el-select v-model="formData.yieldCurve" placeholder="请选择收益率曲线">
+          <el-form-item label="对应收益率曲线" prop="yieldCurve">
+            <el-select v-model="formData.yieldCurve" placeholder="选择收益率曲线">
               <el-option
                 v-for="item in yieldCurves"
                 :key="item.value"
@@ -81,7 +87,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="流通场所">
+          <el-form-item label="流通场所" prop="market">
             <el-select v-model="formData.market" placeholder="选择流通场所">
               <el-option
                 v-for="item in markets"
@@ -93,7 +99,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="发行人">
+          <el-form-item label="发行人" prop="publisher">
             <el-input v-model="formData.publisher" style="width: 72%" />
           </el-form-item>
         </el-col>
@@ -312,7 +318,7 @@
 <script>
 import { queryValuation } from '@/api/valuation/query.js'
 import { basic_api_valuation } from '@/api/base-api'
-import { downloadFile } from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request'
 export default {
   name: 'QueryValuation',
   data() {

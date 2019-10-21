@@ -11,7 +11,7 @@
               </el-col>
               <el-col :span="20">
                 <el-row>
-                  <el-input v-model="screeningForm.screeningNum" style="width: 200px" :disabled="disable_1" />
+                  <el-input v-model.number="screeningForm.screeningNum" style="width: 200px" :disabled="disable_1" />
                 </el-row>
                 <el-row>
                   <el-checkbox v-model="screeningForm.absoluteValue" :disabled="disable_1">是否包含绝对值</el-checkbox>
