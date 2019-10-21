@@ -438,6 +438,7 @@ export default {
       this.offerMarketLoading = true
       this.searchParam = []
       // 处理筛选数据格式
+      console.info(this.offerScreeningFormList)
       this.formatScreeningForm(this.offerScreeningFormList)
       // 获取满足条件的行情数据
       const data = {
@@ -1110,7 +1111,13 @@ export default {
       // 处理筛选数据格式
       value.map(val => {
         // 判断表头类型
-        const headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        let headers = []
+        if (this.currentTable === 1) {
+          headers = this.offerTableHeader.filter(tab => tab.colName === val.headerKey)
+        } else {
+          headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        }
+        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm
