@@ -282,6 +282,7 @@
 
 <script>
 import { basic_api_market } from '@/api/base-api.js'
+import { upload } from '../../../utils/file-request'
 import { addTempList, queryTempList, queryTempInfo, queryBondsAll, queryBondsResult } from '@/api/common/bond-filter-tmpl.js'
 export default {
   name: 'TmpBondFilter',
@@ -293,7 +294,7 @@ export default {
       ruleTags: [],
       othRuleList: [{ ruleCode: '资产分类', ruleValue: '资产分类' }, { ruleCode: '计息方式', ruleValue: '计息方式' }, { ruleCode: '流通市场', ruleValue: '流通市场' }, { ruleCode: '资产信用评级', ruleValue: '资产信用评级' }, { ruleCode: '起息日', ruleValue: '起息日' }],
       allRuleList: [],
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/bond-filter/batch-in`,
+      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/tmpl-filter/batch-in`,
       bondTemps: [],
       tempNo: '',
       blackList: [],
@@ -321,6 +322,16 @@ export default {
     this.loading()
   },
   methods: {
+    uploadFile(data) {
+      const form = new FormData()
+      form.append('attach', data.file)
+      upload({
+        url: this.uploadUrl,
+        data: form
+      }).then(response => {
+        data.onSuccess(response)
+      })
+    },
     toRules() {
       // 获取全量规则指标，然后ruleLists中去除rulelist的rulecode部分，去除部分显示在tag里
       this.ruleFilterVisible = true
@@ -493,37 +504,41 @@ export default {
       }
     },
     uploadBlackList(response) {
-      const that = this
-      if (response.data && response.data.datalist) {
-        for (const index in response.data.datalist) {
-          const bondInfoBlack = response.data.datalist[index]
-          if (this.bwListCheck(that.whiteList, bondInfoBlack) >= 0) {
+      if (response.data) {
+        for (const index in response.data) {
+          const bondInfoBlack = response.data[index]
+          console.log(bondInfoBlack)
+          if (this.bwListCheck(this.whiteList, bondInfoBlack) >= 0) {
             this.$message.error('该券已经添加到白名单中')
             bondInfoBlack.className = 'error-row'
             this.blackList.unshift(bondInfoBlack)
           } else {
+            bondInfoBlack.bondSource = '其他'
+            // 需要增加csin映射
+            bondInfoBlack.csin = bondInfoBlack.bondName
             this.blackList.push(bondInfoBlack)
           }
         }
       }
     },
     uploadWhiteList(response) {
-      const that = this
-      if (response.data && response.data.datalist) {
-        for (const index in response.data.datalist) {
-          const bondInfoWhite = response.data.datalist[index]
-          if (this.bwListCheck(that.blackList, bondInfoWhite) >= 0) {
+      if (response.data) {
+        for (const index in response.data) {
+          const bondInfoWhite = response.data[index]
+          if (this.bwListCheck(this.blackList, bondInfoWhite) >= 0) {
             this.$message.error('该券已经添加到黑名单中')
             bondInfoWhite.className = 'error-row'
             this.whiteList.unshift(bondInfoWhite)
           } else {
+            // 需要增加csin映射
+            bondInfoWhite.csin = bondInfoWhite.bondName
             this.whiteList.push(bondInfoWhite)
           }
         }
       }
     },
     bwListCheck(dataList, data) {
-      return this.$lodash.findIndex(dataList, { bondNo: data.bondNo })
+      return this.$lodash.findIndex(dataList, { csin: data.csin })
     },
     getData(id, tempName) {
       return {
