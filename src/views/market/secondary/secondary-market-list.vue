@@ -495,6 +495,9 @@ export default {
         case 'OPTION':// 可选型
           this.formType = 4
           break
+        default: // 自定义字段不予筛选
+          this.formType = 0
+          break
       }
       this.screeningFormVisible = true
     },
