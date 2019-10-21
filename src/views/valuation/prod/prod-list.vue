@@ -66,7 +66,7 @@
           <el-button v-if="row.approveStatus != '01' && !row.relationId" type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
           <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
           <el-button v-if="row.approveStatus != '01' && row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
-				</template>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     toAdd() {
-      // this.$store.commit('valuationProd/clear')
+      this.$store.commit('valuationProd/clear')
       this.$router.push({ name: 'ValuationProdForm' })
     },
     toEdit(prodId) {

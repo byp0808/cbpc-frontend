@@ -122,7 +122,7 @@
     <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
       <el-row>
         <el-select ref="autoRuleCurve" v-model="autoRuleCurve" placeholder="请选择曲线" :disabled="disabled">
-          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curveOrderId="item.curveOrderId" />
+          <el-option v-for="item in autoRuleCurveOptions" :key="item.value" :label="item.label" :value="item.value" :curve-order-id="item.curveOrderId" />
         </el-select>
         <el-button type="primary" @click="toAddCurve">确认添加</el-button>
       </el-row>
@@ -137,7 +137,7 @@
             <el-table-column prop="productName" label="曲线名称" width="140" show-overflow-tooltip />
             <el-table-column prop="curveWeight" label="权重" width="140" show-overflow-tooltip>
               <template slot-scope="{row}">
-                <el-input type="number" v-model="row.curveWeight" class="edit-input" size="small" style="width: 70px" /> %
+                <el-input v-model="row.curveWeight" type="number" class="edit-input" size="small" style="width: 70px" /> %
               </template>
             </el-table-column>
             <el-table-column prop="" label="批次" width="140" show-overflow-tooltip>

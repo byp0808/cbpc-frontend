@@ -44,3 +44,14 @@ export function save(data) {
     }
   )
 }
+
+// 历史估值方案
+export function history(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/history`,
+      method: 'post',
+      data: data
+    }
+  )
+}

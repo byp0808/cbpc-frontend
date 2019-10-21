@@ -82,8 +82,8 @@ const valuationRouter = {
       meta: { title: '设置任务分配规则', noCache: true, roles: ['ValuationTaskAllocationList'] }
     }, {
       path: '/scheme-form',
-      component: () => import('@/views/valuation/scheme/scheme-form.vue'),
-      name: 'ValuationSchemeForm',
+      component: () => import('@/views/valuation/scheme/scheme-method.vue'),
+      name: 'ValuationSchemeMethod',
       meta: { title: '估值方案', noCache: true }
     }, {
       path: '/flow-recommend',

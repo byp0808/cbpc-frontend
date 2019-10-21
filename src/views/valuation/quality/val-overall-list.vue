@@ -65,7 +65,7 @@ import { qryOverallQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValOverallList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: { 'taskDay': {}, 'orderId': {}},
   data() {
     return {
       overallList: {
