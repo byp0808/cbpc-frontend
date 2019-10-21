@@ -21,7 +21,7 @@
       @cell-dblclick="cellDblclick"
       @header-contextmenu="editCurrentModule"
     >
-      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
           <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
         </template>

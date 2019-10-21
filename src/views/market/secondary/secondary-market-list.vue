@@ -40,7 +40,7 @@
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
       >
-        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -69,7 +69,7 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
