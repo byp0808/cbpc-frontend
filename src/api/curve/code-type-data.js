@@ -181,3 +181,24 @@ export const CHANGE = [
   { value: '2', label: '减少' },
   { value: '3', label: '忽略' }
 ]
+
+// 曲线族系
+export const PRODUCT_TYPE = [
+  { value: 'ND', label: '中国国债曲线族系' },
+  { value: 'CBB', label: '中债央行票据曲线族系' },
+  { value: 'PFB', label: '中债政策性金融债曲线族系' },
+  { value: 'ORD', label: '中债离岸人民币债收益率曲线族系' },
+  { value: 'SDR', label: '中债SDR债曲线族系' },
+  { value: 'LGD', label: '中债地方政府债曲线族系' },
+  { value: 'RD', label: '中债铁道债曲线族系' },
+  { value: 'MSN', label: '中债中短期票据曲线族系' },
+  { value: 'CD', label: '中债企业债曲线族系' },
+  { value: 'CIB', label: '中债城投债曲线族系' },
+  { value: 'CBD', label: '中债商业银行债曲线族系' },
+  { value: 'CBDR', label: '中债商业银行同业存单曲线族系' },
+  { value: 'ABS', label: '中债资产支持证券曲线族系' },
+  { value: 'PSS', label: '中债个人住房抵押贷款资产支持证券曲线族系' },
+  { value: 'CFAS', label: '中债消费金融资产支持证券曲线族系' },
+  { value: 'PAS', label: '中债对公贷款与租赁债权资产支持证券曲线族系' },
+  { value: 'CDD', label: '中债中资美元债曲线族系' }
+]
