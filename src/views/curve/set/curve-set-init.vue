@@ -49,6 +49,7 @@
         ref="refCurveSetInitForm"
         :init-id="initId"
         :op-type="opType"
+        :creat-index-id="creatIndexId"
         @saveCallBack="saveCallBack"
       />
       <div slot="footer" class="dialog-footer">
@@ -79,20 +80,12 @@ export default {
     return {
       initCaseList: [],
       initId: '',
-      temp: {
-        curveId: '',
-        approveStatus: '',
-        productName: '',
-        lastUpdBy: '',
-        lastUpdTs: '',
-        standSlip: ''
-
-      },
       dialogFormVisible: false,
       page: {
         pageNumber: 1,
         pageSize: 10
-      }
+      },
+      creatIndexId: ''
     }
   },
   created() {
@@ -116,13 +109,14 @@ export default {
     },
     // 新建规则
     curveHomologyCreate() {
-      this.temp = []
+      this.creatIndexId = 'creat'
       this.dialogFormVisible = true
     },
     // 列表修改操作
     curveHomologyDtoEdit(index, item, opType) {
       this.initId = item.id
       this.opType = opType
+      this.creatIndexId = 'change'
       this.dialogFormVisible = true
     },
     // 列表删除
