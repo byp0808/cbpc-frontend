@@ -38,12 +38,12 @@
             <div class="input-box">
               <div class="first">
                 <el-form-item prop="rangeStart">
-                  <el-input v-model="spreadParamInfo.rangeStart" :disabled="disabled" />
+                  <el-input v-model.number="spreadParamInfo.rangeStart" :disabled="disabled" />
                 </el-form-item>
               </div>
               <div>
                 <el-form-item prop="rangeEnd">
-                  <el-input v-model="spreadParamInfo.rangeEnd" :disabled="disabled" />
+                  <el-input v-model.number="spreadParamInfo.rangeEnd" :disabled="disabled" />
                 </el-form-item>
               </div>
             </div>
@@ -67,6 +67,14 @@ export default {
   name: 'SpreadParamForm',
   props: ['businessId', 'disabled'],
   data() {
+    var numberRule = (rule, value, callback) => {
+      var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
+      if (value > 0 && reg.test(value)) {
+        callback()
+      } else {
+        callback(new Error('请输入不超过三位小数的正数值'))
+      }
+    }
     return {
       spreadParamInfo: {},
       marketGradeList: [
@@ -84,9 +92,18 @@ export default {
       rules: {
         paramType: [{ required: true, message: '请输入点差参数类型', trigger: 'blur' }],
         marketGrad: [{ required: true, message: '请选择市场隐含评级', trigger: 'change' }],
-        rangeStart: [{ required: true, message: '请完整输入', trigger: 'blur' }],
-        rangeEnd: [{ required: true, message: '请完整输入', trigger: 'blur' }],
-        spreadValue: [{ required: true, message: '请输入点差', trigger: 'blur' }]
+        rangeStart: [
+          { required: true, message: '请完整输入', trigger: 'blur' },
+          { validator: numberRule, trigger: 'blur' }
+        ],
+        rangeEnd: [
+          { required: true, message: '请完整输入', trigger: 'blur' },
+          { validator: numberRule, trigger: 'blur' }
+        ],
+        spreadValue: [
+          { required: true, message: '请输入点差', trigger: 'blur' },
+          { validator: numberRule, trigger: 'blur' }
+        ]
       }
     }
   },

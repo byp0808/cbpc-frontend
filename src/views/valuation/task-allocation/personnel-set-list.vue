@@ -43,7 +43,7 @@
       />
     </div>
     <div>
-      <el-dialog v-if="personnelFormVisible" width="600px" title="新增人员设置" :visible.sync="personnelFormVisible">
+      <el-dialog v-if="personnelFormVisible" width="600px" title="新增任务规则" :visible.sync="personnelFormVisible">
         <PersonnelSetForm
           ref="refPersonnelSetForm"
           :disabled="disabled"
