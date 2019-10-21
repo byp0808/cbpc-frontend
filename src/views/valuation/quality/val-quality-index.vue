@@ -94,16 +94,16 @@
       <ReValList ref="cfgz" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
 
-    <!--<el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置估值质检参数" :visible.sync="orderSetFormVisible">-->
-    <!--<CurveOrderCheckSetForm-->
-    <!--ref="refCurveOrderCheckSetForm"-->
-    <!--:order-list="orderList"-->
-    <!--/>-->
-    <!--<div slot="footer" class="dialog-footer">-->
-    <!--<el-button @click="orderSetFormVisible = false">取 消</el-button>-->
-    <!--<el-button type="primary" @click="saveOrderSet">确 定</el-button>-->
-    <!--</div>-->
-    <!--</el-dialog>-->
+    <el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置估值质检参数" :visible.sync="orderSetFormVisible">
+      <ValParamSetForm
+        ref="refValParamSetForm"
+        :order-list="orderList"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="orderSetFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveOrderSet">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -118,6 +118,7 @@ import ValNetPrcList from '@/views/valuation/quality/val-netprc-list.vue'
 import ValValList from '@/views/valuation/quality/val-val-list.vue'
 import ReValList from '@/views/valuation/quality/val-reval-list.vue'
 import ValQcUploadForm from '@/views/valuation/quality/val-upload-excel.vue'
+import ValParamSetForm from '@/views/valuation/quality/val-param-set-form.vue'
 import { dwnlValQcRpt, uplValQcRpt } from '@/api/valuation/val-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
 
@@ -133,11 +134,18 @@ export default {
     ValNetPrcList,
     ValValList,
     ReValList,
-    ValQcUploadForm
+    ValQcUploadForm,
+    ValParamSetForm
   },
   props: {
-    orderId: {},
-    taskDay: {}
+    orderId: {
+      type: Object,
+      default: () => ({})
+    },
+    taskDay: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
     return {
@@ -172,7 +180,7 @@ export default {
     }
   },
   beforeMount() {
-    console.info('curve-order-check-index.vue beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
+    console.info('val-quality-index.vue beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
     var taskDay = this.taskDay
     if (!taskDay) {
       taskDay = new Date()
@@ -189,7 +197,7 @@ export default {
       // const data = {
       //   taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       // }
-
+      //
       // await getCurveTaskOrderOptions(this.orderList, data)
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条
