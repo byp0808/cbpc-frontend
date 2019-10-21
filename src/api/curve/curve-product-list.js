@@ -67,30 +67,18 @@ export function getCurveProduct(id) {
 }
 // 获取曲线产品列表，仅包含曲线产品，key为曲线产品编号
 export function getCurveProductOptions() {
-  var options = []
+  const options = []
   getCurveList({ search_approveStatus_EQ: '02' }).then(response => {
-    var datalist = response
-    if (datalist && datalist.length > 0) {
-      for (var i = 0; i < datalist.length; i++) {
-        var data = datalist[i]
-        options.push({ value: data.curvePrdCode, label: data.productName })
-      }
-    }
+    response.map(data => options.push({ value: data.curvePrdCode, label: data.productName }))
   })
   return options
 }
 
 // 获取曲线产品列表，仅包含曲线产品，key为曲线产品ID
 export function getCurveProductIdOptions() {
-  var options = []
+  const options = []
   getCurveList({}).then(response => {
-    var datalist = response
-    if (datalist && datalist.length > 0) {
-      for (var i = 0; i < datalist.length; i++) {
-        var data = datalist[i]
-        options.push({ value: data.curveId, label: data.productName, curveId: data.curveId, productName: data.productName, productGrade: data.productGrade })
-      }
-    }
+    response.map(data => options.push({ value: data.curveId, label: data.productName, curveId: data.curveId, productName: data.productName, productGrade: data.productGrade }))
   })
   return options
 }
