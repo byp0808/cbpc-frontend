@@ -534,6 +534,7 @@ export default {
     },
     loading() {
       if (this.filterId) {
+        console.log(this.filterId())
         queryTempInfo(this.filterId.toString()).then(response => {
           const { tempId, rules, black, white } = response
           this.blackList = black
