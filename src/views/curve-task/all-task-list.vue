@@ -6,20 +6,18 @@
       </div>
       <el-form ref="task" :model="task" label-width="120px">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="曲线名称" prop="search_curveName_LIKE">
-              <el-autocomplete
+              <el-input
                 v-model="task.search_curveName_LIKE"
                 class="inline-input"
-                :value-key="'label'"
-                :fetch-suggestions="querySearch"
                 placeholder="请输入曲线名称"
-                @select="handleSelect"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8" :offset="8">
             <el-button-group>
+              <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-upload
                 style="display: inline-block;"
                 action=""
@@ -48,7 +46,7 @@
         </el-table-column>
         <el-table-column label="曲线产品状态">
           <template slot-scope="{ row }">
-            <span>{{ row.curveStatus }}</span>
+            <span>{{ $dft('CURVE_PRODUCT_STATUS', row.curveStatus) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="批次">
@@ -58,7 +56,13 @@
         </el-table-column>
         <el-table-column label="曲线编制状态">
           <template slot-scope="{ row }">
-            <span>{{ row.curveBuildStatusIn }}</span>
+            <span v-if="row.curveBuildStatusIn == 1">待分配</span>
+            <span v-if="row.curveBuildStatusIn == 2">待编制</span>
+            <span v-if="row.curveBuildStatusIn == 3">已确认</span>
+            <span v-if="row.curveBuildStatusIn == 4">已计算</span>
+            <span v-if="row.curveBuildStatusIn == 5">待复核</span>
+            <span v-if="row.curveBuildStatusIn == 6">已复核</span>
+            <span v-if="row.curveBuildStatusIn == 7">已发布</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -68,12 +72,15 @@
         </el-table-column>
         <el-table-column label="编制方法" width="80">
           <template slot-scope="{ row }">
-            <span>{{ row.curveBuildType }}</span>
+            <span v-if="row.authWay == 1">手动</span>
+            <span v-if="row.authWay == 2">自动</span>
           </template>
         </el-table-column>
         <el-table-column label="优先级" width="60">
           <template slot-scope="{ row }">
-            <span>{{ row.priority }}</span>
+            <span v-if="row.priority == 1">低</span>
+            <span v-if="row.priority == 2">中</span>
+            <span v-if="row.priority == 3">高</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
@@ -84,7 +91,7 @@
             <el-button v-else-if="row.curveBuildStatusIn === '2'" type="primary" size="mini" @click="openDialog(row)">
               重新分配
             </el-button>
-            <el-button v-if="0 + row.curveBuildStatusIn > 0 && 0 + row.curveBuildStatusIn < 3" type="primary" size="mini" @click="claim(row)">
+            <el-button v-if="0 + row.curveBuildStatusIn > 0 && 0 + row.curveBuildStatusIn < 3" type="primary" size="mini" :disabled="row.assignName?true:false" @click="claim(row)">
               认领
             </el-button>
           </template>
@@ -102,6 +109,7 @@
             :fetch-suggestions="queryPersonSearch"
             placeholder="请输入责任人"
             :trigger-on-focus="false"
+            @select="handlePersonSelect"
           />
         </el-form-item>
       </el-form>
@@ -155,7 +163,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      selectCurveTask({ data: this.task, page: this.listQuery }).then(response => {
+      selectCurveTask(Object.assign(this.task, { page: this.listQuery })).then(response => {
         this.list = response.dataList
         this.total = response.page.totalRecord
         this.listLoading = false
@@ -185,8 +193,11 @@ export default {
       this.task.search_curveId_EQ = item.value
     },
     queryPersonSearch(queryString, cb) {
-      selectPerson(queryString).then(response => {
-        const results = response.data.list
+      const data = queryString ? { userName: queryString } : {}
+      selectPerson(data).then(response => {
+        const results = response.map(i => {
+          return { value: i.userId, label: i.userName }
+        })
         // 调用 callback 返回建议列表的数据
         cb(results)
       })
@@ -223,7 +234,7 @@ export default {
       })
     },
     claim(item) {
-      chaimCurveTask({ ids: item.id }).then(() => {
+      chaimCurveTask(item.id).then(() => {
         this.getList()
       })
     },
@@ -239,7 +250,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('只能上传.xls或.xlsx结尾的文件')
+          this.$message.error('上传失败')
         })
     }
   }
