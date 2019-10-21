@@ -49,7 +49,7 @@
                   </el-table>
                 </el-card>
                 <el-tag v-for="tag in ruleTags" :key="tag" closable :disable-transitions="false" @close="handleClose(tag)">
-                  {{ tag.ruleValue }}
+                  {{ tag.ruleCode }}
                 </el-tag>
                 <div slot="footer" class="dialog-footer">
                   <el-button @click="ruleFilterVisible = false">取 消</el-button>
@@ -291,7 +291,7 @@ export default {
       ruleFilterVisible: false,
       // ruleTags: [{id:1,ruleValue:'标签一'}, {id:2,ruleValue:'标签二'},{id:3,ruleValue:'标签三'}],
       ruleTags: [],
-      othRuleList: [{ id: 1, ruleValue: '标签一' }, { id: 2, ruleValue: '标签二' }, { id: 3, ruleValue: '标签三' }, { id: 4, ruleValue: '标签4' }, { id: 5, ruleValue: '标签5' }],
+      othRuleList: [{ ruleCode: '资产分类', ruleValue: '资产分类' }, { ruleCode: '计息方式', ruleValue: '计息方式' }, { ruleCode: '流通市场', ruleValue: '流通市场' }, { ruleCode: '资产信用评级', ruleValue: '资产信用评级' }, { ruleCode: '起息日', ruleValue: '起息日' }],
       allRuleList: [],
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/bond-filter/batch-in`,
       bondTemps: [],
