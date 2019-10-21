@@ -141,6 +141,7 @@
 </template>
 <script>
 import { parseTime } from '@/utils'
+import { history } from '@/api/valuation/scheme.js'
 export default {
   name: 'SchemeMethod',
   components: {
@@ -165,8 +166,18 @@ export default {
     this.getAllList()
   },
   methods: {
-    getAllList() {
-
+    getAllList(param) {
+      console.log(param)
+      if (param) {
+        param.page = this.page
+      } else {
+        param = { page: this.page }
+      }
+      history(param).then(response => {
+        const { dataList, page } = response
+        this.adjustList = dataList
+        this.page = page
+      })
     },
     causeFilter(params) {
       switch (params) {
@@ -182,6 +193,11 @@ export default {
     },
     bondSearch() {
       console.log('dd', this.selectDate)
+      const { starDate, endDate } = this.selectDate
+      this.getAllList({
+        search_startDate_EQ: starDate,
+        search_endDate_EQ: endDate
+      })
     },
     downLoad() {
     //   this.downLoading = true
