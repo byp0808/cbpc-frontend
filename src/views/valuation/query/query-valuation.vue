@@ -105,7 +105,7 @@
         </el-col>
         <el-col :span="2">
           <el-form-item>
-            <el-button type="primary">查询</el-button>
+            <el-button type="primary" @click="load">查询</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="2">
@@ -365,10 +365,14 @@ export default {
       ],
       // 流通场所
       markets: [
-        { value: '1', label: '上交所' },
-        { value: '2', label: '香港' }
+        { value: '01', label: '香港' },
+        { value: '02', label: '美国' },
+        { value: '03', label: '交易所' },
+        { value: '04', label: '银行间' }
       ],
-      // 查询到的估值数据
+      // 查询到所有数据（未分页）
+      allValuationResultList: [],
+      // 页面表格数据（分页后）
       valuationResultList: [],
       page: {
         pageNumber: 1,
@@ -383,11 +387,16 @@ export default {
   methods: {
     load() {
       queryValuation(this.formData).then(response => {
-        // const { dataList, page } = response
-        const { dataList } = response
-        this.valuationResultList = dataList
-        // this.page = page
+        this.allValuationResultList = response
+        this.pageData()
       })
+    },
+    // 前端分页
+    pageData() {
+      this.page.totalRecord = this.allValuationResultList.length
+      const start = (this.page.pageNumber - 1) * this.page.pageSize
+      const end = start + this.page.pageSize
+      this.valuationResultList = this.allValuationResultList.slice(start, end)
     },
     resetForm() {
       this.$refs['refForm'].resetFields()
@@ -402,11 +411,11 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.load()
+      this.pageData()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.load()
+      this.pageData()
     }
   }
 }

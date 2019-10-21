@@ -86,7 +86,7 @@
         </el-col>
         <el-col :span="2">
           <el-form-item>
-            <el-button type="primary">查询</el-button>
+            <el-button type="primary" @click="load">查询</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="2">
@@ -175,6 +175,8 @@ export default {
         { value: '1', label: '估值方法1' },
         { value: '2', label: '估值方法2' }
       ],
+      peopleList: [], // 人工估值列表（未分页）
+      methodList: [], // 估值点差方案列表（未分页）
       page: {
         pageNumber: 1,
         pageSize: 10,
@@ -192,28 +194,50 @@ export default {
     // 加载点差方案列表
     loadMethodList() {
       queryValuationScheme(this.formData).then(response => {
-        // const { dataList, page } = response
-        const { dataList } = response
-        this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
-        // this.page = page
+        this.methodList = response
+        // 初始化分页对象（防止两个子页面分页数据混乱）
+        this.page = {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
+        // 数据分页
+        this.pageData()
       })
     },
     // 加载人工估值列表
     loadPeopleList() {
       queryPeopleValuation(this.formData).then(response => {
-        // const { dataList, page } = response
-        const { dataList } = response
-        this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
-        // this.page = page
+        this.peopleList = response
+        // 初始化分页对象（防止两个子页面分页数据混乱）
+        this.page = {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
+        // 数据分页
+        this.pageData()
       })
+    },
+    // 前端分页
+    pageData() {
+      this.page.totalRecord =
+          this.activeElement === '01'
+            ? this.methodList.length
+            : this.peopleList.length
+      const start = (this.page.pageNumber - 1) * this.page.pageSize
+      const end = start + this.page.pageSize
+      const dataList =
+          this.activeElement === '01'
+            ? this.methodList.slice(start, end)
+            : this.peopleList.slice(start, end)
+      this.activeElement === '01'
+        ? this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
+        : this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
     },
     handleSelect(e) {
       this.disable = this.activeElement !== '01'
-      if (this.activeElement === '02') {
-        this.formData.valuationMetnod = ''
-        this.formData.bondQuality = ''
-        this.formData.publisher = ''
-      }
+      this.resetForm()
       this.load()
     },
     resetForm() {
@@ -232,11 +256,11 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.load()
+      this.pageData()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.load()
+      this.pageData()
     }
   }
 }
