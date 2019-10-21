@@ -41,14 +41,14 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API + '/pi-valuation']: {
         // target: 'http://localhost:8081',
-        target: 'http://192.168.8.100:2000',
+        target: 'http://127.0.0.1:8081',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5
       },
       [process.env.VUE_APP_BASE_API + '/pi-curve']: {
         // target: 'http://192.168.8.172:8088',
-        target: 'http://192.168.8.100:2000',
+        target: 'http://127.0.0.1:8081',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5

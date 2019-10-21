@@ -85,6 +85,24 @@ export function dwnlCurveQcRpt(data) {
   // })
 }
 
+// 查询曲线质检参数
+export function qryCurveQcParm(data) {
+  return request({
+    url: `${basic_api_curve}` + '/param/quality/qryCurveQcParm',
+    method: 'post',
+    data: data
+  })
+}
+
+// 设置曲线质检参数
+export function setCurveQcParm(data) {
+  return request({
+    url: `${basic_api_curve}` + '/param/quality/setCurveQcParm',
+    method: 'post',
+    data: data
+  })
+}
+
 // 质检报告，退回至联系人
 export function fallbackContact(data) {
   return request({
