@@ -414,7 +414,7 @@
           <el-radio-group v-model="radio" style="margin-top:-40px" @change="radioChange">
             <div class="moveLeft">
               <el-radio label="1">常规调整</el-radio>
-              <el-input-number v-model="valuationScheme.spreadValue" :disabled="radio!== '1'" type="number" style="width:20%" clearable />
+              <el-input-number v-model="valuationScheme.spreadValue" :disabled="radio!== '1'" :min="-99999" :max="99999" style="width:20%" clearable />
             </div>
             <div style="margin-top:10px">
               <el-row :gutter="0">
@@ -440,7 +440,7 @@
             </div>
             <div style="margin-top:10px">
               <el-radio class="moveLeft" label="3">相对点差</el-radio>
-              <el-input-number v-model="valuationScheme.relaSpread" :disabled="radio!== '3'" type="number" :min="0" :max="100" style="width:20%" clearable />
+              <el-input-number v-model="valuationScheme.relaSpread" :disabled="radio!== '3'" style="width:20%" clearable />
             </div>
           </el-radio-group>
         </el-form-item>
@@ -471,8 +471,8 @@
     </el-dialog>
     <el-dialog v-loading="Dialog.e" :visible.sync="batchAdjustDialog.e" title="批量调整目标其他点差">
       <el-form>
-        <el-form-item label="目标其他点差">
-          <el-input-number v-model="valuationScheme.otAdjValue" :min="-99999" :max="99999" style="width:50%" clearable />
+        <el-form-item label="目标其他点差" prop="otAdjValue">
+          <el-input-number v-model="valuationScheme.otAdjValue" style="width:50%" clearable />
         </el-form-item>
       </el-form>
       <el-row>
@@ -668,6 +668,12 @@ export default {
         tab: '02',
         scene: '01'
       },
+      // otherRule: {
+      //   otAdjValue: [
+      //     { required: true, message: '请输入点差', trigger: 'blur' },
+      //     { required: true, min: -99999, max: 99999, message: '点差在-99999~+99999', trigger: 'blur' }
+      //   ]
+      // },
       valuationScheme: {
         tasks: [],
         curveId: '',
@@ -712,6 +718,11 @@ export default {
         this.tabList = res
       })
     },
+    // changeotAdjValue(e) {
+    //   if (e > 99999 || e < -99999) {
+    //     return this.$message.warning('点差范围是-99999~+99999,请重新输入')
+    //   }
+    // },
     selectionList(data) {
       this.selection = data
     },
@@ -790,9 +801,13 @@ export default {
       if (this.taskLists.length === 0) {
         return this.$message.warning('请至少选择一条任务进行调整')
       }
-      if (!this.valuationScheme.cdsAdjValue && !this.valuationScheme.spreadStart && !this.valuationScheme.spreadEnd &&
-      !this.valuationScheme.relaSpread && !this.valuationScheme.spreadValue) {
-        return this.$message.warning('请输入一种目标点差')
+      if (this.radio === '1') {
+        if (!this.valuationScheme.spreadValue && this.valuationScheme.spreadValue !== 0) {
+          return this.$message.warning('请输入常规调整点差')
+        }
+        if (this.valuationScheme.spreadValue >= 99999 || this.valuationScheme.spreadValue <= -99999) {
+          return this.$message.warning('常规调整点差范围是-99999~+99999,请重新输入')
+        }
       }
       if (this.radio === '2') {
         if (!this.valuationScheme.cdsAdjValue && this.valuationScheme.cdsAdjValue !== 0) {
@@ -807,6 +822,24 @@ export default {
         if (this.valuationScheme.spreadStart >= this.valuationScheme.spreadEnd) {
           return this.$message.warning('最终点差应大于初始点差')
         }
+        if (this.valuationScheme.spreadStart >= 99999 || this.valuationScheme.spreadStart <= -99999) {
+          return this.$message.warning('初始点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.valuationScheme.spreadEnd >= 99999 || this.valuationScheme.spreadEnd <= -99999) {
+          return this.$message.warning('最终点差范围是-99999~+99999,请重新输入')
+        }
+      }
+      if (this.radio === '3') {
+        if (!this.valuationScheme.relaSpread && this.valuationScheme.relaSpread !== 0) {
+          return this.$message.warning('请输入相对点差')
+        }
+        if (this.valuationScheme.relaSpread > 100 || this.valuationScheme.relaSpread < 0) {
+          return this.$message.warning('相对点差范围是0~100,请重新输入')
+        }
+      }
+      if (!this.valuationScheme.cdsAdjValue && !this.valuationScheme.spreadStart && !this.valuationScheme.spreadEnd &&
+      !this.valuationScheme.relaSpread && !this.valuationScheme.spreadValue && this.valuationScheme.relaSpread !== 0) {
+        return this.$message.warning('请输入一种目标点差')
       }
       this.selectBondId()
       this.Dialog.c = true
@@ -824,6 +857,9 @@ export default {
       }
       if (!this.valuationScheme.flAdjValue && this.valuationScheme.flAdjValue !== 0) {
         return this.$message.warning('请输入目标流动性点差')
+      }
+      if (this.valuationScheme.flAdjValue >= 99999 || this.valuationScheme.flAdjValue <= -99999) {
+        return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
       }
       // this.valuationScheme.tasks = this.tasks
       this.selectBondId()
@@ -843,16 +879,26 @@ export default {
       if (!this.valuationScheme.otAdjValue && this.valuationScheme.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
-      // this.valuationScheme.tasks = this.tasks
+      if (this.valuationScheme.otAdjValue >= 99999 || this.valuationScheme.otAdjValue <= -99999) {
+        return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
+      }
       this.selectBondId()
       this.Dialog.e = true
+      // this.$refs.otherDom.validate(val => {
+      //   if (val) {
       batchAdjust(this.valuationScheme).then(res => {
         this.Dialog.e = false
         this.batchAdjustDialog.e = false
         this.$message.success('添加成功')
         this.loadTable()
         this.clearTask()
+      }).catch(err => {
+        this.$message.err(`${err}`)
       })
+      //   } else {
+      //     return false
+      //   }
+      // })
     },
     marketAdjust() {
       this.marketDialog = true

@@ -8,14 +8,10 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="曲线名称" prop="search_productName_LIKE">
-              <el-autocomplete
+              <el-input
                 v-model="task.search_productName_LIKE"
                 class="inline-input"
-                :value-key="'label'"
-                :fetch-suggestions="querySearch"
-                :trigger-on-focus="false"
                 placeholder="请输入曲线名称"
-                @select="handleSelect"
               />
             </el-form-item>
           </el-col>
@@ -88,7 +84,9 @@
         </el-table-column>
         <el-table-column label="审批状态">
           <template slot-scope="{ row }">
-            <span>{{ row.approveStatus }}</span>
+            <span v-if="row.approveStatus === '01'">待审核</span>
+            <span v-if="row.approveStatus === '02'">审核通过</span>
+            <span v-if="row.approveStatus === '03'">审核不通过</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -149,6 +147,7 @@ export default {
       order: {
         options: []
       },
+      uploadUrl: `${basic_api_curve}/curve/importCurveTasks`,
       person: {
         username: '',
         userId: ''
@@ -172,7 +171,7 @@ export default {
     this.getList()
   },
   mounted() {
-    this.getCurveList()
+    // this.getCurveList()
   },
   methods: {
     getList() {
@@ -256,7 +255,10 @@ export default {
     upload(param) {
       const data = new FormData()
       data.append('files', param.file)
-      upload(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/importCurveTasks', data)
+      upload({
+        url: this.uploadUrl,
+        data: data
+      })
         .then(() => {
           this.$message({
             showClose: true,
