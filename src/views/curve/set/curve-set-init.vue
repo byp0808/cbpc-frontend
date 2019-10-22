@@ -85,7 +85,8 @@ export default {
         pageNumber: 1,
         pageSize: 10
       },
-      creatIndexId: ''
+      creatIndexId: '',
+      opType: ''
     }
   },
   created() {
