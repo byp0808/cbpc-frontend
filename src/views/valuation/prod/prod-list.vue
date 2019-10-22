@@ -17,7 +17,11 @@
         prop="prodBasic"
         label="基础产品"
         width="180"
-      />
+      >
+        <template slot-scope="{row}">
+          {{ $dft('VALUATION_BASE_PROD', row.prodName) }}
+        </template>
+      </el-table-column>
       <el-table-column
         prop="listingDate"
         label="产品上市日期"
