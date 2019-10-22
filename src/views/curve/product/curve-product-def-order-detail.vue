@@ -285,28 +285,26 @@ export default {
   },
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
-
+    debugger
     this.curvePrdOrder = this.orderData
     // 更新曲线发布类型、发布步长、付息频率
     if (this.curvePrdOrder) {
       if (this.curvePrdOrder.interestDueFreq) {
         this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
       }
-      if (this.curvePrdOrder.curvePubType) {
-        var maturityFlag = this.productInfo.maturityFlag
-        var spotFlag = this.productInfo.spotFlag
-        var forwardFlag = this.productInfo.forwardFlag
-        if (maturityFlag === 'Y') {
-          this.curvePubTypeSelected.push('1')
-        }
-        if (spotFlag === 'Y') {
-          this.curvePubTypeSelected.push('2')
-        }
-        if (forwardFlag === 'Y') {
-          this.curvePubTypeSelected.push('3')
-        }
-        // this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+      var maturityFlag = this.productInfo.maturityFlag
+      var spotFlag = this.productInfo.spotFlag
+      var forwardFlag = this.productInfo.forwardFlag
+      if (maturityFlag === 'Y') {
+        this.curvePubTypeSelected.push('1')
       }
+      if (spotFlag === 'Y') {
+        this.curvePubTypeSelected.push('2')
+      }
+      if (forwardFlag === 'Y') {
+        this.curvePubTypeSelected.push('3')
+      }
+      // this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
       if (this.curvePrdOrder.publishStepSize) {
         this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
       }
