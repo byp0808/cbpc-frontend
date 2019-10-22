@@ -9,6 +9,7 @@
       :cell-class-name="rowInterval"
       @cell-click="cellClick"
       @cell-dblclick="cellDbClick"
+      @header-click="headerClick"
     >
       <template v-for="col in columns">
         <slot :name="col.slot">
@@ -97,6 +98,10 @@ export default {
     interval: {
       type: Array,
       default: () => []
+    },
+    editEnable: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -132,6 +137,9 @@ export default {
   },
   methods: {
     cellClick(row, column) {
+      if (!this.editEnable) {
+        return
+      }
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
@@ -150,13 +158,6 @@ export default {
         } else {
           this.selected.push({ term: row.term, label: column.label, row })
         }
-        // if (_.find(this.highLight, { row: row.index, col: column.index })) {
-        //   _.pullAllWith(this.highLight, [{ row: row.index, col: column.index }], _.isEqual)
-        //   _.pullAllWith(this.selected, [{ term: row.term, label: column.label, row }], _.isEqual)
-        // } else {
-        //   this.selected.push({ term: row.term, label: column.label, row })
-        //   this.highLight.push({ row: row.index, col: column.index })
-        // }
       }, 300)
       // 价格辅助Dialog
       clearTimeout(time_dia)
@@ -168,6 +169,9 @@ export default {
       }, 800)
     },
     cellDbClick(row, column) {
+      if (!this.editEnable) {
+        return
+      }
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
@@ -206,6 +210,12 @@ export default {
       const label = arr.map(e => e.label).filter((t, i, a) => a.indexOf(t, 0) === i).join(',')
       const item = Object.assign({}, arr[0], { label, value })
       this.resetSetItem('watchStorage', JSON.stringify(item))
+    },
+    headerClick(columns) {
+      if (!this.editEnable) {
+        return
+      }
+      this.$emit('header-click', columns)
     }
   }
 }
