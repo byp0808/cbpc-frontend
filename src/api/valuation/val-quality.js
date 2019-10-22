@@ -3,6 +3,7 @@ import request from '@/utils/app-request'
 import { downloadFile, upload } from '@/utils/file-request'
 
 const basic_api_valuation = '/pi-valuation'
+const basic_api_market = '/pi-market'
 
 // 查询估值产品总览质检报告
 export function qryOverallQcRpt(data) {
@@ -120,3 +121,13 @@ export function uplValQcRpt(data) {
     data: data
   })
 }
+
+// 上传估值质检报告
+export function getValOrderList(data) {
+  return request({
+    url: `${basic_api_market}` + '/order/all-list',
+    method: 'post',
+    data: data
+  })
+}
+

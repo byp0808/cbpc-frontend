@@ -2,16 +2,29 @@
   <div class="x-scroll">
     <div class="flex-container">
       <div class="flex-item">
-        <CurveBuildTable :list="list" :name="productName" :show-division="true" :show-button="true" />
+        <curve-build-table
+          :list="makeData"
+          :name="productName"
+          :curve-id="curveId"
+          :order-id="orderId"
+          :show-division="true"
+          :show-button="true"
+          :options="homology"
+          @change-data="changeData"
+          @confirm-build="confirmBuild"
+          @refund-build="refundBuild"
+          @reset-build="resetBuild"
+          @click-history-division="historyDivision"
+        />
         <el-tabs :tab-position="'top'" class="curve-image">
           <el-tab-pane label="到期" style="width: 500px;">
-            <Chart :options="makeData" />
+            <Chart :options="makeFutureData" />
           </el-tab-pane>
           <el-tab-pane label="即期" style="width: 500px;">
-            <Chart :options="makeData" />
+            <Chart :options="makeSpotData" />
           </el-tab-pane>
         </el-tabs>
-      </div>
+      </div>`
       <div class="flex-item">
         <div v-for="(refer, index) in referList" :key="index" class="curve-build">
           <ReferTable
@@ -35,32 +48,22 @@
         </div>
       </div>
     </div>
-    <init-curve v-if="true" :mini-icon="'el-icon-info'">
-      <div>
-        <div class="curve-sub-content">
-          <CurveBuildTable :list="initList" :name="productName" />
-        </div>
-        <div class="curve-sub-footer">
-          <el-button type="primary">应用</el-button>
-          <el-button>取消</el-button>
-        </div>
-      </div>
-    </init-curve>
   </div>
 </template>
 
 <script>
-import CurveBuildTable from './CurveBuildTable'
-import ReferTable from './ReferTable'
-import RelationTable from './RelationTable'
-import HighBright from './HighBrightColumn'
-import InitCurve from './InitCurve'
+import CurveBuildTable from '@/views/build-curve/components/CurveBuildTable'
+import ReferTable from '@/views/build-curve/components/ReferTable'
+import RelationTable from '@/views/build-curve/components/RelationTable'
+import HighBright from '@/views/build-curve/components/HighBrightColumn'
 import { Chart } from 'highcharts-vue'
-import { queryCurveYield, queryInitCurveYield, queryReferCurveYield, queryRelationsCurveYield, queryHistoryDivision } from '@/api/curve/curve-build'
+import { mapState } from 'vuex'
+import { queryReferCurveYield, queryRelationsCurveYield, queryHomology, queryHistoryDivision, confirmBuild, refundBuild } from '@/api/curve/curve-build'
+import { subtract } from '@/utils/math'
 
 export default {
   name: 'BuildCurve',
-  components: { InitCurve, CurveBuildTable, Chart, ReferTable, RelationTable },
+  components: { CurveBuildTable, Chart, ReferTable, RelationTable },
   props: {
     curveId: {
       type: String,
@@ -85,9 +88,7 @@ export default {
   },
   data() {
     return {
-      list: [],
-      initList: [],
-      chartOptions: {
+      chartFutureOptions: {
         title: {
           text: ''
         },
@@ -114,7 +115,62 @@ export default {
             text: ''
           },
           gridLineWidth: 1
-        }
+        },
+        series: [
+          {
+            name: '今日',
+            data: []
+          }, {
+            name: '昨日',
+            data: []
+          }
+        ]
+      },
+      chartSpotOptions: {
+        title: {
+          text: ''
+        },
+        credits: {
+          enabled: false
+        },
+        legend: {
+          // layout: 'vertical',
+          // backgroundColor: '#ff5f96',
+          floating: true,
+          align: 'right',
+          verticalAlign: 'bottom',
+          x: -10,
+          y: 20
+        },
+        xAxis: {
+          title: {
+            text: ''
+          },
+          step: 0.01,
+          allowDecimals: true,
+          gridLineWidth: 1
+        },
+        yAxis: {
+          title: {
+            text: ''
+          },
+          gridLineWidth: 1
+        },
+        plotOptions: {
+          series: {
+            pointStart: 0,
+            pointInterval: 0.01
+          }
+        },
+        series: [
+          {
+            name: '今日',
+            data: []
+          }, {
+            name: '昨日',
+            data: []
+          }
+        ]
       },
       referColumns: [
         { prop: 'standSlip', label: '期限' },
@@ -128,18 +184,20 @@ export default {
       ],
       referList: [],
       relationList: [],
-      result: [
-        {
-          name: '昨日',
-          data: [1, 2, 3]
-        }, {
-          name: '今日',
-          data: [2, 4, 5]
-        }
-      ]
+      homology: [],
+      status: false,
+      clickClose: false
     }
   },
   computed: {
+    ...mapState({
+      list: function(state) {
+        return state.curveBuild.curveBuildList[this.curveId]
+      },
+      yields: function(state) {
+        return state.curveBuild.curveChartsList[this.curveId]
+      }
+    }),
     makeNow() {
       const _ = this.$lodash
       return this.list.map(v => {
@@ -147,9 +205,34 @@ export default {
       }).reduce((k, i) => _.merge(k, i), {})
     },
     makeData() {
-      const options = this.chartOptions
-      options['series'] = this.result
-      return options
+      return this.list.map((v, index) => {
+        if (index === 0) {
+          v.variations = 0
+        } else {
+          v.variations = subtract(this.list[index].adjResult, this.list[index - 1].adjResult)
+        }
+        return v
+      })
+    },
+    makeFutureData() {
+      const chartFutureOptions = this.chartFutureOptions
+      chartFutureOptions.series[0].data = this.yields[0]
+      chartFutureOptions.series[1].data = this.yields[1]
+      return chartFutureOptions
+    },
+    makeSpotData() {
+      const chartSpotOptions = this.chartSpotOptions
+      chartSpotOptions.series[0].data = this.yields[2]
+      chartSpotOptions.series[1].data = this.yields[3]
+      return chartSpotOptions
+    }
+  },
+  watch: {
+    list: function(newlist, oldlist) {
+      console.log('========')
+      console.log(oldlist)
+      console.log(newlist)
+      console.log('========')
     }
   },
   created() {
@@ -161,15 +244,11 @@ export default {
     this.getCurve()
     this.getReferCurve()
     this.getRelationCurve()
+    this.getOptions()
   },
   methods: {
     getCurve() {
-      queryCurveYield({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }).then(response => {
-        this.list = response
-        queryInitCurveYield({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
-          this.initList = response
-        })
-      })
+      this.$store.dispatch('curveBuild/initData', { curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId })
     },
     getReferCurve() {
       queryReferCurveYield({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
@@ -184,6 +263,48 @@ export default {
           el.curves.map(curve => columns.push({ prop: curve.curveId, label: curve.productName, component: HighBright }))
           el.columns = columns
           return el
+        })
+      })
+    },
+    getOptions() {
+      queryHomology({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
+        this.homology = response.map(v => {
+          return { label: '[' + v.curveName + v.standSlip + 'Y]', value: '#' + '[' + v.curveShortName + v.standSlip + 'Y]', id: v.id }
+        })
+      })
+    },
+    getSaveCurveBuild() {
+      this.$store.dispatch('curveBuild/updateData', this.list)
+    },
+    changeData(data) {
+      const i = this.list.findIndex(v => v.standSlip === data.standSlip)
+      this.$set(this.list, i, data)
+      this.getSaveCurveBuild()
+    },
+    confirmBuild() {
+      confirmBuild({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }).then(response => {
+        this.status = true
+        this.$message({
+          type: 'success',
+          message: '确认成功!'
+        })
+      })
+    },
+    refundBuild() {
+      refundBuild({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }).then(response => {
+        this.status = false
+        this.$message({
+          type: 'success',
+          message: '退回成功!'
+        })
+      })
+    },
+    resetBuild() {
+      this.$store.dispatch('curveBuild/resetData', { curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }, function() {
+        this.status = false
+        this.$message({
+          type: 'success',
+          message: '重置成功!'
         })
       })
     },
@@ -219,17 +340,5 @@ export default {
 .curve-image {
   min-width: 580px;
   margin-left: 20px;
-}
-.curve-sub-content {
-  padding: 5px;
-}
-.curve-sub-footer {
-  height: 50px;
-  line-height: 50px;
-  position: relative;
-  width: 100%;
-  text-align: right;
-  padding-right: 20px;
-  transition: 600ms ease position;
 }
 </style>

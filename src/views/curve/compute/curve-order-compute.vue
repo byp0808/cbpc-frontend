@@ -250,6 +250,9 @@ export default {
         this.computeDisabled = false
         this.getCurveOrderComputeList()
         this.calculatCompletionRate()
+      }).catch((err) => {
+        console.log(err)
+        this.computeDisabled = false
       })
       this.computeDisabled = false
     },
