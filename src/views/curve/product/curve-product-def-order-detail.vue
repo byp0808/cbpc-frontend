@@ -618,7 +618,6 @@ export default {
           this.curvePrdOrder.publishType = '1'
         } else {
           this.publishTypeDisabled = false
-          this.curvePrdOrder.publishType = '2'
         }
       }
       if (this.disabled) {
