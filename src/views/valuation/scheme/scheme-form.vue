@@ -34,6 +34,25 @@
                 <span class="unit">%</span>
               </el-form-item>
             </el-col>
+            <el-col :offset="6" :span="11">
+              <el-upload
+                class="upload-demo"
+                action=""
+                :before-upload="handlePreview"
+                name="attach"
+                :http-request="uploadFile"
+                :on-exceed="handleExceed"
+                :before-remove="remove"
+                multiple
+                :limit="1"
+                accept=".xlsx,.pdf,.xls,.doc,.docx"
+                :file-list="fileList"
+              >
+                <el-button size="small" type="primary">上传估值判断依据</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传world/excel/pdf文件，且不超过1MB</div>
+              </el-upload>
+              <div v-if="uploadTime" class="text-smaller text-placeholder">上传时间：{{ uploadTime }}</div>
+            </el-col>
           </el-row>
         </div>
       </template>
@@ -46,7 +65,9 @@
 
 <script>
 import SchemeNormal from '@/views/valuation/scheme/scheme-normal.vue'
+import { upload } from '../../../utils/file-request'
 import { queryDictList } from '@/api/common/common.js'
+import { basic_api_valuation } from '@/api/base-api.js'
 import { save } from '@/api/valuation/scheme.js'
 export default {
   name: 'ValuationSchemeForm',
@@ -55,8 +76,10 @@ export default {
   },
   data() {
     return {
+      uploadUrl: `${basic_api_valuation}/scheme/upload`,
       valWays: [],
       recovery: '',
+      uploadTime: '',
       schemeInfo: {
         bondId: '12344345',
         curveId: 'curve2',
@@ -142,6 +165,21 @@ export default {
           message: `保存成功`,
           type: 'success'
         })
+      })
+    },
+    uploadFile(data) {
+      // const date = new Date()
+      // const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + date.getHours() + ':' + date.getMinutes()
+      // this.fileList.push({ name: `${data.file.name}-${today}` })
+      const form = new FormData()
+      form.append('data', data.file)
+      upload({
+        url: this.uploadUrl,
+        data: form
+      }).then(response => {
+        data.onSuccess(response)
+        const date = new Date()
+        this.uploadTime = this.$moment(date).format('YYYY-MM-DD')
       })
     }
   }

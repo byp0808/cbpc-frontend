@@ -40,10 +40,10 @@
               <el-form-item label="基础产品">
                 <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%" :disabled="boolTrue">
                   <el-option
-                    v-for="basicProd in basicProdList"
-                    :key="basicProd.id"
-                    :label="basicProd.name"
-                    :value="basicProd.id"
+                    v-for="(name, key) in $dict('VALUATION_BASE_PROD')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
@@ -75,12 +75,12 @@
               </el-form-item>
               <el-form-item label="停产日">
                 <el-date-picker
-                        v-model="prodInfo.delistingDate"
-                        :disabled="boolTrue"
-                        align="right"
-                        type="date"
-                        placeholder="选择日期"
-                        style="width: 100%"
+                  v-model="prodInfo.delistingDate"
+                  :disabled="boolTrue"
+                  align="right"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
                 />
               </el-form-item>
             </el-form>
