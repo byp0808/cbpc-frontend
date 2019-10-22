@@ -50,6 +50,7 @@
             >
               <el-table-column
                 prop="colChiName"
+                sortable
                 label="字段"
                 show-overflow-tooltip
                 width="150"
@@ -91,7 +92,7 @@
                   <el-checkbox
                     v-model="scope.row.showOrhide"
                     v-bind="{'checked': scope.row.showOrhide? true : false}"
-                    :disabled="disabled"
+                    :disabled="disabled || scope.row.isPriMaryKey === 'Y'"
                     @change="checkedShow(scope.$index, scope.row.showOrhide)"
                   />
                 </template>
@@ -180,6 +181,7 @@
               <el-table-column
                 prop="colChiName"
                 label="字段"
+                sortable
                 show-overflow-tooltip
                 width="300"
               />
@@ -198,12 +200,12 @@
 
 <script>
 import { optioins } from '@/api/curve/code-type.js'
-import { saveMarketTemp, getMarketTemp, getMarketColsInfo } from '@/api/market/market-temp.js'
+import { saveMarketTemp, getMarketTemp, getMarketColsInfo, checkTempName } from '@/api/market/market-temp.js'
 
 export default {
   name: 'MarketTempForm',
   components: {},
-  props: ['businessId', 'opType'],
+  props: ['businessId', 'opType', 'isCopy'],
   data() {
     return {
       disabled: '',
@@ -289,6 +291,10 @@ export default {
       this.$emit('closeDialog')
     },
     save(formName) {
+      if (this.isCopy) {
+        // 复制新增-->删除Id
+        this.marketTempInfo.id = ''
+      }
       this.$refs.MarketTempForm.validate((valid) => {
         if (valid) {
           const data = {}
@@ -488,13 +494,6 @@ export default {
         }
       }
     },
-    checkTempName(rule, value, callback) {
-      if (this.businessId) {
-        callback()
-      } else {
-        callback()
-      }
-    },
     selectColName(val) {
       let obj = {}
       obj = this.relationColsOptions.find((item) => {
@@ -524,6 +523,19 @@ export default {
         this.colData = colData
         this.relationColsOptions = numberCols
         this.setColDataResult()
+      })
+    },
+    checkTempName(rule, value, callback) {
+      var data = {}
+      data.tempName = value
+      data.id = this.marketTempInfo.id
+      checkTempName(data).then(response => {
+        // console.log(response)
+        if (response) {
+          callback(new Error('模板名称重复'))
+        } else {
+          callback()
+        }
       })
     }
   }

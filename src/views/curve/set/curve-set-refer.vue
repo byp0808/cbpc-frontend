@@ -14,7 +14,7 @@
       </el-table-column>
       <el-table-column label="同调曲线" width="290px" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveReferDtoEdit(scope.$index, curveReferDtoList)">详情</span>
+          <span class="link-type" @click="curveReferDtoEdit(scope.$index, curveReferDtoList, 'VIEW')">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
@@ -27,7 +27,7 @@
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, curveReferDtoList)">编辑</el-button>
+          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, curveReferDtoList, 'EDIT')">编辑</el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoDel(scope.$index, curveReferDtoList)">删除</el-button>
         </template>
@@ -43,16 +43,17 @@
       @current-change="handleCurrentChange"
     />
 
-    <el-dialog :visible.sync="dialogFormVisible" width="50%">
+    <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="50%">
       <Refer
         ref="refer"
         :temp="temp"
+        :op-type="opType"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="storageCurveRefer()">
+        <el-button v-if="opType !== 'VIEW'" type="primary" @click="storageCurveRefer()">
           确定
         </el-button>
       </div>
@@ -75,6 +76,7 @@ export default {
   data() {
     return {
       curveReferDtoList: [],
+      opType: '',
       temp: {
         curveId: '',
         approveStatus: '',
@@ -104,11 +106,13 @@ export default {
     curveReferCreate() {
       this.temp = []
       this.dialogFormVisible = true
+      this.opType = 'ADD'
     },
     // dto列表修改操作
-    curveReferDtoEdit(index, rows) {
+    curveReferDtoEdit(index, rows, opType) {
       this.temp = rows[index]
       this.dialogFormVisible = true
+      this.opType = opType
     },
     // dto列表删除
     curveReferDtoDel(index, rows) {

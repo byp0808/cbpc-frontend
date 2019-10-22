@@ -5,6 +5,7 @@
       <el-button v-if="false" type="primary" @click="toAddProduct('COPY')">复制新增</el-button>
       <el-input v-model="input" placeholder="请输入查询内容" style="width: 15%" />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-button class="filter-item" type="primary" @click="download">下载详情</el-button>
     </div>
     <el-table
       ref="multipleTable"
@@ -168,7 +169,7 @@ import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import ValuationProdForm from '@/views/valuation/prod/prod-detail.vue'
-import { queryALlProductList, queryProdByID } from '@/api/common/prod-list.js'
+import { queryALlProductList, queryProdByID, dwnlProducts } from '@/api/common/prod-list.js'
 
 import { delCurveSample } from '@/api/curve/curve-sample.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
@@ -365,6 +366,9 @@ export default {
       console.info('confirmValuationInfoCallBack')
       this.addValuationProductDefFormVisible = false
       this.queryProductList()
+    },
+    download() {
+      dwnlProducts()
     }
   }
 }

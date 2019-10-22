@@ -118,17 +118,24 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="债券代码" prop="bondNo">
-              <el-input v-model="weight.bondNo" />
+              <el-autocomplete
+                v-model="weight.bondNo"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch"
+                :trigger-on-focus="false"
+                @select="handleSelect"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="债券简称" prop="bondName">
-              <el-input v-model="weight.bondName" />
+              <el-input v-model="weight.bondName" readonly />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="待偿期限" prop="slip">
-              <el-input v-model="weight.slip" oninput="value = value.replace(/[^\d.]/g,'')" />
+              <el-input v-model="weight.slip" readonly />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -275,6 +282,25 @@ export default {
     closeDialog() {
       this.weight = {}
       this.showResult = false
+    },
+    querySearch(queryString, cb) {
+      const data = []
+      if (queryString) {
+        data.push({ colName: 'VAL_ASSET_CODE', value: queryString, colType: 'STRING', operator: 'EQ' })
+      }
+      // TODO
+      // selectPerson(data).then(response => {
+      //   const results = response.map(i => {
+      //     return { value: i.userId, label: i.userName }
+      //   })
+      //   // 调用 callback 返回建议列表的数据
+      //   cb(results)
+      // })
+    },
+    handleSelect(item) {
+      // TODO
+      this.weight.bondName = item.bondName
+      this.weight.slip = item.slip
     },
     calculusYield() {
       if (add(this.weight.onePoint, this.weight.twoPoint) === 0) {
