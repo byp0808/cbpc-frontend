@@ -229,6 +229,7 @@ export default {
       this.multipleSelection = val
     },
     convertMarket(val) {
+      if (!val) return ''
       let res = ''
       val = val.split(',')
       for (const x in val) {
@@ -322,6 +323,9 @@ export default {
             })
           }).catch(() => {
           })
+        } else if (res.respCode === 'YBL100002004') {
+          this.$alert(res.respMsg, '错误')
+          this.$refs.uploadZone.clearFiles()
         } else {
           this.$refs.uploadZone.clearFiles()
           this.$message.success('批量上传成功')
