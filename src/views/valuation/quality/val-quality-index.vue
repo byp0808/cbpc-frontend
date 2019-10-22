@@ -119,8 +119,7 @@ import ValValList from '@/views/valuation/quality/val-val-list.vue'
 import ReValList from '@/views/valuation/quality/val-reval-list.vue'
 import ValQcUploadForm from '@/views/valuation/quality/val-upload-excel.vue'
 import ValParamSetForm from '@/views/valuation/quality/val-param-set-form.vue'
-import { dwnlValQcRpt, uplValQcRpt } from '@/api/valuation/val-quality.js'
-// import { formatTimeToStr } from '@/utils/date.js'
+import { dwnlValQcRpt, uplValQcRpt, getValOrderList } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValQualityIndex',
@@ -139,12 +138,12 @@ export default {
   },
   props: {
     orderId: {
-      type: Object,
-      default: () => ({})
+      type: String,
+      default: ''
     },
     taskDay: {
-      type: Object,
-      default: () => ({})
+      type: Date,
+      default: () => (new Date())
     }
   },
   data() {
@@ -157,10 +156,6 @@ export default {
         taskDay: null,
         orderId: ''
       },
-      // dwnlForm: {
-      //   compDate: '20190918',
-      //   batchId: 'B0002'
-      // },
       activeName: 'zl'
     }
   },
@@ -186,19 +181,20 @@ export default {
       taskDay = new Date()
     }
     this.queryForm.taskDay = taskDay
-    this.queryForm.orderId = this.$store.state.curveOrderCompute.orderId
     // 加载批次
     this.init(true)
+    console.info('orderList.length' + this.orderList.length)
   },
   methods: {
     async init() {
       // 加载批次
-      this.orderList = [{ id: 'B0003', orderName: 'B0003' }]
       // const data = {
       //   taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       // }
-      //
-      // await getCurveTaskOrderOptions(this.orderList, data)
+      this.orderList = []
+      this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
+      this.orderList.push({ id: 'B0003', orderName: 'B0003' })
+      await this.getValOrderOptions(this.orderList)
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条
         if (this.queryForm.orderId) {
@@ -219,6 +215,21 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event)
+    },
+    async getValOrderOptions(orderList) {
+      console.info('getValOrderOptions...')
+      var dataList = []
+      const data = { basePrd: '01' }
+      await getValOrderList(data).then(response => {
+        dataList = response
+      })
+      if (dataList && dataList.length > 0) {
+        for (var i = 0; i < dataList.length; i++) {
+          var item = dataList[i]
+          orderList.push({ id: item.orderNo, orderName: item.orderName })
+        }
+      }
+      return orderList
     },
     // 下载
     download() {

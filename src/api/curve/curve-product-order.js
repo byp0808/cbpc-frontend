@@ -110,3 +110,12 @@ export function queryPrdOrderAutoKts(data) {
     data
   })
 }
+
+// 查看曲线性质
+export function viewCurveProperty(data) {
+  return request({
+    url: `${basic_api_curve}/curveOrderCompute/viewCurveProperty`,
+    method: 'post',
+    data
+  })
+}

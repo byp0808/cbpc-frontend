@@ -65,8 +65,7 @@
 
 <script>
 import SchemeNormal from '@/views/valuation/scheme/scheme-normal.vue'
-import { upload } from '../../../utils/file-request'
-import { queryDictList } from '@/api/common/common.js'
+import { queryDictList, uploadFile } from '@/api/common/common.js'
 import { basic_api_valuation } from '@/api/base-api.js'
 import { save } from '@/api/valuation/scheme.js'
 export default {
@@ -168,18 +167,9 @@ export default {
       })
     },
     uploadFile(data) {
-      // const date = new Date()
-      // const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + date.getHours() + ':' + date.getMinutes()
-      // this.fileList.push({ name: `${data.file.name}-${today}` })
-      const form = new FormData()
-      form.append('data', data.file)
-      upload({
-        url: this.uploadUrl,
-        data: form
-      }).then(response => {
+      uploadFile({ file: data.file }).then(response => {
         data.onSuccess(response)
-        const date = new Date()
-        this.uploadTime = this.$moment(date).format('YYYY-MM-DD')
+        this.uploadTime = this.$moment().format('YYYY-MM-DD')
       })
     }
   }

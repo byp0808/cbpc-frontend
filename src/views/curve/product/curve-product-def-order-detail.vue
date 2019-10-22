@@ -145,9 +145,11 @@
                 {{ orderName }}
               </template>
             </el-table-column>
-            <el-table-column prop="curveBuildStatus" label="所需状态" width="80" show-overflow-tooltip>
+            <el-table-column prop="curveBuildStatus" label="所需状态" width="120" show-overflow-tooltip>
               <template slot-scope="scope">
-                {{ scope.row.curveBuildStatus ? $t('dicts.CURVE_BUILD_STATUS' + '.' + (scope.row.curveBuildStatus)) : '' }}
+                <el-select v-model="scope.row.curveBuildStatus" placeholder="请选择产品状态" :disabled="disabled">
+                  <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
               </template>
             </el-table-column>
             <el-table-column prop="" label="操作" width="60" show-overflow-tooltip>
@@ -265,6 +267,9 @@ export default {
     // 自动编制规则
     autoRuleOptions() {
       return optioins(this, 'AUTO_RULE')
+    },
+    prdStatusOptions() {
+      return optioins(this, 'CURVE_BUILD_STATUS')
     }
   },
   watch: {
@@ -288,7 +293,6 @@ export default {
         this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
       }
       if (this.curvePrdOrder.curvePubType) {
-        debugger
         var maturityFlag = this.productInfo.maturityFlag
         var spotFlag = this.productInfo.spotFlag
         var forwardFlag = this.productInfo.forwardFlag
