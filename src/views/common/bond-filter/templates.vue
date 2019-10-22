@@ -69,20 +69,22 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.tempId, true)"
+            @click.native.prevent="toDetail(scope.row.tempId, scope.row.tempName, true)"
           >
             查看
           </el-button>
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail(scope.row.tempId, false)"
+            :disabled="scope.row.status === '01'"
+            @click.native.prevent="toDetail(scope.row.tempId, scope.row.tempName,false)"
           >
             编辑
           </el-button>
           <el-button
             type="text"
             size="small"
+            :disabled="scope.row.status === '01'"
             @click.native.prevent="toDelete(scope.row.tempId,scope.row.tempName)"
           >
             删除
@@ -127,6 +129,7 @@ export default {
       tempId: '',
       disabled: '',
       tempName: '',
+      editable: false,
       bondTempFilters: {
         dataList: [],
         page: {
@@ -169,7 +172,11 @@ export default {
         cancelButtonText: '取消',
         inputValue: this.tempName
       }).then(({ value }) => {
-        this.$refs.refTmpBondFilter.save(value)
+        if (this.editable) {
+          this.$refs.refTmpBondFilter.save(this.tempId, value)
+        } else {
+          this.$refs.refTmpBondFilter.save(null, value)
+        }
         this.bondFilterVisible = false
       }).catch(() => {
         this.$message({
@@ -230,9 +237,11 @@ export default {
       })
       return ruleDetail
     },
-    toDetail(id, disabled) {
+    toDetail(id, name, disabled) {
       this.tempId = id
       this.disabled = disabled
+      this.tempName = name
+      this.editable = !disabled
       this.bondFilterVisible = true
     },
     toAdd() {

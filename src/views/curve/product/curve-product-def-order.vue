@@ -2,6 +2,7 @@
   <div class="app-container" style="margin: 0;padding-left:0;padding-right:0">
     <el-row :gutter="24">
       <el-col :span="7">
+        <el-button type="primary" style="margin-top: 10px" :disabled="disabled" @click="loadAll">刷新</el-button>
         <el-table
           ref="orderTable"
           :data="orderList"
@@ -40,6 +41,7 @@
               :curve-prd-order-auto-list="tabItem.curvePrdOrderAutoList"
               :auto-prd-order-kts="tabItem.autoPrdOrderKts"
               :prd-order-auto-kds="tabItem.prdOrderAutoKds"
+              :product-info="productInfo"
               @locaLastOrder="locaLastOrder"
             />
           </el-tab-pane>
@@ -60,7 +62,7 @@ export default {
   components: {
     CurveProductDefOrderDetailForm
   },
-  props: ['productId', 'opType', 'disabled'],
+  props: ['productId', 'opType', 'disabled', 'productInfo'],
   data() {
     return {
       productIdLocal: '',
@@ -83,12 +85,16 @@ export default {
   computed: {
   },
   beforeMount() {
-    this.productIdLocal = this.productId
-    // this.productIdLocal = '4028b8816d18e4c2016d1915bdc70004'
-    console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
-    this.init()
+    this.loadAll()
   },
   methods: {
+    loadAll() {
+      this.productIdLocal = this.productId
+      // this.productIdLocal = '4028b8816d18e4c2016d1915bdc70004'
+      console.info('curve-product-def-order.vue.beforeMount:' + this.productIdLocal)
+      this.productInfo
+      this.init()
+    },
     // 加载批次所有数据
     async init() {
       // 查询产品关键期限，如果选择批次未生成生成相应 产品批次关键期限 信息，则默认取产品关键期限

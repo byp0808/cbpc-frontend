@@ -21,7 +21,7 @@
       @cell-dblclick="cellDblclick"
       @header-contextmenu="editCurrentModule"
     >
-      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
           <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
         </template>
@@ -184,31 +184,6 @@ export default {
         { id: '4', key: 'remindTime', label: '提醒时间', THType: '6' }
       ],
       colData: [],
-      module_1: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '5', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_2: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'timeZone', label: '时区', THType: '5' },
-        { id: '6', key: 'remindTime', label: '提醒时间', THType: '6' }
-      ],
-      module_3: [
-        { id: '1', key: 'orderNo', label: '批次', THType: '1' },
-        { id: '2', key: 'orderName', label: '批次名字', THType: '2' },
-        { id: '3', key: 'orderNo', label: '批次', THType: '3' },
-        { id: '4', key: 'orderName', label: '批次名字', THType: '4' },
-        { id: '5', key: 'orderNo', label: '批次', THType: '5' },
-        { id: '6', key: 'orderName', label: '批次名字', THType: '6' },
-        { id: '7', key: 'timeZone', label: '时区', THType: '7' },
-        { id: '8', key: 'remindTime', label: '提醒时间', THType: '8' }
-      ],
       moduleList: [],
       moduleId: '',
       currentModuleId: '',
@@ -249,7 +224,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -272,7 +249,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -341,8 +320,6 @@ export default {
 
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
 
       switch (type) {
         case 'DATE':// 日期型
@@ -359,6 +336,9 @@ export default {
           break
         case 'OPTION':// 可选型
           this.formType = 4
+          break
+        default:// 自定义字段不予筛选
+          this.formType = 0
           break
       }
       this.screeningFormVisible = true

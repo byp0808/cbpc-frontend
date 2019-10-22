@@ -1,9 +1,12 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="curveHomologyCreate">
-        新增规则
-      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        @click="curveHomologyCreate"
+      >新增规则</el-button>
     </div>
 
     <el-table :data="initCaseList" tooltip-effect="dark" style="width: 100%">
@@ -24,12 +27,16 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, initCaseList)">
-            修改
-          </el-button>
-          <el-button type="text" size="big" @click="curveHomologyDtoDel(scope.$index, initCaseList)">
-            删除
-          </el-button>
+          <el-button
+            type="text"
+            size="big"
+            @click="curveHomologyDtoEdit(scope.$index, initCaseList)"
+          >修改</el-button>
+          <el-button
+            type="text"
+            size="big"
+            @click="curveHomologyDtoDel(scope.$index, initCaseList)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -43,17 +50,10 @@
       @current-change="handleCurrentChange"
     />
     <el-dialog :visible.sync="dialogFormVisible" width="90%">
-      <Creditdebt
-        ref="creditdebt"
-        :temp="temp"
-      />
+      <Creditdebt ref="creditdebt" :temp="temp" />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="storageInit()">
-          确定
-        </el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="storageInit()">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -82,7 +82,6 @@ export default {
         lastUpdBy: '',
         lastUpdTs: '',
         standSlip: ''
-
       },
       dialogFormVisible: false,
       page: {
@@ -107,7 +106,7 @@ export default {
     curveHomologyCreate() {
       this.temp = []
       this.dialogFormVisible = true
-      // this.$refs.creditdebt.jinzhiXuanZe = false
+      this.$refs.creditdebt.jinzhiXuanZe = false
       // this.$refs.creditdebt.curveHomologyShow = true
       // this.$refs.creditdebt.curveHomologyXing = true
       // this.$refs.creditdebt.bankMessage = []
@@ -162,5 +161,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

@@ -40,7 +40,7 @@
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
       >
-        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -69,7 +69,7 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center">
+        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -396,7 +396,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         // console.info(response)
-        // this.offerPage = response.page
+        if (typeof response.page !== 'undefined') {
+          this.offerPage = response.page
+        }
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -425,7 +427,9 @@ export default {
       }
       queryMarketData(data2).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -438,6 +442,7 @@ export default {
       this.offerMarketLoading = true
       this.searchParam = []
       // 处理筛选数据格式
+      console.info(this.offerScreeningFormList)
       this.formatScreeningForm(this.offerScreeningFormList)
       // 获取满足条件的行情数据
       const data = {
@@ -450,7 +455,9 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        // this.offerPage = response.page
+        if (typeof response.page !== 'undefined') {
+          this.offerPage = response.page
+        }
         this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
@@ -493,6 +500,9 @@ export default {
           break
         case 'OPTION':// 可选型
           this.formType = 4
+          break
+        default: // 自定义字段不予筛选
+          this.formType = 0
           break
       }
       this.screeningFormVisible = true
@@ -599,7 +609,9 @@ export default {
       }
       queryMarketData(data).then(response => {
         console.info(response)
-        // this.page = response.page
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
         this.marketList = response.dataList
       })
       this.marketLoading = false
@@ -1110,7 +1122,13 @@ export default {
       // 处理筛选数据格式
       value.map(val => {
         // 判断表头类型
-        const headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        let headers = []
+        if (this.currentTable === 1) {
+          headers = this.offerTableHeader.filter(tab => tab.colName === val.headerKey)
+        } else {
+          headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
+        }
+        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm

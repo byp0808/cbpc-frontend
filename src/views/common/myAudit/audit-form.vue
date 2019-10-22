@@ -80,8 +80,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button :type="scope.row.approveStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true" @click="audit(scope.row.businessNo, '02', scope.row.businessRouter)">通过</el-button>
-          <el-button :type="scope.row.approveStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.approveStatus === '01'? false: true" @click="audit(scope.row.businessNo, '03', scope.row.businessRouter)">拒绝</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '02', scope.row.businessRouter)">通过</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '03', scope.row.businessRouter)">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -167,19 +167,19 @@ export default {
   methods: {
     getList() {
       this.params.search_taskType_EQ = this.activeName
-	    if (this.isActive) {
-	      const dates = this.isActive.split('_')
-		    if (dates.length > 1) {
+      if (this.isActive) {
+        const dates = this.isActive.split('_')
+        if (dates.length > 1) {
           this.params.search_startTime_EQ = this.$moment(new Date()).add(dates[1], dates[0]).format('YYYY-MM-DD HH:mm:SS')
-		    }
-	    } else {
+        }
+      } else {
         delete this.params.search_startTime_EQ
-	    }
-	    if (this.auditActive) {
+      }
+      if (this.auditActive) {
         this.params.search_taskStatus_EQ = this.auditActive
       } else {
-	      delete this.params.search_taskStatus_EQ
-	    }
+        delete this.params.search_taskStatus_EQ
+      }
       queryTasks(this.params).then(
         response => {
           const { dataList, page } = response
@@ -196,7 +196,7 @@ export default {
     selectDate(e) {
       console.log('e', e)
       this.isActive = e.value
-	    this.getList()
+      this.getList()
     },
     selectStatus(e) {
       this.auditActive = e.value

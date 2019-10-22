@@ -13,6 +13,13 @@ export function selectFormulaType() {
   ]
 }
 
+export function selectFormulaTypeN() {
+  return [
+    { value: '+', label: '+' },
+    { value: '-', label: '-' }
+  ]
+}
+
 // 获取信用债初始化方案列表
 export function getInitPageList(data) {
   return request({
