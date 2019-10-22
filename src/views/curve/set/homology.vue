@@ -3,7 +3,7 @@
         <el-row>
             <el-col :span="12">
                 <el-form-item label="选择曲线">
-                    <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px">
+                    <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="disabled">
                         <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value"/>
                     </el-select>
                 </el-form-item>
@@ -27,12 +27,13 @@
             </el-col>
         </el-row>
 
-        <el-form-item label="选择同调曲线">
+        <el-form-item label="选择同调曲线" :disabled="disabled">
             <el-select ref="homologyCurve" v-model="homologyCurveId" placeholder="请选择同调曲线">
                 <el-option v-for="item in selectCurveHomology" :key="item.value" :label="item.label" :value="item.value"/>
             </el-select>
             <el-button class="filter-item" style="margin-left: 10px;" type="primary"
-                       @click="curveHomologyAdd">
+                       @click="curveHomologyAdd"
+                       :disabled="disabled">
                 添加
             </el-button>
         </el-form-item>
@@ -45,7 +46,9 @@
             <el-table-column label="操作" align="center" width="226px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <el-button type="text" size="big"
-                               @click="curveHomologyDelete(scope.$index, curveHomologyList)">删除
+                               @click="curveHomologyDelete(scope.$index, curveHomologyList)"
+                               :disabled="disabled">
+                      删除
                     </el-button>
                 </template>
             </el-table-column>
@@ -61,7 +64,7 @@
 
   export default {
     name: "Homology",
-    props: ['temp'],
+    props: ['temp', 'disabled'],
     data() {
       return {
         selectCurve: [],

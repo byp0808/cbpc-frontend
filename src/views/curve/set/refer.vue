@@ -3,7 +3,7 @@
         <el-row>
             <el-col :span="12">
                 <el-form-item label="选择曲线">
-                    <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px">
+                    <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="disabled">
                         <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value"/>
                     </el-select>
                 </el-form-item>
@@ -29,10 +29,11 @@
 
         <el-form-item label="选择同调曲线">
             <el-select ref="referCurve" v-model="referCurveId" placeholder="请选择同调曲线">
-                <el-option v-for="item in selectCurveRefer" :key="item.value" :label="item.label" :value="item.value"/>
+                <el-option v-for="item in selectCurveRefer" :key="item.value" :label="item.label" :value="item.value" :disabled="disabled"/>
             </el-select>
             <el-button class="filter-item" style="margin-left: 10px;" type="primary"
-                       @click="curveReferAdd">
+                       @click="curveReferAdd"
+                       :disabled="disabled">
                 添加
             </el-button>
         </el-form-item>
@@ -45,7 +46,9 @@
             <el-table-column label="操作" align="center" width="226px" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <el-button type="text" size="big"
-                               @click="curveReferDelete(scope.$index, curveReferList)">删除
+                               @click="curveReferDelete(scope.$index, curveReferList)"
+                               :disabled="disabled">
+                      删除
                     </el-button>
                 </template>
             </el-table-column>

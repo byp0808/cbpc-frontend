@@ -48,10 +48,10 @@
               <el-form-item label="基础产品" prop="prodBasic">
                 <el-select v-model="prodInfo.prodBasic" placeholder="基础产品" style="width: 100%">
                   <el-option
-                    v-for="basicProd in basicProdList"
-                    :key="basicProd.id"
-                    :label="basicProd.name"
-                    :value="basicProd.id"
+                    v-for="(name, key) in $dict('VALUATION_BASE_PROD')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
@@ -738,7 +738,7 @@ export default {
     saveProd(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          const prodInfo = this.prodInfo
+          const prodInfo = this.$lodash.clone(this.prodInfo)
           prodInfo.currency = this.$lodash.join(prodInfo.currency, [';'])
           this.save({ valuationProd: prodInfo }, '产品信息')
         } else {
@@ -801,7 +801,8 @@ export default {
         businessNo: this.prodId,
         businessName: '估值产品定义',
         businessRouter: 'ValuationProdTask',
-        taskName: `估值产品定义-${this.prodInfo.prodName}`
+        taskName: `估值产品定义-${this.prodInfo.prodName}`,
+        taskType: '01'
       }).then(response => {
         this.$message({
           showClose: true,

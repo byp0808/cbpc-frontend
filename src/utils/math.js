@@ -6,7 +6,7 @@ import _ from 'lodash'
 export function add(n1, n2) {
   n1 = n1 || 0
   n2 = n2 || 0
-  return _.round(_.add((n1 + 0), (n2 + 0)), 12)
+  return _.round(_.add((0 + n1), (0 + n2)), 12)
 }
 
 /**
@@ -15,7 +15,7 @@ export function add(n1, n2) {
 export function subtract(n1, n2) {
   n1 = n1 || 0
   n2 = n2 || 0
-  return _.round(_.subtract((n1 + 0), (n2 + 0)), 12)
+  return _.round(_.subtract((0 + n1), (0 + n2)), 12)
 }
 
 /**
@@ -24,7 +24,7 @@ export function subtract(n1, n2) {
 export function multiply(n1, n2) {
   n1 = n1 || 0
   n2 = n2 || 0
-  return _.round(_.multiply((n1 + 0), (n2 + 0)), 12)
+  return _.round(_.multiply((0 + n1), (0 + n2)), 12)
 }
 
 /**
@@ -36,7 +36,7 @@ export function divide(n1, n2) {
   if (n2 + 0 === 0) {
     return 0
   }
-  return _.round(_.divide((n1 + 0), (n2 + 0)), 12)
+  return _.round(_.divide((0 + n1), (0 + n2)), 12)
 }
 
 /**

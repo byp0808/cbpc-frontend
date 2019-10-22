@@ -615,7 +615,7 @@ export default {
           this.publishTypeDisabled = true
           this.curvePrdOrder.publishType = '1'
         } else {
-          this.publishTypeDisabled = true
+          this.publishTypeDisabled = false
           this.curvePrdOrder.publishType = '2'
         }
       }
