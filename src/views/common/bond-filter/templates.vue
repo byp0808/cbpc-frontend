@@ -251,7 +251,7 @@ export default {
     toAddNew() {
       this.tempId = null
       this.disabled = false
-      this.$refs.refTblBondFilter.clearSelection()
+      // this.$refs.refTblBondFilter.clearSelection()
       this.bondFilterVisible = true
     },
     saveCallBack() {
@@ -259,8 +259,11 @@ export default {
       this.loadTable()
     },
     handleSelectionChange(row) {
-      this.tempId = row[0].tempId
-      this.tempName = row[0].tempName
+      if (row[0]) {
+        console.log(row[0])
+        this.tempId = row[0].tempId
+        this.tempName = row[0].tempName
+      }
     }
   }
 }

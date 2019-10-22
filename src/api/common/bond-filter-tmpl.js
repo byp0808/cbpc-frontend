@@ -1,10 +1,10 @@
 import request from '@/utils/app-request'
 import { basic_api_market } from '@/api/base-api.js'
 
-// 查询模板列表
+// 查询所有模板列表
 export function queryTempList(data) {
   return request({
-    url: `${basic_api_market}/tmpl-filter/tpl-list`,
+    url: `${basic_api_market}/tmpl-filter/tmpl-list`,
     method: 'post',
     data: data
   })
