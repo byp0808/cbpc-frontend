@@ -78,9 +78,7 @@
         </el-table-column>
         <el-table-column label="优先级" width="60">
           <template slot-scope="{ row }">
-            <span v-if="row.priority == 1">低</span>
-            <span v-if="row.priority == 2">中</span>
-            <span v-if="row.priority == 3">高</span>
+            <span v-if="row.priority == 1">高</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
@@ -135,6 +133,7 @@ export default {
         search_curveName_LIKE: '',
         search_curveId_EQ: ''
       },
+      uploadUrl: `${basic_api_curve}/curve/uploadCurveSolutions`,
       person: {
         username: '',
         userId: ''
@@ -241,7 +240,10 @@ export default {
     upload(param) {
       const data = new FormData()
       data.append('files', param.file)
-      upload(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/uploadCurveSolutions', data)
+      upload({
+        url: this.uploadUrl,
+        data: data
+      })
         .then(() => {
           this.$message({
             showClose: true,
@@ -250,7 +252,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('上传失败')
+          this.$message.error('上传失败，请联系管理员')
         })
     }
   }

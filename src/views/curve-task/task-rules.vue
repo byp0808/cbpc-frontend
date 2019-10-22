@@ -6,7 +6,7 @@
       </div>
       <el-form ref="task" :model="task" label-width="120px">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="曲线名称" prop="search_productName_LIKE">
               <el-input
                 v-model="task.search_productName_LIKE"
@@ -84,9 +84,7 @@
         </el-table-column>
         <el-table-column label="审批状态">
           <template slot-scope="{ row }">
-            <span v-if="row.approveStatus === '01'">待审核</span>
-            <span v-if="row.approveStatus === '02'">审核通过</span>
-            <span v-if="row.approveStatus === '03'">审核不通过</span>
+            <span>{{ $dft('APPROVE_STATUS', row.approveStatus) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -267,7 +265,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('上传失败')
+          this.$message.error('上传失败，请联系管理员')
         })
     }
   }
