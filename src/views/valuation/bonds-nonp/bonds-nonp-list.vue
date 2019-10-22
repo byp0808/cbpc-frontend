@@ -322,6 +322,7 @@ export default {
               this.loadTable()
             })
           }).catch(() => {
+            this.$refs.uploadZone.clearFiles()
           })
         } else if (res.respCode === 'YBL100002004') {
           this.$alert(res.respMsg, '错误')
