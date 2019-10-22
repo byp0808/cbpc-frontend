@@ -5,9 +5,9 @@
     </el-tabs>
 
     <el-form :inline="true" label-width="250px">
-      <el-form-item label="估值净价波动BP阈值">
+      <el-form-item label="估值净价波动阈值(元)">
         <el-col :span="15">
-          <el-input v-model="orderSet.valNetPrcShkBp" type="nubmer" />
+          <el-input v-model="orderSet.valNetPrcShkYuan" type="nubmer" />
         </el-col>
         <el-col :span="5">
           BP
