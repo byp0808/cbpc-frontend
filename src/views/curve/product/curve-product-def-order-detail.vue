@@ -506,7 +506,7 @@ export default {
             const item = this.curvePrdKdList[i]
             this.curveKdsIntersection.push(item.standSlip)
             // 添加不存在的
-            if (standSlipArray.indexOf(item.standSlip) < 0) {
+            if (standSlipArray.length > 0 && standSlipArray.indexOf(item.standSlip) < 0) {
               this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
             }
           }
