@@ -5,38 +5,42 @@
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_1" label="利率曲线：检测对敲行情的时间范围">
-            <el-input v-model="paraform.para_1.paraValue" type="number" style="width:100px" /> 天
+            <el-select v-model="paraform.para_1.paraValue" value-key="value" style="width:100px" :disabled="disabled">
+              <el-option v-for="item in timeFrameOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_2" label="单笔数额区间:">
-            <el-input v-model="paraform.para_2.minParaValue" type="number" style="width:80px" /> 到
-            <el-input v-model="paraform.para_2.maxParaValue" type="number" style="width:80px" /> (万元)
+            <el-input v-model="paraform.para_2.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_2.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_3" label="对敲价差区间:">
-            <el-input v-model="paraform.para_3.minParaValue" type="number" style="width:80px" /> 到
-            <el-input v-model="paraform.para_3.maxParaValue" type="number" style="width:80px" /> (万元)
+            <el-input v-model="paraform.para_3.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_3.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_4" label="信用曲线：检测对敲行情的时间范围">
-            <el-input v-model="paraform.para_4.paraValue" type="number" style="width:100px" /> 天
+            <el-select v-model="paraform.para_4.paraValue" value-key="value" style="width:100px" :disabled="disabled">
+              <el-option v-for="item in timeFrameOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_5" label="单笔数额区间:">
-            <el-input v-model="paraform.para_5.minParaValue" type="number" style="width:80px" /> 到
-            <el-input v-model="paraform.para_5.maxParaValue" type="number" style="width:80px" /> (万元)
+            <el-input v-model="paraform.para_5.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_5.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_6" label="对敲价差区间:">
-            <el-input v-model="paraform.para_6.minParaValue" type="number" style="width:80px" /> 到
-            <el-input v-model="paraform.para_6.maxParaValue" type="number" style="width:80px" /> (万元)
+            <el-input v-model="paraform.para_6.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_6.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
       </el-row>
@@ -57,11 +61,13 @@
   </div>
 </template>
 <script>
-import { queryParaList, saveParaInfo } from '@/api/market/market-para.js'
+import { optioins } from '@/api/curve/code-type.js'
+import { queryParaList, saveParaInfo, getAppRoles } from '@/api/market/market-para.js'
 export default {
   name: 'Paraform',
   data() {
     return {
+      disabled: false,
       matchedParaList: [],
       paraform: {
         para_1: {
@@ -158,9 +164,22 @@ export default {
     }
   },
   computed: {
+    timeFrameOptions() {
+      return optioins(this, 'MATCHED_TIME_FRAME')
+    }
   },
   beforeMount() {
     const data = {}
+    // 查询用户角色
+    data.appId = '01'
+    getAppRoles(data).then(response => {
+      const { roles } = response
+      // console.log(this.roles)
+      if (roles[0].roleName === '估值师') {
+        this.disabled = true
+      }
+    })
+
     queryParaList(data).then(response => {
       const { paraform } = response
       this.paraform = paraform
