@@ -343,3 +343,18 @@ export function getDetalInitOptions() {
   })
   return options
 }
+
+// 获取初同调曲线始化列表，仅包含曲线产品，key为曲线产品编号
+export function getQueryCurvOptions(news) {
+  var options = []
+  queryCurveReferDto(news).then(response => {
+    var datalist = response.datalist
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ data })
+      }
+    }
+  })
+  return options
+}

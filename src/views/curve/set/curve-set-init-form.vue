@@ -76,7 +76,7 @@
               <h3 style="font-size:40px;">场<br><br>景</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
@@ -112,7 +112,7 @@
               <h3 style="font-size:40px;">行<br><br>为</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
@@ -199,7 +199,8 @@ export default {
         actionFormulaType: '', // 行为算号
         actionFormulaValue: 0, // 行为结果值
         formulaId: '' // 公式主键，用于判断新增、修改记录
-      }
+      },
+      querycueid: ''
     }
   },
   computed: {
@@ -284,14 +285,14 @@ export default {
       // 公式列表默认显示第一期限方案
       if (this.curentCurveOrderKt.length > 0) {
         this.initstandSlipSet(0)
-        this.formulaEditList = [this.formulaEditList[0]]
+        // this.formulaEditList = [this.formulaEditList[0]]
+        this.curveHomologyShow = true
         console.info('中间' + this.formulaEditList)
         if (this.formulaEditList.length > 0) {
           this.curveHomologyXiuGai(0)
           this.detailForm = this.formulaEditList[0]
+          this.detaiColVisible = true
         }
-        this.curveHomologyShow = true
-        this.detaiColVisible = true
       }
     },
     // 获取当前曲线关键期限列表
@@ -302,6 +303,8 @@ export default {
         await queryCurvePrdKd({ curveId: this.initInfo.curveId }).then(response => {
           this.curvePrdKdList = response.dataList
           const list = response.dataList
+          console.info('这是期限列表')
+          console.info(list)
           if (list && list.length > 0) {
             for (var i = 0; i < list.length; i++) {
               var item = list[i]
@@ -311,6 +314,7 @@ export default {
             }
             tmp_standSlip.sort(sortStandSlip)
           }
+          this.querycueid = this.curvePrdKdList[0].curveId
         })
       }
       // 组装列表
@@ -323,15 +327,16 @@ export default {
       // 公式列表默认显示第一期限方案  新建
       if (this.curentCurveOrderKt.length > 0) {
         this.initstandSlipSet(0)
-        this.formulaEditList = [this.formulaEditList[0]]
+        // this.formulaEditList = [this.formulaEditList[0]]
+        this.curveHomologyShow = true
         console.info('中间' + this.formulaEditList)
         if (this.formulaEditList.length > 0) {
           this.curveHomologyXiuGai(0)
           this.detailForm = this.formulaEditList[0]
+          this.detaiColVisible = true
         }
-        this.curveHomologyShow = true
-        this.detaiColVisible = true
       }
+      console.info(this)
       return this.curentCurveOrderKt
     },
     getCurveName(id) {
