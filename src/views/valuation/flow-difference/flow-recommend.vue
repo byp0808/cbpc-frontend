@@ -265,7 +265,7 @@
         @saveCallBack="spreadParamSaveCallBack"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="assetDialog = false">取 消</el-button>
+        <el-button @click="paramsDialog = false">取 消</el-button>
         <el-button type="primary" @click="spreadParamSave">确 定</el-button>
       </div>
     </el-dialog>
