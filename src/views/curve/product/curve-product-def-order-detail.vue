@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :disabled="true" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
