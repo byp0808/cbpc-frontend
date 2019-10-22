@@ -1,130 +1,80 @@
 <template>
-  <div ref="rightPanel" :class="{show: show}" class="rightPanel-container">
-    <div class="rightPanel">
-      <div class="handle-button" :style="{ 'top': buttonTop+'px', 'background-color': theme }" @click="show=!show">
-        <i :class="show?'el-icon-close':miniIcon" />
-      </div>
-      <div class="rightPanel-items">
-        <slot />
-      </div>
+  <div>
+    <div class="curve-sub-content">
+      <curve-build-table :list="initList" :name="productName" />
+    </div>
+    <div class="curve-sub-footer">
+      <el-button type="primary" @click="changeInitData">应用</el-button>
+      <el-button @click="closeSidebar">取消</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { addClass, removeClass } from '@/utils'
+import CurveBuildTable from '@/views/build-curve/components/CurveBuildTable'
+import { queryInitCurveYield } from '@/api/curve/curve-build'
 
 export default {
+  components: { CurveBuildTable },
   props: {
-    clickNotClose: {
-      default: true,
-      type: Boolean
+    curveId: {
+      type: String,
+      default: ''
     },
-    buttonTop: {
-      default: 150,
-      type: Number
+    productName: {
+      type: String,
+      default: ''
     },
-    miniIcon: {
-      default: '',
-      type: String
+    orderId: {
+      type: String,
+      default: ''
+    },
+    curveOrderId: {
+      type: String,
+      default: ''
+    },
+    curveTaskId: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      show: false
-    }
-  },
-  computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    }
-  },
-  watch: {
-    show(value) {
-      if (value && !this.clickNotClose) {
-        this.addEventClick()
-      }
-      if (value) {
-        addClass(document.body, 'showRightPanel')
-      } else {
-        removeClass(document.body, 'showRightPanel')
-      }
+      initList: []
     }
   },
   mounted() {
-    this.insertToBody()
-  },
-  beforeDestroy() {
-    const elx = this.$refs.rightPanel
-    elx.remove()
+    this.getInitialCurve()
   },
   methods: {
-    addEventClick() {
-      window.addEventListener('click', this.closeSidebar)
+    getInitialCurve() {
+      queryInitCurveYield({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
+        this.initList = response
+      })
     },
-    closeSidebar(evt) {
-      const parent = evt.target.closest('.rightPanel')
-      if (!parent) {
-        this.show = false
-        window.removeEventListener('click', this.closeSidebar)
-      }
+    changeInitData() {
+      const _ = this.$lodash
+      const list = this.initList.map(value => _.omit(value, ['lastYield', 'adjRange', 'adjResult', 'variations']))
+      this.$store.dispatch('curveBuild/updateInitData', list, this.curveId)
     },
-    insertToBody() {
-      const elx = this.$refs.rightPanel
-      const body = document.querySelector('body')
-      body.insertBefore(elx, body.firstChild)
+    closeSidebar() {
+      this.$emit('close-sidebar')
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.showRightPanel {
-  overflow: hidden;
+<style scoped>
+.curve-sub-content {
+  padding: 5px;
+}
+.curve-sub-footer {
+  height: 50px;
+  line-height: 50px;
   position: relative;
-  width: calc(100% - 15px);
-}
-
-.rightPanel {
   width: 100%;
-  max-width: 950px;
-  height: 60vh;
-  position: fixed;
-  top: 0;
-  right: 0;
-  box-shadow: 0 0 15px 0 rgba(0, 0, 0, .05);
-  transition: all .25s cubic-bezier(.7, .3, .1, 1);
-  transform: translate(100%);
-  background: #fff;
-  z-index: 40000;
-  border-left: 1px solid #192953;
-  border-bottom: 1px solid #192953;
-}
-
-.show {
-  transition: all .3s cubic-bezier(.7, .3, .1, 1);
-
-  .rightPanel {
-    transform: translate(0);
-  }
-}
-
-.handle-button {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-  left: -48px;
-  text-align: center;
-  font-size: 24px;
-  border-radius: 6px 0 0 6px !important;
-  z-index: 0;
-  pointer-events: auto;
-  cursor: pointer;
-  color: #fff;
-  line-height: 48px;
-  i {
-    font-size: 24px;
-    line-height: 48px;
-  }
+  text-align: right;
+  padding-right: 20px;
+  transition: 600ms ease position;
 }
 </style>
