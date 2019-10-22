@@ -106,7 +106,16 @@ export default {
     CurveFTQcRpt,
     CurveOrderCheckSetForm
   },
-  props: ['orderId', 'taskDay'],
+  props: {
+    orderId: {
+      type: String,
+      default: ''
+    },
+    taskDay: {
+      type: Date,
+      default: () => (new Date())
+    }
+  },
   data() {
     return {
       lockScroll: true,
@@ -116,10 +125,6 @@ export default {
       queryForm: {
         taskDay: null,
         orderId: ''
-      },
-      dwnlForm: {
-        compDate: '20190918',
-        batchId: 'B0002'
       },
       activeName: 'zl'
     }
@@ -157,14 +162,13 @@ export default {
       const data = {
         taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       }
-
       await getCurveTaskOrderOptions(this.orderList, data)
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条
         if (this.queryForm.orderId) {
           var isIn = false
           for (let i = 0; i < this.orderList.length; i++) {
-            const orderInfo = this.orderList[i];
+            const orderInfo = this.orderList[i]
             if (this.queryForm.orderId === orderInfo.id) {
               isIn = true
             }
@@ -183,7 +187,11 @@ export default {
     // 下载
     download() {
       console.info('download')
-      dwnlCurveQcRpt(this.dwnlForm)
+      const dwnlForm = {
+        compDate: this.queryForm.taskDay,
+        batchId: this.queryForm.orderId
+      }
+      dwnlCurveQcRpt(dwnlForm)
     },
     // 曲线质检波动偏差值设置
     orderSet() {
