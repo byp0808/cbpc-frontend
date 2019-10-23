@@ -2,7 +2,7 @@
   <div class="app-container">
     <Refer
       ref="Refer"
-      :temp="temp"
+      :refer-id="businessNo"
       :disabled="disabled"
       opType="VIEW"
     />
@@ -25,36 +25,17 @@ export default {
   data() {
     return {
       businessNo: '',
-      temp: {
-        curveId: '',
-        approveStatus: '01',
-        lastUpdBy: '',
-        lastUpdTs: ''
-      },
       disabled: true
     }
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
-    this.temp.curveId = this.businessNo
-    this.getCurveReferDtoList({
-      curveId: this.temp.curveId,
-      approveStatus: '01'
-    })
     console.info('beforeMount.businessNo:' + this.businessNo)
   },
   mounted() {
     this.$store.commit('task/clear')
   },
   methods: {
-    getCurveReferDtoList() {
-      queryCurveReferDto().then(response => {
-        debugger
-        this.temp.lastUpdBy = response.dataList[0].lastUpdBy
-        this.temp.lastUpdTs = response.dataList[0].lastUpdTs
-        setTimeout(1.5 * 1000)
-      })
-    },
     finishRefer(taskStatus) {
       if (!this.businessNo) {
         this.$message({

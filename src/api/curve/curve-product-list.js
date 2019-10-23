@@ -189,6 +189,14 @@ export function queryCurveReferDto(data) {
   })
 }
 
+// 查询参考曲线主表流程信息
+export function queryCurveReferMainInfo(id) {
+  return request({
+    url: `${basic_api_curve}/curveRefer/get/` + id,
+    method: 'get'
+  })
+}
+
 // 删除参考曲线dto列表
 export function delCurveReferDto(data) {
   return request({

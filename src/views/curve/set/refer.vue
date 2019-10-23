@@ -1,28 +1,28 @@
 <template>
-  <el-form ref="dataForm" :model="temp" label-position="left" label-width="120px">
+  <el-form ref="dataForm" :model="mainInfo" label-position="left" label-width="120px">
     <el-row>
       <el-col :span="12">
         <el-form-item label="选择曲线">
-          <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled">
+          <el-select v-model="mainInfo.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled">
             <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item v-show="false" label="approveStatus">
-          <el-input v-model="temp.approveStatus" disabled />
+          <el-input v-model="mainInfo.approveStatus" disabled />
         </el-form-item>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="12">
         <el-form-item label="最后操作人">
-          <el-input v-model="temp.lastUpdBy" style="width: 200px" disabled />
+          <el-input v-model="mainInfo.lastUpdBy" style="width: 200px" disabled />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="最后操作时间">
-          <el-input :value="$moment(temp.lastUpdTs).format('YYYY-MM-DD')" style="width: 200px" disabled>ßß</el-input>
+          <el-input :value="$moment(mainInfo.lastUpdTs).format('YYYY-MM-DD')" style="width: 200px" disabled>ßß</el-input>
         </el-form-item>
       </el-col>
     </el-row>
@@ -66,16 +66,18 @@
 <script>
 import {
   queryCurveRefer,
+  queryCurveReferMainInfo,
   getCurveProductIdOptions
 } from '@/api/curve/curve-product-list.js'
 
 export default {
   name: 'Refer',
-  props: ['temp', 'opType'],
+  props: ['referId', 'opType'],
   data() {
     return {
-        disabled: false,
-        curveDisabled: false,
+      disabled: false,
+      curveDisabled: false,
+      mainInfo: {},
       selectCurve: [],
       selectCurveRefer: [],
       referCurveId: '',
@@ -83,35 +85,44 @@ export default {
     }
   },
   beforeMount() {
-    console.info('===beforeMount===')
-    this.getCurveReferDtoList
+    console.info('===beforeMount===referId:' + this.referId + ',optype:' + this.opType)
+
     // 先加载列表
     this.selectCurve = getCurveProductIdOptions()
     this.selectCurveRefer = getCurveProductIdOptions()
 
-      if (this.opType === 'VIEW') {
-          this.disabled = true
-      } else if (this.opType === 'EDIT') {
-          this.disabled = false
-      }
-      if (this.opType === 'ADD') {
-          this.curveDisabled = false
-          this.disabled = false
-      } else {
-          this.curveDisabled = true
-      }
-  },
-  created() {
-    this.getCurveReferList({
-      curveId: this.temp.curveId,
-      approveStatus: this.temp.approveStatus
-    })
+    if (this.opType === 'VIEW') {
+      this.disabled = true
+    } else if (this.opType === 'EDIT') {
+      this.disabled = false
+    }
+    if (this.opType === 'ADD') {
+      this.curveDisabled = false
+      this.disabled = false
+    } else {
+      this.curveDisabled = true
+    }
+
+    this.init()
   },
   methods: {
+    async init() {
+      if (this.referId) {
+        // 查询主表信息
+        await queryCurveReferMainInfo(this.referId).then(response => {
+          if (response) {
+            this.mainInfo = response
+          }
+        })
+        // 查询曲线列表
+        this.getCurveReferList({
+          referId: this.referId
+        })
+      }
+    },
     // 查询列表
     getCurveReferList(data) {
       queryCurveRefer(data).then(response => {
-        debugger
         this.curveReferList = response.dataList
         setTimeout(1.5 * 1000)
       })
@@ -119,8 +130,15 @@ export default {
 
     // 列表删除
     curveReferDelete(index, rows) {
-      rows[index]
-      rows.splice(index, 1)
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        rows[index]
+        rows.splice(index, 1)
+      }).catch(() => {
+        console.info('cancle')
+      })
     },
 
     // 选择同调曲线并添加到列表
@@ -145,7 +163,7 @@ export default {
         }
       }
       this.curveReferList.push({
-        curveId: this.temp.curveId, // 依赖曲线ID
+        curveId: this.mainInfo.curveId, // 依赖曲线ID
         referCurveId: referCurveId, // 依赖曲线ID
         productName: label // 同调曲线名称
       })
@@ -153,8 +171,7 @@ export default {
 
     obtainCurveRefer() {
       var data = {
-        curveId: this.temp.curveId,
-        approveStatus: this.temp.approveStatus,
+        referMainInfo: this.mainInfo,
         curveReferList: this.curveReferList
       }
       return data
