@@ -14,7 +14,7 @@
       </el-table-column>
       <el-table-column label="同调曲线" width="290px" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList, 'VIEW')">详情</span>
+          <span class="link-type" @click="curveHomologyDtoEdit(scope.$index, 'VIEW')">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
@@ -27,7 +27,7 @@
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, curveHomologyDtoList, 'EDIT')">
+          <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, 'EDIT')">
             编辑
           </el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
@@ -48,7 +48,7 @@
     <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="50%">
       <Homology
         ref="homology"
-        :temp="temp"
+        :homologyId="selectHomologyId"
         :op-type="opType"
       />
       <div slot="footer" class="dialog-footer">
@@ -80,6 +80,7 @@ export default {
     return {
       curveHomologyDtoList: [],
       opType: '',
+      selectHomologyId: '', // 选择的主表ID
       temp: {
         curveId: '',
         approveStatus: '',
@@ -93,7 +94,7 @@ export default {
       }
     }
   },
-  created() {
+  beforeMount() {
     this.getCurveHomologyDtoList()
   },
   methods: {
@@ -108,24 +109,33 @@ export default {
     // 新建规则
     curveHomologyCreate() {
       this.temp = []
+      this.selectHomologyId = ''
       this.dialogFormVisible = true
       this.opType = 'ADD'
     },
     // dto列表修改操作
-    curveHomologyDtoEdit(index, rows, opType) {
+    curveHomologyDtoEdit(index, opType) {
       this.opType = opType
-      this.temp = rows[index]
+      this.temp = this.curveHomologyDtoList[index]
+      this.selectHomologyId = this.temp.homologyId
       this.dialogFormVisible = true
     },
     // dto列表删除
     curveHomologyDtoDel(index, rows) {
-      delcurveHomologyDto(rows[index]).then(response => {
-        rows.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        delcurveHomologyDto(rows[index]).then(response => {
+          rows.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     disableEdit() {
@@ -140,8 +150,9 @@ export default {
         alert('请选择同调曲线！')
         return
       }
+      console.info('data:' + JSON.stringify(data))
       storageHomology(data).then(response => {
-        this.curveHomologyDtoList.unshift(this.temp)
+        this.getCurveHomologyDtoList()
         this.dialogFormVisible = false
         this.$message({
           message: '操作成功！',

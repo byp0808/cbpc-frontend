@@ -155,6 +155,14 @@ export function querycurveHomology(data) {
   })
 }
 
+// 查询同调曲线主表信息
+export function querycurveHomologyMain(id) {
+  return request({
+    url: `${basic_api_curve}/curveHomology/get/` + id,
+    method: 'get'
+  })
+}
+
 // 同调曲线保存并发起流程
 export function storageHomology(data) {
   return request({

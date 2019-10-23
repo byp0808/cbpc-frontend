@@ -1,28 +1,28 @@
 <template>
-  <el-form ref="dataForm" :model="temp" label-position="left" label-width="120px">
+  <el-form ref="dataForm" :model="mainInfo" label-position="left" label-width="120px">
     <el-row>
       <el-col :span="12">
         <el-form-item label="选择曲线">
-          <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled">
+          <el-select v-model="mainInfo.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled">
             <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item v-show="false" label="approveStatus">
-          <el-input v-model="temp.approveStatus" disabled />
+          <el-input v-model="mainInfo.approveStatus" disabled />
         </el-form-item>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="12">
         <el-form-item label="最后操作人">
-          <el-input v-model="temp.lastUpdBy" style="width: 200px" disabled />
+          <el-input v-model="mainInfo.lastUpdBy" style="width: 200px" disabled />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="最后操作时间">
-          <el-input disabled style="width: 200px" :value="$moment(temp.lastUpdTs).format('YYYY-MM-DD')" />
+          <el-input disabled style="width: 200px" :value="$moment(mainInfo.lastUpdTs).format('YYYY-MM-DD')" />
         </el-form-item>
       </el-col>
     </el-row>
@@ -66,16 +66,18 @@
 <script>
 import {
   querycurveHomology,
+  querycurveHomologyMain,
   getCurveProductIdOptions
 } from '@/api/curve/curve-product-list.js'
 
 export default {
   name: 'Homology',
-  props: ['temp', 'opType'],
+  props: ['homologyId', 'opType'],
   data() {
     return {
       disabled: false,
       curveDisabled: false,
+      mainInfo: {},
       selectCurve: [],
       selectCurveHomology: [],
       homologyCurveId: '',
@@ -83,8 +85,7 @@ export default {
     }
   },
   beforeMount() {
-    console.info('===beforeMount===' + this.opType)
-    this.getCurveHomologyDtoList
+    console.info('===beforeMount===homologyId:' + this.homologyId + ',optype:' + this.opType)
     // 先加载列表
     this.selectCurve = getCurveProductIdOptions()
     this.selectCurveHomology = getCurveProductIdOptions()
@@ -99,18 +100,32 @@ export default {
     } else {
       this.curveDisabled = true
     }
-  },
-  created() {
-    this.getCurveHomologyList({
-      curveId: this.temp.curveId,
-      approveStatus: this.temp.approveStatus
-    })
+
+    this.init()
   },
   methods: {
+    async init() {
+
+      if (this.homologyId) {
+        // 查询主表信息
+        await querycurveHomologyMain(this.homologyId).then(response => {
+          if (response) {
+            this.mainInfo = response
+          }
+        })
+        // 查询曲线列表
+        this.getCurveHomologyList({
+          homologyId: this.homologyId
+        })
+      }
+    },
     // 查询列表
     getCurveHomologyList(data) {
+      this.curveHomologyList = []
       querycurveHomology(data).then(response => {
-        this.curveHomologyList = response.dataList
+        if (response && response.dataList) {
+          this.curveHomologyList = response.dataList
+        }
         setTimeout(1.5 * 1000)
       })
     },
@@ -132,7 +147,6 @@ export default {
         })
         return false
       }
-      debugger
       for (var i = 0; i < this.curveHomologyList.length; i++) {
         var item = this.curveHomologyList[i]
         if (item.homologyCurveId === homologyCurveId) {
@@ -144,7 +158,7 @@ export default {
         }
       }
       this.curveHomologyList.push({
-        curveId: this.temp.curveId, // 依赖曲线ID
+        curveId: this.mainInfo.curveId, // 依赖曲线ID
         homologyCurveId: homologyCurveId, // 依赖曲线ID
         productName: label // 同调曲线名称
       })
@@ -152,8 +166,7 @@ export default {
 
     obtainCurveHomology() {
       var data = {
-        curveId: this.temp.curveId,
-        approveStatus: this.temp.approveStatus,
+        mainInfo: this.mainInfo,
         curveHomologyList: this.curveHomologyList
       }
       return data

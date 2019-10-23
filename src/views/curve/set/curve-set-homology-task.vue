@@ -2,9 +2,9 @@
   <div class="app-container">
     <Homology
       ref="Homology"
-      :temp="temp"
+      :homology-id="businessNo"
       :disabled="disabled"
-      opType="VIEW"
+      op-type="VIEW"
     />
     <div class="button-box-fixed">
       <el-button type="primary" @click="finishHomology('02')">审核通过</el-button>
@@ -16,7 +16,7 @@
 
 <script>
 import Homology from '@/views/curve/set/homology.vue'
-import { querycurveHomologyDto, finishHomology } from '@/api/curve/curve-product-list.js'
+import { finishHomology } from '@/api/curve/curve-product-list.js'
 export default {
   name: 'CurveSetHomologyTask',
   components: {
@@ -25,36 +25,17 @@ export default {
   data() {
     return {
       businessNo: '',
-      temp: {
-        curveId: '',
-        approveStatus: '01',
-        lastUpdBy: '',
-        lastUpdTs: ''
-      },
       disabled: true
     }
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
-    this.temp.curveId = this.businessNo
-    this.getCurveHomologyDtoList({
-      curveId: this.temp.curveId,
-      approveStatus: '01'
-    })
     console.info('beforeMount.businessNo:' + this.businessNo)
   },
   mounted() {
     this.$store.commit('task/clear')
   },
   methods: {
-    getCurveHomologyDtoList() {
-      querycurveHomologyDto().then(response => {
-        debugger
-        this.temp.lastUpdBy = response.dataList[0].lastUpdBy
-        this.temp.lastUpdTs = response.dataList[0].lastUpdTs
-        setTimeout(1.5 * 1000)
-      })
-    },
     finishHomology(taskStatus) {
       if (!this.businessNo) {
         this.$message({
