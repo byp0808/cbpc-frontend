@@ -537,7 +537,8 @@ export default {
         // return mods.length > 0
         const modifiedCols = row.modifiedCols
         const mods = modifiedCols.split(',')
-        return mods.length > 0
+        const mod = mods.filter(val => val === header.key)
+        return mod.length > 0
       } else {
         return false
       }
@@ -688,7 +689,8 @@ export default {
         // return mods.length > 0
         const modifiedCols = row.modifiedCols
         const mods = modifiedCols.split(',')
-        return mods.length > 0
+        const mod = mods.filter(val => val === header.key)
+        return mod.length > 0
       } else {
         return false
       }
