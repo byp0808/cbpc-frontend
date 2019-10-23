@@ -654,7 +654,6 @@ export default {
       } else {
         item.disabled = true
       }
-      console.info(maturityFlag + '' + spotFlag + '' + forwardFlag + '' + item.value)
       return item.disabled
     }
   }

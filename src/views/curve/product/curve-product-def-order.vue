@@ -307,7 +307,7 @@ export default {
       if (!info.interestDueFreq) {
         msg.push('付息频率不能为空')
       }
-      if (info.orderClosedFlag === '1' && (info.orderClosedSt || info.orderClosedEt)) {
+      if (info.orderClosedFlag === '1' && (!(info.orderClosedSt) || !(info.orderClosedEt))) {
         msg.push('批次关闭的生效时间,开始和结束时间都不可为空')
       }
       return msg.join('、')
