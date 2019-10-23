@@ -177,7 +177,9 @@ export default {
       })
     },
     openBuild(item) {
-      localStorage.setItem('ids', JSON.stringify(item))
+      const items = []
+      items.push(item)
+      localStorage.setItem('ids', JSON.stringify(items))
       openWindow('/#/curve-market', '曲线行情', 540, 540)
       openWindow('/#/build-curve', '编制曲线方案', 540, 540)
     }

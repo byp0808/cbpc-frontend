@@ -3,7 +3,7 @@
     <div v-for="curve in curves" :key="curve.id">
       <curve-build
         :curve-id="curve.id"
-        :product-name="curve.productName"
+        :product-name="curve.curveName"
         :order-id="curve.orderId"
         :curve-order-id="curve.curveOrderId"
         :curve-task-id="curve.curveTaskId"
@@ -13,7 +13,7 @@
       <div v-for="curve in curves" :key="curve.id">
         <init-curve
           :curve-id="curve.id"
-          :product-name="curve.productName"
+          :product-name="curve.curveName"
           :order-id="curve.orderId"
           :curve-order-id="curve.curveOrderId"
           :curve-task-id="curve.curveTaskId"
@@ -33,10 +33,7 @@ export default {
   name: 'BuildCurve',
   components: { CurveBuild, FloatCurve, InitCurve },
   data() {
-    const temp = [
-      { id: 'CURVE_ID_01', orderId: 'ORDER_ID_1', curveOrderId: 'CURVE_ID_01-ORDER_ID_1', productName: '曲线产品1', curveTaskId: '2019101200001' }
-    ]
-    const curves = localStorage.getItem('ids') || temp
+    const curves = JSON.parse(localStorage.getItem('ids'))
     return {
       curves
     }
