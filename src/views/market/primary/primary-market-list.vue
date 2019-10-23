@@ -296,8 +296,11 @@ export default {
       // console.info('头')
       // console.info(header)
       if (typeof row.modifiedCols !== 'undefined') {
+        // const modifiedCols = row.modifiedCols
+        // const mods = modifiedCols.filter(val => val.colName === header.key)
+        // return mods.length > 0
         const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
+        const mods = modifiedCols.split(',')
         return mods.length > 0
       } else {
         return false
