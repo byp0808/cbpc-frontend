@@ -368,9 +368,9 @@ export default {
   },
   methods: {
     // 初始化
-    initTable() {
-      this.initOfferTable()
-      this.initCJTable()
+    async initTable() {
+      await this.initOfferTable()
+      await this.initCJTable()
     },
     initOfferTable() {
       // 初始化报价表数据
@@ -532,8 +532,11 @@ export default {
     offerIsLight(row, header) {
       // 判断是否高亮
       if (typeof row.modifiedCols !== 'undefined') {
+        // const modifiedCols = row.modifiedCols
+        // const mods = modifiedCols.filter(val => val.colName === header.key)
+        // return mods.length > 0
         const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
+        const mods = modifiedCols.split(',')
         return mods.length > 0
       } else {
         return false
@@ -680,8 +683,11 @@ export default {
     isLight(row, header) {
       // 成交判断是否高亮
       if (typeof row.modifiedCols !== 'undefined') {
+        // const modifiedCols = row.modifiedCols
+        // const mods = modifiedCols.filter(val => val.colName === header.key)
+        // return mods.length > 0
         const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
+        const mods = modifiedCols.split(',')
         return mods.length > 0
       } else {
         return false
