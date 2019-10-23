@@ -132,8 +132,15 @@ export default {
 
     // 列表删除
     curveHomologyDelete(index, rows) {
-      rows[index]
-      rows.splice(index, 1)
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        rows[index]
+        rows.splice(index, 1)
+      }).catch(() => {
+        console.info('cancle')
+      })
     },
 
     // 选择同调曲线并添加到列表

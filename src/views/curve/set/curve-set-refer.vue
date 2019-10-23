@@ -14,7 +14,7 @@
       </el-table-column>
       <el-table-column label="同调曲线" width="290px" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveReferDtoEdit(scope.$index, curveReferDtoList, 'VIEW')">详情</span>
+          <span class="link-type" @click="curveReferDtoEdit(scope.$index, 'VIEW')">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
@@ -27,7 +27,7 @@
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, curveReferDtoList, 'EDIT')">编辑</el-button>
+          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, 'EDIT')">编辑</el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoDel(scope.$index, curveReferDtoList)">删除</el-button>
         </template>
@@ -46,7 +46,7 @@
     <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="50%">
       <Refer
         ref="refer"
-        :temp="temp"
+        :refer-id="selectedReferId"
         :op-type="opType"
       />
       <div slot="footer" class="dialog-footer">
@@ -77,6 +77,7 @@ export default {
     return {
       curveReferDtoList: [],
       opType: '',
+      selectedReferId: '',
       temp: {
         curveId: '',
         approveStatus: '',
@@ -90,7 +91,7 @@ export default {
       }
     }
   },
-  created() {
+  beforeMount() {
     this.getCurveReferDtoList()
   },
   methods: {
@@ -105,24 +106,33 @@ export default {
     // 新建规则
     curveReferCreate() {
       this.temp = []
+      this.selectedReferId = ''
       this.dialogFormVisible = true
       this.opType = 'ADD'
     },
     // dto列表修改操作
-    curveReferDtoEdit(index, rows, opType) {
-      this.temp = rows[index]
+    curveReferDtoEdit(index, opType) {
+      this.temp = this.curveReferDtoList[index]
+      this.selectedReferId = this.temp.referId
       this.dialogFormVisible = true
       this.opType = opType
     },
     // dto列表删除
     curveReferDtoDel(index, rows) {
-      delCurveReferDto(rows[index]).then(response => {
-        rows.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        delCurveReferDto(rows[index]).then(response => {
+          rows.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     storageCurveRefer() {
@@ -132,8 +142,8 @@ export default {
         return
       }
       storageRefer(data).then(response => {
-        this.curveReferDtoList.unshift(this.temp)
         this.dialogFormVisible = false
+        this.getCurveReferDtoList()
         this.$message({
           message: '操作成功！',
           type: 'success',
