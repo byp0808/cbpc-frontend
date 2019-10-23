@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :label="item.value" :disabled="disabled || setDisable(item)">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
@@ -67,7 +67,7 @@
           <div class="switch-item">
             <label class="switch-label">开始</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled? true: !(this.curvePrdOrder.orderClosedFlag==='1')" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -75,7 +75,7 @@
           <div class="switch-item">
             <label class="switch-label">结束</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled? true: !(this.curvePrdOrder.orderClosedFlag==='1')" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -285,7 +285,6 @@ export default {
   },
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
-    debugger
     this.curvePrdOrder = this.orderData
     // 更新曲线发布类型、发布步长、付息频率
     if (this.curvePrdOrder) {
@@ -637,7 +636,26 @@ export default {
           type: 'error',
           message: '结束时间要大于开始时间！'
         })
+        this.curvePrdOrder.orderClosedSt = ''
+        this.curvePrdOrder.orderClosedEt = ''
       }
+      return false
+    },
+    setDisable(item) {
+      var maturityFlag = this.productInfo.maturityFlag
+      var spotFlag = this.productInfo.spotFlag
+      var forwardFlag = this.productInfo.forwardFlag
+      if (maturityFlag === 'Y' && item.value === '1') {
+        item.disabled = false
+      } else if (spotFlag === 'Y' && item.value === '2') {
+        item.disabled = false
+      } else if (forwardFlag === 'Y' && item.value === '3') {
+        item.disabled = false
+      } else {
+        item.disabled = true
+      }
+      console.info(maturityFlag + '' + spotFlag + '' + forwardFlag + '' + item.value)
+      return item.disabled
     }
   }
 }
