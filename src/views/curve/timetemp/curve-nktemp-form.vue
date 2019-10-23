@@ -9,7 +9,7 @@
                 <el-input v-model="nkTempInfo.id" disabled />
               </el-form-item>
               <el-form-item label="规则名称" prop="tempName">
-                <el-input v-model="nkTempInfo.tempName" :disabled="false" placeholder="请输入规则名称" type="text" />
+                <el-input v-model="nkTempInfo.tempName" :disabled="false" maxlength="42" placeholder="请输入规则名称" type="text" />
               </el-form-item>
             </el-form>
           </div>
@@ -94,7 +94,7 @@ export default {
       nkTempInfoRules: {
         tempName: [
           { required: true, message: '请输入规则名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { min: 1, max: 42, message: '超长', trigger: 'blur' },
           { validator: this.checkTempName, trigger: 'blur' }
         ]
       },
@@ -171,7 +171,7 @@ export default {
         })
         return false
       }
-      if (this.addDetail.nvalue === 0 && this.addDetail.kvalue === 0) {
+      if (this.addDetail.nvalue === '0' && this.addDetail.kvalue === '0') {
         this.$message({
           message: 'N\K值不能同时为0',
           type: 'error'
@@ -196,7 +196,7 @@ export default {
       // 判断NK重复
       var reflag = false
       for (const item of this.newsList) {
-        if (item.nvalue === this.addDetail.nvalue && item.kvalue === this.addDetail.kvalue) {
+        if (item.nvalue === Number(this.addDetail.nvalue).toFixed(1) && item.kvalue === Number(this.addDetail.kvalue).toFixed(1)) {
           reflag = true
           break
         }
