@@ -153,7 +153,7 @@ export default {
       if (dataList && dataList.length > 0) {
         for (var i = 0; i < dataList.length; i++) {
           var item = dataList[i]
-          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime, remindTime: item.remindTime })
+          this.orderList.push({ id: item.id, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime, remindTime: item.remindTime })
         }
       }
 

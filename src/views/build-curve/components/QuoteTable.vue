@@ -120,10 +120,10 @@ export default {
       return Object.keys(this.selectable).reduce((arr, k) => arr.concat(this.selectable[k]), [])
     },
     makeInterval() {
-      return this.list.map(v => v[this.intervalBy]).map(value => this.interval.findIndex(i => value >= i.down && value < i.up))
+      return this.data.map(v => v[this.intervalBy]).map(value => this.interval.findIndex(i => value >= i.down && value < i.up))
     },
     makeData() {
-      return this.list.map((v, i) => {
+      return this.data.map((v, i) => {
         const value = v[this.intervalBy]
         const e = this.interval.find(i => value >= i.down && value < i.up)
         return this.$lodash.assign(v, e, { index: i })

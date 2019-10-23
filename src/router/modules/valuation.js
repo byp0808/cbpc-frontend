@@ -124,6 +124,11 @@ const valuationRouter = {
       component: () => import('@/views/valuation/scheme/scheme-construct.vue'),
       name: 'SchemeConstruct',
       meta: { title: '分析影响因子', noCache: true }
+    }, {
+      path: 'publish-list',
+      component: () => import('@/views/valuation/publish-bond/publish-list.vue'),
+      name: 'PublishList',
+      meta: { title: '计算并发布估值产品', noCache: true }
     }
   ]
 }
