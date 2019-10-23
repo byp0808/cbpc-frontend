@@ -73,7 +73,10 @@ export default {
         para_1: {
           id: '',
           curveType: '01',
-          paraValue: '',
+          paraValue: {
+            label: '',
+            value: ''
+          },
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -83,7 +86,6 @@ export default {
         para_2: {
           id: '',
           curveType: '01',
-          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -93,7 +95,6 @@ export default {
         para_3: {
           id: '',
           curveType: '01',
-          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -103,7 +104,10 @@ export default {
         para_4: {
           id: '',
           curveType: '02',
-          paraValue: '',
+          paraValue: {
+            label: '',
+            value: ''
+          },
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -113,7 +117,6 @@ export default {
         para_5: {
           id: '',
           curveType: '02',
-          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -123,7 +126,6 @@ export default {
         para_6: {
           id: '',
           curveType: '02',
-          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -182,7 +184,10 @@ export default {
 
     queryParaList(data).then(response => {
       const { paraform } = response
-      this.paraform = paraform
+      if (Object.keys(paraform).length !== 0) {
+        console.log(paraform)
+        this.paraform = paraform
+      }
     })
   },
   methods: {
@@ -214,23 +219,25 @@ export default {
       })
     },
     checkValue(rule, value, callback) {
-      if (!value.paraValue) {
+      if (value.paraValue.value === '') {
         callback(new Error('不能为空'))
-      }
-      if (Number(value.paraValue) > 30) {
-        callback(new Error('不能大于30'))
       }
       callback()
     },
     checkFrameValue(rule, value, callback) {
-      if (!value.minParaValue || !value.maxParaValue) {
-        callback(new Error('不能为空'))
+      if (value.maxParaValue !== '') {
+        if (!value.minParaValue) {
+          callback(new Error('不能为空'))
+        }
+        // if (Number(value.minParaValue) < 0 || Number(value.maxParaValue) < 0) {
+        //   callback(new Error('不能小于0'))
+        // }
+        if (Number(value.minParaValue) > Number(value.maxParaValue)) {
+          callback(new Error('最大值不能小于最小值'))
+        }
       }
-      // if (Number(value.minParaValue) < 0 || Number(value.maxParaValue) < 0) {
-      //   callback(new Error('不能小于0'))
-      // }
-      if (Number(value.minParaValue) > Number(value.maxParaValue)) {
-        callback(new Error('最大值不能小于最小值'))
+      if (value.minParaValue === '' && value.maxParaValue === '') {
+        callback(new Error('不能为空'))
       }
       callback()
     },

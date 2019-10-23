@@ -260,8 +260,8 @@ export default {
   beforeMount() {
     if (this.businessId) {
       this.tempInfodisabled = true
-      getMarketTemp(this.businessId).then(reponse => {
-        const { marketTempInfo, colData } = reponse
+      getMarketTemp(this.businessId).then(response => {
+        const { marketTempInfo, colData } = response
         this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
         this.colData = colData
         // this.extendColInfo = {}
@@ -270,8 +270,8 @@ export default {
       var data = {}
       data.dataMarket = this.marketTempInfo.dataMarket
       data.showArea = this.marketTempInfo.showArea
-      getMarketColsInfo(data).then(reponse => {
-        const { numberCols } = reponse
+      getMarketColsInfo(data).then(response => {
+        const { numberCols } = response
         this.relationColsOptions = numberCols
       })
       if (this.opType === 'VIEW') {
@@ -518,8 +518,8 @@ export default {
       if (marketLevel === '2') {
         data.showArea = this.marketTempInfo.showArea
       }
-      getMarketColsInfo(data).then(reponse => {
-        const { numberCols, colData } = reponse
+      getMarketColsInfo(data).then(response => {
+        const { numberCols, colData } = response
         this.colData = colData
         this.relationColsOptions = numberCols
         this.setColDataResult()
