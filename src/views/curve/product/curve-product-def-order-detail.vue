@@ -294,16 +294,41 @@ export default {
       var maturityFlag = this.productInfo.maturityFlag
       var spotFlag = this.productInfo.spotFlag
       var forwardFlag = this.productInfo.forwardFlag
-      if (maturityFlag === 'Y') {
-        this.curvePubTypeSelected.push('1')
+
+      // 如果当前批次已经勾选过曲线发布类型，则不更新默认勾选
+      this.curvePubTypeSelected = []
+      if (!this.curvePrdOrder.curvePubType) {
+        if (maturityFlag === 'Y') {
+          this.curvePubTypeSelected.push('1')
+        }
+        if (spotFlag === 'Y') {
+          this.curvePubTypeSelected.push('2')
+        }
+        if (forwardFlag === 'Y') {
+          this.curvePubTypeSelected.push('3')
+        }
+      } else { // 去除已经勾选的内容
+        this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+        if (maturityFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('1')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
+        if (spotFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('2')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
+        if (forwardFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('3')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
       }
-      if (spotFlag === 'Y') {
-        this.curvePubTypeSelected.push('2')
-      }
-      if (forwardFlag === 'Y') {
-        this.curvePubTypeSelected.push('3')
-      }
-      // this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+
       if (this.curvePrdOrder.publishStepSize) {
         this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
       }
