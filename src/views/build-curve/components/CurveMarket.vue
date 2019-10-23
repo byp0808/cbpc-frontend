@@ -1,49 +1,37 @@
 <template>
   <div>
-    <el-form ref="form" :inline="true" size="mini" :model="form" label-width="120px">
-      <el-form-item label="债券代码" prop="bondCode">
-        <el-input v-model="form.bondCode" />
-      </el-form-item>
-      <el-form-item label="待偿期">
-        <el-col :span="11">
-          <el-input v-model="form.slipUp" />
-        </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-input v-model="form.slipDown" />
-        </el-col>
-      </el-form-item>
-      <el-form-item prop="marketYield">
-        <el-checkbox-button v-model="form.marketYield" label="市场收益率(T+n)不为空" />
-      </el-form-item>
-      <el-form-item label="买卖点差上限" prop="diffUp">
-        <el-input v-model="form.diffUp" />
-      </el-form-item>
-      <el-form-item label="双边范围限制" prop="rangeLimit">
-        <el-input v-model="form.rangeLimit" />
-      </el-form-item>
-      <el-form-item class="right">
-        <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
-        <el-button type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
-      </el-form-item>
-    </el-form>
     <div class="table-selection">
       <el-checkbox-group v-model="selectList" size="mini">
         <el-checkbox-button v-for="row in table" :key="row" :label="row" border>{{ row }}</el-checkbox-button>
       </el-checkbox-group>
     </div>
-    <quote-table v-if="selectList.filter(value => value === '双边报价').length > 0" class="table-filter" :data="multi" :limit="limit" />
-    <quote-table v-if="selectList.filter(value => value === '成交报价').length > 0" class="table-filter" :data="sale" :limit="limit" />
-    <quote-table v-if="selectList.filter(value => value === '经纪报价').length > 0" class="table-filter" :data="broker" :limit="limit" />
-    <quote-table v-if="selectList.filter(value => value === '报价行情').length > 0" class="table-filter" :data="quote" :limit="limit" />
+    <quote-table
+      v-if="selectList.filter(value => value === '成交报价').length > 0"
+      class="table-filter"
+      :header="saleTableHeader"
+      :data="sale.list"
+      :total="sale.total"
+      :limit="limit"
+      @refresh-list="getSaleList"
+    />
+    <quote-table
+      v-if="selectList.filter(value => value === '报价行情').length > 0"
+      class="table-filter"
+      :header="quoteTableHeader"
+      :data="quote.list"
+      :total="quote.total"
+      :limit="limit"
+      @refresh-list="getQuoteList"
+    />
   </div>
 </template>
 
 <script>
-import QuoteTable from './QuoteTable'
-import { queryCurveKeyTerm, queryBondsMarket } from '@/api/curve/curve-build'
+import QuoteTable from '@/views/build-curve/components/QuoteTable'
+import { queryCurveKeyTerm } from '@/api/curve/curve-build'
+import { queryMarketData } from '@/api/market/market'
 
-const tableList = ['双边报价', '成交报价', '经纪报价', '报价行情']
+const tableList = ['成交报价', '报价行情']
 export default {
   components: { QuoteTable },
   props: {
@@ -58,40 +46,66 @@ export default {
     curveOrderId: {
       type: String,
       default: ''
+    },
+    quoteTableHeader: {
+      type: Array,
+      default: () => []
+    },
+    saleTableHeader: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      form: {
-        bondCode: '',
-        slipUp: '',
-        slipDown: '',
-        marketYield: false,
-        diffUp: '',
-        rangeLimit: ''
-      },
-      selectList: ['双边报价'],
+      selectList: ['成交报价'],
       table: tableList,
-      multi: [],
-      sale: [],
-      broker: [],
-      quote: [],
+      sale: {
+        list: [],
+        total: 0
+      },
+      quote: {
+        list: [],
+        total: 0
+      },
       limit: []
     }
   },
   created() {
-    this.getList()
+    this.getSaleList()
+    this.getQuoteList()
     queryCurveKeyTerm({ curveId: this.curveId, orderId: this.orderId }).then(response => {
       this.limit = response
     })
   },
   methods: {
-    getList() {
-      this.listLoading = true
-      queryBondsMarket(this.form).then(response => {
-        this.list = response.dataList
-        this.total = response.page.totalRecord
-        this.listLoading = false
+    getQuoteList(page, search) {
+      const searchParam = search || []
+      searchParam.push({ colName: 'CURVE_ID', colType: 'String', operator: 'EQ', value: this.curveId })
+      const _data = {
+        page: page || { pageNumber: 1, pageSize: 100 },
+        dataMarket: '02',
+        showArea: '01',
+        searchParam: searchParam
+      }
+      queryMarketData(_data).then(response => {
+        console.log(response)
+        this.quote.list = response.dataList
+        this.quote.total = response.page.totalRecord
+      })
+    },
+    getSaleList(page, search) {
+      const searchParam = search || []
+      searchParam.push({ colName: 'CURVE_ID', colType: 'String', operator: 'EQ', value: this.curveId })
+      const _data = {
+        page: page || { pageNumber: 1, pageSize: 100 },
+        dataMarket: '02',
+        showArea: '02',
+        searchParam: searchParam
+      }
+      queryMarketData(_data).then(response => {
+        this.sale.list = response.dataList
+        this.sale.total = response.page.totalRecord
       })
     },
     reset() {

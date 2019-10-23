@@ -230,7 +230,9 @@ export default {
       allList: [],
       selection: [],
       causeList: [],
-      nameModel: {},
+      nameModel: {
+        userId: ''
+      },
       batchList: [
         {
           batchId: '11',

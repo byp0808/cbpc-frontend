@@ -136,6 +136,15 @@ export default {
       }
       this.$refs.NkTempForm.validate((valid) => {
         if (valid) {
+          // console.log(this.newsList)
+          if (this.newsList.length === 0) {
+            this.$message({
+              message: 'NK值不能为空！',
+              type: 'error',
+              showClose: true
+            })
+            return false
+          }
           const data = this.nkTempInfo
           data.nkList = this.newsList
           savenkTemp(data).then(response => {
@@ -158,6 +167,20 @@ export default {
       if (this.addDetail.nvalue > 49 || this.addDetail.kvalue > 49) {
         this.$message({
           message: 'N\K值不能大于49',
+          type: 'error'
+        })
+        return false
+      }
+      if (this.addDetail.nvalue === 0 && this.addDetail.kvalue === 0) {
+        this.$message({
+          message: 'N\K值不能同时为0',
+          type: 'error'
+        })
+        return false
+      }
+      if (Number(this.addDetail.nvalue) % 1 !== 0 || Number(this.addDetail.kvalue) % 1 !== 0) {
+        this.$message({
+          message: 'N\K值只能为整数',
           type: 'error'
         })
         return false

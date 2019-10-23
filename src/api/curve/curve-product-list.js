@@ -155,6 +155,14 @@ export function querycurveHomology(data) {
   })
 }
 
+// 查询同调曲线主表信息
+export function querycurveHomologyMain(id) {
+  return request({
+    url: `${basic_api_curve}/curveHomology/get/` + id,
+    method: 'get'
+  })
+}
+
 // 同调曲线保存并发起流程
 export function storageHomology(data) {
   return request({
@@ -334,6 +342,21 @@ export function getDetalInitOptions() {
   var options = []
   getInitDetailList({}).then(response => {
     var datalist = response
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var data = datalist[i]
+        options.push({ data })
+      }
+    }
+  })
+  return options
+}
+
+// 获取初同调曲线始化列表，仅包含曲线产品，key为曲线产品编号
+export function getQueryCurvOptions(news) {
+  var options = []
+  queryCurveReferDto(news).then(response => {
+    var datalist = response.datalist
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]

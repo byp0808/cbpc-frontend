@@ -19,7 +19,7 @@
 
 <script>
 
-import { getOrderList, getProductOrderList } from '@/api/curve/curve-product-order.js'
+import { getOrderList, getProductOrderList, viewCurveProperty } from '@/api/curve/curve-product-order.js'
 
 export default {
   name: 'CurveProductDefConfirm',
@@ -99,7 +99,13 @@ export default {
 
       debugger
       item.curveSampleNumberVisible = true
-      item.curveSampleNumber = 123
+      var data = {
+        curveId: curveId
+      }
+      viewCurveProperty(data).then(response => {
+        item.curveSampleNumber = response
+        setTimeout(1.5 * 1000)
+      })
     }
   }
 }

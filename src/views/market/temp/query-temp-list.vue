@@ -2,6 +2,7 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-button type="primary" @click="toAdd">新增</el-button>
+      <el-button type="primary" class="float-left" @click="copyAdd">复制新增</el-button>
     </div>
     <el-table
       ref="refMarketTempTable"
@@ -11,11 +12,11 @@
       style="width: 1286px"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        label="选择"
-        type="selection"
-        width="55"
-      />
+      <el-table-column align="center" label="选择" style="width: 100px">
+        <template slot-scope="scope">
+          <el-radio v-model="radio" :label="scope.row.id" class="textRadio" @change="clickRow(scope.row.id)">&nbsp;</el-radio>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="tempName"
         label="行情展示模板名称"
@@ -75,6 +76,7 @@
         :market-temp-data="marketTempData"
         :business-id="marketTempId"
         :op-type="opType"
+        :is-copy="isCopy"
         @saveCallBack="saveCallBack"
         @closeDialog="closeDialog"
       />
@@ -94,7 +96,9 @@ export default {
     return {
       marketTempFormVisible: false,
       marketTempId: '',
+      radio: '',
       opType: '',
+      isCopy: false,
       marketTempList: [],
       marketTempData: {},
       page: {
@@ -120,6 +124,10 @@ export default {
     this.loadTable()
   },
   methods: {
+    clickRow(id) {
+      // console.log(id)
+      this.marketTempId = id
+    },
     loadTable() {
       queryTempList({ page: this.page }).then(response => {
         const { dataList, page } = response
@@ -176,6 +184,18 @@ export default {
       this.$store.commit('marketTemp/setMarketTempInfo', {})
       this.marketTempFormVisible = true
     },
+    copyAdd() {
+      if (this.marketTempId === '') {
+        this.$message({
+          type: 'warning',
+          message: '请选中要复制的行情模板'
+        })
+      } else {
+        this.disabled = false
+        this.isCopy = true
+        this.marketTempFormVisible = true
+      }
+    },
     saveCallBack() {
       this.marketTempFormVisible = false
       this.loadTable()
@@ -193,5 +213,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

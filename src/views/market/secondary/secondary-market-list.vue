@@ -392,7 +392,7 @@ export default {
       const data2 = {
         page: this.offerPage,
         dataMarket: '02',
-        shawArea: '01'
+        showArea: '01'
       }
       queryMarketData(data2).then(response => {
         // console.info(response)

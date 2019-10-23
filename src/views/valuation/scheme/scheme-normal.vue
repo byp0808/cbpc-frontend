@@ -128,7 +128,7 @@
           <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '02'">
             <!-- <el-form ref="relativeRule" :model="normalInfo.valuationScheme" :rules="relativeRule"> -->
             <el-form-item label="相对点差" class="display-inline">
-              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" :min="0" :max="100" /><span class="unit">%</span>
+              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" /><span class="unit">%</span>
             </el-form-item>
             <!-- </el-form> -->
             <el-row>
@@ -392,6 +392,23 @@ export default {
         if (this.normalInfo.valuationScheme.cdsPremAdjType === '02' && !this.normalInfo.spreadStart) {
           this.$message.warning('请填写初始点差')
           return false
+        }
+        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02') {
+          if (!this.normalInfo.spreadStart && this.normalInfo.spreadStart !== 0) {
+            return this.$message.warning('请输入初始点差')
+          }
+          if (!this.normalInfo.spreadEnd && this.normalInfo.spreadEnd !== 0) {
+            return this.$message.warning('请输入最终点差')
+          }
+          if (this.normalInfo.spreadStart >= this.normalInfo.spreadEnd) {
+            return this.$message.warning('最终点差应大于初始点差')
+          }
+          if (this.normalInfo.cdsAdjValue >= (this.normalInfo.spreadEnd - this.normalInfo.spreadStart)) {
+            return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
+          }
+          if (!this.normalInfo.cdsAdjValue && this.normalInfo.cdsAdjValue !== 0) {
+            return this.$message.warning('请输入调整幅度')
+          }
         }
       }
       spreadTrial().then(response => {

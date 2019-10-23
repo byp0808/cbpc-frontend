@@ -1,14 +1,29 @@
 <template>
-
   <el-form>
     <el-row>
       <el-col :span="8">
-        <el-form ref="dataForm" label-position="left" label-width="90px" style="border:1px solid black;width:100%;padding:10px 5px;height:600px">
+        <el-form
+          ref="dataForm"
+          label-position="left"
+          label-width="90px"
+          style="border:1px solid black;width:100%;padding:10px 5px;height:600px"
+        >
           <el-row>
             <el-col>
               <el-form-item label="选择曲线" label-width="100px">
-                <el-select v-model="temp.curveId" placeholder="请选择曲线" style="width: 80%" :disabled="jinzhiXuanZe" @change="loadCurvePrdKd">
-                  <el-option v-for="item in selectCurve" :key="item.data.curveId" :label="item.data.productName" :value="item.data.curveId" />
+                <el-select
+                  v-model="temp.curveId"
+                  placeholder="请选择曲线"
+                  style="width: 80%"
+                  :disabled="jinzhiXuanZe"
+                  @change="loadCurvePrdKd"
+                >
+                  <el-option
+                    v-for="item in selectCurve"
+                    :key="item.data.curveId"
+                    :label="item.data.productName"
+                    :value="item.data.curveId"
+                  />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -27,7 +42,13 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-table :data="standSlipList" border highlight-current-row style="width: 727px;" max-height="300">
+          <el-table
+            :data="standSlipList"
+            border
+            highlight-current-row
+            style="width: 727px;"
+            max-height="300"
+          >
             <el-table-column label="关键期限" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.standSlip }}</span>
@@ -39,65 +60,45 @@
                   type="text"
                   size="big"
                   @click="initstandSlipSet(scope.$index, standSlipList)"
-                >设置
-                </el-button>
+                >设置</el-button>
                 <el-button
                   type="text"
                   size="big"
                   @click="initstandSlipCopy(scope.$index, standSlipList)"
-                >复制上一期限并设置
-                </el-button>
+                >复制上一期限并设置</el-button>
                 <el-button
                   type="text"
                   size="big"
                   @click="initstandSlipDelete(scope.$index, standSlipList)"
-                >删除
-                </el-button>
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form>
       </el-col>
-      <el-col v-show="curveHomologyShow" :span="8" style="border:1px solid black;border-left:0;padding:10px 5px;height:600px;position: relative;">
-        <el-alert
-          title="mesge"
-          type="info"
-          center
-          :closable="false"
-        />
-        <el-table
-          ref="singleTable"
-          :data="tableData"
-          height="400"
-          style="width:100%;"
-        >
-          <el-table-column
-            type="index"
-            width="50"
-          />
-          <el-table-column label="场景" width="120">
+      <el-col
+        v-show="curveHomologyShow"
+        :span="8"
+        style="border:1px solid black;border-left:0;padding:10px 5px;height:600px;position: relative;"
+      >
+        <el-alert title="mesge" type="info" center :closable="false" />
+        <el-table ref="singleTable" :data="tableData" height="400" style="width:100%;">
+          <el-table-column type="index" width="50" />
+          <el-table-column label="场景" width="120" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.sceneFormula }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="行为" width="120">
+          <el-table-column label="行为" width="120" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.actionFormula }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-          >
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
-              <el-button
-                type="text"
-                size="big"
-                @click="curveHomologyXiuGai(scope.$index, tableData)"
-              >修改
-              </el-button>
+              <el-button type="text" size="big" @click="curveHomologyXiuGai(scope.$index, tableData)">修改</el-button>
             </template>
           </el-table-column>
-
         </el-table>
         <el-button
           class="filter-item"
@@ -105,15 +106,22 @@
           size="big"
           style="position: absolute;right: 10px;margin-top:30px;width:100px"
           @click="curveHomologyXinZeng"
-        >
-          新增
-        </el-button>
+        >新增</el-button>
       </el-col>
       <el-col v-show="curveHomologyXing" :span="8">
-        <el-form ref="detalForm" label-position="left" label-width="90px" style="border:1px solid black;border-left:0;width:100%;padding:10px 5px;height:600px;position: relative;">
+        <el-form
+          ref="detalForm"
+          label-position="left"
+          label-width="90px"
+          style="border:1px solid black;border-left:0;width:100%;padding:10px 5px;height:600px;position: relative;"
+        >
           <el-row style="height:45%">
             <el-col :span="4">
-              <h3 style="font-size:40px;">场<br><br>景</h3>
+              <h3 style="font-size:40px;">
+                场
+                <br>
+                <br>景
+              </h3>
             </el-col>
             <el-scrollbar style="height:100%">
               <el-col v-for="(item, index) in bankMessage" :key="index" :span="19" class="box">
@@ -129,8 +137,18 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="选择同调曲线" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.depCurveId" placeholder="请选择曲线" style="width: 80%" @change="loadCurvePrdKd">
-                            <el-option v-for="item in selectDepCurve" :key="item.data.curveId" :label="item.data.productName" :value="item.data.curveId" />
+                          <el-select
+                            v-model="temp.depCurveId"
+                            placeholder="请选择曲线"
+                            style="width: 80%"
+                            @change="loadCurvePrdKd"
+                          >
+                            <el-option
+                              v-for="item in selectDepCurve"
+                              :key="item.data.curveId"
+                              :label="item.data.productName"
+                              :value="item.data.curveId"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -139,7 +157,12 @@
                       <el-col>
                         <el-form-item label="关键期限" label-width="100px" style="height:20px;">
                           <el-select v-model="temp.id" placeholder="请选择期限" style="width: 80%">
-                            <el-option v-for="item in selectStandSlip" :key="item.id" :label="item.standSlip" :value="item.id" />
+                            <el-option
+                              v-for="item in selectStandSlip"
+                              :key="item.id"
+                              :label="item.standSlip"
+                              :value="item.id"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -148,7 +171,12 @@
                       <el-col>
                         <el-form-item label="指标" label-width="100px" style="height:20px;">
                           <el-select v-model="temp.depInd" placeholder="请选择指标" style="width: 80%">
-                            <el-option v-for="item in selectDepInd" :key="item.value" :label="item.label" :value="item.value" />
+                            <el-option
+                              v-for="item in selectDepInd"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -157,8 +185,17 @@
                   <el-row :gutter="5" style="margin-top:5px">
                     <el-col :span="9">
                       <el-form-item>
-                        <el-select v-model="reloperators" placeholder="请选择" style="height:20px;width: 100%">
-                          <el-option v-for="item in selectFormulaType" :key="item.value" :label="item.label" :value="item.value" />
+                        <el-select
+                          v-model="reloperators"
+                          placeholder="请选择"
+                          style="height:20px;width: 100%"
+                        >
+                          <el-option
+                            v-for="item in selectFormulaType"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
                         </el-select>
                       </el-form-item>
                     </el-col>
@@ -184,7 +221,11 @@
           <hr>
           <el-row style="height:45%">
             <el-col :span="4">
-              <h3 style="font-size:40px;">行<br><br>为</h3>
+              <h3 style="font-size:40px;">
+                行
+                <br>
+                <br>为
+              </h3>
             </el-col>
             <el-scrollbar style="overflow-x: hidden;height:100%">
               <el-col v-for="(item, index) in bankMessage2" :key="index" :span="16" class="box">
@@ -200,8 +241,17 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="选择同调曲线" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.depCurveId" placeholder="请选择曲线" style="width: 80%">
-                            <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
+                          <el-select
+                            v-model="temp.depCurveId"
+                            placeholder="请选择曲线"
+                            style="width: 80%"
+                          >
+                            <el-option
+                              v-for="item in selectCurve"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -209,8 +259,17 @@
                     <el-row>
                       <el-col>
                         <el-form-item label="关键期限" label-width="100px" style="height:20px;">
-                          <el-select v-model="temp.standSlip" placeholder="请选择期限" style="width: 80%">
-                            <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
+                          <el-select
+                            v-model="temp.standSlip"
+                            placeholder="请选择期限"
+                            style="width: 80%"
+                          >
+                            <el-option
+                              v-for="item in selectCurve"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -219,7 +278,12 @@
                       <el-col>
                         <el-form-item label="指标" label-width="100px" style="height:20px;">
                           <el-select v-model="temp.depInd" placeholder="请选择指标" style="width: 80%">
-                            <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
+                            <el-option
+                              v-for="item in selectCurve"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                            />
                           </el-select>
                         </el-form-item>
                       </el-col>
@@ -228,14 +292,26 @@
                   <el-row :gutter="5" style="margin-top:5px">
                     <el-col :span="9">
                       <el-form-item>
-                        <el-select v-model="temp.actionFormulaType" placeholder="请选择" style="height:20px;width: 100%">
-                          <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
+                        <el-select
+                          v-model="temp.actionFormulaType"
+                          placeholder="请选择"
+                          style="height:20px;width: 100%"
+                        >
+                          <el-option
+                            v-for="item in selectCurve"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                          />
                         </el-select>
                       </el-form-item>
                     </el-col>
                     <el-col :span="9">
                       <el-form-item>
-                        <el-input v-model="temp.actionFormulaValue" style="height:20px;width: 100%" />
+                        <el-input
+                          v-model="temp.actionFormulaValue"
+                          style="height:20px;width: 100%"
+                        />
                       </el-form-item>
                     </el-col>
                     <el-col span="2" style="height:34px;line-height: 34px">BP</el-col>
@@ -253,7 +329,11 @@
             </el-scrollbar>
           </el-row>
           <el-form-item>
-            <el-button type="primary" style="position: absolute;right: 0;" @click="addDetalInit">保存场景行为</el-button>
+            <el-button
+              type="primary"
+              style="position: absolute;right: 0;"
+              @click="addDetalInit"
+            >保存场景行为</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -273,6 +353,7 @@ import {
 
 export default {
   name: 'Creditdebt',
+  // eslint-disable-next-line vue/require-prop-types
   props: ['temp'],
   data() {
     return {
@@ -280,28 +361,36 @@ export default {
       bankMessage2: [],
       selectCurve: [],
       selectDepCurve: [],
-      selectFormulaType: [{
-        value: '选项1',
-        label: '>'
-      }, {
-        value: '选项2',
-        label: '<'
-      }, {
-        value: '选项3',
-        label: '>='
-      }, {
-        value: '选项4',
-        label: '<='
-      }, {
-        value: '选项5',
-        label: '=='
-      }, {
-        value: '选项6',
-        label: '!='
-      }, {
-        value: '选项7',
-        label: '<>'
-      }],
+      selectFormulaType: [
+        {
+          value: '选项1',
+          label: '>'
+        },
+        {
+          value: '选项2',
+          label: '<'
+        },
+        {
+          value: '选项3',
+          label: '>='
+        },
+        {
+          value: '选项4',
+          label: '<='
+        },
+        {
+          value: '选项5',
+          label: '=='
+        },
+        {
+          value: '选项6',
+          label: '!='
+        },
+        {
+          value: '选项7',
+          label: '<>'
+        }
+      ],
       standSlipList: [],
       selectStandSlip: [],
       tableData: [],
@@ -311,7 +400,6 @@ export default {
       curveHomologyShow: false,
       curveHomologyXing: false,
       reloperators: ''
-
     }
   },
   beforeMount() {
@@ -335,6 +423,8 @@ export default {
           depCurveId: this.depCurveId,
           id: this.id
         })
+        this.temp.lastUpdBy = this.standSlipList[0].lastUpdBy
+        this.temp.lastUpdTs = this.standSlipList[0].lastUpdTs
       }
     },
     // 选择曲线查询期限列表
@@ -398,6 +488,9 @@ export default {
     // 修改场景和行为
     curveHomologyXiuGai(index, rows) {
       this.curveHomologyXing = true
+      this.bankMessage = rows[index]
+      console.info(this.bankMessage)
+      console.info(rows)
       this.selectStandSlip = this.standSlipList
     },
 
@@ -405,43 +498,48 @@ export default {
     curveHomologyXinZeng() {
       this.curveHomologyXing = true
       this.selectStandSlip = this.standSlipList
-      this.getInitData({
-        curveId: this.temp.curveId,
-        standSlip: this.standSlip
-      })
+      // this.getInitData({
+      //   curveId: this.temp.curveId,
+      //   standSlip: this.standSlip
+      // })
     },
 
     // 添加一个场景
     addMessage() {
-      this.bankMessage.unshift(
-        {
-          depCurveId: '',
-          percent: '',
-          standSlip: '',
-          depInd: ''
-        }
-      )
+      this.bankMessage.unshift({
+        depCurveId: '',
+        percent: '',
+        standSlip: '',
+        depInd: ''
+      })
     },
 
     // 添加一个行为
     addMessage2() {
-      this.bankMessage2.unshift(
-        {
-          depCurveId: '',
-          percent: '',
-          standSlip: '',
-          depInd: ''
-        }
-      )
+      this.bankMessage2.unshift({
+        depCurveId: '',
+        percent: '',
+        standSlip: '',
+        depInd: ''
+      })
     },
     // 保存场景行为
     addDetalInit() {
-      const tpm = this.selectDepCurve.filter(val => val.data.curveId === this.temp.depCurveId)
+      const tpm = this.selectDepCurve.filter(
+        val => val.data.curveId === this.temp.depCurveId
+      )
       const qx = this.selectStandSlip.filter(val => val.id === this.temp.id)
       this.tableData.push({
-        sceneFormula: this.temp.percent + '*' + '[' + tpm[0].data.productName + qx[0].standSlip + ']',
+        sceneFormula:
+          this.temp.percent +
+          '*' +
+          '[' +
+          tpm[0].data.productName +
+          qx[0].standSlip +
+          ']',
         actionFormula: this.actionFormula
       })
+      this.bankMessage = []
     },
 
     obtainCurveHomology() {

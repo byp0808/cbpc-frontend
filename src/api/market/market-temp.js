@@ -40,3 +40,11 @@ export function getMarketColsInfo(data) {
     data: data
   })
 }
+
+export function checkTempName(data) {
+  return request({
+    url: `${basic_api_market}/market-temp/check-name`,
+    method: 'post',
+    data
+  })
+}
