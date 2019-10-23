@@ -455,7 +455,7 @@ export default {
       return this.getCurveInfo(id).productName
     },
     getProductGrade(id) {
-      return this.getCurveInfo(id).productGrade
+      return this.$dft('MARKET_GRADE', this.getCurveInfo(id).productGrade)
     },
     getCurveInfo(id) {
       var list = this.curveList
