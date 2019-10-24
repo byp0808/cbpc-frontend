@@ -26,9 +26,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">编辑</el-button>
+          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, 'EDIT')">编辑</el-button>
-          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">删除</el-button>
+          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoDel(scope.$index, curveReferDtoList)">删除</el-button>
         </template>
       </el-table-column>
@@ -167,7 +167,7 @@ export default {
     disableEdit() {
       this.$message({
         type: 'warning',
-        message: '不能操作待审核或者审批通过的数据'
+        message: '不能操作待审核的数据'
       })
     }
   }

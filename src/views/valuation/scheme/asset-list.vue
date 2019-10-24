@@ -37,9 +37,9 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作人" align="center">
+      <el-table-column label="调整人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.lastUpdBy }}</span>
+          <span>{{ scope.row.userId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券代码" align="center">

@@ -27,7 +27,12 @@
         <el-col :span="12" :offset="6">
           <el-form-item label="市场隐含评级" prop="marketGrad">
             <el-select v-model="spreadParamInfo.marketGrad" placeholder="请选择市场隐含评级" :disabled="disabled">
-              <el-option v-for="item in marketGradeList" :key="item.value" :label="item.value" :value="item.label" />
+              <el-option
+                v-for="(name, key) in $dict('MARKET_GRADE')"
+                :key="key"
+                :label="name"
+                :value="key"
+              />
             </el-select>
           </el-form-item>
         </el-col>
@@ -38,12 +43,12 @@
             <div class="input-box">
               <div class="first">
                 <el-form-item prop="rangeStart">
-                  <el-input v-model.number="spreadParamInfo.rangeStart" :disabled="disabled" />
+                  <el-input v-model="spreadParamInfo.rangeStart" :disabled="disabled" />
                 </el-form-item>
               </div>
               <div>
                 <el-form-item prop="rangeEnd">
-                  <el-input v-model.number="spreadParamInfo.rangeEnd" :disabled="disabled" />
+                  <el-input v-model="spreadParamInfo.rangeEnd" :disabled="disabled" />
                 </el-form-item>
               </div>
             </div>
@@ -68,27 +73,16 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     var numberRule = (rule, value, callback) => {
-      var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
+      // var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
+      var reg = /^(\-|\+)?\d+(\.\d+)?$/
       if (value > 0 && reg.test(value)) {
         callback()
       } else {
-        callback(new Error('请输入不超过三位小数的正数值'))
+        callback(new Error('请输入数值'))
       }
     }
     return {
       spreadParamInfo: {},
-      marketGradeList: [
-        {
-          value: 'AAA+',
-          label: 'AAA+'
-        }, {
-          value: 'AAA',
-          label: 'AAA'
-        }, {
-          value: 'AA+',
-          label: 'AA+'
-        }
-      ],
       rules: {
         paramType: [{ required: true, message: '请输入点差参数类型', trigger: 'blur' }],
         marketGrad: [{ required: true, message: '请选择市场隐含评级', trigger: 'change' }],

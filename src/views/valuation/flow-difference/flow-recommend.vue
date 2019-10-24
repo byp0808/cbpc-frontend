@@ -92,11 +92,14 @@
                 align="center"
               />
               <el-table-column
-                prop="marketGrad"
                 label="市场隐含评级"
                 align="center"
                 width="120px"
-              />
+              >
+                <template slot-scope="scope">
+                  <span>{{ scope.row.marketGrad }}</span>
+                </template>
+              </el-table-column>
               <el-table-column
                 label="期限区间"
                 align="center"
