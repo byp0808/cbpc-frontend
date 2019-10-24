@@ -77,7 +77,7 @@ export default {
       return this.getCurveInfo(id).productName
     },
     getCurveInfo(id) {
-      var list = this.selectCurve
+      var list = this.curveList
       for (const index in list) {
         const item = list[index]
         if (id === item.curveId) {
