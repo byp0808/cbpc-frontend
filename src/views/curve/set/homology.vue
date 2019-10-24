@@ -157,7 +157,7 @@ export default {
       if (homologyCurveId === this.mainInfo.curveId) {
         this.$message({
           type: 'error',
-          message: '同调曲线不可与选择的曲线相同！'
+          message: '不可选择目标曲线本身作为同调曲线！'
         })
         return false
       }

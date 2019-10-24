@@ -156,7 +156,7 @@ export default {
       if (referCurveId === this.mainInfo.curveId) {
         this.$message({
           type: 'error',
-          message: '参考曲线不可与选择的曲线相同！'
+          message: '不可选择目标曲线本身作为参考曲线！'
         })
         return false
       }

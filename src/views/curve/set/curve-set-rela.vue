@@ -44,7 +44,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="dialogFormVisible" title="曲线间关系模板" :visible.sync="dialogFormVisible" width="90%">
+    <el-dialog v-if="dialogFormVisible" title="曲线间关系模板" :visible.sync="dialogFormVisible" width="90%" :close-on-click-modal="false">
       <CurveSetRelaForm
         ref="refCurveSetRelaForm"
         :temp-main-id="tempMainId"
