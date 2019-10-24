@@ -422,7 +422,7 @@
       </el-table-column>
       <el-table-column label="历史评级变动" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="look(scope.row)">查看</el-button>
+          <el-button type="text" size="small" @click="look(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -721,6 +721,9 @@
       @size-change="sizeChange"
       @current-change="currentChange"
     />
+    <!-- <el-dialog title="历史评级变动" :visible.sync="historyDialog">
+
+    </el-dialog> -->
   </div>
 </template>
 
