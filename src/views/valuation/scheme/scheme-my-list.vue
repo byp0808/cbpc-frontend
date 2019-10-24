@@ -121,10 +121,10 @@
     </el-dialog>
     <el-dialog :visible.sync="uploadMethodDialog" title="人工估值上传">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="选择批次">
-            <el-select v-model="upLoadValution.batch" filterable clearable placeholder="请选择批次">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+        <el-form ref="bondDom" style="margin-left:50px" :model="upLoadValution" :rules="bondRule">
+          <el-form-item label="选择批次" prop="batchId">
+            <el-select v-model="upLoadValution.batchId" filterable placeholder="请选择批次">
+              <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择文件">
@@ -605,6 +605,9 @@ export default {
         cause: [{ required: true, message: '请选择调整原因', trigger: 'change' }]
         // dataFile: [{ required: true, message: '请选择上传文件', trigger: 'blur' }]
       },
+      bondRule: {
+        batchId: [{ required: true, message: '请选择批次', trigger: 'change' }]
+      },
       batchList: [
         {
           batchId: '11',
@@ -647,8 +650,8 @@ export default {
         }
       ],
       upLoadValution: {
-        batch: '',
-        excelFile1: ''
+        batchId: '11',
+        excelFile: ''
       },
       nameList: [
         {
@@ -1015,13 +1018,20 @@ export default {
 
     },
     saveValuation() {
+      this.$refs['bondDom'].validate(val => {
 
+      })
     },
     resetTaskDialog() {
       this.volumeAdd.batchId = this.batchList[0].batchId
       this.volumeAdd.attach = null
       this.volumeAdd.cause = '08'
       if (this.$refs.upload) this.$refs.upload.clearFiles()
+    },
+    resetBondDialog() { // 清空人工估值上传
+      this.upLoadValution.batchId = this.batchList[0].batchId
+      this.upLoadValution.excelFile = null
+      if (this.$refs.upload1) this.$refs.upload1.clearFiles()
     },
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
@@ -1141,6 +1151,7 @@ export default {
       this.resetTaskDialog()
     },
     uploadScheme() {
+      this.resetBondDialog()
       this.uploadMethodDialog = true
     },
     downloadScheme: function() {

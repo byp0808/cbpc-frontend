@@ -2,11 +2,11 @@
   <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
     <el-tab-pane v-for="curve in curves" :key="curve.id" :label="curve.curveName" :name="curve.curveName">
       <curve-market
-        :curve-id="curve.id"
+        :curve-id="curve.curveId"
         :order-id="curve.orderId"
         :quote-table-header="quoteTableHeader"
         :sale-table-header="saleTableHeader"
-        :curve-order-id="curve.curveOrderId"
+        :curve-order-id="curve.id"
       />
     </el-tab-pane>
   </el-tabs>
@@ -30,6 +30,9 @@ export default {
   },
   created() {
     this.getTableCols()
+  },
+  beforeDestroy() {
+    localStorage.removeItem('ids')
   },
   methods: {
     handleClick(tab, event) {

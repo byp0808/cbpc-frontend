@@ -60,8 +60,8 @@
     <el-dialog :visible.sync="allocationDialog" title="任务分配">
       <div>
         <el-form ref="taskDom" style="margin-left:50px" :rules="taskRule" :model="nameModel">
-          <el-form-item label="任务责任人" prop="userId">
-            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务责任人" @visible-change="nameChange">
+          <el-form-item label="任务调整人" prop="userId">
+            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务调整人" @visible-change="nameChange">
               <el-option v-for="(item, index) in nameList" :key="index" :label="item.userName" :value="item.userId" />
             </el-select>
           </el-form-item>
@@ -135,8 +135,8 @@
       <div>
         <el-form style="margin-left:50px">
           <el-form-item label="选择批次">
-            <el-select v-model="upLoadValution.batch" filterable clearable placeholder="请选择批次">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+            <el-select v-model="upLoadValution.batchId" filterable clearable placeholder="请选择批次">
+              <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择文件">
@@ -152,8 +152,8 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/voluation.xlsx" download="估值点差上传汇总文件" />
+            <div class="downLoad" @click="downLoadBond">
+              <a ref="DomDownload" style="display: none" href="/model/voluation.xlsx" download="估值点差上传汇总文件" />
               模板文件下载</div>
           </el-form-item>
         </el-form>
@@ -232,7 +232,7 @@ export default {
       selection: [],
       causeList: [],
       taskRule: {
-        userId: [{ required: true, message: '请选择任务责任人', trigger: 'change' }]
+        userId: [{ required: true, message: '请选择任务调整人', trigger: 'change' }]
       },
       nameModel: {
         userId: ''
@@ -271,8 +271,8 @@ export default {
         batchId: '2222'
       },
       upLoadValution: {
-        batch: '',
-        excelFile1: ''
+        batchId: '',
+        excelFile: ''
       },
       nameList: [],
       bondId: '',
@@ -364,8 +364,12 @@ export default {
       this.volumeAdd.batchId = this.batchList[0].batchId
       this.volumeAdd.cause = '08'
       this.excelFile = null
-      // this.volumeAdd = { cause: '08' }
       if (this.$refs.upload) this.$refs.upload.clearFiles()
+    },
+    resetBondDialog() { // 清空估值方案上传
+      this.upLoadValution.batchId = this.batchList[0].batchId
+      this.upLoadValution.excelFile = null
+      if (this.$refs.upload1) this.$refs.upload1.clearFiles()
     },
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
@@ -473,8 +477,11 @@ export default {
     downLoadMode() {
       this.$refs.moduleDownload.click()
     },
+    downLoadBond() {
+      this.$refs.DomDownload.click()
+    },
     saveValuation() {
-
+      this.resetBondDialog()
     },
     handleExceed() {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
@@ -519,6 +526,7 @@ export default {
               type: 'success'
             })
             this.taskList = []
+            this.loadTable_all()
           })
         } else {
           return false
