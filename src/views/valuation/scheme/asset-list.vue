@@ -3,7 +3,7 @@
     <el-table
       :data="allList"
       style="width: 100%"
-      max-height="280"
+      max-height="400"
       :header-cell-style="{background:'#f6f6f6'}"
       tooltip-effect="dark"
       border
@@ -177,17 +177,21 @@ export default {
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
-        val.map((v, i) => {
-          this.selectionList.push(v.bondId)
-          // this.taskList.push({ bondId: v.bondId })
-        })
-        this.selectionList = Array.from(new Set(this.selectionList))
-        this.$emit('selectionList', this.selectionList)
-        this.$emit('taskList', val)
+        this.taskList = val
       } else {
-        this.selectionList = []
         this.taskList = []
       }
+      this.$emit('taskList', this.taskList)
+      // if (val.length > 0) {
+      //   val.map((v, i) => {
+      //     this.selectionList.push(v.id)
+      //   })
+      //   this.selectionList = Array.from(new Set(this.selectionList))
+      //   this.$emit('selectionList', this.selectionList)
+      // } else {
+      //   this.selectionList = []
+      //   this.taskList = []
+      // }
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize

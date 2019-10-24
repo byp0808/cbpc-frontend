@@ -4,7 +4,7 @@
       <el-row>
         <el-col :span="11">
           <el-button type="primary" @click="allotTask">任务分配</el-button>
-          <el-button type="primary" @click="getTask">任务认领</el-button>
+          <el-button v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
@@ -29,7 +29,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
-        <asset-list :all-list="allList" @selectionList="selectionList" />
+        <asset-list :all-list="allList" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -43,7 +43,7 @@
         />
       </div>
       <div v-if="activeElement === '04'" v-loading="tabLoading">
-        <people-upload :all-list="uploadList" @selectionList="selectionList" />
+        <people-upload :all-list="uploadList" @taskList="taskLists" />
         <el-pagination
           align="center"
           :current-page="params.page.pageNumber"
@@ -59,9 +59,9 @@
     </transition>
     <el-dialog :visible.sync="allocationDialog" title="任务分配">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="任务分配人">
-            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
+        <el-form ref="taskDom" style="margin-left:50px" :rules="taskRule" :model="nameModel">
+          <el-form-item label="任务责任人" prop="userId">
+            <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务责任人" @visible-change="nameChange">
               <el-option v-for="(item, index) in nameList" :key="index" :label="item.userName" :value="item.userId" />
             </el-select>
           </el-form-item>
@@ -94,7 +94,7 @@
       <div>
         <el-form style="margin-left:50px" :label-position="labelPosition" :model="volumeAdd">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
-            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @change="batchChange">
+            <el-select v-model="volumeAdd.batchId" filterable placeholder="请选择批次">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
@@ -116,7 +116,7 @@
               模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
-            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择原因" @change="batchChange">
+            <el-select v-model="volumeAdd.cause" filterable placeholder="请选择原因">
               <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>
@@ -135,7 +135,7 @@
       <div>
         <el-form style="margin-left:50px">
           <el-form-item label="选择批次">
-            <el-select v-model="upLoadValution.batch" filterable clearable placeholder="请选择批次" @change="batchChange">
+            <el-select v-model="upLoadValution.batch" filterable clearable placeholder="请选择批次">
               <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
             </el-select>
           </el-form-item>
@@ -218,6 +218,7 @@ export default {
       uploadMethodDialog: false,
       tabLoading: false,
       fileLoading: false,
+      taskLoading: false,
       methodUpload: false,
       isBatch: false,
       remaindDialog: false,
@@ -230,6 +231,9 @@ export default {
       allList: [],
       selection: [],
       causeList: [],
+      taskRule: {
+        userId: [{ required: true, message: '请选择任务责任人', trigger: 'change' }]
+      },
       nameModel: {
         userId: ''
       },
@@ -274,6 +278,7 @@ export default {
       bondId: '',
       valuationAllTask: [],
       valuationMyTask: [],
+      taskList: [],
       params: {
         page: {
           pageNumber: 1,
@@ -305,20 +310,30 @@ export default {
         this.tabLoading = false
       })
     },
-    selectionList(data) {
-      this.selection = data
+    // selectionList(data) {
+    //   this.selection = data
+    // },
+    taskLists(data) {
+      this.taskList = data
+      console.log('dd', this.taskList)
     },
     getTask() {
       console.log('data', this.selection)
-      if (this.selection.length === 0) {
+      if (this.taskList.length === 0) {
         return this.$message.warning('请选择任务')
       } else {
+        this.selectionCheck()
+        this.taskLoading = true
         getTask(this.selection).then(res => {
           this.$message({
             message: '任务认领成功',
             type: 'success'
           })
+          this.taskLoading = false
           this.loadTable_all()
+          this.taskList = []
+        }).catch(() => {
+          this.taskLoading = false
         })
       }
     },
@@ -422,10 +437,10 @@ export default {
           this.$message.error(`${message}`)
         })
       } else {
-        if (!this.bondId) {
-          this.$message.error('请输入资产编码')
-          return
-        }
+        // if (!this.bondId) {
+        //   this.$message.error('请输入资产编码')
+        //   return
+        // }
         delete this.volumeAdd.attach
         delete this.volumeAdd.busiCode
         this.volumeAdd.csin = this.bondId
@@ -447,6 +462,9 @@ export default {
       }
     },
     addTask() {
+      if (!this.bondId) {
+        return this.$message.warning('请输入资产编号')
+      }
       this.isBatch = false
       this.volumeAddDialog = true
       this.taskTitle = '添加任务'
@@ -474,22 +492,37 @@ export default {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
     },
     allotTask() {
+      if (this.taskList.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
       this.allocationDialog = true
       this.nameModel.userId = ''
       getUserName('00001').then(res => {
         this.nameList = res
       })
     },
+    selectionCheck() { // 防止点击取消后还会被添加上
+      this.taskList.map(v => {
+        this.selection.push(v.id)
+      })
+      this.selection = Array.from(new Set(this.selection))
+    },
     saveName() {
-      if (this.selection.length === 0) {
-        return this.$message.warning('请选择任务')
-      }
+      this.selectionCheck()
       this.nameModel.ids = this.selection
-      saveTask(this.nameModel).then(res => {
-        this.$message({
-          message: '任务分配成功',
-          type: 'success'
-        })
+      this.$refs['taskDom'].validate((val) => {
+        if (val) {
+          saveTask(this.nameModel).then(res => {
+            this.allocationDialog = false
+            this.$message({
+              message: '任务分配成功',
+              type: 'success'
+            })
+            this.taskList = []
+          })
+        } else {
+          return false
+        }
       })
     },
     claimTask: function() {
