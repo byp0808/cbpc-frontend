@@ -142,8 +142,12 @@ export default {
     },
     storageCurveRefer() {
       var data = this.$refs.refer.obtainCurveRefer()
-      if (!data.curveReferList) {
-        alert('请选择参考曲线！')
+      debugger
+      if (!data.curveReferList || data.curveReferList.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择参考曲线'
+        })
         return
       }
       storageRefer(data).then(response => {
