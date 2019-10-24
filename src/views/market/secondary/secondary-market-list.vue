@@ -35,8 +35,7 @@
         :data="offerMarketList"
         tooltip-effect="dark"
         style="width: 100%"
-        height="200"
-        fit
+        height="300px"
         @header-click="offerHeaderScreening"
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
