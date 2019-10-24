@@ -67,9 +67,7 @@
         </el-table-column>
         <el-table-column label="优先级" width="60">
           <template slot-scope="{ row }">
-            <span v-if="row.priority == 1">低</span>
-            <span v-if="row.priority == 2">中</span>
-            <span v-if="row.priority == 3">高</span>
+            <span v-if="row.priority == 1">高</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
@@ -172,8 +170,19 @@ export default {
       } else {
         ids.push(item.id)
       }
-      refundCurveTask({ ids, assign: null, assignName: null }).then(() => {
-        this.getList()
+      this.$confirm('确定退回?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        refundCurveTask({ ids, assign: null, assignName: null }).then(() => {
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退回'
+        })
       })
     },
     openBuild(item) {
