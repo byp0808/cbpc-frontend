@@ -26,11 +26,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
+          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">编辑</el-button>
           <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, 'EDIT')">
             编辑
           </el-button>
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
+          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveHomologyDtoDel(scope.$index, curveHomologyDtoList)">删除
           </el-button>
         </template>
@@ -45,7 +45,12 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="50%">
+    <el-dialog
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      width="50%"
+      :close-on-click-modal="false"
+    >
       <Homology
         ref="homology"
         :homologyId="selectHomologyId"
@@ -141,7 +146,7 @@ export default {
     disableEdit() {
       this.$message({
         type: 'warning',
-        message: '不能操作待审核状态的数据'
+        message: '不能操作待审核或者审批通过的数据'
       })
     },
     storageCurveHomology() {

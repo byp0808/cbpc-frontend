@@ -12,7 +12,7 @@
           <span>{{ scope.row.productName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="同调曲线" width="290px" align="center">
+      <el-table-column label="参考曲线" width="290px" align="center">
         <template slot-scope="scope">
           <span class="link-type" @click="curveReferDtoEdit(scope.$index, 'VIEW')">详情</span>
         </template>
@@ -26,9 +26,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
+          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">编辑</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, 'EDIT')">编辑</el-button>
-          <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
+          <el-button v-if="scope.row.approveStatus==='01' || scope.row.approveStatus==='02'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoDel(scope.$index, curveReferDtoList)">删除</el-button>
         </template>
       </el-table-column>
@@ -43,7 +43,12 @@
       @current-change="handleCurrentChange"
     />
 
-    <el-dialog v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="50%">
+    <el-dialog
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      width="50%"
+      :close-on-click-modal="false"
+    >
       <Refer
         ref="refer"
         :refer-id="selectedReferId"
@@ -138,7 +143,7 @@ export default {
     storageCurveRefer() {
       var data = this.$refs.refer.obtainCurveRefer()
       if (!data.curveReferList) {
-        alert('请选择同调曲线！')
+        alert('请选择参考曲线！')
         return
       }
       storageRefer(data).then(response => {
@@ -162,7 +167,7 @@ export default {
     disableEdit() {
       this.$message({
         type: 'warning',
-        message: '不能操作待审核状态的数据'
+        message: '不能操作待审核或者审批通过的数据'
       })
     }
   }
