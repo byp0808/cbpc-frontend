@@ -102,7 +102,7 @@ export default {
     handleSelectionChange(val) {
       if (val.length > 0) {
         val.map(v => {
-          this.selectionList.push(v.bondId)
+          this.selectionList.push(v.id)
           // this.taskList.push({ bondId: v.bondId })
         })
         this.selectionList = Array.from(new Set(this.selectionList))
