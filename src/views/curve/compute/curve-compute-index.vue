@@ -43,6 +43,9 @@ export default {
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条
         this.selectOrder = this.orderList[0]
+        this.$nextTick(() => {
+          this.$refs.refCurveOrderCompute.query()
+        })
       }
     },
     orderTabClick(tab, event) {

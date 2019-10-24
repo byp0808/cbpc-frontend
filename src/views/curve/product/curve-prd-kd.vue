@@ -99,7 +99,7 @@
     >
       <label>远期N/K值： </label>
       <el-select v-model="forwardFlagMod" style="width: 140px" class="filter-item" :disabled="disabled">
-        <el-option v-for="item in forwardFlagMods" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in forwardFlagMods" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" :disabled="disabled" @click="handleCurvePrdNkFilter">
         应用模板

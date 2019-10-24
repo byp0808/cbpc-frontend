@@ -4,7 +4,13 @@
       <el-row :gutter="20">
         <el-col :span="7">
           <el-form-item label="开始日期及批次期" prop="startDate">
-            <el-date-picker v-model="formData.startDate" type="date" placeholder="选择日期" />
+            <el-date-picker
+              v-model="formData.startDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              @change="getStartBatchs"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="5">
@@ -12,9 +18,9 @@
             <el-select v-model="formData.startBatch" placeholder="选择批次">
               <el-option
                 v-for="item in startBatchs"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
           </el-form-item>
@@ -24,9 +30,9 @@
             <el-select v-model="formData.payingInterest" placeholder="选择付息方式">
               <el-option
                 v-for="item in payingInterests"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.batchId"
+                :label="item.batchId"
+                :value="item.batchId"
               />
             </el-select>
           </el-form-item>
@@ -40,7 +46,13 @@
       <el-row :gutter="20">
         <el-col :span="7">
           <el-form-item label="结束日期及批次期" prop="endDate">
-            <el-date-picker v-model="formData.endDate" type="date" placeholder="选择日期" />
+            <el-date-picker
+              v-model="formData.endDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              @change="getEndBatchs"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="5">
@@ -48,9 +60,9 @@
             <el-select v-model="formData.endBatch" placeholder="选择批次">
               <el-option
                 v-for="item in endBatchs"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
           </el-form-item>
@@ -69,7 +81,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="债券代码" prop="CSIN">
-            <el-input v-model="formData.CSIN" style="width: 72%" />
+            <el-input v-model="formData.csin" style="width: 72%" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -316,7 +328,7 @@
 </template>
 
 <script>
-import { queryValuation } from '@/api/valuation/query.js'
+import { queryValuation, getTaskBatchList } from '@/api/valuation/query.js'
 import { basic_api_valuation } from '@/api/base-api'
 import { downloadFile } from '@/utils/file-request'
 export default {
@@ -332,22 +344,16 @@ export default {
         endBatch: '', // 结束批次
         payingInterest: '', // 付息方式
         bondShort: '', // 债券简称
-        CSIN: '', // 债券代码
+        csin: '', // 债券代码
         bondQuality: '', // 债券品种
         yieldCurve: '', // 收益率曲线
         market: '', // 流通场所
         publisher: '' // 发行人
       },
       // 开始批次
-      startBatchs: [
-        { value: '1', label: '8：00' },
-        { value: '2', label: '9：00' }
-      ],
+      startBatchs: [],
       // 结束批次
-      endBatchs: [
-        { value: '1', label: '8：00' },
-        { value: '2', label: '9：00' }
-      ],
+      endBatchs: [],
       // 付息方式
       payingInterests: [
         { value: '1', label: '一年两息' },
@@ -389,6 +395,16 @@ export default {
       queryValuation(this.formData).then(response => {
         this.allValuationResultList = response
         this.pageData()
+      })
+    },
+    getStartBatchs() {
+      getTaskBatchList(this.formData.startDate).then(response => {
+        this.startBatchs = response
+      })
+    },
+    getEndBatchs() {
+      getTaskBatchList(this.formData.endDate).then(response => {
+        this.endBatchs = response
       })
     },
     // 前端分页

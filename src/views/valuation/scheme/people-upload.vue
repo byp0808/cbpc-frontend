@@ -4,7 +4,7 @@
       <el-table
         :data="allList"
         style="width: 100%"
-        max-height="300"
+        max-height="400"
         tooltip-effect="dark"
         border
         :header-cell-style="{background:'#f6f6f6'}"
@@ -101,26 +101,22 @@ export default {
   methods: {
     handleSelectionChange(val) {
       if (val.length > 0) {
-        val.map(v => {
-          this.selectionList.push(v.bondId)
-          // this.taskList.push({ bondId: v.bondId })
-        })
-        this.selectionList = Array.from(new Set(this.selectionList))
-        this.$emit('selectionList', this.selectionList)
-        this.$emit('taskList', val)
+        this.taskList = val
       } else {
-        this.selectionList = []
         this.taskList = []
       }
+      this.$emit('taskList', this.taskList)
+      // if (val.length > 0) {
+      //   val.map(v => {
+      //     this.selectionList.push(v.id)
+      //   })
+      //   this.selectionList = Array.from(new Set(this.selectionList))
+      //   this.$emit('selectionList', this.selectionList)
+      // } else {
+      //   this.selectionList = []
+      //   this.taskList = []
+      // }
     }
-    // handleSizeChange(pageSize) {
-    //   this.page.pageSize = pageSize
-    //   this.load()
-    // },
-    // handleCurrentChange(currentPage) {
-    //   this.page.pageNumber = currentPage
-    //   this.load()
-    // }
   }
 }
 </script>

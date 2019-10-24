@@ -3,7 +3,8 @@
     <h3>财务报表</h3>
     <el-tabs v-model="activeName" type="card" @tab-click="tabClick">
       <div style="margin-top:10px;margin-bottom:20px">
-        <el-button type="primary" @click="isDisplay(activeName)">展开/收起</el-button>
+        <el-button v-if="!showForm" type="primary" @click="isDisplay(activeName)">展开</el-button>
+        <el-button v-else type="primary" @click="isDisplay">收起</el-button>
       </div>
       <el-form v-show="showForm">
         <el-row>
@@ -48,8 +49,8 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-button type="primary" plain>减少小位数</el-button>
-              <el-button type="primary" plain>增加小位数</el-button>
+              <el-button type="primary" plain @click="reducePoint">减少小位数</el-button>
+              <el-button type="primary" plain @click="addPoint">增加小位数</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -567,7 +568,11 @@ export default {
           totalRecord: 0
         }
       },
-      interestList: [],
+      interestList: [
+        { remark: 33.123 },
+        { remark: 34.123 },
+        { remark: 343.666444 }
+      ],
       debtList: [],
       crushList: [],
       keyRateList: [],
@@ -631,13 +636,60 @@ export default {
     }
   },
   created() {
+    this.getInterestList()
   },
   methods: {
     tabClick(e) {
       this.activeIndex = e.name
-      console.log('this.activeIndex', this.activeIndex)
+      // if (this.activeIndex === '01') {
+      //   this.getInterestList()
+      // }
+      switch (e.name) {
+        case '01' : return this.getInterestList()
+        case '02' : return this.getDebtList()
+        case '03' : return this.getCrushList()
+        case '04' : return this.getKeyList()
+        case '05' : return this.getEveryBond()
+        case '06' : return this.getOtherList()
+      }
     },
     handleSelectionChange(e) {
+
+    },
+    getInterestList() {
+
+    },
+    getDebtList() {
+
+    },
+    getCrushList() {
+
+    },
+    getKeyList() {
+
+    },
+    getEveryBond() {
+
+    },
+    getOtherList() {
+
+    },
+    reducePoint() {
+      if (this.activeIndex === '01') {
+        this.list = this.interestList
+      }
+      this.list.map((v, i) => {
+        const isSrt = v.remark.toString()
+        const index = isSrt.indexOf('.')
+        if (index > 0) {
+          console.log('pp', index)
+          const arr = isSrt.split('')
+          arr.splice(arr.length - 1, 1)
+          v.remark = arr.join('')
+        }
+      })
+    },
+    addPoint() {
 
     },
     changeReport(e) {

@@ -53,7 +53,7 @@
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
           >
-            设置
+            编辑
           </el-button>
           <el-button
             :disabled="scope.row.approveStatus === '01' || (scope.row.busiStatus === '04' && scope.row.approveStatus === '01' )"
@@ -63,13 +63,13 @@
           >
             删除
           </el-button>
-          <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
-            type="text"
-            size="small"
-          >
-            {{ statusText(scope.row.busiStatus) }}
-          </el-button>
+          <!--          <el-button-->
+          <!--            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"-->
+          <!--            type="text"-->
+          <!--            size="small"-->
+          <!--          >-->
+          <!--            {{ statusText(scope.row.busiStatus) }}-->
+          <!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>

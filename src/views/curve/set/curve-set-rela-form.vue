@@ -5,7 +5,7 @@
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="tempMain" label-width="150px">
-              <el-form-item label="曲线产品名称">
+              <el-form-item label="选择曲线">
                 <el-select ref="curveIdSelect" v-model="tempMain.curveId" style="width: 100%" filterable :disabled="curveSelectDisable" placeholder="请选择曲线" @change="curveSelect">
                   <el-option
                     v-for="item in curveList"
@@ -455,7 +455,7 @@ export default {
       return this.getCurveInfo(id).productName
     },
     getProductGrade(id) {
-      return this.getCurveInfo(id).productGrade
+      return this.$dft('MARKET_GRADE', this.getCurveInfo(id).productGrade)
     },
     getCurveInfo(id) {
       var list = this.curveList
@@ -994,18 +994,25 @@ export default {
     // 删除关系
     relaFormTableDelete(index) {
       console.info('curve-set-rela-form.vue...relaFormTableDelete...index:' + index)
-      // 删除并返回数据
-      const deletObj = this.relaFormTableList.splice(index, 1)[0]
-      /*
-       需要删除缓存数据 this.tempList
-      */
-      const _tmp_tempInfo = deletObj.tempInfo
-      for (var i in this.tempList) {
-        if (this.tempList[i].id === _tmp_tempInfo.id) {
-          this.tempList.splice(i, 1)
-          break
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        // 删除并返回数据
+        const deletObj = this.relaFormTableList.splice(index, 1)[0]
+        /*
+         需要删除缓存数据 this.tempList
+        */
+        const _tmp_tempInfo = deletObj.tempInfo
+        for (var i in this.tempList) {
+          if (this.tempList[i].id === _tmp_tempInfo.id) {
+            this.tempList.splice(i, 1)
+            break
+          }
         }
-      }
+      }).catch(() => {
+        console.info('cancle')
+      })
     },
     moveToPri(index) {
       console.info('curve-set-rela-form.vue...moveToPri...index:' + index)

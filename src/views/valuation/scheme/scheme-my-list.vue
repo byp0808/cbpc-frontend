@@ -16,7 +16,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </template>
-          <el-button type="primary" @click="backTask">任务退回</el-button>
+          <el-button v-loading="backLoading" type="primary" @click="backTask">任务退回</el-button>
           <el-button type="primary">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
@@ -28,7 +28,7 @@
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
         </el-col> -->
         <el-col :span="10" :offset="1">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
+          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" clearable />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <div style="margin-top:7px">
@@ -50,7 +50,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tableLoading">
-        <asset-list :all-list="myList" @selectionList="selectionList" @taskList="taskList" />
+        <asset-list :all-list="myList" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -64,7 +64,7 @@
         />
       </div>
       <div v-if="activeElement === '04'" v-loading="tableLoading">
-        <people-upload :all-list="uploadList" @selectionList="selectionList" @taskList="taskList" />
+        <people-upload :all-list="uploadList" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -82,7 +82,7 @@
       <div>
         <el-form ref="ruleForm" style="margin-left:50px" :model="volumeAdd" :rules="rules">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '105px'" prop="batchId">
-            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+            <el-select v-model="volumeAdd.batchId" filterable placeholder="请选择批次">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
@@ -104,7 +104,7 @@
             </div>
           </el-form-item>
           <el-form-item label="选择调整原因" prop="cause">
-            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+            <el-select v-model="volumeAdd.cause" filterable placeholder="请选择批次">
               <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>
@@ -121,10 +121,10 @@
     </el-dialog>
     <el-dialog :visible.sync="uploadMethodDialog" title="人工估值上传">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="选择批次">
-            <el-select v-model="upLoadValution.batch" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
-              <el-option v-for="(item, index) in nameList" :key="index" :label="item.name" :value="item.name" />
+        <el-form ref="bondDom" style="margin-left:50px" :model="upLoadValution" :rules="bondRule">
+          <el-form-item label="选择批次" prop="batchId">
+            <el-select v-model="upLoadValution.batchId" filterable placeholder="请选择批次">
+              <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择文件">
@@ -522,6 +522,7 @@ export default {
       tableLoading: false,
       isBatch: false,
       remaindDialog: false,
+      backLoading: false,
       marketDialog: false,
       creditDialog: false,
       interestDialog: false,
@@ -604,6 +605,9 @@ export default {
         cause: [{ required: true, message: '请选择调整原因', trigger: 'change' }]
         // dataFile: [{ required: true, message: '请选择上传文件', trigger: 'blur' }]
       },
+      bondRule: {
+        batchId: [{ required: true, message: '请选择批次', trigger: 'change' }]
+      },
       batchList: [
         {
           batchId: '11',
@@ -646,8 +650,8 @@ export default {
         }
       ],
       upLoadValution: {
-        batch: '',
-        excelFile1: ''
+        batchId: '11',
+        excelFile: ''
       },
       nameList: [
         {
@@ -718,14 +722,9 @@ export default {
         this.tabList = res
       })
     },
-    // changeotAdjValue(e) {
-    //   if (e > 99999 || e < -99999) {
-    //     return this.$message.warning('点差范围是-99999~+99999,请重新输入')
-    //   }
+    // selectionList(data) {
+    //   this.selection = data
     // },
-    selectionList(data) {
-      this.selection = data
-    },
     taskList(data) { // 批量调整任务id
       this.taskLists = data
     },
@@ -744,12 +743,12 @@ export default {
     refrech() {
       this.loadTable()
     },
-    // validateTask() {
-    //   if (this.tasks.length === 0) {
-    //     return this.$message.warning('请至少选择一条任务进行调整')
-    //   }
-    //   this.valuationScheme.tasks = this.tasks
-    // },
+    selectionCheck() { // 防止点击取消后还会被添加上
+      this.taskLists.map(v => {
+        this.selection.push(v.id)
+      })
+      this.selection = Array.from(new Set(this.selection))
+    },
     selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
       if (this.taskLists && this.taskLists.length > 0) {
         this.taskLists.map(v => {
@@ -980,22 +979,30 @@ export default {
       this.loadTable()
     },
     backTask() {
-      console.log('this.selection', this.selection)
-      if (this.selection.length === 0) {
+      if (this.taskLists.length === 0) {
         return this.$message({
           message: '请选择任务',
           type: 'warning'
         })
       }
+      this.selectionCheck()
+      this.backLoading = true
       returnTask(this.selection).then(res => {
         this.$message({
           message: '任务退回成功',
           type: 'success'
         })
+        this.backLoading = false
+        this.taskLists = []
         this.loadTable()
+      }).catch(() => {
+        this.backLoading = false
       })
     },
     addTask() {
+      if (!this.bondId) {
+        return this.$message.warning('请输入资产编号')
+      }
       this.isBatch = false
       this.volumeAddDialog = true
       this.taskTitle = '添加任务'
@@ -1011,13 +1018,20 @@ export default {
 
     },
     saveValuation() {
+      this.$refs['bondDom'].validate(val => {
 
+      })
     },
     resetTaskDialog() {
       this.volumeAdd.batchId = this.batchList[0].batchId
       this.volumeAdd.attach = null
       this.volumeAdd.cause = '08'
       if (this.$refs.upload) this.$refs.upload.clearFiles()
+    },
+    resetBondDialog() { // 清空人工估值上传
+      this.upLoadValution.batchId = this.batchList[0].batchId
+      this.upLoadValution.excelFile = null
+      if (this.$refs.upload1) this.$refs.upload1.clearFiles()
     },
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
@@ -1137,6 +1151,7 @@ export default {
       this.resetTaskDialog()
     },
     uploadScheme() {
+      this.resetBondDialog()
       this.uploadMethodDialog = true
     },
     downloadScheme: function() {

@@ -37,7 +37,7 @@
           </el-form>
         </el-card>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="11">
         <el-row style="height: 600px">
           <el-card class="box-card margin-top calendar-job">
             <el-table
@@ -57,7 +57,7 @@
                 :formatter="formatColname"
               />
               <el-table-column
-                width="80"
+                width="100"
                 show-overflow-tooltip
                 align="center"
               >
@@ -101,7 +101,7 @@
                 prop="orderBy"
                 show-overflow-tooltip
                 label="顺序调整"
-                width="120"
+                width="160"
               >
                 <template slot-scope="scope">
                   <el-button

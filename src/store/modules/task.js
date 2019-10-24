@@ -2,7 +2,8 @@ export default {
   namespaced: true,
   state: {
     businessNo: '',
-    auditStatus: ''
+    auditStatus: '',
+    taskStatus: ''
   },
   mutations: {
     setBusinessNo(state, businessNo) {
@@ -10,6 +11,9 @@ export default {
     },
     setAuditStatus(state, auditStatus) {
       state.auditStatus = auditStatus
+    },
+    setTaskStatus(state, taskStatus) {
+      state.taskStatus = taskStatus
     },
     clear(state) {
       state.businessNo = ''

@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.marketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="含权说明" align="center">
@@ -75,12 +75,12 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <el-row>
+    <el-row>
       <el-col :span="24"><div class="line" /></el-col>
-    </el-row> -->
+    </el-row>
     <el-row style="margin-top:20px;margin-bottom:20px">
       <el-col :span="3" :offset="21">
-        <el-button type="primary">批量添加至我的任务</el-button>
+        <el-button type="primary" @click="addBatch">批量添加至我的任务</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -112,7 +112,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.marketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值方法" align="center">
@@ -189,6 +189,7 @@ export default {
     return {
       haveSelectList: [],
       allList: [],
+      selectList: [],
       tabLoading: false,
       params: {
         page: {
@@ -206,10 +207,15 @@ export default {
 
     },
     handleSelectionChange(e) {
-
+      this.selectList = e
     },
     getAllList() {
 
+    },
+    addBatch() {
+      if (this.selectList.length === 0) {
+        return this.$message.warning('至少选择一条估值资产')
+      }
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize
