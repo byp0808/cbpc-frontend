@@ -31,3 +31,13 @@ export function queryPeopleValuation(data) {
     }
   )
 }
+// 查询指定日期下的批次
+export function getTaskBatchList(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/query/task-batch-list`,
+      method: 'post',
+      data: data
+    }
+  )
+}

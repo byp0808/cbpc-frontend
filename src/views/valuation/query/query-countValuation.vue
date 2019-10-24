@@ -33,7 +33,7 @@
         </el-col>
         <el-col :span="5">
           <el-form-item label="债券代码" prop="CSIN">
-            <el-input v-model="formData.CSIN" style="width:60%" clearable />
+            <el-input v-model="formData.csin" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
@@ -149,7 +149,7 @@ export default {
         startBatch: '', // 开始批次
         endBatch: '', // 结束批次
         bondShort: '', // 债券简称
-        CSIN: '', // 债券代码
+        csin: '', // 债券代码
         bondQuality: '', // 债券品种
         yieldCurve: '', // 收益率曲线
         valuationMetnod: '', // 估值方法
