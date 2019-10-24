@@ -122,13 +122,22 @@ export default {
     },
     // 列表删除
     curveHomologyDtoDel(index, item) {
-      delInitList(item[index]).then(response => {
-        item.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        console.info('====delInitList====')
+        console.info('delInitList:' + item.id)
+        delInitList(item.id).then(response => {
+          this.initCaseList.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     storageInit() {
