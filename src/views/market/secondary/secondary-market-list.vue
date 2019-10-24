@@ -36,6 +36,7 @@
         tooltip-effect="dark"
         style="width: 100%"
         height="200"
+        fit
         @header-click="offerHeaderScreening"
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
@@ -213,7 +214,7 @@
           <el-input v-model="editModuleForm.offerModuleName" placeholder="" style="width: 300px" />
         </el-form-item>
         <el-form-item>
-          <span style="font-size: 2px;color: #dddfdd">
+          <span style="color: #dddfdd">
             修改模板名称后保存，视为新模板
           </span>
         </el-form-item>
@@ -474,11 +475,11 @@ export default {
       this.currentHeader.key = key
       this.currentHeader.label = column.label
       // 默认该表头没有筛选过
-      const index = this.isScreeningByHeader(this.offerScreeningFormList)
-      if (index != null && index !== '') {
-        // 该表头筛选过
-        const form = this.offerScreeningFormList[index].screeningForm
-        this.screeningFormSet(form)
+      const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+      console.info(form)
+      if (form.length > 0) {
+        // const form = this.screeningFormList[index].screeningForm
+        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
       }
       const tab = this.offerTableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
@@ -553,7 +554,14 @@ export default {
       getTempById(val).then(res => {
         const { showCols, colData } = res
         console.info(showCols)
-        this.offerTableHeader = showCols
+        // this.offerTableHeader = showCols
+        this.offerTableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.offerTableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.offerTableHeader)
+        })
         this.offerColData = colData
       })
       // 清空筛选数据
@@ -629,10 +637,11 @@ export default {
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      const index = this.isScreeningByHeader(this.screeningFormList)
-      if (index != null && index !== '') {
-        const form = this.screeningFormList[index].screeningForm
-        this.screeningFormSet(form)
+      const form = this.screeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+      console.info(form)
+      if (form.length > 0) {
+        // const form = this.screeningFormList[index].screeningForm
+        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
       }
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
@@ -705,7 +714,14 @@ export default {
       getTempById(val).then(res => {
         const { showCols, colData } = res
         console.info(showCols)
-        this.tableHeader = showCols
+        // this.tableHeader = showCols
+        this.tableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.tableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.tableHeader)
+        })
         this.colData = colData
       })
       // 清空筛选数据
@@ -1067,7 +1083,13 @@ export default {
         getTempById(newTempId).then(res => {
           const { showCols, colData } = res
           console.info(showCols)
-          this.tableHeader = showCols
+          this.tableHeader = []
+          this.$nextTick(() => {
+            for (let i = 0; i < showCols.length; i++) {
+              this.tableHeader.splice(i, 0, showCols[i])
+            }
+            console.info(this.tableHeader)
+          })
           this.colData = colData
         })
         // 获取满足条件的行情数据
@@ -1095,7 +1117,14 @@ export default {
         getTempById(newTempId).then(res => {
           const { showCols, colData } = res
           console.info(showCols)
-          this.offerTableHeader = showCols
+          // this.offerTableHeader = showCols
+          this.offerTableHeader = []
+          this.$nextTick(() => {
+            for (let i = 0; i < showCols.length; i++) {
+              this.offerTableHeader.splice(i, 0, showCols[i])
+            }
+            console.info(this.offerTableHeader)
+          })
           this.offerColData = colData
         })
         // 获取满足条件的行情数据

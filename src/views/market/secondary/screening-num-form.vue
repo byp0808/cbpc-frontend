@@ -69,9 +69,9 @@ export default {
       disable_2: true,
       isScreened: false,
       numFormRules: {
-        screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
-        startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
-        endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }]
+        screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
+        startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
+        endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }]
       }
     }
   },
@@ -101,7 +101,7 @@ export default {
         if (valid) {
           this.$emit('dateCallBack')
         } else {
-          this.$message('error submit!!')
+          // this.$message('error submit!!')
           return false
         }
       })
