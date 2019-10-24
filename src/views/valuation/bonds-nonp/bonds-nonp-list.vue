@@ -38,12 +38,6 @@
         :selectable="selectToBatch"
       />
       <el-table-column
-        prop="bondsConceptType"
-        label="资产概念分类"
-        show-overflow-tooltip
-        width="120"
-      />
-      <el-table-column
         prop="bondId"
         label="资产编码"
         show-overflow-tooltip
