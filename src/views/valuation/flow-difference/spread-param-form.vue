@@ -43,12 +43,12 @@
             <div class="input-box">
               <div class="first">
                 <el-form-item prop="rangeStart">
-                  <el-input v-model.number="spreadParamInfo.rangeStart" :disabled="disabled" />
+                  <el-input v-model="spreadParamInfo.rangeStart" :disabled="disabled" />
                 </el-form-item>
               </div>
               <div>
                 <el-form-item prop="rangeEnd">
-                  <el-input v-model.number="spreadParamInfo.rangeEnd" :disabled="disabled" />
+                  <el-input v-model="spreadParamInfo.rangeEnd" :disabled="disabled" />
                 </el-form-item>
               </div>
             </div>
@@ -73,7 +73,8 @@ export default {
   props: ['businessId', 'disabled'],
   data() {
     var numberRule = (rule, value, callback) => {
-      var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
+      // var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
+      var reg = /^(\-|\+)?\d+(\.\d+)?$/
       if (value > 0 && reg.test(value)) {
         callback()
       } else {
