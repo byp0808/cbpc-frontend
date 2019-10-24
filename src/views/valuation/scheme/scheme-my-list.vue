@@ -28,7 +28,7 @@
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
         </el-col> -->
         <el-col :span="10" :offset="1">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
+          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" clearable />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <div style="margin-top:7px">
@@ -82,7 +82,7 @@
       <div>
         <el-form ref="ruleForm" style="margin-left:50px" :model="volumeAdd" :rules="rules">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '105px'" prop="batchId">
-            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+            <el-select v-model="volumeAdd.batchId" filterable placeholder="请选择批次" @visible-change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
@@ -104,7 +104,7 @@
             </div>
           </el-form-item>
           <el-form-item label="选择调整原因" prop="cause">
-            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择批次" @visible-change="batchChange">
+            <el-select v-model="volumeAdd.cause" filterable placeholder="请选择批次" @visible-change="batchChange">
               <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>

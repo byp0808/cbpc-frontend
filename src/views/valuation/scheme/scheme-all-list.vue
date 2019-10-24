@@ -59,8 +59,8 @@
     </transition>
     <el-dialog :visible.sync="allocationDialog" title="任务分配">
       <div>
-        <el-form style="margin-left:50px">
-          <el-form-item label="任务分配人">
+        <el-form ref="taskDom" style="margin-left:50px" :rules="taskRule" :model="nameModel">
+          <el-form-item label="任务分配人" prop="userId">
             <el-select v-model="nameModel.userId" filterable clearable placeholder="请选择任务分配人" @visible-change="nameChange">
               <el-option v-for="(item, index) in nameList" :key="index" :label="item.userName" :value="item.userId" />
             </el-select>
@@ -94,7 +94,7 @@
       <div>
         <el-form style="margin-left:50px" :label-position="labelPosition" :model="volumeAdd">
           <el-form-item label="选择批次" :label-width="isBatch ? '': '95px'">
-            <el-select v-model="volumeAdd.batchId" filterable clearable placeholder="请选择批次" @change="batchChange">
+            <el-select v-model="volumeAdd.batchId" filterable placeholder="请选择批次" @change="batchChange">
               <el-option v-for="(item, index) in batchList" :key="index" :label="item.name" :value="item.batchId" />
             </el-select>
           </el-form-item>
@@ -116,7 +116,7 @@
               模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
-            <el-select v-model="volumeAdd.cause" filterable clearable placeholder="请选择原因" @change="batchChange">
+            <el-select v-model="volumeAdd.cause" filterable placeholder="请选择原因" @change="batchChange">
               <el-option v-for="(name, key) in $dict('ADJUST_CAUSE')" :key="key" :label="name" :value="key" />
             </el-select>
           </el-form-item>
@@ -230,6 +230,9 @@ export default {
       allList: [],
       selection: [],
       causeList: [],
+      taskRule: {
+        userId: [{ required: true, message: '请选择任务分配人', trigger: 'change' }]
+      },
       nameModel: {
         userId: ''
       },
@@ -485,11 +488,18 @@ export default {
         return this.$message.warning('请选择任务')
       }
       this.nameModel.ids = this.selection
-      saveTask(this.nameModel).then(res => {
-        this.$message({
-          message: '任务分配成功',
-          type: 'success'
-        })
+      this.$refs['taskDom'].validate((val) => {
+        if (val) {
+          saveTask(this.nameModel).then(res => {
+            this.allocationDialog = false
+            this.$message({
+              message: '任务分配成功',
+              type: 'success'
+            })
+          })
+        } else {
+          return false
+        }
       })
     },
     claimTask: function() {
