@@ -326,6 +326,9 @@ export default {
         ],
         referRate: [
           { required: true, message: '请选择曲线基准利率', trigger: 'change' }
+        ],
+        prdStatus: [
+          { required: true, message: '请选择产品状态', trigger: 'blur' }
         ]
       },
       pickerOptions: {

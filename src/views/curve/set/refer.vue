@@ -27,7 +27,7 @@
       </el-col>
     </el-row>
 
-    <el-form-item label="选择同调曲线">
+    <el-form-item label="选择参考曲线">
       <el-select ref="referCurve" v-model="referCurveId" :disabled="disabled" placeholder="请选择同调曲线">
         <el-option v-for="item in selectCurveRefer" :key="item.value" :label="item.label" :value="item.value" :disabled="disabled" />
       </el-select>
@@ -42,7 +42,7 @@
       </el-button>
     </el-form-item>
     <el-table :data="curveReferList" border highlight-current-row style="width: 727px;">
-      <el-table-column label="同调曲线" width="500px" align="center">
+      <el-table-column label="参考曲线" width="500px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.productName }}</span>
         </template>
@@ -141,14 +141,22 @@ export default {
       })
     },
 
-    // 选择同调曲线并添加到列表
+    // 选择参考曲线并添加到列表
     curveReferAdd() {
+      debugger
       var referCurveId = this.referCurveId
       var label = this.$refs.referCurve.selectedLabel
       if (!referCurveId) {
         this.$message({
           type: 'error',
           message: '请选择曲线'
+        })
+        return false
+      }
+      if (referCurveId === this.mainInfo.curveId) {
+        this.$message({
+          type: 'error',
+          message: '不可选择目标曲线本身作为参考曲线！'
         })
         return false
       }

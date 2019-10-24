@@ -379,7 +379,7 @@
       v-loading="creditLoading"
       :data="creditList"
       style="width: 100%"
-      max-height="200"
+      max-height="300"
       :header-cell-style="{background:'#e5e9f2'}"
       border
       fit
@@ -422,7 +422,7 @@
       </el-table-column>
       <el-table-column label="历史评级变动" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="look(scope.row)">查看</el-button>
+          <el-button type="text" size="small" @click="look(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -696,7 +696,7 @@
       </el-table-column>
       <el-table-column label="期末每百元面额现金流" align="center">
         <template slot-scope="scope">
-          <span>{{ causeFilter(scope.row.cause) }}</span>
+          <span>{{ scope.row.cause }}</span>
         </template>
       </el-table-column>
       <el-table-column label="现金流类型" align="center">
@@ -721,6 +721,9 @@
       @size-change="sizeChange"
       @current-change="currentChange"
     />
+    <!-- <el-dialog title="历史评级变动" :visible.sync="historyDialog">
+
+    </el-dialog> -->
   </div>
 </template>
 
@@ -740,6 +743,7 @@ export default {
       creditLoading: false,
       publishLoading: false,
       crushLoading: false,
+      historyDialog: false,
       page: {
         pageNumber: 1,
         pageSize: 10,
