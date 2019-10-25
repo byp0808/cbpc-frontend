@@ -82,13 +82,13 @@
           <div class="grid-content bg-purple-light">债券代码</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.valAssetCode }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>债券简称</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.valAssetShortName }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -96,13 +96,13 @@
           <div class="grid-content bg-purple-light">当前余额(亿元)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.currBal }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>债券类型</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -110,13 +110,13 @@
           <div class="grid-content bg-purple-light">质押券代码</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>折合标准券(元)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -124,13 +124,13 @@
           <div class="grid-content bg-purple-light">上市日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.lstdDate">{{ $moment(basicInfo.lstdDate ).format('YYYY-MM-DD') }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>摘牌日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -138,13 +138,13 @@
           <div class="grid-content bg-purple-light">交易市场</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.exchng }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>海外评级</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -152,13 +152,13 @@
           <div class="grid-content bg-purple-light">最新债项评级</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.ltstDebtCrdtRtng }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>评级机构</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -166,13 +166,13 @@
           <div class="grid-content bg-purple-light">票面利率(当期)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.ltstCupnRate }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行价格(元)/最新面值(元)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -180,27 +180,27 @@
           <div class="grid-content bg-purple-light">利率类型</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>票息品种</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="6">
-          <div class="grid-content bg-purple-light">付息说明</div>
+          <div class="grid-content bg-purple-light">付息频率</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.intPymntPeriod }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>下一付息日</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -208,13 +208,13 @@
           <div class="grid-content bg-purple-light">利率说明</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>距下一付息日(天)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -222,13 +222,13 @@
           <div class="grid-content bg-purple-light">计息基准</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.bnchmrkIntRateClassCode }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>票息类型</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -236,13 +236,13 @@
           <div class="grid-content bg-purple-light">剩余期限(年)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.mtrtyDate }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>期限(年)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -250,13 +250,13 @@
           <div class="grid-content bg-purple-light">起息日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.intStartDate">{{ $moment(basicInfo.intStartDate ).format('YYYY-MM-DD') }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>到期日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -264,13 +264,13 @@
           <div class="grid-content bg-purple-light">发行规模(亿元)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行方式</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.issueMthdCode }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -278,13 +278,13 @@
           <div class="grid-content bg-purple-light">债券全称</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.bondFullName }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>是否城投债曲线样本券</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.mncplBdFlag }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -292,13 +292,13 @@
           <div class="grid-content bg-purple-light">发行人</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.issuerName }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行人企业性质</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -306,7 +306,7 @@
           <div class="grid-content bg-purple-light">发行人注册地址</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -314,13 +314,13 @@
           <div class="grid-content bg-purple-light">托管机构</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>担保人</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -328,13 +328,13 @@
           <div class="grid-content bg-purple-light">增信方式</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>增信情况</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -342,13 +342,13 @@
           <div class="grid-content bg-purple-light">缴款日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.issuePymntDate">{{ $moment(basicInfo.issuePymntDate).format('YYYY-MM-DD') }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>主承销商</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -356,13 +356,13 @@
           <div class="grid-content bg-purple-light">内含特殊条款</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>下一行权日</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -370,7 +370,7 @@
           <div class="grid-content bg-purple-light">条款说明</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>11</div>
+          <div>--</div>
         </el-col>
       </el-row>
     </div>
@@ -444,13 +444,13 @@
           <div class="grid-content bg-purple-light">发行起始日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.issueStartDate">{{ $moment(basicInfo.issueStartDate).format('YYYY-MM-DD') }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行截至日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.issueEndDate">{{ $moment(basicInfo.issueEndDate ).format('YYYY-MM-DD') }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -458,13 +458,13 @@
           <div class="grid-content bg-purple-light">缴款日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div v-if="basicInfo.issuePymntDate">{{ $moment(basicInfo.issuePymntDate ).format('YYYY-MM-DD') }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行方式</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -472,13 +472,13 @@
           <div class="grid-content bg-purple-light">上市日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行公告日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -486,13 +486,13 @@
           <div class="grid-content bg-purple-light">计划发行量(亿)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>实际发行量(亿)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.actualIssueAmt }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -500,13 +500,13 @@
           <div class="grid-content bg-purple-light">薄记管理人</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>承销方式</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -514,7 +514,7 @@
           <div class="grid-content bg-purple-light">主承销商</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -522,7 +522,7 @@
           <div class="grid-content bg-purple-light">副主承销商</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -530,7 +530,7 @@
           <div class="grid-content bg-purple-light">主承金额分摊</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -538,13 +538,13 @@
           <div class="grid-content bg-purple-light">承销团</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>注册文件号</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -552,13 +552,13 @@
           <div class="grid-content bg-purple-light">招投标日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行价收益率(%)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.issueRefYieldRate }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -566,13 +566,13 @@
           <div class="grid-content bg-purple-light">招标标的</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.bidObjectTypeCode }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>招标方式</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -580,13 +580,13 @@
           <div class="grid-content bg-purple-light">中标价位</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.mrgnWinBidAmt }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>中标区间</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -594,13 +594,13 @@
           <div class="grid-content bg-purple-light">认购倍数</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.sbscptnMult }}</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行费率(%)</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>{{ basicInfo.issueCommRate }}</div>
         </el-col>
       </el-row>
       <el-row>
@@ -608,13 +608,13 @@
           <div class="grid-content bg-purple-light">上网认购代码</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>上网发行日期</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -622,13 +622,13 @@
           <div class="grid-content bg-purple-light">上网发行数量</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>同期债</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -636,13 +636,13 @@
           <div class="grid-content bg-purple-light">发现时债项评级</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>发行时主体评级</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -650,13 +650,13 @@
           <div class="grid-content bg-purple-light">发行人委托评级机构</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
         <el-col :span="6" class="grid-content bg-purple-light">
           <div>法律顾问</div>
         </el-col>
         <el-col :span="6" class="grid-content">
-          <div>债券代码</div>
+          <div>--</div>
         </el-col>
       </el-row>
       <el-row>
@@ -664,7 +664,7 @@
           <div class="grid-content bg-purple-light">募集资金用途</div>
         </el-col>
         <el-col :span="18" class="grid-content">
-          <div>11</div>
+          <div>--</div>
         </el-col>
       </el-row>
     </div>
@@ -739,11 +739,13 @@ export default {
       creditList: [],
       haveSelectList: [],
       moneyList: [],
+      basicInfo: {},
       basicLoading: false,
       creditLoading: false,
       publishLoading: false,
       crushLoading: false,
       historyDialog: false,
+      id: '',
       page: {
         pageNumber: 1,
         pageSize: 10,
@@ -757,7 +759,12 @@ export default {
     }
   },
   created() {
-    // this.searchBond()
+    if (this.$route.params) {
+      this.haveSelectList.push(this.$route.params)
+      this.id = this.$route.params.id
+    }
+    console.log('22', this.id)
+    this.searchBond()
   },
   methods: {
     look() {
@@ -765,14 +772,19 @@ export default {
     },
     searchBond() {
       this.basicLoading = true
-      const params = [{
-        colName: 'CSIN',
-        value: '111111',
-        colType: 'STRING',
-        operator: 'EQ'
-      }]
+      const params = {
+        page: {
+          pageNumber: 1,
+          pageSize: 10
+        },
+        search_csin_EQ: this.id
+        // search_csin_EQ: '402e50f218894a5fb86288b868cf8320'
+      }
       searchBond(params).then(res => {
         this.basicLoading = false
+        if (res.dataList[0]) {
+          this.basicInfo = res.dataList[0]
+        }
       }).catch(err => {
         console.log(err)
         this.basicLoading = false

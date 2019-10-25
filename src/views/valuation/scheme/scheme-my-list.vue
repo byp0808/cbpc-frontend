@@ -2,8 +2,8 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :span="13">
-          <el-button type="primary">方案调整</el-button>
+        <el-col :xl="7" :lg="10">
+          <!-- <el-button type="primary">方案调整</el-button> -->
           <template>
             <el-dropdown split-button type="primary" @command="batchesAdjust">
               批量调整
@@ -20,21 +20,12 @@
           <el-button type="primary">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
-        <!-- <el-col :span="11" :offset="1" class="scroll-box">
+        <el-col :xl="17" :lg="14">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
-        </el-col> -->
-        <el-col :span="10" :offset="1">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" clearable />
-          <el-button type="primary" @click="addTask">添加任务</el-button>
-          <el-button type="primary" @click="batchAddTask">批量添加</el-button>
-          <div style="margin-top:7px">
-            <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
-            <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
-          </div>
         </el-col>
       </el-row>
     </div>
@@ -50,7 +41,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tableLoading">
-        <asset-list :all-list="myList" @taskList="taskList" />
+        <asset-list :all-list="myList" :is-my="isMy" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -660,6 +651,7 @@ export default {
         }
       ],
       bondId: '',
+      isMy: true,
       valuationAllTask: [],
       valuationMyTask: [],
       taskLists: [],
@@ -736,7 +728,7 @@ export default {
       switch (param) {
         case '01': return '正常'
         case '02': return '违约'
-        case '03': return '特殊'
+        case '03': return '本金'
         case '04': return '人工上传'
       }
     },

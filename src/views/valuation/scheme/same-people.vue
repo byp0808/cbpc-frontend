@@ -80,7 +80,7 @@
     </el-row>
     <el-row style="margin-top:20px;margin-bottom:20px">
       <el-col :span="3" :offset="21">
-        <el-button type="primary" @click="addBatch">批量添加至我的任务</el-button>
+        <el-button v-loading="addLoading" type="primary" @click="addBatch">批量添加至我的任务</el-button>
       </el-col>
     </el-row>
     <el-table
@@ -97,22 +97,22 @@
       <el-table-column align="center" label="全选" type="selection" />
       <el-table-column label="方案操作" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
       <el-table-column label="资产编码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <span>{{ scope.row.valAssetCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.valAssetShortName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="流通场所" align="center">
+      <el-table-column label="流通场所" align="center" width="200px">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketId }}</span>
+          <span>{{ scope.row.exchng }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值方法" align="center">
@@ -181,6 +181,9 @@
 </template>
 
 <script>
+import { getSamePeople } from '@/api/valuation/influence.js'
+// import { addOneTask } from '@/api/valuation/task.js'
+
 export default {
   name: 'SamePeople',
   components: {
@@ -190,7 +193,10 @@ export default {
       haveSelectList: [],
       allList: [],
       selectList: [],
+      selectId: [],
+      id: '',
       tabLoading: false,
+      addLoading: false,
       params: {
         page: {
           pageNumber: 1,
@@ -201,21 +207,44 @@ export default {
     }
   },
   created() {
+    if (this.$route.params) {
+      this.haveSelectList.push(this.$route.params)
+      this.id = this.$route.params.id
+    }
+    this.getAllList()
   },
   methods: {
-    selectionChange(e) {
-
-    },
     handleSelectionChange(e) {
       this.selectList = e
     },
-    getAllList() {
+    adjust() {
 
+    },
+    getAllList() {
+      this.params.search_fiId_EQ = this.id
+      // this.params.search_fiId_EQ = '128d3beed63a408090fb28745c9a1110'
+      this.tabLoading = true
+      getSamePeople(this.params).then(res => {
+        this.tabLoading = false
+        const { dataList, page } = res
+        this.allList = dataList
+        this.params.page = page
+      }).catch(() => {
+        this.tabLoading = false
+      })
     },
     addBatch() {
       if (this.selectList.length === 0) {
         return this.$message.warning('至少选择一条估值资产')
       }
+      // this.selectList.map(v => {
+      //   this.selectId.push(v.csin)
+      // })
+      // this.selectId = Array.from(new Set(this.selctId))
+      // console.log('ss', this.selectId)
+      // addOneTask(this.selectId).then(res => {
+      //   this.$message.success('批量添加成功')
+      // })
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize
