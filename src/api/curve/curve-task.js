@@ -100,3 +100,12 @@ export function queryOrder(data) {
     data: data
   })
 }
+
+// 查询曲线方案
+export function querycurveSolution(data) {
+  return request({
+    url: `${basic_api_curve}` + '/curve/queryCurveBuildWayInfo',
+    method: 'post',
+    data: data
+  })
+}
