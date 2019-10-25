@@ -326,7 +326,7 @@ export function getTaskFinsih(data) {
 // 删除方案信息
 export function delInitList(id) {
   return request({
-    url: `${basic_api_curve}/curveSetInit/delete` + id,
+    url: `${basic_api_curve}/curveSetInit/delete/` + id,
     method: 'delete'
   })
 }
@@ -368,7 +368,7 @@ export function getQueryCurvOptions(news) {
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var item = datalist[i]
-        options.push({ label: item.productName, value: item.curveId })
+        options.push({ label: item.productName, value: item.homologyCurveId, curveId: item.homologyCurveId, productName: item.productName, productShortName: item.productShortName })
       }
     }
   })

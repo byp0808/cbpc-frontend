@@ -488,6 +488,7 @@ export default {
       // 获取所有form,验证表单信息
       console.info('addDetalInit')
       // refSceneList
+      var shortNameFun
       var refSceneList = this.$refs.refSceneList
       var refActionList = this.$refs.refActionList
       if (!refSceneList || refSceneList.length <= 0) {
@@ -497,6 +498,8 @@ export default {
           showClose: true
         })
         return false
+      } else {
+        shortNameFun = refSceneList[0].getProductShortName
       }
       var isAllOk = true
       for (const index in refSceneList) {
@@ -555,8 +558,8 @@ export default {
       }
 
       // 计算公式
-      var sceneFormula = this.toFormula(this.tmp_sceneList) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
-      var actionFormula = this.toFormula(this.tmp_actionList) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
+      var sceneFormula = this.toFormula(shortNameFun, this.tmp_sceneList) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
+      var actionFormula = this.toFormula(shortNameFun, this.tmp_actionList) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
       console.info('sceneFormula:' + sceneFormula)
       console.info('actionFormula:' + actionFormula)
 
@@ -610,7 +613,7 @@ export default {
       })
     },
     // 根据列表计算公式
-    toFormula(detailList) {
+    toFormula(shortNameFun, detailList) {
       // 权重 * [产品 关键期限 指标]
       var formula = ''
       if (detailList && detailList.length > 0) {
@@ -618,7 +621,7 @@ export default {
           if (formula) {
             formula += ' + '
           }
-          formula += item.percent / 100 + ' # [' + item.depCurveId + '|' + item.standSlip + '' + item.depInd + ']'
+          formula += item.percent / 100 + ' # [' + shortNameFun(item.depCurveId) + '' + item.standSlip + '' + item.depInd + ']'
         }
       }
       return formula

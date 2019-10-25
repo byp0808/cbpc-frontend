@@ -44,7 +44,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="dialogFormVisible" title="信用债初始化方案" :visible.sync="dialogFormVisible" width="90%">
+    <el-dialog v-if="dialogFormVisible" title="信用债初始化方案" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="90%">
       <CurveSetInitForm
         ref="refCurveSetInitForm"
         :init-id="initId"
@@ -56,7 +56,7 @@
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button v-if="opType === 'EDIT'" type="primary" @click="storageInit()">
+        <el-button v-if="opType !== 'VIEW'" type="primary" @click="storageInit()">
           确定
         </el-button>
       </div>
@@ -111,6 +111,7 @@ export default {
     // 新建规则
     curveHomologyCreate() {
       this.creatIndexId = 'creat'
+      this.opType = 'ADD'
       this.dialogFormVisible = true
     },
     // 列表修改操作
@@ -122,13 +123,22 @@ export default {
     },
     // 列表删除
     curveHomologyDtoDel(index, item) {
-      delInitList(item[index]).then(response => {
-        item.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        console.info('====delInitList====')
+        console.info('delInitList:' + item.id)
+        delInitList(item.id).then(response => {
+          this.initCaseList.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     storageInit() {
