@@ -34,8 +34,8 @@
         v-loading="offerMarketLoading"
         :data="offerMarketList"
         tooltip-effect="dark"
-        style="width: 100%"
-        height="300px"
+        width="100%"
+        height="400px"
         @header-click="offerHeaderScreening"
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
@@ -1194,7 +1194,7 @@ export default {
               // 范围
               obj.operator = 'BETWEEN'
               if (typeof data.startNum !== 'undefined') {
-                obj.startvalue = data.startNum + ''
+                obj.beginvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
                 obj.endvalue = data.endNum + ''
