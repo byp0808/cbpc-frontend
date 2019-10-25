@@ -496,6 +496,13 @@ export default {
         }
       } else {
         this.tmp_curveId = newValue
+        const curveInfo = this.getCurveInfo(this.tempMain.curveId)
+        this.tmp_quXJList.push({
+          curveId: curveInfo.curveId,
+          productGrade: curveInfo.productGrade,
+          productName: curveInfo.productName,
+          referFlag: 'Y'
+        })
         this.$refs.curveIdSelect.blur()
       }
     },
