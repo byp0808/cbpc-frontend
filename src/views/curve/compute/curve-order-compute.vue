@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-button type="primary" @click="toCompute()" :disabled="computeDisabled">开始计算</el-button>
+      <el-button type="primary" :disabled="computeDisabled" @click="toCompute()">开始计算</el-button>
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
       <i class="el-icon-caret-right" />
@@ -332,6 +332,14 @@ export default {
     checkCoupon() {
       this.curveOrderVisible = false
       this.checkCouponVisible = true
+      // var selection = this.$refs.refCurveOrderList.selection
+      // if (selection.length <= 0) {
+      //   this.$message({
+      //     type: 'error',
+      //     message: '请选择需要发布的曲线'
+      //   })
+      //   return false
+      // }
       checkCurveSample(this.$refs.refCurveOrderList.selection).then(response => {
         setTimeout(1.5 * 1000)
       })
@@ -344,6 +352,8 @@ export default {
     // 发布样本券
     deployCoupon() {
       var selection = this.$refs.refCurveOrderList.selection
+      console.info()
+      console.info(this)
       var data = {
         action: '3',
         computes: selection
