@@ -9,7 +9,7 @@
       @open="computePrice"
       @header-click="headerScreening"
     />
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" @pagination="getList" />
+    <pagination v-show="total>100" :total="total" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" :page-sizes="listQuery.pageSizes" @pagination="getList" />
     <el-dialog v-if="screeningFormVisible" width="45%" title="筛选" :visible.sync="screeningFormVisible">
       <keep-alive>
         <!--日期类型-->
@@ -80,24 +80,13 @@ export default {
   },
   data() {
     return {
-      list: [{
-        '估值日': '2019-9-18', '曲线名称': '曲线AAA', '报价时间': '2019-9-17', '债券名称': '国开债券', '估值日买入收益率': 2.16
-      }, {
-        '估值日': '2019-9-18', '曲线名称': '曲线AAA', '报价时间': '2019-9-17', '债券名称': '国开债券', '估值日买入收益率': 2.12
-      }, {
-        '估值日': '2019-9-18', '曲线名称': '曲线AAA', '报价时间': '2019-9-17', '债券名称': '国开债券', '估值日买入收益率': 2.13
-      }, {
-        '估值日': '2019-9-18', '曲线名称': '曲线AAA', '报价时间': '2019-9-17', '债券名称': '国开债券', '估值日买入收益率': 2.09
-      }, {
-        '估值日': '2019-9-18', '曲线名称': '曲线AAA', '报价时间': '2019-9-17', '债券名称': '国开债券', '估值日买入收益率': 2.01
-      }],
-      interval: [{ down: '1.11', up: '2.07', term: '0.08' }, { down: '2.11', up: '3.07', term: '0.25' }],
-      selectable: { '收益率': ['估值日买入收益率'], '偏差值': ['曲线名称'] },
-      intervalBy: '估值日买入收益率',
-      selectBy: '曲线名称',
+      selectable: { '收益率': ['估值日买入收益率', '市场收益率(%)'], '偏差值': ['推荐收益率偏差'] },
+      intervalBy: 'MTRTY',
+      selectBy: 'MTRTY',
       listQuery: {
         pageNumber: 1,
-        pageSize: 100
+        pageSize: 100,
+        pageSizes: [100, 200]
       },
       screeningFormVisible: false,
       formType: 0,
@@ -120,22 +109,22 @@ export default {
       return Object.keys(this.selectable).reduce((arr, k) => arr.concat(this.selectable[k]), [])
     },
     makeInterval() {
-      return this.data.map(v => v[this.intervalBy]).map(value => this.interval.findIndex(i => value >= i.down && value < i.up))
+      return this.data.map(v => v[this.intervalBy]).map(value => this.limit.findIndex(i => value >= i.down && value < i.up))
     },
     makeData() {
       return this.data.map((v, i) => {
         const value = v[this.intervalBy]
-        const e = this.interval.find(i => value >= i.down && value < i.up)
+        const e = this.limit.find(i => value >= i.down && value < i.up)
         return this.$lodash.assign(v, e, { index: i })
       })
     }
   },
   methods: {
-    computePrice({ arr, term, type, result }) {
+    computePrice({ arr, standSlip, type, result }) {
       const flag = arr.map(value => value.row[this.selectBy]).filter((v, i, a) => a.indexOf(v, 0) === i).length > 0
       const values = arr.map(v => v.row[v.label])
       Object.assign(result, {
-        term: flag ? term : 0 + arr[0].row[this.intervalBy],
+        standSlip: flag ? standSlip : 0 + arr[0].row[this.intervalBy],
         type: type,
         num: arr.length,
         avg: getMean(values),
