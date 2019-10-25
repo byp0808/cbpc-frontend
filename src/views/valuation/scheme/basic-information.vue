@@ -782,7 +782,7 @@ export default {
       }
       searchBond(params).then(res => {
         this.basicLoading = false
-        if (res.dataList[0]) {
+        if (res.dataList[0] && this.id) {
           this.basicInfo = res.dataList[0]
         }
       }).catch(err => {

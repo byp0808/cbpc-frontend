@@ -2,7 +2,7 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :xl="7" :lg="10">
+        <el-col :xl="8" :lg="10">
           <!-- <el-button type="primary">方案调整</el-button> -->
           <template>
             <el-dropdown split-button type="primary" @command="batchesAdjust">
@@ -20,7 +20,7 @@
           <el-button type="primary">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
-        <el-col :xl="17" :lg="14">
+        <el-col :xl="16" :lg="14">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
@@ -92,6 +92,7 @@
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
               <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
+              模板文件下载
             </div>
           </el-form-item>
           <el-form-item label="选择调整原因" prop="cause">
@@ -131,8 +132,8 @@
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
-            <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+            <div class="downLoad" @click="downLoadPeople">
+              <a ref="peopleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
               模板文件下载</div>
           </el-form-item>
         </el-form>
@@ -1006,8 +1007,8 @@ export default {
     downLoadMode() {
       this.$refs.moduleDownload.click()
     },
-    batchChange() {
-
+    downLoadPeople() {
+      this.$refs.peopleDownload.click()
     },
     saveValuation() {
       this.$refs['bondDom'].validate(val => {
