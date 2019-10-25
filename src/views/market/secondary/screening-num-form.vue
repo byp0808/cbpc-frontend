@@ -76,7 +76,7 @@ export default {
           } else {
             callback()
           }
-        }, trigger: 'blur' }],
+        }, trigger: 'change' }],
         endNum: [{ validator: (rule, value, callback) => {
           // typeof this.screeningForm.startNum === 'undefined' || this.screeningForm.startNum === '' || value >= this.screeningForm.startNum
           if (value < this.screeningForm.startNum) {
@@ -84,7 +84,7 @@ export default {
           } else {
             callback()
           }
-        }, trigger: 'blur' }]
+        }, trigger: 'change' }]
       }
     }
   },
