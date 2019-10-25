@@ -87,7 +87,7 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="productName" label="曲线名称" width="100" />
-      <el-table-column prop="curveStartTime" label="发布日期" width="140" />
+      <el-table-column prop="taskDay" label="发布日期" width="140" />
       <el-table-column prop="orderName" label="批次" width="100" />
       <el-table-column prop="curveBuildStatus" label="编制状态" width="100">
         <template slot-scope="{row}">
