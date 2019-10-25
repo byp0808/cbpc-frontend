@@ -89,7 +89,6 @@ export default {
         searchParam: searchParam
       }
       queryMarketData(_data).then(response => {
-        console.log(response)
         this.quote.list = response.dataList
         this.quote.total = response.page.totalRecord
       })

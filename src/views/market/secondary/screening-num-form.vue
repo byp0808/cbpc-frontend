@@ -1,7 +1,7 @@
 <template>
   <!--  数值型-->
   <div class="" style="width: 600px">
-    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
+    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px" :rules="numFormRules">
       <el-row :gutter="76" align="left">
         <div class="grid-content bg-purple">
           <el-form-item label="" prop="screeningNum">
@@ -67,12 +67,23 @@ export default {
       radio: '1',
       disable_1: false,
       disable_2: true,
-      isScreened: false
-      // numFormRules: {
-      //   screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
-      //   startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
-      //   endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }]
-      // }
+      isScreened: false,
+      numFormRules: {
+        startNum: [{ validator: (rule, value, callback) => {
+          if (typeof this.screeningForm.endNum === 'undefined' || this.screeningForm.endNum === '' || value <= this.screeningForm.endNum) {
+            callback()
+          } else {
+            callback(new Error('开始数值需小于结束数值'))
+          }
+        }, trigger: 'change' }],
+        endNum: [{ validator: (rule, value, callback) => {
+          if (typeof this.screeningForm.startNum === 'undefined' || this.screeningForm.startNum === '' || value >= this.screeningForm.startNum) {
+            callback()
+          } else {
+            callback(new Error('结束数值需大于开始数值'))
+          }
+        }, trigger: 'change' }]
+      }
     }
   },
   computed: {
@@ -101,7 +112,6 @@ export default {
         if (valid) {
           this.$emit('dateCallBack')
         } else {
-          // this.$message('error submit!!')
           return false
         }
       })
