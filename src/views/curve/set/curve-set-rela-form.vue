@@ -80,7 +80,7 @@
                 <el-input disabled :title="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" :value="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" />
               </el-col>
               <el-col :span="12">
-                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled" placeholder="请选择曲线">
+                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled || !(this.tmp_tempInfo.orderId)" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-col>
@@ -496,6 +496,13 @@ export default {
         }
       } else {
         this.tmp_curveId = newValue
+        const curveInfo = this.getCurveInfo(this.tempMain.curveId)
+        this.tmp_quXJList.push({
+          curveId: curveInfo.curveId,
+          productGrade: curveInfo.productGrade,
+          productName: curveInfo.productName,
+          referFlag: 'Y'
+        })
         this.$refs.curveIdSelect.blur()
       }
     },
@@ -597,7 +604,7 @@ export default {
           var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
           if (resolveProductGrade2Num(curent_grade) < resolveProductGrade2Num(last_grade)) {
-            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},低于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},低于${this.getCurveName(last_item.curveId)}曲线,请问是否确认调整顺序`
             this.$confirm(msg, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'

@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { addTaskAllocation, queryTaskRangeSelects, taskAllocation, personnelList } from '@/api/valuation/task-allocation.js'
+import { addTaskAllocation, queryTaskRangeSelects, taskAllocation, personnelList, getOederId } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetForm',
   props: ['groupId', 'disabled'],
@@ -86,8 +86,10 @@ export default {
     }
   },
   beforeMount() {
-    personnelList('00001').then(response => {
-      this.personnelList = response
+    getOederId().then(res => {
+      personnelList(res).then(response => {
+        this.personnelList = response
+      })
     })
     if (this.groupId) {
       taskAllocation(this.groupId).then(response => {

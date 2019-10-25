@@ -22,9 +22,9 @@
           <span>{{ scope.row.taskStatus | taskStatus }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原因" align="center">
+      <el-table-column v-if="isMy" label="方案操作" align="center">
         <template slot-scope="scope">
-          <span>{{ causeFilter(scope.row.cause) }}</span>
+          <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center">
@@ -37,22 +37,24 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="调整人" align="center">
+      <el-table-column label="操作人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.userId }}</span>
+          <span>{{ scope.row.lastUpdBy }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="债券代码" align="center">
+      <el-table-column label="债券编码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <!-- <span>{{ scope.row.bondId }}</span> -->
+          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondId }}</el-button>
         </template>
       </el-table-column>
       <el-table-column label="债券简称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <!-- <span>{{ scope.row.bondShort }}</span> -->
+          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="场所" align="center">
+      <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.maketId }}</span>
         </template>
@@ -60,6 +62,21 @@
       <el-table-column label="债券性质" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.filterId }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="含权说明" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="推荐方法" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="估值方法" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
         </template>
       </el-table-column>
       <el-table-column label="隐含评级" align="center">
@@ -102,12 +119,12 @@
           <span>{{ scope.row.yield }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否即期" align="center">
+      <el-table-column label="调整原因" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ causeFilter(scope.row.cause) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="发布批次" align="center">
+      <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.filterId }}</span>
         </template>
@@ -141,9 +158,12 @@ export default {
       default: function() {
         return []
       }
+    },
+    isMy: {
+      type: Boolean,
+      default: false
     }
   },
-  //   props: ['allList'],
   data() {
     return {
       ruleSetFormVisible: false,
@@ -174,6 +194,12 @@ export default {
         case '07': return '巡检'
         case '08': return '其他'
       }
+    },
+    goBasic(e) {
+      this.$router.push({ name: 'SchemeConstruct', params: e })
+    },
+    adjust(e) {
+      this.$router.push({ name: 'ValuationSchemeMethod', params: { id: e.id, maketId: e.marketId }})
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
