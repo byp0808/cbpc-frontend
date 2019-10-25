@@ -168,7 +168,7 @@
 import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
-import ValuationProdForm from '@/views/valuation/prod/prod-detail.vue'
+import ValuationProdForm from '@/views/valuation/prod/prod-form.vue'
 import { queryALlProductList, queryProdByID, dwnlProducts } from '@/api/common/prod-list.js'
 
 import { delCurveSample } from '@/api/curve/curve-sample.js'
@@ -229,7 +229,7 @@ export default {
       this.queryProductList()
     },
     handleSelectionChange(items) {
-      console.info('handleSelectionChange' + JSON.stringify(items))
+      // console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
     queryProductList() {
@@ -368,7 +368,12 @@ export default {
       this.queryProductList()
     },
     download() {
-      dwnlProducts()
+      console.log(this.multipleSelection)
+      const prdId = []
+      for (const index in this.multipleSelection) {
+        prdId.push(this.multipleSelection[index].prdId)
+      }
+      dwnlProducts({ prdId: prdId })
     }
   }
 }
