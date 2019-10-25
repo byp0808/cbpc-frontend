@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="12">
         <el-form-item label="选择曲线">
-          <el-select v-model="mainInfo.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled">
+          <el-select v-model="mainInfo.curveId" placeholder="请选择曲线" style="width: 200px" :disabled="curveDisabled" @change="changeCurve">
             <el-option v-for="item in selectCurve" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -184,6 +184,18 @@ export default {
         curveHomologyList: this.curveHomologyList
       }
       return data
+    },
+    // 主体曲线
+    changeCurve() {
+      if (this.curveHomologyList && this.curveHomologyList.length>0) {
+        this.$confirm('更改主体曲线将清空选择的同调曲线列表?', '提示', {
+          type: 'warning'
+        }).then(() => {
+          this.curveHomologyList = []
+          this.homologyCurveId = ''
+        }).catch(() => {
+        })
+      }
     }
   }
 }

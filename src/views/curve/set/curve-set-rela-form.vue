@@ -80,7 +80,7 @@
                 <el-input disabled :title="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" :value="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" />
               </el-col>
               <el-col :span="12">
-                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled" placeholder="请选择曲线">
+                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled || !(this.tmp_tempInfo.orderId)" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-col>
