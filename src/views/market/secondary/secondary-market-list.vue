@@ -1194,7 +1194,7 @@ export default {
               // 范围
               obj.operator = 'BETWEEN'
               if (typeof data.startNum !== 'undefined') {
-                obj.startvalue = data.startNum + ''
+                obj.beginvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
                 obj.endvalue = data.endNum + ''
