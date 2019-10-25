@@ -96,19 +96,19 @@ export default {
       disabled: false,
       chartOptions: {
         title: {
-          text: ''
+          text: '1'
         },
         credits: {
           enabled: false
         },
         legend: {
           layout: 'vertical',
-          backgroundColor: '#ff5f96',
+          backgroundColor: '#fff',
           floating: true,
-          align: 'right',
-          verticalAlign: 'bottom',
-          x: -10,
-          y: -30
+          align: 'left',
+          verticalAlign: 'top',
+          x: 0,
+          y: -10
         },
         xAxis: {
           title: {
@@ -123,11 +123,14 @@ export default {
           gridLineWidth: 1
         },
         series: [{
-          name: '本次收益率',
+          name: '现在',
           data: [1, 2, 3]
         }, {
-          name: '上一批次收益率',
+          name: '一个月前',
           data: [3, 2, 1]
+        }, {
+          name: '一年前',
+          data: [2, 3, 1]
         }]
       },
       orderList: [], // 批次列表

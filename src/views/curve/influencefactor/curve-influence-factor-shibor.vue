@@ -73,7 +73,7 @@
         />
       </el-card>
       <el-card class="flex-children curve-image">
-        <Chart :options="chartOptions" />
+        <Chart :options="chartOptions" style="width:100%" />
       </el-card>
     </div>
   </div>
@@ -133,12 +133,12 @@ export default {
         },
         legend: {
           layout: 'vertical',
-          backgroundColor: '#ff5f96',
+          backgroundColor: '#fff',
           floating: true,
           align: 'right',
-          verticalAlign: 'bottom',
-          x: -10,
-          y: -30
+          verticalAlign: 'top',
+          x: 0,
+          y: -10
         },
         xAxis: {
           title: {

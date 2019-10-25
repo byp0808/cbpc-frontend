@@ -19,9 +19,9 @@
       </el-tab-pane>
       <el-tab-pane label="美国国债收益率曲线">
         <el-card class="box-card ">
-          <!-- <div slot="header" class="clearfix card-head">
+          <div slot="header" class="clearfix card-head">
             <h3>美国国债收益率曲线</h3>
-          </div> -->
+          </div>
           <CurveInfluenceFactorUsa />
         </el-card>
       </el-tab-pane>

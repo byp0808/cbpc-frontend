@@ -368,7 +368,7 @@ export function getQueryCurvOptions(news) {
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var item = datalist[i]
-        options.push({ label: item.productName, value: item.curveId })
+        options.push({ label: item.productName, value: item.homologyCurveId, curveId: item.homologyCurveId, productName: item.productName, productShortName: item.productShortName })
       }
     }
   })
