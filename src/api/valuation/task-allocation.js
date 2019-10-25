@@ -62,6 +62,15 @@ export function personnelList(orgId) {
     }
   )
 }
+// 获取当前登录人部门编号
+export function getOederId() {
+  return request(
+    {
+      url: `${basic_api_valuation}/valuation-task/get-order-id`,
+      method: 'post'
+    }
+  )
+}
 
 // 获取人员任务分配列表
 export function taskAllocationList(data) {
