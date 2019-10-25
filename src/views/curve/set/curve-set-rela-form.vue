@@ -645,7 +645,7 @@ export default {
           var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
           if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
-            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,请问是否确认调整顺序`
             this.$confirm(msg2, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
