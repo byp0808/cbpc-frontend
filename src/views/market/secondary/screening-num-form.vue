@@ -26,13 +26,13 @@
               </el-col>
               <el-col :span="4">
                 <el-form-item prop="startNum">
-                  <el-input v-model="screeningForm.startNum" type="number" style="width: 80px" :disabled="disable_2" />
+                  <el-input v-model.number="screeningForm.startNum" type="number" style="width: 80px" :disabled="disable_2" />
                 </el-form-item>
               </el-col>
               <el-col :span="1" align="center">~</el-col>
               <el-col :span="4">
                 <el-form-item prop="endNum">
-                  <el-input v-model="screeningForm.endNum" type="number" style="width: 80px" :disabled="disable_2" />
+                  <el-input v-model.number="screeningForm.endNum" type="number" style="width: 80px" :disabled="disable_2" />
                 </el-form-item>
               </el-col>
               <el-col :span="2">BP</el-col>
@@ -76,7 +76,7 @@ export default {
           } else {
             callback()
           }
-        }, trigger: 'change' }],
+        }, trigger: 'blur' }],
         endNum: [{ validator: (rule, value, callback) => {
           // typeof this.screeningForm.startNum === 'undefined' || this.screeningForm.startNum === '' || value >= this.screeningForm.startNum
           if (value < this.screeningForm.startNum) {
@@ -84,7 +84,7 @@ export default {
           } else {
             callback()
           }
-        }, trigger: 'change' }]
+        }, trigger: 'blur' }]
       }
     }
   },
