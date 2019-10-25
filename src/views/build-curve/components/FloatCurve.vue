@@ -91,7 +91,7 @@ export default {
 .rightPanel {
   width: 100%;
   max-width: 950px;
-  height: 60vh;
+  /*height: 60vh;*/
   position: fixed;
   top: 0;
   right: 0;

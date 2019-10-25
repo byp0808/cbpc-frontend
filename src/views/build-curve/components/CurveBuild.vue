@@ -148,8 +148,6 @@ export default {
           title: {
             text: ''
           },
-          step: 0.01,
-          allowDecimals: true,
           gridLineWidth: 1
         },
         yAxis: {
@@ -233,7 +231,13 @@ export default {
   },
   watch: {
     list: function(newlist, oldlist) {
+      console.log('======== list ========')
+      console.log(oldlist)
+      console.log(newlist)
       console.log('========')
+    },
+    yields: function(newlist, oldlist) {
+      console.log('======== yields ========')
       console.log(oldlist)
       console.log(newlist)
       console.log('========')
