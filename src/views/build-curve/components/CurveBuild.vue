@@ -231,22 +231,15 @@ export default {
   },
   watch: {
     list: function(newlist, oldlist) {
-      console.log('======== list ========')
-      console.log(oldlist)
-      console.log(newlist)
-      console.log('========')
     },
     yields: function(newlist, oldlist) {
-      console.log('======== yields ========')
-      console.log(oldlist)
-      console.log(newlist)
-      console.log('========')
     }
   },
   created() {
   },
   mounted() {
     window.addEventListener('storage', () => {
+      console.log(JSON.parse(localStorage.getItem('watchStorage')))
       this.list[0].yield = JSON.parse(localStorage.getItem('watchStorage')).value
     })
     this.getCurve()
