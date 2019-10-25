@@ -2,11 +2,17 @@
   <div class="flex-container">
     <div class="flex-item">
       <el-card class="flex-children curve-build">
-        <div style="margin-bottom: 20px">
-          <el-select v-model="rvsQcRptList.curveId" @change="handleOptionChange">
-            <el-option v-for="item in curveList.dataList" :key="item.curveId" :label="item.productName" :value="item.curveId" />
-          </el-select>
-        </div>
+        <el-form :inline="true">
+          <el-form-item>
+            <el-select v-model="rvsQcRptList.curveId" @change="handleOptionChange">
+              <el-option v-for="item in curveList.dataList" :key="item.curveId" :label="item.productName" :value="item.curveId" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="indexQuery">查询</el-button>
+          </el-form-item>
+          <i style="float:right;font-size:22px;line-height:36px">2019-10-25</i>
+        </el-form>
         <el-table
           ref="multipleTable"
           :data="rvsQcRptList.dataList"
@@ -97,6 +103,18 @@ export default {
     }
   },
   methods: {
+    // 主页面查询方法
+    // 根据 activeName 调用各个页面查询方法
+    indexQuery() {
+      console.info('indexQuery.activeName:' + this.activeName)
+      if (!this.queryForm.orderId) {
+        this.$message({
+          type: 'error',
+          message: '请选择'
+        })
+        return false
+      }
+    },
     handleSelectionChange(items) {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
