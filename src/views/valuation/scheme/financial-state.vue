@@ -568,11 +568,7 @@ export default {
           totalRecord: 0
         }
       },
-      interestList: [
-        { remark: 33.123 },
-        { remark: 34.123 },
-        { remark: 343.666444 }
-      ],
+      interestList: [],
       debtList: [],
       crushList: [],
       keyRateList: [],
