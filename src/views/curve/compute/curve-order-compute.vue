@@ -340,7 +340,7 @@ export default {
       //   })
       //   return false
       // }
-      checkCurveSample(this.$refs.refCurveOrderList.selection).then(response => {
+      checkCurveSample({ computes: this.$refs.refCurveOrderList.selection }).then(response => {
         setTimeout(1.5 * 1000)
       })
     },
