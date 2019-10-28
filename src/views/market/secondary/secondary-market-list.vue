@@ -846,7 +846,7 @@ export default {
           this.$refs.ScreeningCheckboxForm.screening()
           break
         case 5:
-          this.$refs.ScreeningCheckboxForm.screening()
+          this.screeningCallBack()
           break
       }
     },
