@@ -197,6 +197,9 @@ export default {
       this.AdjustDialog = true
       this.adjustParams.taskId = e.id
     },
+    getDataList() {
+      return this.taskList
+    },
     handleSelectionChange(val) {
       if (val.length > 0) {
         this.taskList = val
