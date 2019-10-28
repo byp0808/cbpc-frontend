@@ -11,7 +11,7 @@
 import pdfJS from 'pdfjs-dist'
 import { queryReport, previewReport } from '@/api/valuation/report.js'
 import { basic_api_valuation } from '@/api/base-api'
-import { downloadFile } from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request.js'
 export default {
   name: 'ReportForm',
   components: {

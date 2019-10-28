@@ -60,7 +60,7 @@
         highlight-current-row
         :data="newsList"
         tooltip-effect="dark"
-        style="width: 401px;left: 200px"
+        style="width: 501px;left: 200px"
       >
         <el-table-column
           prop="nvalue"
@@ -76,6 +76,23 @@
           width="200"
           align="center"
         />
+        <el-table-column
+          prop="address"
+          label="操作"
+          width="100"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+
+              size="small"
+              @click.native.prevent="toDelete(scope.$index, newsList)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -229,6 +246,9 @@ export default {
           callback()
         }
       })
+    },
+    toDelete(index, rows) { // 删除改行
+      rows.splice(index, 1)
     }
   }
 }

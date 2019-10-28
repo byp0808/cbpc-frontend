@@ -65,6 +65,7 @@
         :data="marketList"
         tooltip-effect="dark"
         style="width: 100%"
+        :row-class-name="tableRowClassName"
         @header-click="headerScreening"
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
@@ -138,8 +139,8 @@
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
           <el-select v-model="queryForm.curveType" :clearable="true" placeholder="请选择曲线编制类型">
-            <el-option label="利率" value="1" />
-            <el-option label="信用" value="2" />
+            <el-option label="利率" value="利率" />
+            <el-option label="信用" value="信用" />
           </el-select>
         </el-form-item>
         <el-form-item label="曲线名称">
@@ -178,7 +179,7 @@
         <el-form-item label="债券代码" prop="bondCode">
           <el-input v-model="queryForm.bondCode" placeholder="请输入债券代码" style="width: 200px" />
         </el-form-item>
-        <el-form-item label="代偿期">
+        <el-form-item label="待偿期">
           <!--<el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />-->
           <el-row :gutter="22" s>
             <el-form-item prop="startPeriod" style="display: inline-block">
@@ -196,6 +197,7 @@
           <el-date-picker
             v-model="queryForm.updateTime"
             type="datetimerange"
+            value-format="yyyy-MM-dd HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -417,7 +419,8 @@ export default {
       const data2 = {
         page: this.offerPage,
         dataMarket: '02',
-        showArea: '01'
+        showArea: '01',
+        queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
         // console.info(response)
@@ -448,7 +451,8 @@ export default {
       const data2 = {
         page: this.page,
         dataMarket: '02',
-        showArea: '02'
+        showArea: '02',
+        queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
         console.info(response)
@@ -556,13 +560,10 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      if (typeof row.modifiedCols !== 'undefined') {
-        // const modifiedCols = row.modifiedCols
-        // const mods = modifiedCols.filter(val => val.colName === header.key)
-        // return mods.length > 0
-        const modifiedCols = row.modifiedCols
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
         const mods = modifiedCols.split(',')
-        const mod = mods.filter(val => val === header.key)
+        const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
       } else {
         return false
@@ -716,13 +717,10 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      if (typeof row.modifiedCols !== 'undefined') {
-        // const modifiedCols = row.modifiedCols
-        // const mods = modifiedCols.filter(val => val.colName === header.key)
-        // return mods.length > 0
-        const modifiedCols = row.modifiedCols
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
         const mods = modifiedCols.split(',')
-        const mod = mods.filter(val => val === header.key)
+        const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
       } else {
         return false
@@ -898,6 +896,17 @@ export default {
         const headers = this.offerTableHeader.filter(tab => tab.colName === this.currentHeader.key)
         // console.info('确定修改')
         // alert(content)
+        const str = headers[0].colName
+        this.currentRow[str]
+        // console.info('修改'+ this.currentRow[str])
+        if (content === this.currentRow[str] + '') {
+          this.updateForm.updateContent = ''
+          this.currentRow = {}
+          this.currentHeader = {}
+          this.updateFormVisible = false
+          return
+        }
+        this.currentRow[str] = content
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
@@ -921,6 +930,17 @@ export default {
         const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
         // console.info('确定修改')
         // alert(content)
+        const str = headers[0].colName
+        this.currentRow[str]
+        // console.info('修改'+ this.currentRow[str])
+        if (content === this.currentRow[str] + '') {
+          this.updateForm.updateContent = ''
+          this.currentRow = {}
+          this.currentHeader = {}
+          this.updateFormVisible = false
+          return
+        }
+        this.currentRow[str] = content
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
@@ -1294,6 +1314,12 @@ export default {
       getCurveList().then(response => {
         this.curveList = response
       })
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === 1) {
+        return 'warning-row'
+      }
+      return ''
     }
   }
 
@@ -1303,6 +1329,9 @@ export default {
 <style scoped>
   .light {
     color: #df1009;
+  }
+  .el-table .warning-row {
+    background: oldlace;
   }
 
 </style>
