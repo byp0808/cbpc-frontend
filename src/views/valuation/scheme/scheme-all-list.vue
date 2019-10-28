@@ -2,13 +2,13 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :xl="7" :lg="10">
+        <el-col :xl="8" :lg="10">
           <el-button type="primary" @click="allotTask">任务分配</el-button>
           <el-button v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
-        <el-col :xl="17" :lg="14">
+        <el-col :xl="16" :lg="14">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" clearable style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
