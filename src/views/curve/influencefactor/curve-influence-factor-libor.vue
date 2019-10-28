@@ -13,44 +13,65 @@
           </el-form-item>
           <i style="float:right;font-size:22px;line-height:36px">2019-10-25</i>
         </el-form>
-        <el-table
-          ref="multipleTable"
-          :data="liborDataList.dataList"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column label="利率期限">
-            <template slot-scope="scope">
-              {{ scope.row.data.timeLimit }}
-            </template>
-          </el-table-column>
-          <el-table-column label="利率 %">
-            <template slot-scope="scope">
-              {{ scope.row.data.rate }}
-            </template>
-          </el-table-column>
-          <el-table-column label="利率期限">
-            <template slot-scope="scope">
-              {{ scope.row.yieldChg }}
-            </template>
-          </el-table-column>
-          <el-table-column label="利率 %">
-            <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
-            </template>
-          </el-table-column>
-          <el-table-column label="利率期限">
-            <template slot-scope="scope">
-              {{ scope.row.yieldChg }}
-            </template>
-          </el-table-column>
-          <el-table-column label="利率 %">
-            <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-row>
+          <el-col :span="8">
+            <el-table
+              ref="multipleTable1"
+              :data="liborDataList.dataList[0]"
+              tooltip-effect="dark"
+              style="width: 100%"
+            >
+              <el-table-column label="利率期限">
+                <template slot-scope="scope">
+                  {{ scope.row.timeLimit }}
+                </template>
+              </el-table-column>
+              <el-table-column label="利率 %">
+                <template slot-scope="scope">
+                  {{ scope.row.rate }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="8">
+            <el-table
+              ref="multipleTable1"
+              :data="liborDataList.dataList[1]"
+              tooltip-effect="dark"
+              style="width: 100%"
+            >
+              <el-table-column label="利率期限">
+                <template slot-scope="scope">
+                  {{ scope.row.timeLimit }}
+                </template>
+              </el-table-column>
+              <el-table-column label="利率 %">
+                <template slot-scope="scope">
+                  {{ scope.row.rate }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+          <el-col :span="8">
+            <el-table
+              ref="multipleTable1"
+              :data="liborDataList.dataList[2]"
+              tooltip-effect="dark"
+              style="width: 100%"
+            >
+              <el-table-column label="利率期限">
+                <template slot-scope="scope">
+                  {{ scope.row.timeLimit }}
+                </template>
+              </el-table-column>
+              <el-table-column label="利率 %">
+                <template slot-scope="scope">
+                  {{ scope.row.rate }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
       </el-card>
     </div>
   </div>
@@ -102,18 +123,32 @@ export default {
       }
       this.getQuerylibor()
     },
-    handleSelectionChange(items) {
-      // console.info('handleSelectionChange' + JSON.stringify(items))
-      this.multipleSelection = items
-    },
     handleOptionChange(pageSize) {
 
     },
     // 获取libor数据
     getQuerylibor() {
       const options = []
+      const options1 = []
+      const options2 = []
+      const options3 = []
       querylidor({}).then(response => {
-        response.map(data => options.push({ data }))
+        var datalist = response
+        if (datalist && datalist.length > 0) {
+          for (var i = 0; i < datalist.length; i++) {
+            var data = datalist[i]
+            if (i % 3 === 0) {
+              options1.push(data)
+            }
+            if (i % 3 === 1) {
+              options2.push(data)
+            }
+            if (i % 3 === 2) {
+              options3.push(data)
+            }
+          }
+          options.push(options1, options2, options3)
+        }
       })
       return options
     }
