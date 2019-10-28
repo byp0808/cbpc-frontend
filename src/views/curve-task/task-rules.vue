@@ -219,7 +219,6 @@ export default {
     },
     handlePersonSelect2(item) {
       this.person.userId = item.value
-      this.person.name = item.label
     },
     openDialog(item, val) {
       this.isMultiple = val || false
@@ -235,10 +234,11 @@ export default {
       this.dialogFormVisible = true
     },
     distribute() {
+      this.flag = false
       const data = []
       this.results.map(v => {
-        if (this.person.username !== v.label || !this.person.userId) {
-          this.$message.warning('ssssss')
+        if (this.person.username !== v.label) {
+          this.$message.warning('没有查到对应的责任人信息')
           this.flag = true
           return
         }
