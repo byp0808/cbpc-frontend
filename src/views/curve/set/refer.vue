@@ -28,14 +28,14 @@
     </el-row>
 
     <el-form-item label="选择参考曲线">
-      <el-select ref="referCurve" v-model="referCurveId" :disabled="disabled" placeholder="请选择参考曲线">
+      <el-select ref="referCurve" v-model="referCurveId" :disabled="disabled || !(this.mainInfo.curveId)" placeholder="请选择参考曲线">
         <el-option v-for="item in selectCurveRefer" :key="item.value" :label="item.label" :value="item.value" :disabled="disabled" />
       </el-select>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        :disabled="disabled"
+        :disabled="disabled || !(this.mainInfo.curveId)"
         @click="curveReferAdd"
       >
         添加
