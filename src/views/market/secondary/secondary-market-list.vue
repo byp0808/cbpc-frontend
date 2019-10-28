@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <div style="margin-top: -10px">
-      <el-button icon="el-icon-arrow-down" style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px" @click="drawerIsOpen = true" />
+      <el-button
+        icon="el-icon-arrow-down"
+        style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
+        @click="drawerIsOpen = true"
+      />
     </div>
     <div style="margin-bottom: 20px" align="right">
       <span>
@@ -40,7 +44,14 @@
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
       >
-        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
+        <el-table-column
+          v-for="item in offerTableHeader"
+          :key="item.colName"
+          :prop="item.colName"
+          :label="item.colChiName"
+          align="center"
+          width="180px"
+        >
           <template slot-scope="scope">
             <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -70,7 +81,14 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
+        <el-table-column
+          v-for="item in tableHeader"
+          :key="item.colName"
+          :prop="item.colName"
+          :label="item.colChiName"
+          align="center"
+          width="180px"
+        >
           <template slot-scope="scope">
             <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -134,7 +152,13 @@
         <el-button type="primary" @click="updateCell">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
+    <el-dialog
+      v-if="drawerIsOpen"
+      width="100%"
+      :visible.sync="drawerIsOpen"
+      style="margin-top: 0;padding-bottom: 0"
+      top="0"
+    >
       <!--查询条件-->
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
@@ -165,11 +189,17 @@
             <el-col :span="8">
               <el-row>
                 <el-col :span="4">
-                  <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
+                  <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">全选
+                  </el-checkbox>
                 </el-col>
                 <el-col :span="16">
-                  <el-checkbox-group v-model="queryForm.checkedReferenceType" @change="handleCheckedReferenceTypeChange">
-                    <el-checkbox v-for="referenceType in referenceTypes" :key="referenceType" :label="referenceType">{{ referenceType }}</el-checkbox>
+                  <el-checkbox-group
+                    v-model="queryForm.checkedReferenceType"
+                    @change="handleCheckedReferenceTypeChange"
+                  >
+                    <el-checkbox v-for="referenceType in referenceTypes" :key="referenceType" :label="referenceType">{{
+                      referenceType }}
+                    </el-checkbox>
                   </el-checkbox-group>
                 </el-col>
               </el-row>
@@ -209,7 +239,11 @@
       </el-form>
       <div slot="footer" class="dialog-footer" style="width: 100%">
         <div style="margin-bottom: -20px">
-          <el-button icon="el-icon-arrow-up" style="margin-bottom: 0;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px" @click="drawerIsOpen = false" />
+          <el-button
+            icon="el-icon-arrow-up"
+            style="margin-bottom: 0;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
+            @click="drawerIsOpen = false"
+          />
         </div>
       </div>
     </el-dialog>
@@ -291,8 +325,16 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
+import {
+  queryDefaultCols,
+  queryMarketData,
+  getTempList,
+  getTempById,
+  saveTempInfo,
+  saveMarketData
+} from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
+
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -327,20 +369,24 @@ export default {
         checkedReferenceType: ['曲线样本券', '估值进线规则']
       },
       queryFormRules: {
-        startPeriod: [{ validator: (rule, value, callback) => {
-          if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
-            callback(new Error('开始数值需小于等于结束数值'))
-          } else {
-            callback()
-          }
-        }, trigger: 'change' }],
-        endPeriod: [{ validator: (rule, value, callback) => {
-          if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
-            callback(new Error('结束数值需大于等于开始数值'))
-          } else {
-            callback()
-          }
-        }, trigger: 'change' }]
+        startPeriod: [{
+          validator: (rule, value, callback) => {
+            if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
+              callback(new Error('开始数值需小于等于结束数值'))
+            } else {
+              callback()
+            }
+          }, trigger: 'change'
+        }],
+        endPeriod: [{
+          validator: (rule, value, callback) => {
+            if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
+              callback(new Error('结束数值需大于等于开始数值'))
+            } else {
+              callback()
+            }
+          }, trigger: 'change'
+        }]
       },
       checkAll: true,
       referenceTypes: ['曲线样本券', '估值进线规则'],
@@ -1216,13 +1262,12 @@ export default {
         } else {
           headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
         }
-        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm
         switch (type) {
           case 'DATE':// 日期型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'DATE'
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
@@ -1240,7 +1285,7 @@ export default {
             }
             break
           case 'NUMBER':// 数值型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
             if (typeof data.screeningNum === 'undefined') {
               // 范围
@@ -1264,7 +1309,7 @@ export default {
             }
             break
           case 'STRING':// 字符型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'STRING'
             // 单日
             obj.operator = 'LIKE'
@@ -1274,7 +1319,7 @@ export default {
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'EQSTRING'
             // 单日
             obj.operator = 'EQ'
@@ -1284,7 +1329,7 @@ export default {
             }
             break
           case 'OPTION':// 可选型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
               if (typeof data.screeningChecked === 'undefined') {
@@ -1330,6 +1375,7 @@ export default {
   .light {
     color: #df1009;
   }
+
   .el-table .warning-row {
     background: oldlace;
   }
