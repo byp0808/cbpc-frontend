@@ -118,12 +118,12 @@
           <div class="grid-content bg-purple">
             <el-form-item label="特殊条款">
               <el-checkbox-group v-model="specialChecked">
-                <el-checkbox label="是否永续" value="1" /><br>
-                <el-checkbox label="是否私募" value="2" /><br>
-                <el-checkbox label="是否有担保" value="3" /><br>
-                <el-checkbox label="是否公开" value="4" /><br>
-                <el-checkbox label="是否休1" value="5" /><br>
-                <el-checkbox label="是否休2" value="6" /><br>
+                <el-checkbox label="1">是否永续</el-checkbox><br>
+                <el-checkbox label="2">是否私募</el-checkbox><br>
+                <el-checkbox label="3">是否有担保</el-checkbox><br>
+                <el-checkbox label="4">是否公开</el-checkbox><br>
+                <el-checkbox label="5">是否休1</el-checkbox><br>
+                <el-checkbox label="6">是否休2</el-checkbox><br>
               </el-checkbox-group>
             </el-form-item>
           </div>
@@ -1342,7 +1342,7 @@ export default {
       })
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === 1) {
+      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === '1') {
         return 'warning-row'
       }
       return ''

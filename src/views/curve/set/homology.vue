@@ -155,13 +155,6 @@ export default {
         })
         return false
       }
-      if (homologyCurveId === this.mainInfo.curveId) {
-        this.$message({
-          type: 'error',
-          message: '不可选择目标曲线本身作为同调曲线！'
-        })
-        return false
-      }
       for (var i = 0; i < this.curveHomologyList.length; i++) {
         var item = this.curveHomologyList[i]
         if (item.homologyCurveId === homologyCurveId) {

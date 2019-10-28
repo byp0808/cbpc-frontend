@@ -1029,9 +1029,10 @@ export default {
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
       const fd = new FormData()
-      fd.append('attach', this.volumeAdd.attach)
-      fd.append('batchId', this.volumeAdd.batchId)
-      fd.append('cause', this.volumeAdd.cause)
+      fd.append('data.attach', this.volumeAdd.attach)
+      fd.append('data.batchId', this.volumeAdd.batchId)
+      fd.append('data.cause', this.volumeAdd.cause)
+      fd.append('data.tab', '02')
       addBatchTask(fd).then(res => {
         this.remaindDialog = false
         this.volumeAddDialog = false
@@ -1045,6 +1046,7 @@ export default {
     saveFirst(type) {
       console.log('ty', type)
       this.volumeAdd.busiCode = type
+      this.volumeAdd.tab = '02'
       addOneTask(this.volumeAdd).then(res => {
         this.remaindDialog = false
         this.volumeAddDialog = false
@@ -1067,9 +1069,10 @@ export default {
               return this.$message('别着急, 您的文件还没有上传哦')
             }
             var fd = new FormData()
-            fd.append('attach', this.volumeAdd.attach)
-            fd.append('batchId', this.volumeAdd.batchId)
-            fd.append('cause', this.volumeAdd.cause)
+            fd.append('data.attach', this.volumeAdd.attach)
+            fd.append('data.batchId', this.volumeAdd.batchId)
+            fd.append('data.cause', this.volumeAdd.cause)
+            fd.append('data.tab', '02')
             addBatchTask(fd).then(res => {
               if (res) {
                 if (res.respCode === 'YBL100001004') {
@@ -1097,6 +1100,7 @@ export default {
             delete this.volumeAdd.attach
             delete this.volumeAdd.busiCode
             this.volumeAdd.csin = this.bondId
+            this.volumeAdd.tab = '02'
             addOneTask(this.volumeAdd).then(res => {
               if (res.code) {
                 // this.volumeAddDialog = false
