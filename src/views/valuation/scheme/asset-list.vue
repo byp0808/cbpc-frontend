@@ -39,7 +39,7 @@
       </el-table-column>
       <el-table-column label="调整人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.lastUpdBy }}</span>
+          <span>{{ scope.row.userId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产编码" align="center">
