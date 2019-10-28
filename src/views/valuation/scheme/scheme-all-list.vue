@@ -29,7 +29,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
-        <asset-list :all-list="allList" :is-my="isMy" @taskList="taskLists" />
+        <asset-list ref="assetList" :all-list="allList" :is-my="isMy" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -514,6 +514,7 @@ export default {
       })
     },
     selectionCheck() { // 防止点击取消后还会被添加上
+      this.selection = []
       this.taskList.map(v => {
         this.selection.push(v.id)
       })

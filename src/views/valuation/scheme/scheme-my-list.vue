@@ -737,6 +737,7 @@ export default {
       this.loadTable()
     },
     selectionCheck() { // 防止点击取消后还会被添加上
+      this.selection = []
       this.taskLists.map(v => {
         this.selection.push(v.id)
       })
