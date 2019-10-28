@@ -73,14 +73,14 @@ export default {
         startNum: [{ validator: (rule, value, callback) => {
           console.info(typeof value)
           if (value > this.screeningForm.endNum && value !== '' && this.screeningForm.endNum !== '') {
-            callback(new Error('开始数值需小于等于结束数值'))
+            callback(new Error('需小于等于' + this.screeningForm.endNum))
           } else {
             callback()
           }
         }, trigger: 'change' }],
         endNum: [{ validator: (rule, value, callback) => {
           if (value < this.screeningForm.startNum && value !== '' && this.screeningForm.startNum !== '') {
-            callback(new Error('结束数值需大于等于开始数值'))
+            callback(new Error('需大于等于' + this.screeningForm.startNum))
           } else {
             callback()
           }
