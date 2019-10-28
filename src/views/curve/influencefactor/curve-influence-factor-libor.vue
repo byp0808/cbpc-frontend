@@ -4,8 +4,8 @@
       <el-card class="flex-children curve-build">
         <el-form :inline="true">
           <el-form-item>
-            <el-select v-model="rvsQcRptList.curveId" @change="handleOptionChange">
-              <el-option v-for="item in curveList.dataList" :key="item.curveId" :label="item.productName" :value="item.curveId" />
+            <el-select v-model="liborDataList.curveId" @change="handleOptionChange">
+              <el-option v-for="item in curveList.dataList" :key="item.id" :label="item.orderName" :value="item.id" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -15,19 +15,19 @@
         </el-form>
         <el-table
           ref="multipleTable"
-          :data="rvsQcRptList.dataList"
+          :data="liborDataList.dataList"
           tooltip-effect="dark"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
           <el-table-column label="利率期限">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.timeLimit }}
             </template>
           </el-table-column>
           <el-table-column label="利率 %">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.rate }}
             </template>
           </el-table-column>
           <el-table-column label="利率期限">
@@ -56,57 +56,43 @@
   </div>
 </template>
 <script>
-import { qryCurveRvsQcList, qryCurveRvsQcRpt } from '@/api/curve/curve-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
+import { querylidor } from '@/api/curve/curve-query.js'
 
 export default {
   name: 'CurveInfluenceFactorLibor',
   //   props: ['taskDay', 'orderId'],
   data() {
     return {
-      rvsQcRptList: {
-        compDate: '',
+      liborDataList: {
         curveId: '',
-        batchId: '',
-        dataList: [{
-          keyTerm: 0.08,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.1,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.2,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.3,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }],
-        page: {
-          pageNumber: 1,
-          pageSize: 10
-        }
+        dataList: []
       },
       queryForm: {
         taskDay: null,
         orderId: ''
       },
       curveList: {
-        dataList: []
+        dataList: [
+          { id: '选项一', orderName: '欧元' },
+          { id: '选项二', orderName: '英镑' },
+          { id: '选项三', orderName: '日元' },
+          { id: '选项四', orderName: '瑞朗' },
+          { id: '选项五', orderName: '加元' },
+          { id: '选项六', orderName: '澳元' }
+        ]
       },
-      disabled: false,
-      orderList: [], // 批次列表
       multipleSelection: '' // 选择记录
     }
+  },
+  mounted() {
+    this.liborDataList.dataList = this.getQuerylibor()
   },
   methods: {
     // 主页面查询方法
     // 根据 activeName 调用各个页面查询方法
     indexQuery() {
-      console.info('indexQuery.activeName:' + this.activeName)
+      console.info(this)
       if (!this.queryForm.orderId) {
         this.$message({
           type: 'error',
@@ -114,50 +100,23 @@ export default {
         })
         return false
       }
+      this.getQuerylibor()
     },
     handleSelectionChange(items) {
-      console.info('handleSelectionChange' + JSON.stringify(items))
+      // console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
     handleOptionChange(pageSize) {
-      this.rvsQcRptList.page.pageNumber = 1
-      this.qryCurveRvsQcRpt()
-    },
-    qryCurveRvsQcRpt() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
-        const { dataList, page } = response
-        this.rvsQcRptList.dataList = dataList
-        this.rvsQcRptList.page = page
-        var income = []
-        var lastinCome = []
-        for (var i = 0; i < dataList.length; i++) {
-          // eslint-disable-next-line no-new-wrappers
-          var x = Number(dataList[i].keyTerm)
-          // eslint-disable-next-line no-new-wrappers
-          var y = Number(dataList[i].keyTermYield)
-          income.push([x, y])
-          // eslint-disable-next-line no-new-wrappers
-          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
-        }
-        // 本次收益率
-        this.chartOptions.series[0].data = income
-        // 上一批次收益率
-        this.chartOptions.series[1].data = lastinCome
-      })
-    },
-    qryCurveRvsQcList() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcList(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
-        const { datalist } = response
-        this.curveList.dataList = datalist
-      })
-    }
 
+    },
+    // 获取libor数据
+    getQuerylibor() {
+      const options = []
+      querylidor({}).then(response => {
+        response.map(data => options.push({ data }))
+      })
+      return options
+    }
   }
 }
 </script>
