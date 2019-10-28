@@ -65,6 +65,7 @@
         :data="marketList"
         tooltip-effect="dark"
         style="width: 100%"
+        :row-class-name="tableRowClassName"
         @header-click="headerScreening"
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
@@ -178,7 +179,7 @@
         <el-form-item label="债券代码" prop="bondCode">
           <el-input v-model="queryForm.bondCode" placeholder="请输入债券代码" style="width: 200px" />
         </el-form-item>
-        <el-form-item label="代偿期">
+        <el-form-item label="待偿期">
           <!--<el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />-->
           <el-row :gutter="22" s>
             <el-form-item prop="startPeriod" style="display: inline-block">
@@ -1313,6 +1314,12 @@ export default {
       getCurveList().then(response => {
         this.curveList = response
       })
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === 1) {
+        return 'warning-row'
+      }
+      return ''
     }
   }
 
@@ -1322,6 +1329,9 @@ export default {
 <style scoped>
   .light {
     color: #df1009;
+  }
+  .el-table .warning-row {
+    background: oldlace;
   }
 
 </style>
