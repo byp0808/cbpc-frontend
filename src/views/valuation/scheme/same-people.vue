@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketId }}</span>
+          <span>{{ scope.row.maketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="含权说明" align="center">
@@ -95,9 +95,9 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" label="全选" type="selection" />
-      <el-table-column label="方案操作" align="center" width="150px">
+      <el-table-column label="方案操作" align="center" width="200px">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="adjust(scope.row)">添加任务</el-button>
+          <el-button type="text" size="small" @click="adjust(scope.row)">添加至我的任务</el-button>
           <el-button type="text" size="small" @click="goPage(scope.row)">查看行情</el-button>
         </template>
       </el-table-column>

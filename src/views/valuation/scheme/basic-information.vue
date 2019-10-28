@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.maketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="含权说明" align="center">
