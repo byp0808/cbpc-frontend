@@ -61,14 +61,6 @@
             查看
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
-            type="text"
-            size="small"
-            @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
-          >
-            {{ statusText(scope.row.busiStatus) }}
-          </el-button>
-          <el-button
             type="text"
             size="small"
             @click.native.prevent="toDownload(scope.row.id)"
@@ -111,7 +103,7 @@
 import ReportForm from '@/views/valuation/report/report-form.vue'
 import { queryReportList, deleteReport, switchStatus, uploadReport } from '@/api/valuation/report.js'
 import { basic_api_valuation } from '@/api/base-api'
-import { downloadFile } from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request.js'
 export default {
   name: 'ReportList',
   components: {
