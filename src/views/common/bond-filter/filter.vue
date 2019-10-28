@@ -423,20 +423,6 @@ export default {
     delRow(index, rows) {
       rows.splice(index, 1)
     },
-    // setRuleValue(index, rows) {
-    //   this.$prompt('请输入指标值', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     inputValue: rows[index].ruleValue
-    //   }).then(({ value }) => {
-    //     rows[index].ruleValue = value
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '取消输入'
-    //     })
-    //   })
-    // },
     setRuleValue(index, rows) {
       this.editRuleIndex = index
       this.setRuleDialog = true
@@ -447,6 +433,7 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         rows[index].ruleValue = ''
+        rows[index].ruleValueE = ''
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -510,7 +497,7 @@ export default {
       }
       const rules = this.$lodash.clone(this.ruleList)
       this.$lodash(rules).forEach(function(rule, index) {
-        if (rule.ruleValue instanceof Array) {
+        if (rule.ruleValue && rule.ruleValue instanceof Array) {
           rule.ruleValue = that.$lodash.join(rule.ruleValue, [';'])
         }
       })
@@ -567,7 +554,7 @@ export default {
         bondSource: '其他',
         bondName: row.valAssetShortName,
         csin: row.csin,
-        marketId: row.marketId,
+        marketId: row.exchng,
         catelog: 'B'
       }
       if (this.bwListCheck(this.whiteList, row) >= 0) {
@@ -596,7 +583,7 @@ export default {
         bondSource: '其他',
         bondName: row.valAssetShortName,
         csin: row.csin,
-        marketId: row.marketId,
+        marketId: row.exchng,
         catelog: 'W'
       }
       if (this.bwListCheck(this.blackList, row) >= 0) {
@@ -642,7 +629,7 @@ export default {
       }
     },
     bwListCheck(dataList, data) {
-      return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.marketId })
+      return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.exchng })
     },
     getData(busiCode) {
       const that = this
