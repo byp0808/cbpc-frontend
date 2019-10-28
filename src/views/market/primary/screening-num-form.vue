@@ -1,7 +1,7 @@
 <template>
   <!--  数值型-->
   <div class="" style="width: 600px">
-    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px">
+    <el-form ref="screeningForm" status-icon :model="screeningForm" label-width="150px" :rules="numFormRules">
       <el-row :gutter="76" align="left">
         <div class="grid-content bg-purple">
           <el-form-item label="" prop="screeningNum">
@@ -11,10 +11,10 @@
               </el-col>
               <el-col :span="20">
                 <el-row>
-                  <el-input v-model="screeningForm.screeningNum" type="number" style="width: 200px" :disabled="disable_1" />
+                  <el-input v-model.number="screeningForm.screeningNum" type="number" style="width: 200px" :disabled="disable_1" />
                 </el-row>
                 <el-row>
-                  <el-checkbox v-model="screeningForm.absoluteValue" :disabled="disable_1">是否包含绝对值</el-checkbox>
+                  <el-checkbox v-model.number="screeningForm.absoluteValue" :disabled="disable_1">是否包含绝对值</el-checkbox>
                 </el-row>
               </el-col>
             </el-row>
@@ -68,12 +68,24 @@ export default {
       radio: '1',
       disable_1: false,
       disable_2: true,
-      isScreened: false
-      // numFormRules: {
-      //   screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
-      //   startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }],
-      //   endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'change' }]
-      // }
+      isScreened: false,
+      numFormRules: {
+        startNum: [{ validator: (rule, value, callback) => {
+          console.info(typeof value)
+          if (value > this.screeningForm.endNum && value !== '' && this.screeningForm.endNum !== '') {
+            callback(new Error('开始数值需小于等于结束数值'))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }],
+        endNum: [{ validator: (rule, value, callback) => {
+          if (value < this.screeningForm.startNum && value !== '' && this.screeningForm.startNum !== '') {
+            callback(new Error('结束数值需大于等于开始数值'))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }]
+      }
     }
   },
   computed: {

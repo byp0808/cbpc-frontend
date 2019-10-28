@@ -30,26 +30,22 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="批次" prop="search_buildType_EQ">
-              <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+            <el-form-item label="批次" prop="search_orderName_LIKE">
+              <el-autocomplete
+                v-model="plan.search_orderName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch1"
+                placeholder="请输入批次名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
-              <el-autocomplete
+              <el-input
                 v-model="plan.search_productName_LIKE"
                 class="inline-input"
-                :value-key="'label'"
-                :fetch-suggestions="querySearch"
                 placeholder="请输入曲线名称"
-                @select="handleSelect"
               />
             </el-form-item>
           </el-col>
@@ -67,14 +63,10 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="操作人" prop="search_assignName_LIKE">
-              <el-autocomplete
+              <el-input
                 v-model="plan.search_assignName_LIKE"
                 class="inline-input"
-                :value-key="'label'"
-                :fetch-suggestions="queryPersonSearch"
                 placeholder="请输入操作人"
-                :trigger-on-focus="false"
-                @select="handlePersonSelect"
               />
             </el-form-item>
           </el-col>
@@ -94,9 +86,13 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="productName" label="曲线名称" width="100" />
-      <el-table-column prop="curveStartTime" label="发布日期" width="140" />
-      <el-table-column prop="curveOrderId" label="批次" width="100" />
-      <el-table-column prop="curveBuildStatus" label="编制状态" width="100" />
+      <el-table-column prop="taskDay" label="发布日期" width="140" />
+      <el-table-column prop="orderName" label="批次" width="100" />
+      <el-table-column prop="curveBuildStatus" label="编制状态" width="100">
+        <template slot-scope="{row}">
+          {{ $dft('CURVE_BUILD_STATUS', row.curveBuildStatus) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="standSlip" label="关键期限" width="140" />
       <el-table-column prop="bondName" label="所选卷" width="120" />
       <el-table-column prop="slip" label="所选卷期限" width="120" />
@@ -108,6 +104,7 @@
       <el-table-column prop="adjResult" label="调整结果" width="100" />
       <el-table-column prop="variations" label="期限间变动" width="100" />
       <el-table-column prop="itemName" label="所选字段" width="150" />
+      <el-table-column prop="assignName" label="责任人" width="150" />
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" @pagination="getList" />
   </div>
@@ -115,7 +112,7 @@
 
 <script>
 import { queryCurveSolutions } from '@/api/curve/curve-query'
-import { selectCurve, selectPerson } from '@/api/curve/curve-task'
+import { selectCurve, selectPerson, queryOrder } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -150,6 +147,9 @@ export default {
       options: temp
     }
   },
+  beforeMount() {
+    this.getList()
+  },
   methods: {
     getList() {
       this.listLoading = true
@@ -161,6 +161,16 @@ export default {
     },
     reset() {
       this.$refs.plan.resetFields()
+    },
+    querySearch1(queryString, cb) {
+      const data = queryString ? { search_orderName_LIKE: queryString } : {}
+      queryOrder(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
+        const results = response.dataList.map(i => {
+          return { value: i.orderId, label: i.orderName }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
     },
     querySearch(queryString, cb) {
       const data = queryString ? { search_productName_LIKE: queryString } : {}

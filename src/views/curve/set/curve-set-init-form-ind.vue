@@ -76,6 +76,9 @@ export default {
     getCurveName(id) {
       return this.getCurveInfo(id).productName
     },
+    getProductShortName(id) {
+      return this.getCurveInfo(id).productShortName
+    },
     getCurveInfo(id) {
       var list = this.curveList
       for (const index in list) {

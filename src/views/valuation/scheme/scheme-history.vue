@@ -6,6 +6,7 @@
           <el-form-item>
             <el-date-picker
               v-model="selectDate.starDate"
+              :picker-options="limitStar"
               type="date"
               value-format="yyyy-MM-dd"
               placeholder="选择日期"
@@ -17,6 +18,7 @@
           <el-form-item>
             <el-date-picker
               v-model="selectDate.endDate"
+              :picker-options="limitEnd"
               type="date"
               value-format="yyyy-MM-dd"
               placeholder="选择日期"
@@ -159,6 +161,20 @@ export default {
         pageNumber: 1,
         pageSize: 10,
         totalRecord: 0
+      },
+      limitStar: {
+        disabledDate: (time) => {
+          if (this.selectDate.endDate) {
+            return new Date(this.selectDate.endDate).getTime() < time.getTime()
+          }
+        }
+      },
+      limitEnd: {
+        disabledDate: (time) => {
+          if (this.selectDate.starDate) {
+            return new Date(this.selectDate.starDate).getTime() > time.getTime()
+          }
+        }
       }
     }
   },

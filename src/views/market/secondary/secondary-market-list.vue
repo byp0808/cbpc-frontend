@@ -34,8 +34,8 @@
         v-loading="offerMarketLoading"
         :data="offerMarketList"
         tooltip-effect="dark"
-        style="width: 100%"
-        height="300px"
+        width="100%"
+        height="400px"
         @header-click="offerHeaderScreening"
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
@@ -135,7 +135,7 @@
     </el-dialog>
     <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
       <!--查询条件-->
-      <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px">
+      <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
           <el-select v-model="queryForm.curveType" :clearable="true" placeholder="请选择曲线编制类型">
             <el-option label="利率" value="1" />
@@ -150,7 +150,7 @@
                 multiple
                 collapse-tags
                 filterable
-                placeholder="请选择"
+                placeholder="请选择曲线名称"
                 @visible-change="getcurveNames"
               >
                 <el-option
@@ -178,8 +178,16 @@
         <el-form-item label="债券代码" prop="bondCode">
           <el-input v-model="queryForm.bondCode" placeholder="请输入债券代码" style="width: 200px" />
         </el-form-item>
-        <el-form-item label="代偿期" prop="period">
-          <el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />
+        <el-form-item label="代偿期">
+          <!--<el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />-->
+          <el-row :gutter="22" s>
+            <el-form-item prop="startPeriod" style="display: inline-block">
+              <el-input v-model.number="queryForm.startPeriod" placeholder="开始" type="number" style="width: 90px" />&nbsp;~
+            </el-form-item>
+            <el-form-item prop="endPeriod" style="display: inline-block">
+              <el-input v-model.number="queryForm.endPeriod" placeholder="结束" type="number" style="width: 90px" />&nbsp;年
+            </el-form-item>
+          </el-row>
         </el-form-item>
         <el-form-item label="发行人" prop="issuer">
           <el-input v-model="queryForm.issuer" placeholder="请输入发行人" style="width: 200px" />
@@ -310,13 +318,31 @@ export default {
         checkedCurveNames: [],
         curveType: '',
         bondCode: '',
-        period: '',
+        // period: '',
+        // endPeriod: '',
+        // startPeriod: '',
         issuer: '',
         updateTime: [],
-        checkedReferenceType: ['样本券维度', '估值曲线维度']
+        checkedReferenceType: ['曲线样本券', '估值进线规则']
+      },
+      queryFormRules: {
+        startPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
+            callback(new Error('开始数值需小于等于结束数值'))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }],
+        endPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
+            callback(new Error('结束数值需大于等于开始数值'))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }]
       },
       checkAll: true,
-      referenceTypes: ['样本券维度', '估值曲线维度'],
+      referenceTypes: ['曲线样本券', '估值进线规则'],
       isIndeterminate: false,
       curveList: [],
       // 查询是否打开
@@ -770,12 +796,19 @@ export default {
 
     // 其他
     queryCell() {
-      // 确定查询
-      this.drawerIsOpen = false
-      // 查询成交表
-      this.loadTable()
-      // 查询报价表
-      this.offerLoadTable()
+      this.$refs['queryForm'].validate((valid) => {
+        if (valid) {
+          // 查询成交表
+          this.loadTable()
+          // 查询报价表
+          this.offerLoadTable()
+          // 确定查询
+          this.drawerIsOpen = false
+        } else {
+          // this.$message('error submit!!')
+          return false
+        }
+      })
     },
     screening() {
       // 确定筛选方法
@@ -1194,7 +1227,7 @@ export default {
               // 范围
               obj.operator = 'BETWEEN'
               if (typeof data.startNum !== 'undefined') {
-                obj.startvalue = data.startNum + ''
+                obj.beginvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
                 obj.endvalue = data.endNum + ''

@@ -43,12 +43,12 @@
             <div class="input-box">
               <div class="first">
                 <el-form-item prop="rangeStart">
-                  <el-input v-model="spreadParamInfo.rangeStart" :disabled="disabled" />
+                  <el-input v-model.number="spreadParamInfo.rangeStart" type="number" :disabled="disabled" />
                 </el-form-item>
               </div>
               <div>
                 <el-form-item prop="rangeEnd">
-                  <el-input v-model="spreadParamInfo.rangeEnd" :disabled="disabled" />
+                  <el-input v-model.number="spreadParamInfo.rangeEnd" type="number" :disabled="disabled" />
                 </el-form-item>
               </div>
             </div>
@@ -58,7 +58,7 @@
       <el-row>
         <el-col :span="12" :offset="6">
           <el-form-item label="点差" prop="spreadValue">
-            <el-input v-model="spreadParamInfo.spreadValue" :disabled="disabled" />
+            <el-input v-model.number="spreadParamInfo.spreadValue" type="number" :disabled="disabled" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -72,31 +72,19 @@ export default {
   name: 'SpreadParamForm',
   props: ['businessId', 'disabled'],
   data() {
-    var numberRule = (rule, value, callback) => {
-      // var reg = /^-?\d{1,5}(?:\.\d{1,3})?$/
-      var reg = /^(\-|\+)?\d+(\.\d+)?$/
-      if (value > 0 && reg.test(value)) {
-        callback()
-      } else {
-        callback(new Error('请输入数值'))
-      }
-    }
     return {
       spreadParamInfo: {},
       rules: {
         paramType: [{ required: true, message: '请输入点差参数类型', trigger: 'blur' }],
         marketGrad: [{ required: true, message: '请选择市场隐含评级', trigger: 'change' }],
         rangeStart: [
-          { required: true, message: '请完整输入', trigger: 'blur' },
-          { validator: numberRule, trigger: 'blur' }
+          { required: true, message: '请完整输入', trigger: 'blur' }
         ],
         rangeEnd: [
-          { required: true, message: '请完整输入', trigger: 'blur' },
-          { validator: numberRule, trigger: 'blur' }
+          { required: true, message: '请完整输入', trigger: 'blur' }
         ],
         spreadValue: [
-          { required: true, message: '请输入点差', trigger: 'blur' },
-          { validator: numberRule, trigger: 'blur' }
+          { required: true, message: '请输入点差', trigger: 'blur' }
         ]
       }
     }
@@ -118,6 +106,30 @@ export default {
     save() {
       this.$refs['refSpreadParamForm'].validate((valid) => {
         if (valid) {
+          if (this.spreadParamInfo.rangeStart >= this.spreadParamInfo.rangeEnd) {
+            this.$message({
+              message: '结束区间应大于开始区间！',
+              type: 'warning',
+              showClose: true
+            })
+            return false
+          }
+          if (this.spreadParamInfo.rangeStart < 0 || this.spreadParamInfo.rangeEnd < 0) {
+            this.$message({
+              message: '区间不能是负数',
+              type: 'warning',
+              showClose: true
+            })
+            return false
+          }
+          if (this.spreadParamInfo.spreadValue < 0) {
+            this.$message({
+              message: '点差不能是负数',
+              type: 'warning',
+              showClose: true
+            })
+            return false
+          }
           saveSpreadParam(this.spreadParamInfo).then(response => {
             this.$emit('saveCallBack')
             this.$message({

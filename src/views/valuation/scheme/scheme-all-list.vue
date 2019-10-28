@@ -2,20 +2,20 @@
   <div>
     <div style="margin-bottom: 20px">
       <el-row>
-        <el-col :span="11">
+        <el-col :xl="8" :lg="10">
           <el-button type="primary" @click="allotTask">任务分配</el-button>
           <el-button v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
-        <el-col :span="11" :offset="2">
+        <el-col :xl="16" :lg="14">
           <el-input v-model="bondId" placeholder="输入资产根码后添加任务" clearable style="width:200px" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
-          <div style="margin-top:7px">
-            <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
-            <el-button type="primary">下载估值方案</el-button>
-          </div>
+          <!-- <div style="margin-top:7px"> -->
+          <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
+          <el-button type="primary">下载估值方案</el-button>
+          <!-- </div> -->
         </el-col>
       </el-row>
     </div>
@@ -29,7 +29,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
-        <asset-list :all-list="allList" @taskList="taskLists" />
+        <asset-list :all-list="allList" :is-my="isMy" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -222,6 +222,7 @@ export default {
       methodUpload: false,
       isBatch: false,
       remaindDialog: false,
+      isMy: false,
       message: '',
       code: '',
       failMessage: '',
@@ -342,7 +343,7 @@ export default {
       switch (param) {
         case '01': return '正常'
         case '02': return '违约'
-        case '03': return '特殊'
+        case '03': return '本金'
         case '04': return '人工上传'
       }
     },

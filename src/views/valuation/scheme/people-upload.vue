@@ -12,9 +12,8 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column align="center" type="selection" />
         <el-table-column prop="filterId" label="日期" align="center" />
-        <el-table-column prop="lastUpdBy" label="操作人" align="center" />
+        <!-- <el-table-column prop="lastUpdBy" label="操作人" align="center" /> -->
         <el-table-column label="债券代码" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.bondId }}</span>
@@ -58,6 +57,11 @@
         <el-table-column label="可信度" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.reliability }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="长/短" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.resultDirection }}</span>
           </template>
         </el-table-column>
       </el-table>
