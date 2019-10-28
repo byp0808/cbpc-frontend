@@ -96,6 +96,18 @@
         <div class="grid-content bg-purple-light">
           <ul>
             <li>
+              <span>较前一日日终曲线条数：{{ overallNum.numOfYsChg }}条</span>
+            </li>
+            <li>
+              <span>较上批次曲线条数：{{ overallNum.numOfLsChg }} 条</span>
+            </li>
+          </ul>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="grid-content bg-purple-light">
+          <ul>
+            <li>
               <span>全面性检查：{{ overallNum.numOfComprehensiveQc }}条</span>
             </li>
             <li>
