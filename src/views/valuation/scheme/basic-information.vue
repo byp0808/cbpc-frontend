@@ -9,7 +9,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="资产编码" align="center">
+      <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.bondId }}</span>
         </template>
@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column label="含权说明" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否推荐" align="center">
@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="市场隐含评级" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ $dft('MARKET_GRADE', scope.row.marketGrade) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标曲线" align="center">
