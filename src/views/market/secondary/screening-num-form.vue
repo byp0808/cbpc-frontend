@@ -35,7 +35,7 @@
                   <el-input v-model.number="screeningForm.endNum" type="number" style="width: 80px" :disabled="disable_2" />
                 </el-form-item>
               </el-col>
-              <el-col :span="2">BP</el-col>
+              <el-col :span="2">&nbsp;</el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="" align="left">

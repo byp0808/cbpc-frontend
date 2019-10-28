@@ -297,17 +297,10 @@ export default {
     },
     isLight(row, header) {
       // 判断是否高亮
-      // console.info('行')
-      // console.info(row)
-      // console.info('头')
-      // console.info(header)
-      if (typeof row.modifiedCols !== 'undefined') {
-        // const modifiedCols = row.modifiedCols
-        // const mods = modifiedCols.filter(val => val.colName === header.key)
-        // return mods.length > 0
-        const modifiedCols = row.modifiedCols
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
         const mods = modifiedCols.split(',')
-        const mod = mods.filter(val => val === header.key)
+        const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
       } else {
         return false
@@ -415,6 +408,17 @@ export default {
       const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
       // console.info('确定修改')
       // alert(content)
+      const str = headers[0].colName
+      this.currentRow[str]
+      // console.info('修改'+ this.currentRow[str])
+      if (content === this.currentRow[str] + '') {
+        this.updateForm.updateContent = ''
+        this.currentRow = {}
+        this.currentHeader = {}
+        this.updateFormVisible = false
+        return
+      }
+      this.currentRow[str] = content
       const data = {
         currentHeader: headers[0],
         currentRow: this.currentRow,
