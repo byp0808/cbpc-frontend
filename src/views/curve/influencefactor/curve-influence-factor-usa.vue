@@ -7,44 +7,44 @@
       <el-card class="flex-children curve-build">
         <el-table
           ref="multipleTable"
-          :data="rvsQcRptList.dataList"
+          :data="usaDataList.dataList"
           tooltip-effect="dark"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
           <el-table-column label="名称">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.bondName }}
             </template>
           </el-table-column>
           <el-table-column label="债券收益率">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.rate }}
             </template>
           </el-table-column>
           <el-table-column label="前值">
             <template slot-scope="scope">
-              {{ scope.row.yieldChg }}
+              {{ scope.row.data.beforeVlaue }}
             </template>
           </el-table-column>
           <el-table-column label="高">
             <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
+              {{ scope.row.data.highValue }}
             </template>
           </el-table-column>
           <el-table-column label="低">
             <template slot-scope="scope">
-              {{ scope.row.yieldChg }}
+              {{ scope.row.data.lowValue }}
             </template>
           </el-table-column>
           <el-table-column label="涨跌">
             <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
+              {{ scope.row.data.changeValue }}
             </template>
           </el-table-column>
           <el-table-column label="涨跌幅">
             <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
+              {{ scope.row.data.changeRate }}
             </template>
           </el-table-column>
         </el-table>
@@ -53,8 +53,8 @@
   </div>
 </template>
 <script>
-import { qryCurveRvsQcList, qryCurveRvsQcRpt } from '@/api/curve/curve-quality.js'
 // import { formatTimeToStr } from '@/utils/date.js'
+import { queryUstreasuries } from '@/api/curve/curve-query.js'
 import { Chart } from 'highcharts-vue'
 
 export default {
@@ -63,37 +63,9 @@ export default {
   //   props: ['taskDay', 'orderId'],
   data() {
     return {
-      rvsQcRptList: {
-        compDate: '',
-        curveId: '',
-        batchId: '',
-        dataList: [{
-          keyTerm: 0.08,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.1,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.2,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.3,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }],
-        page: {
-          pageNumber: 1,
-          pageSize: 10
-        }
+      usaDataList: {
+        dataList: []
       },
-      queryForm: {
-        taskDay: null,
-        orderId: ''
-      },
-      disabled: false,
       chartOptions: {
         title: {
           text: '1'
@@ -133,49 +105,59 @@ export default {
           data: [2, 3, 1]
         }]
       },
-      orderList: [], // 批次列表
       multipleSelection: '' // 选择记录
     }
+  },
+  mounted() {
+    this.usaDataList.dataList = this.getQueryUstreasuries()
   },
   methods: {
     handleSelectionChange(items) {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
-    qryCurveRvsQcRpt() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
-        const { dataList, page } = response
-        this.rvsQcRptList.dataList = dataList
-        this.rvsQcRptList.page = page
-        var income = []
-        var lastinCome = []
-        for (var i = 0; i < dataList.length; i++) {
-          // eslint-disable-next-line no-new-wrappers
-          var x = Number(dataList[i].keyTerm)
-          // eslint-disable-next-line no-new-wrappers
-          var y = Number(dataList[i].keyTermYield)
-          income.push([x, y])
-          // eslint-disable-next-line no-new-wrappers
-          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
-        }
-        // // 本次收益率
-        // this.chartOptions.series[0].data = income
-        // // 上一批次收益率
-        // this.chartOptions.series[1].data = lastinCome
+    // 获取美国国债收益率曲线数据
+    getQueryUstreasuries() {
+      const options = []
+      queryUstreasuries({}).then(response => {
+        response.map(data => options.push({ data }))
       })
-    },
-    qryCurveRvsQcList() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcList(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
-        const { datalist } = response
-        this.curveList.dataList = datalist
-      })
+      return options
     }
+    // qryCurveRvsQcRpt() {
+    //   this.rvsQcRptList.compDate = this.taskDay
+    //   this.rvsQcRptList.batchId = this.orderId
+    //   qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
+    //     console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
+    //     const { dataList, page } = response
+    //     this.rvsQcRptList.dataList = dataList
+    //     this.rvsQcRptList.page = page
+    //     var income = []
+    //     var lastinCome = []
+    //     for (var i = 0; i < dataList.length; i++) {
+    //       // eslint-disable-next-line no-new-wrappers
+    //       var x = Number(dataList[i].keyTerm)
+    //       // eslint-disable-next-line no-new-wrappers
+    //       var y = Number(dataList[i].keyTermYield)
+    //       income.push([x, y])
+    //       // eslint-disable-next-line no-new-wrappers
+    //       lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
+    //     }
+    //     // // 本次收益率
+    //     // this.chartOptions.series[0].data = income
+    //     // // 上一批次收益率
+    //     // this.chartOptions.series[1].data = lastinCome
+    //   })
+    // },
+    // qryCurveRvsQcList() {
+    //   this.rvsQcRptList.compDate = this.taskDay
+    //   this.rvsQcRptList.batchId = this.orderId
+    //   qryCurveRvsQcList(this.rvsQcRptList).then(response => {
+    //     console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
+    //     const { datalist } = response
+    //     this.curveList.dataList = datalist
+    //   })
+    // }
 
   }
 }

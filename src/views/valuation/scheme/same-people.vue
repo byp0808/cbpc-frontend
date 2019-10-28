@@ -9,7 +9,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="资产编码" align="center">
+      <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.bondId }}</span>
         </template>
@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column label="含权说明" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否推荐" align="center">
@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="市场隐含评级" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ $dft('MARKET_GRADE', scope.row.marketGrade) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标曲线" align="center">
@@ -95,14 +95,15 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" label="全选" type="selection" />
-      <el-table-column label="方案操作" align="center">
+      <el-table-column label="方案操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button type="text" @click="adjust(scope.row)">调整</el-button>
+          <el-button type="text" size="small" @click="adjust(scope.row)">添加任务</el-button>
+          <el-button type="text" size="small" @click="goPage(scope.row)">查看行情</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="资产编码" align="center">
+      <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.valAssetCode }}</span>
+          <span>{{ scope.row.csin }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
@@ -112,7 +113,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center" width="200px">
         <template slot-scope="scope">
-          <span>{{ scope.row.exchng }}</span>
+          <span>{{ scope.row.marketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值方法" align="center">
@@ -122,17 +123,17 @@
       </el-table-column>
       <el-table-column label="市场隐含评级" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ $dft('MARKET_GRADE', scope.row.marketGrade) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标曲线" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ scope.row.curveId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="曲线类型" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标信用点差" align="center" width="120px">
@@ -152,7 +153,7 @@
       </el-table-column>
       <el-table-column label="点差类型" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ $dft('ADJ_WAY', scope.row.cdsPremAdjWay) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="预估价格" align="center">
@@ -162,7 +163,7 @@
       </el-table-column>
       <el-table-column label="调整方式" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ $dft('ADJ_TYPE', scope.row.cdsPremAdjType) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -182,7 +183,7 @@
 
 <script>
 import { getSamePeople } from '@/api/valuation/influence.js'
-// import { addOneTask } from '@/api/valuation/task.js'
+import { addOneTask } from '@/api/valuation/task.js'
 
 export default {
   name: 'SamePeople',
@@ -197,6 +198,8 @@ export default {
       id: '',
       tabLoading: false,
       addLoading: false,
+      AdjustDialog: false,
+      volumeAdd: {},
       params: {
         page: {
           pageNumber: 1,
@@ -217,18 +220,27 @@ export default {
     handleSelectionChange(e) {
       this.selectList = e
     },
-    adjust() {
-
+    adjust(e) {
+      this.volumeAdd.csin = e.csin
+      addOneTask(this.volumeAdd).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.getAllList()
+      })
+    },
+    goPage() {
+      this.$router.push('/market/secondary-market-list')
     },
     getAllList() {
       this.params.search_fiId_EQ = this.id
       // this.params.search_fiId_EQ = '128d3beed63a408090fb28745c9a1110'
       this.tabLoading = true
-      getSamePeople(this.params).then(res => {
+      getSamePeople(this.id).then(res => {
         this.tabLoading = false
-        const { dataList, page } = res
-        this.allList = dataList
-        this.params.page = page
+        console.log('22', res)
+        this.allList = res
       }).catch(() => {
         this.tabLoading = false
       })
