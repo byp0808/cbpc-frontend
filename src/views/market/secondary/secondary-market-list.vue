@@ -44,14 +44,7 @@
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
       >
-        <el-table-column
-          v-for="item in offerTableHeader"
-          :key="item.colName"
-          :prop="item.colName"
-          :label="item.colChiName"
-          align="center"
-          width="180px"
-        >
+        <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -81,14 +74,7 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column
-          v-for="item in tableHeader"
-          :key="item.colName"
-          :prop="item.colName"
-          :label="item.colChiName"
-          align="center"
-          width="180px"
-        >
+        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
             <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
           </template>
@@ -131,6 +117,22 @@
           @dateCallBack="screeningCallBack"
         />
       </keep-alive>
+      <el-form v-if="formType === 5" ref="specialForm" status-icon label-width="150px">
+        <el-row :gutter="66" align="left">
+          <div class="grid-content bg-purple">
+            <el-form-item label="特殊条款">
+              <el-checkbox-group v-model="specialChecked">
+                <el-checkbox label="1">是否永续</el-checkbox><br>
+                <el-checkbox label="2">是否私募</el-checkbox><br>
+                <el-checkbox label="3">是否有担保</el-checkbox><br>
+                <el-checkbox label="4">是否公开</el-checkbox><br>
+                <el-checkbox label="5">是否休1</el-checkbox><br>
+                <el-checkbox label="6">是否休2</el-checkbox><br>
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </el-row>
+      </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="screening">确 定</el-button>
@@ -152,13 +154,7 @@
         <el-button type="primary" @click="updateCell">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      v-if="drawerIsOpen"
-      width="100%"
-      :visible.sync="drawerIsOpen"
-      style="margin-top: 0;padding-bottom: 0"
-      top="0"
-    >
+    <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
       <!--查询条件-->
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
@@ -189,17 +185,11 @@
             <el-col :span="8">
               <el-row>
                 <el-col :span="4">
-                  <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">全选
-                  </el-checkbox>
+                  <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">全选</el-checkbox>
                 </el-col>
                 <el-col :span="16">
-                  <el-checkbox-group
-                    v-model="queryForm.checkedReferenceType"
-                    @change="handleCheckedReferenceTypeChange"
-                  >
-                    <el-checkbox v-for="referenceType in referenceTypes" :key="referenceType" :label="referenceType">{{
-                      referenceType }}
-                    </el-checkbox>
+                  <el-checkbox-group v-model="queryForm.checkedReferenceType" @change="handleCheckedReferenceTypeChange">
+                    <el-checkbox v-for="referenceType in referenceTypes" :key="referenceType" :label="referenceType">{{ referenceType }}</el-checkbox>
                   </el-checkbox-group>
                 </el-col>
               </el-row>
@@ -239,11 +229,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer" style="width: 100%">
         <div style="margin-bottom: -20px">
-          <el-button
-            icon="el-icon-arrow-up"
-            style="margin-bottom: 0;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
-            @click="drawerIsOpen = false"
-          />
+          <el-button icon="el-icon-arrow-up" style="margin-bottom: 0;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px" @click="drawerIsOpen = false" />
         </div>
       </div>
     </el-dialog>
@@ -325,16 +311,8 @@ import ScreeningForm from '@/views/market/secondary/screening-form.vue'
 import ScreeningNumForm from '@/views/market/secondary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/secondary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
-import {
-  queryDefaultCols,
-  queryMarketData,
-  getTempList,
-  getTempById,
-  saveTempInfo,
-  saveMarketData
-} from '@/api/market/market.js'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
-
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -345,6 +323,8 @@ export default {
   },
   data() {
     return {
+      // 特殊条款
+      specialChecked: [],
       // 编辑模板弹框
       editModuleIsOpen: false,
       editModuleForm: {
@@ -369,24 +349,20 @@ export default {
         checkedReferenceType: ['曲线样本券', '估值进线规则']
       },
       queryFormRules: {
-        startPeriod: [{
-          validator: (rule, value, callback) => {
-            if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
-              callback(new Error('开始数值需小于等于结束数值'))
-            } else {
-              callback()
-            }
-          }, trigger: 'change'
-        }],
-        endPeriod: [{
-          validator: (rule, value, callback) => {
-            if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
-              callback(new Error('结束数值需大于等于开始数值'))
-            } else {
-              callback()
-            }
-          }, trigger: 'change'
-        }]
+        startPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
+            callback(new Error('需小于等于' + this.queryForm.endPeriod))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }],
+        endPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
+            callback(new Error('需大于等于' + this.queryForm.startPeriod))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }]
       },
       checkAll: true,
       referenceTypes: ['曲线样本券', '估值进线规则'],
@@ -526,7 +502,8 @@ export default {
         showArea: '01',
         tempId: this.offerCurrentModuleId,
         searchParam: this.searchParam,
-        queryForm: this.queryForm
+        queryForm: this.queryForm,
+        specialChecked: this.specialChecked
       }
       queryMarketData(data).then(response => {
         console.info(response)
@@ -548,37 +525,41 @@ export default {
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      // 默认该表头没有筛选过
-      const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
-      console.info(form)
-      if (form.length > 0) {
-        // const form = this.screeningFormList[index].screeningForm
-        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
-      }
-      const tab = this.offerTableHeader.filter(tab => tab.colName === key)
-      const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
+      if (key === 'SPECIAL_PROVISIONS') {
+        this.formType = 5
+      } else {
+        // 默认该表头没有筛选过
+        const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+        console.info(form)
+        if (form.length > 0) {
+          // const form = this.screeningFormList[index].screeningForm
+          this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
+        }
+        const tab = this.offerTableHeader.filter(tab => tab.colName === key)
+        const type = tab[0].colType
+        // console.info('在这')
+        // console.info(type)
 
-      switch (type) {
-        case 'DATE':// 日期型
-          this.formType = 1
-          break
-        case 'NUMBER':// 数值型
-          this.formType = 2
-          break
-        case 'STRING':// 字符型
-          this.formType = 3
-          break
-        case 'EQSTRING':// 字符型（不能模糊查询）
-          this.formType = 3
-          break
-        case 'OPTION':// 可选型
-          this.formType = 4
-          break
-        default: // 自定义字段不予筛选
-          this.formType = 0
-          break
+        switch (type) {
+          case 'DATE':// 日期型
+            this.formType = 1
+            break
+          case 'NUMBER':// 数值型
+            this.formType = 2
+            break
+          case 'STRING':// 字符型
+            this.formType = 3
+            break
+          case 'EQSTRING':// 字符型（不能模糊查询）
+            this.formType = 3
+            break
+          case 'OPTION':// 可选型
+            this.formType = 4
+            break
+          default: // 自定义字段不予筛选
+            this.formType = 0
+            break
+        }
       }
       this.screeningFormVisible = true
     },
@@ -867,6 +848,9 @@ export default {
           break
         case 4:
           this.$refs.ScreeningCheckboxForm.screening()
+          break
+        case 5:
+          this.screeningCallBack()
           break
       }
     },
@@ -1361,7 +1345,7 @@ export default {
       })
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === 1) {
+      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === '1') {
         return 'warning-row'
       }
       return ''
@@ -1375,7 +1359,6 @@ export default {
   .light {
     color: #df1009;
   }
-
   .el-table .warning-row {
     background: oldlace;
   }
