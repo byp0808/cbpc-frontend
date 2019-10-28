@@ -113,6 +113,22 @@
           @dateCallBack="screeningCallBack"
         />
       </keep-alive>
+      <el-form v-if="formType === 5" ref="specialForm" status-icon label-width="150px">
+        <el-row :gutter="66" align="left">
+          <div class="grid-content bg-purple">
+            <el-form-item label="特殊条款">
+              <el-checkbox-group v-model="specialChecked">
+                <el-checkbox label="是否永续" value="1" />
+                <el-checkbox label="是否私募" value="2" />
+                <el-checkbox label="是否有担保" value="3" />
+                <el-checkbox label="是否公开" value="4" />
+                <el-checkbox label="是否休1" value="5" />
+                <el-checkbox label="是否休2" value="6" />
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </el-row>
+      </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="screening">确 定</el-button>
@@ -303,6 +319,8 @@ export default {
   },
   data() {
     return {
+      // 特殊条款
+      specialChecked: [],
       // 编辑模板弹框
       editModuleIsOpen: false,
       editModuleForm: {
@@ -329,14 +347,14 @@ export default {
       queryFormRules: {
         startPeriod: [{ validator: (rule, value, callback) => {
           if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
-            callback(new Error('开始数值需小于等于结束数值'))
+            callback(new Error('需小于等于' + this.queryForm.endPeriod))
           } else {
             callback()
           }
         }, trigger: 'change' }],
         endPeriod: [{ validator: (rule, value, callback) => {
           if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
-            callback(new Error('结束数值需大于等于开始数值'))
+            callback(new Error('需大于等于' + this.queryForm.startPeriod))
           } else {
             callback()
           }
@@ -480,7 +498,8 @@ export default {
         showArea: '01',
         tempId: this.offerCurrentModuleId,
         searchParam: this.searchParam,
-        queryForm: this.queryForm
+        queryForm: this.queryForm,
+        specialChecked: this.specialChecked
       }
       queryMarketData(data).then(response => {
         console.info(response)
@@ -502,37 +521,41 @@ export default {
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      // 默认该表头没有筛选过
-      const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
-      console.info(form)
-      if (form.length > 0) {
-        // const form = this.screeningFormList[index].screeningForm
-        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
-      }
-      const tab = this.offerTableHeader.filter(tab => tab.colName === key)
-      const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
+      if (key === 'SPECIAL_PROVISIONS') {
+        this.formType = 5
+      } else {
+        // 默认该表头没有筛选过
+        const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+        console.info(form)
+        if (form.length > 0) {
+          // const form = this.screeningFormList[index].screeningForm
+          this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
+        }
+        const tab = this.offerTableHeader.filter(tab => tab.colName === key)
+        const type = tab[0].colType
+        // console.info('在这')
+        // console.info(type)
 
-      switch (type) {
-        case 'DATE':// 日期型
-          this.formType = 1
-          break
-        case 'NUMBER':// 数值型
-          this.formType = 2
-          break
-        case 'STRING':// 字符型
-          this.formType = 3
-          break
-        case 'EQSTRING':// 字符型（不能模糊查询）
-          this.formType = 3
-          break
-        case 'OPTION':// 可选型
-          this.formType = 4
-          break
-        default: // 自定义字段不予筛选
-          this.formType = 0
-          break
+        switch (type) {
+          case 'DATE':// 日期型
+            this.formType = 1
+            break
+          case 'NUMBER':// 数值型
+            this.formType = 2
+            break
+          case 'STRING':// 字符型
+            this.formType = 3
+            break
+          case 'EQSTRING':// 字符型（不能模糊查询）
+            this.formType = 3
+            break
+          case 'OPTION':// 可选型
+            this.formType = 4
+            break
+          default: // 自定义字段不予筛选
+            this.formType = 0
+            break
+        }
       }
       this.screeningFormVisible = true
     },
@@ -820,6 +843,9 @@ export default {
           this.$refs.ScreeningStringForm.screening()
           break
         case 4:
+          this.$refs.ScreeningCheckboxForm.screening()
+          break
+        case 5:
           this.$refs.ScreeningCheckboxForm.screening()
           break
       }
