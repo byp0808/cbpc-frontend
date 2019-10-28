@@ -62,6 +62,7 @@ import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { queryReferCurveYield, queryRelationsCurveYield, queryHomology, queryHistoryDivision, confirmBuild, refundBuild } from '@/api/curve/curve-build'
 import { subtract } from '@/utils/math'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'BuildCurve',
@@ -334,11 +335,11 @@ export default {
     },
     connection() {
       // 建立连接
-      const url = 'http://' + window.location.host + process.env.VUE_APP_BASE_API + '/pi-curve/mq'
+      const url = 'http://' + window.location.host + process.env.VUE_APP_BASE_API + '/pi-curve/mq?token=' + getToken()
       const socket = new SockJS(url)
       // 获取stomp子协议的客户端对象
       this.stompClient = Stomp.over(socket)
-      const headers = { Authorization: '' }
+      const headers = { token: getToken() }
       // 发送websocket连接
       this.stompClient.connect(headers, (frame) => {
         console.log('frame is:', frame)

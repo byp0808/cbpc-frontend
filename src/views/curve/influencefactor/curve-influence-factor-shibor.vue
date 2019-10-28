@@ -1,31 +1,35 @@
 <template>
   <div class="flex-container">
-    <el-form :inline="true" :model="queryForm" class="demo-form-inline">
-      <el-form-item label="开始日期">
+    <el-form ref="queryForm" :inline="true" :model="queryForm" class="demo-form-inline">
+      <el-form-item label="开始日期" prop="search_dateBegin_GTE">
         <el-date-picker
-          v-model="queryForm.taskDay"
+          v-model="queryForm.search_dateBegin_GTE"
           align="right"
           type="date"
           format="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"
+          value-format="timestamp"
           placeholder="选择日期"
           :disabled="disabled"
+          :picker-options="pickerOptionsStart"
+          @change="changeEnd"
         />
       </el-form-item>
-      <el-form-item label="结束日期">
+      <el-form-item label="结束日期" prop="search_dateEnd_LTE">
         <el-date-picker
-          v-model="queryForm.taskDay"
+          v-model="queryForm.search_dateEnd_LTE"
           align="right"
           type="date"
           format="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"
+          value-format="timestamp"
           placeholder="选择日期"
           :disabled="disabled"
+          :picker-options="pickerOptionsEnd"
+          @change="changeStart"
         />
       </el-form-item>
       <el-form-item label="利率种类">
         <el-select v-model="queryForm.orderId" placeholder="请选择" :disabled="disabled">
-          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.id" />
+          <el-option v-for="item in orderList" :key="item.id" :label="item.orderName" :value="item.orderName" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -36,41 +40,32 @@
       <el-card class="flex-children curve-build">
         <el-table
           ref="multipleTable"
-          :data="rvsQcRptList.dataList"
+          :data="shiborDataList.dataList"
           tooltip-effect="dark"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
           <el-table-column label="日期">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.date }}
             </template>
           </el-table-column>
           <el-table-column label="期限">
             <template slot-scope="scope">
-              {{ scope.row.keyTerm }}
+              {{ scope.row.data.timeLimit }}
             </template>
           </el-table-column>
           <el-table-column label="利率 （%）">
             <template slot-scope="scope">
-              {{ scope.row.yieldChg }}
+              {{ scope.row.data.rate }}
             </template>
           </el-table-column>
           <el-table-column label="涨跌 （BP）">
             <template slot-scope="scope">
-              {{ scope.row.tgtYieldChg }}
+              {{ scope.row.data.change }}
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-          :current-page="rvsQcRptList.page.pageNumber"
-          :page-sizes="[10, 20, 30, 40, 50]"
-          :page-size="rvsQcRptList.page.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="rvsQcRptList.page.totalRecord"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
       </el-card>
       <el-card class="flex-children curve-image">
         <Chart :options="chartOptions" style="width:100%" />
@@ -80,9 +75,10 @@
 </template>
 <script>
 import { Chart } from 'highcharts-vue'
-import { qryCurveRvsQcList, qryCurveRvsQcRpt } from '@/api/curve/curve-quality.js'
-import { getCurveTaskOrderOptions } from '@/api/curve/curve-order-compute.js'
-import { formatTimeToStr } from '@/utils/date.js'
+// import { qryCurveRvsQcList, qryCurveRvsQcRpt } from '@/api/curve/curve-quality.js'
+import { queryShidor } from '@/api/curve/curve-query.js'
+// import { getCurveTaskOrderOptions } from '@/api/curve/curve-order-compute.js'
+// import { formatTimeToStr } from '@/utils/date.js'
 
 export default {
   name: 'CurveInfluenceFactorShibor',
@@ -91,38 +87,27 @@ export default {
   //   props: ['taskDay', 'orderId'],
   data() {
     return {
-      rvsQcRptList: {
-        compDate: '',
-        curveId: '',
-        batchId: '',
-        dataList: [{
-          keyTerm: 0.08,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.1,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.2,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.3,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }],
-        page: {
-          pageNumber: 1,
-          pageSize: 10
-        }
+      shiborDataList: {
+        dataList: []
       },
       queryForm: {
-        taskDay: null,
+        search_dateBegin_GTE: '',
+        search_dateEnd_LTE: '',
         orderId: ''
       },
+      pickerOptionsStart: {},
+      pickerOptionsEnd: {},
       disabled: false,
-      orderList: [], // 批次列表
+      orderList: [
+        { id: '选项一', orderName: '全部' },
+        { id: '选项二', orderName: 'O/N' },
+        { id: '选项三', orderName: '1W' },
+        { id: '选项四', orderName: '2W' },
+        { id: '选项五', orderName: '1M' },
+        { id: '选项六', orderName: '3M' },
+        { id: '选项七', orderName: '6M' },
+        { id: '选项八', orderName: '9M' }
+      ], // 批次列表
       multipleSelection: '', // 选择记录
       chartOptions: {
         title: {
@@ -162,62 +147,16 @@ export default {
       }
     }
   },
-  computed: {
-    taskDayStr() {
-      var date = this.queryForm.taskDay
-      if (date) {
-        return this.$moment(date).format('YYYY-MM-DD')
-      }
-      return ''
-    }
-  },
-  watch: {
-    'queryForm.taskDay'(newValue, oldValue) {
-      console.info('queryForm.taskDay.newValue:' + newValue)
-      this.init()
-    }
-  },
-  beforeMount() {
-    console.info('curve-order-check-index.vue beforeMount:' + this.orderId + ',taskDay:' + this.taskDay)
-    var taskDay = this.taskDay
-    if (!taskDay) {
-      taskDay = new Date()
-    }
-    this.queryForm.taskDay = taskDay
-    this.queryForm.orderId = this.$store.state.curveOrderCompute.orderId
-    // 加载批次
-    this.init(true)
+  mounted() {
+    // 加载数据
+    this.shiborDataList.dataList = this.getQueryShidor()
   },
   methods: {
-    async init() {
-      // 加载批次
-      this.orderList = []
-      const data = {
-        taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
-      }
-      await getCurveTaskOrderOptions(this.orderList, data)
-      if (this.orderList && this.orderList.length > 0) {
-        // 默认显示第一条
-        if (this.queryForm.orderId) {
-          var isIn = false
-          for (let i = 0; i < this.orderList.length; i++) {
-            const orderInfo = this.orderList[i]
-            if (this.queryForm.orderId === orderInfo.id) {
-              isIn = true
-            }
-          }
-          if (!isIn) {
-            this.queryForm.orderId = this.orderList[0].id
-          }
-        } else {
-          this.queryForm.orderId = this.orderList[0].id
-        }
-      }
-    },
     // 主页面查询方法
     // 根据 activeName 调用各个页面查询方法
     indexQuery() {
-      console.info('indexQuery.activeName:' + this.activeName)
+      console.info(this)
+      console.info('查询')
       if (!this.queryForm.orderId) {
         this.$message({
           type: 'error',
@@ -225,51 +164,75 @@ export default {
         })
         return false
       }
-    },
-    handleSizeChange(pageSize) {
-      this.rvsQcRptList.page.pageSize = pageSize
-      this.qryCurveRvsQcRpt()
-    },
-    handleCurrentChange(currentPage) {
-      this.rvsQcRptList.page.pageNumber = currentPage
-      this.qryCurveRvsQcRpt()
+      this.getQueryShidor()
     },
     handleSelectionChange(items) {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
-    qryCurveRvsQcRpt() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
-        const { dataList, page } = response
-        this.rvsQcRptList.dataList = dataList
-        this.rvsQcRptList.page = page
-        var income = []
-        var lastinCome = []
-        for (var i = 0; i < dataList.length; i++) {
-          // eslint-disable-next-line no-new-wrappers
-          var x = Number(dataList[i].keyTerm)
-          // eslint-disable-next-line no-new-wrappers
-          var y = Number(dataList[i].keyTermYield)
-          income.push([x, y])
-          // eslint-disable-next-line no-new-wrappers
-          lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
+    // 获取shibor数据
+    getQueryShidor() {
+      const options = []
+      // this.queryForm.orderId = this.orderList.orderName
+      // this.queryForm.search_dateBegin_GTE = this.orderId
+      // this.queryForm.search_dateEnd_LTE = this.orderId
+      queryShidor(this.queryForm).then(response => {
+        response.map(data => options.push({ data }))
+      })
+      return options
+    },
+    // queryShidor() {
+    //   this.rvsQcRptList.compDate = this.taskDay
+    //   this.rvsQcRptList.batchId = this.orderId
+    //   queryShidor(this.rvsQcRptList).then(response => {
+    //     console.info('queryShidor.queryShidor...')
+    //     const { dataList, page } = response
+    //     this.rvsQcRptList.dataList = dataList
+    //     this.rvsQcRptList.page = page
+    //     var income = []
+    //     var lastinCome = []
+    //     for (var i = 0; i < dataList.length; i++) {
+    //       // eslint-disable-next-line no-new-wrappers
+    //       var x = Number(dataList[i].keyTerm)
+    //       // eslint-disable-next-line no-new-wrappers
+    //       var y = Number(dataList[i].keyTermYield)
+    //       income.push([x, y])
+    //       // eslint-disable-next-line no-new-wrappers
+    //       lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
+    //     }
+    //     // // 本次收益率
+    //     // this.chartOptions.series[0].data = income
+    //     // // 上一批次收益率
+    //     // this.chartOptions.series[1].data = lastinCome
+    //   })
+    // },
+    // 结束时间限制开始时间
+    changeStart() {
+      if (!this.queryForm.search_dateEnd_LTE) {
+        this.pickerOptionsStart = {
+          disabledDate: {}
         }
-        // // 本次收益率
-        // this.chartOptions.series[0].data = income
-        // // 上一批次收益率
-        // this.chartOptions.series[1].data = lastinCome
+        return
+      }
+      this.pickerOptionsStart = Object.assign({}, this.pickerOptionsStart, {
+        // 可通过箭头函数的方式访问到this
+        disabledDate: (time) => {
+          return time.getTime() > this.queryForm.search_dateEnd_LTE
+        }
       })
     },
-    qryCurveRvsQcList() {
-      this.rvsQcRptList.compDate = this.taskDay
-      this.rvsQcRptList.batchId = this.orderId
-      qryCurveRvsQcList(this.rvsQcRptList).then(response => {
-        console.info('qryCurveRvsQcList.qryCurveRvsQcList...')
-        const { datalist } = response
-        this.curveList.dataList = datalist
+    // 开始时间 控制结束时间
+    changeEnd() {
+      if (!this.queryForm.search_dateBegin_GTE) {
+        this.pickerOptionsEnd = {
+          disabledDate: {}
+        }
+        return
+      }
+      this.pickerOptionsEnd = Object.assign({}, this.pickerOptionsEnd, {
+        disabledDate: (time) => {
+          return time.getTime() < this.queryForm.search_dateBegin_GTE
+        }
       })
     }
 

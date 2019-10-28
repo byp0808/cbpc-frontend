@@ -49,6 +49,7 @@ module.exports = {
       [process.env.VUE_APP_BASE_API + '/pi-curve']: {
         // target: 'http://192.168.8.172:8088',
         target: 'http://192.168.8.100:2000',
+        // target: 'http://192.168.8.108:8080',
         pathRewrite: { ['^' + process.env.VUE_APP_BASE_API]: '' },
         changeOrigin: true,
         proxyTimeout: 1000 * 60 * 5

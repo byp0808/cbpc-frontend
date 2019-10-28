@@ -130,27 +130,20 @@
         </template>
       </el-table-column>
     </el-table>
-    <div>
-      <!-- <el-pagination
-        style="margin-top:20px"
-        align="center"
-        :current-page="page.pageNumber"
-        :page-sizes="[10, 20, 30, 40, 50]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalRecord"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      /> -->
-    </div>
+    <transition name="dialog-fade-in">
+      <el-dialog :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
+        <scheme-form />
+      </el-dialog>
+    </transition>
+
   </div>
 </template>
 <script>
-
+import SchemeForm from '@/views/valuation/scheme/scheme-method.vue'
 export default {
   name: 'AssetList',
   components: {
-
+    SchemeForm
   },
   props: {
     allList: {
@@ -167,6 +160,7 @@ export default {
   data() {
     return {
       ruleSetFormVisible: false,
+      AdjustDialog: false,
       taskRangeId: '',
       selectionList: [],
       taskList: [],
@@ -199,7 +193,8 @@ export default {
       this.$router.push({ name: 'SchemeConstruct', params: e })
     },
     adjust(e) {
-      this.$router.push({ name: 'ValuationSchemeMethod', params: { id: e.id, maketId: e.marketId }})
+      this.AdjustDialog = true
+      // this.$router.push({ name: 'ValuationSchemeMethod', params: { id: e.id, maketId: e.marketId }})
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
@@ -231,8 +226,20 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
  .box {
      margin-top: 10px;
  }
+ @keyframes dialog-fade-in {
+   0% {
+     transform:translate(0,50%);
+   }
+   50% {
+     transform:translate(0,100%);
+   }
+    100% {
+     transform:translate(0,0);
+   }
+ }
+
 </style>
