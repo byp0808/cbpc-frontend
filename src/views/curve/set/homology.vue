@@ -28,14 +28,14 @@
     </el-row>
 
     <el-form-item label="选择同调曲线" :disabled="disabled">
-      <el-select ref="homologyCurve" v-model="homologyCurveId" :disabled="disabled" placeholder="请选择同调曲线">
+      <el-select ref="homologyCurve" v-model="homologyCurveId" :disabled="disabled || !(this.mainInfo.curveId)" placeholder="请选择同调曲线">
         <el-option v-for="item in selectCurveHomology" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        :disabled="disabled"
+        :disabled="disabled || !(this.mainInfo.curveId)"
         @click="curveHomologyAdd"
       >
         添加
@@ -105,7 +105,6 @@ export default {
   },
   methods: {
     async init() {
-
       if (this.homologyId) {
         // 查询主表信息
         await querycurveHomologyMain(this.homologyId).then(response => {
@@ -145,19 +144,13 @@ export default {
 
     // 选择同调曲线并添加到列表
     curveHomologyAdd() {
+      debugger
       var homologyCurveId = this.homologyCurveId
       var label = this.$refs.homologyCurve.selectedLabel
       if (!homologyCurveId) {
         this.$message({
           type: 'error',
           message: '请选择曲线'
-        })
-        return false
-      }
-      if (homologyCurveId === this.mainInfo.curveId) {
-        this.$message({
-          type: 'error',
-          message: '不可选择目标曲线本身作为同调曲线！'
         })
         return false
       }
@@ -187,7 +180,7 @@ export default {
     },
     // 主体曲线
     changeCurve() {
-      if (this.curveHomologyList && this.curveHomologyList.length>0) {
+      if (this.curveHomologyList && this.curveHomologyList.length > 0) {
         this.$confirm('更改主体曲线将清空选择的同调曲线列表?', '提示', {
           type: 'warning'
         }).then(() => {

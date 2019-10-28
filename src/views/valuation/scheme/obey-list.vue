@@ -27,31 +27,19 @@
           <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="进入日期" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="调整人" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userId }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="资产编码" align="center">
         <template slot-scope="scope">
-          <!-- <span>{{ scope.row.bondId }}</span> -->
           <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondId }}</el-button>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
         <template slot-scope="scope">
-          <!-- <span>{{ scope.row.bondShort }}</span> -->
           <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="发行人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.maketId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="流通场所" align="center">
@@ -64,57 +52,17 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="含权说明" align="center">
+      <el-table-column label="回收率" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="推荐方法" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="估值方法" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="隐含评级" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="目标曲线" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.curveId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="信用点差" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="相对点差" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.relaSpread }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="流动性点差" align="center" width="110px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.flAdjValue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="其他点差" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.otAdjValue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总点差（变动）" align="center" width="120px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.recovery }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值收益率" align="center" width="110px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.yield }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="全价" align="center" width="110px">
         <template slot-scope="scope">
           <span>{{ scope.row.yield }}</span>
         </template>
@@ -125,6 +73,11 @@
         </template>
       </el-table-column>
       <el-table-column label="进入时间" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.filterId }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="发布批次" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.filterId }}</span>
         </template>
@@ -196,9 +149,6 @@ export default {
     adjust(e) {
       this.AdjustDialog = true
       this.adjustParams.taskId = e.id
-    },
-    getDataList() {
-      return this.taskList
     },
     handleSelectionChange(val) {
       if (val.length > 0) {

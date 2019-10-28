@@ -164,7 +164,19 @@
           </div>
         </el-col>
       </el-row>
-      <el-carousel style="margin-top: 20px" ref="relaFormTableCarousel" :interval="0" :initial-index="initialIndex" :autoplay="false" trigger="click" :loop="false" indicator-position="outside" type="card" height="440px" @change="carouselChange">
+      <el-carousel
+        ref="relaFormTableCarousel"
+        style="margin-top: 20px"
+        :interval="0"
+        :initial-index="initialIndex"
+        :autoplay="false"
+        trigger="click"
+        :loop="false"
+        indicator-position="outside"
+        type="card"
+height="440px"
+        @change="carouselChange"
+      >
         <el-carousel-item v-for="(item, index) in relaFormTableList" :key="index" style="height: 400px;overflow: scroll">
           <CurveSetRelaFormTable
             ref="refCurveSetRelaFormTable"
@@ -355,6 +367,7 @@ export default {
             })
           }
         }
+        this.sortTmpQuXJLixt()
         // 添加利差数据
         console.info('spreadFlag:' + spreadFlag)
         console.info('columnProp_LC:' + JSON.stringify(columnProp_LC))
@@ -503,6 +516,8 @@ export default {
           productName: curveInfo.productName,
           referFlag: 'Y'
         })
+
+        this.sortTmpQuXJLixt()
         this.$refs.curveIdSelect.blur()
       }
     },
@@ -575,6 +590,8 @@ export default {
       })
       // 根据区域排序，族系区放中间
       this.tmp_quXJList.sort(this.sortCurveByReferFlag)
+
+      this.sortTmpQuXJLixt()
     },
     quXJMove(index, opType) {
       if (opType === 'DEL') { // 删除
@@ -1248,6 +1265,24 @@ export default {
         })
         this.$emit('saveCallBack')
       })
+    },
+    // 族系区根据曲线评级排序
+    sortTmpQuXJLixt() {
+      for (var i = 0; i < this.tmp_quXJList.length; i++) {
+        if (this.tmp_quXJList[i].referFlag === 'Y') {
+          this.tmp_quXJList.sort(this.compareGrade)
+        }
+      }
+    },
+    // 比较评级
+    compareGrade(currentRow, nextRow) {
+      var curent_grade = this.getProductGrade(currentRow.curveId)
+      var last_grade = this.getProductGrade(nextRow.curveId)
+      if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
+        return 1
+      } else {
+        return -1
+      }
     }
   }
 

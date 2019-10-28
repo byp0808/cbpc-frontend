@@ -1,5 +1,6 @@
 import request from '@/utils/app-request'
 import { basic_api_market } from '@/api/base-api.js'
+import { basic_api_portal } from '@/api/base-api.js'
 
 // 查询模板列表
 export function queryTempList(data) {
@@ -22,9 +23,18 @@ export function queryTempInfo(tempId) {
 // 查询所有的债券
 export function queryBondsAll(bondName) {
   return request({
-    url: `${basic_api_market}/bond-filter/bond-query`,
-    method: 'get',
+    url: `${basic_api_market}/bond-info/allBonds`,
+    method: 'post',
     params: { bondName }
+  })
+}
+
+// 查询所有筛选指标
+export function queryFilterIndex(data) {
+  return request({
+    url: `${basic_api_portal}/sys/sys-para/getByType`,
+    method: 'post',
+    data
   })
 }
 

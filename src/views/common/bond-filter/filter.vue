@@ -36,7 +36,11 @@
                 prop="ruleValue"
                 label="规则值"
                 show-overflow-tooltip
-              />
+              >
+                <template slot-scope="scope">
+                  <span v-for="(value,key) in scope.row.ruleValue" :key="key">{{ interestList[value] + ";" }}</span>
+                </template>
+              </el-table-column>
               <el-table-column
                 prop="address"
                 label="操作"
@@ -79,7 +83,7 @@
               :row-class-name="tableWarningClass"
             >
               <el-table-column
-                prop="bondName"
+                prop="valAssetShortName"
                 label="债券名称"
                 show-overflow-tooltip
                 width="250"
@@ -250,7 +254,7 @@
               height="745"
             >
               <el-table-column
-                prop="bondName"
+                prop="valAssetShortName"
                 label="债券名称"
                 show-overflow-tooltip
                 width="250"
@@ -285,7 +289,7 @@
         </div>
       </el-col>
     </el-row>
-    <el-dialog :visible.sync="setRuleDialog">
+    <el-dialog append-to-body :visible.sync="setRuleDialog">
       <el-row>
         <el-col :span="18" :offset="2">
           <el-input v-model="setRuleData" prefix-icon="el-icon-search" clearable @change="search" />
@@ -295,7 +299,7 @@
         <el-col :span="18" :offset="2">
           <div class="checkBox-big">
             <el-checkbox-group v-model="interest" @change="haveSelect">
-              <el-checkbox v-for="item in interestList" :key="item" :label="item">{{ item }}</el-checkbox>
+              <el-checkbox v-for="(value, index) in interestList" :key="index" :label="index">{{ value }}</el-checkbox>
             </el-checkbox-group>
           </div>
         </el-col>
@@ -307,7 +311,7 @@
       </el-row>
       <el-row>
         <el-col :span="18" :offset="2">
-          <el-tag v-for="item in selectionList" :key="item" style="margin-right:10px">{{ item }}</el-tag>
+          <el-tag v-for="item in selectionList" :key="item" style="margin-right:10px">{{ interestList[item] }}</el-tag>
         </el-col>
       </el-row>
       <el-row>
@@ -324,7 +328,7 @@
 
 <script>
 import { basic_api_market } from '@/api/base-api.js'
-import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById, checkRepeat } from '@/api/common/bond-filter.js'
+import { queryTempList, queryTempInfo, queryBondsAll, queryBondsResult, queryFilterInfoById, checkRepeat, queryFilterIndex } from '@/api/common/bond-filter.js'
 import { upload } from '../../../utils/file-request'
 
 export default {
@@ -351,12 +355,19 @@ export default {
       whiteList: [],
       interest: [],
       setRuleData: '',
-      interestList: ['上海', '北京', '广州', '深圳'],
+      // interestList: ['上海', '北京', '广州', '深圳'],
+      interestList: {
+        '1': '码值1',
+        '2': '码值2',
+        '3': '码值3',
+        '4': '码值4'
+      },
       selectionList: [],
       ruleList: [],
       bondListAll: [],
       bondListResult: [],
       setRuleDialog: false,
+      editRuleIndex: '',
       input5: ''
     }
   },
@@ -364,11 +375,6 @@ export default {
     tableWarningClass() {
       return function({ rowIndex, row }) {
         return row.className
-      }
-    },
-    test() {
-      return function(row) {
-        return false
       }
     }
   },
@@ -401,26 +407,24 @@ export default {
 
     },
     saveRules() {
-
+      let e = ''
+      const that = this
+      this.ruleList[this.editRuleIndex].ruleValue = this.selectionList
+      this.$lodash(this.selectionList).forEach(function(value, key) {
+        e += "'" + value + "' eq #x"
+        if (key < that.selectionList.length - 1) {
+          e += ' || '
+        }
+      })
+      console.log(e)
+      this.ruleList[this.editRuleIndex].ruleValueE = e
+      this.setRuleDialog = false
     },
     delRow(index, rows) {
       rows.splice(index, 1)
     },
-    // setRuleValue(index, rows) {
-    //   this.$prompt('请输入指标值', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     inputValue: rows[index].ruleValue
-    //   }).then(({ value }) => {
-    //     rows[index].ruleValue = value
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '取消输入'
-    //     })
-    //   })
-    // },
-    setRuleValue() {
+    setRuleValue(index, rows) {
+      this.editRuleIndex = index
       this.setRuleDialog = true
     },
     emptyRuleValue(index, rows) {
@@ -429,6 +433,7 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         rows[index].ruleValue = ''
+        rows[index].ruleValueE = ''
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -456,11 +461,22 @@ export default {
         type: 'warning'
       }).then(() => {
         this.queryBondsList()
+        queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+          const ruleList = []
+          this.$lodash(response).forEach(function(value, index) {
+            ruleList.push({
+              ruleCode: value.paraName,
+              ruleName: value.paraValue,
+              ruleValue: '',
+              ruleValueE: ''
+            })
+          })
+          this.ruleList = ruleList
+        })
         queryTempInfo(this.bondTempSelect.tempId).then(response => {
-          const { black, white, rules } = response
-          this.blackList = black
-          this.whiteList = white
-          this.ruleList = rules
+          // const { black, white } = response
+          // this.blackList = black
+          // this.whiteList = white
           this.bondListResult = []
         })
       }).catch(() => {
@@ -471,16 +487,23 @@ export default {
       })
     },
     screenBonds() {
-      if (!this.ruleList || this.ruleList.length === 0 || !this.$lodash.concat(this.whiteList, this.blackList).length) {
+      const that = this
+      if (!this.ruleList && this.ruleList.length === 0 && !this.$lodash.concat(this.whiteList, this.blackList).length) {
         this.$message({
           type: 'warning',
           message: '请选择具体的模板,并应用模板!'
         })
         return false
       }
+      const rules = this.$lodash.clone(this.ruleList)
+      this.$lodash(rules).forEach(function(rule, index) {
+        if (rule.ruleValue && rule.ruleValue instanceof Array) {
+          rule.ruleValue = that.$lodash.join(rule.ruleValue, [';'])
+        }
+      })
       const data = {
         tempId: this.bondTempSelect.tempId,
-        rules: this.ruleList,
+        rules: rules,
         blwls: this.$lodash.concat(this.whiteList, this.blackList)
       }
       queryBondsResult(data).then(response => {
@@ -513,8 +536,8 @@ export default {
     },
     queryBondsList() {
       queryBondsAll().then(response => {
-        const { dataList } = response
-        this.bondListAll = dataList
+        // const { dataList } = response
+        this.bondListAll = response
       })
     },
     mvToBlackList(index, rows) {
@@ -529,9 +552,9 @@ export default {
       }
       const blackInfo = {
         bondSource: '其他',
-        bondName: row.bondName,
+        bondName: row.valAssetShortName,
         csin: row.csin,
-        marketId: row.marketId,
+        marketId: row.exchng,
         catelog: 'B'
       }
       if (this.bwListCheck(this.whiteList, row) >= 0) {
@@ -558,9 +581,9 @@ export default {
       }
       const whiteInfo = {
         bondSource: '其他',
-        bondName: row.bondName,
+        bondName: row.valAssetShortName,
         csin: row.csin,
-        marketId: row.marketId,
+        marketId: row.exchng,
         catelog: 'W'
       }
       if (this.bwListCheck(this.blackList, row) >= 0) {
@@ -606,14 +629,20 @@ export default {
       }
     },
     bwListCheck(dataList, data) {
-      return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.marketId })
+      return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.exchng })
     },
     getData(busiCode) {
       const that = this
+      const rules = this.$lodash.clone(this.ruleList)
+      this.$lodash(rules).forEach(function(rule, index) {
+        if (rule.ruleValue instanceof Array) {
+          rule.ruleValue = that.$lodash.join(rule.ruleValue, [';'])
+        }
+      })
       const data = {
         tempId: this.bondTempSelect.tempId,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
-        rules: this.ruleList,
+        rules: rules,
         filterApiScnCode: busiCode
       }
       if ((data.rules || data.rules.length === 0) && (!data.blwls || data.blwls.length === 0)) {

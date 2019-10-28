@@ -26,7 +26,7 @@
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" :disabled="true">编辑</el-button>
           <el-button v-else type="text" size="big" @click="curveHomologyDtoEdit(scope.$index, scope.row, 'EDIT')">
-            修改
+            编辑
           </el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" :disabled="true">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveHomologyDtoDel(scope.$index, scope.row)">

@@ -29,7 +29,7 @@
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
-        <asset-list :all-list="allList" :is-my="isMy" @taskList="taskLists" />
+        <asset-list ref="assetList" :all-list="allList" :is-my="isMy" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -375,9 +375,10 @@ export default {
     saveBatchFirst(type) {
       this.volumeAdd.busiCode = type
       const fd = new FormData()
-      fd.append('attach', this.excelFile)
-      fd.append('batchId', this.volumeAdd.batchId)
-      fd.append('cause', this.volumeAdd.cause)
+      fd.append('data.attach', this.excelFile)
+      fd.append('data.batchId', this.volumeAdd.batchId)
+      fd.append('data.cause', this.volumeAdd.cause)
+      fd.append('data.tab', '01')
       addBatchTask(fd).then(res => {
         this.remaindDialog = false
         this.volumeAddDialog = false
@@ -391,6 +392,7 @@ export default {
     saveFirst(type) {
       console.log('ty', type)
       this.volumeAdd.busiCode = type
+      this.volumeAdd.tab = '01'
       addOneTask(this.volumeAdd).then(res => {
         this.remaindDialog = false
         this.volumeAddDialog = false
@@ -420,6 +422,7 @@ export default {
         fd.append('data.attach', this.excelFile)
         fd.append('data.batchId', this.volumeAdd.batchId)
         fd.append('data.cause', this.volumeAdd.cause)
+        fd.append('data.tab', '01')
         console.log('fd', fd.getAll('attach'))
         addBatchTask(fd).then(res => {
           console.log('22', res)
@@ -449,6 +452,7 @@ export default {
         delete this.volumeAdd.attach
         delete this.volumeAdd.busiCode
         this.volumeAdd.csin = this.bondId
+        this.volumeAdd.tab = '01'
         addOneTask(this.volumeAdd).then(res => {
           if (res.code) {
             // this.volumeAddDialog = false
@@ -510,6 +514,7 @@ export default {
       })
     },
     selectionCheck() { // 防止点击取消后还会被添加上
+      this.selection = []
       this.taskList.map(v => {
         this.selection.push(v.id)
       })

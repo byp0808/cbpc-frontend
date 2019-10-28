@@ -8,7 +8,7 @@
           <el-input v-model="queryForm.curveName" placeholder="曲线名称" />
         </el-form-item>
         <el-form-item label="样本券编制状态">
-          <el-select v-model="queryForm.buildStatus" placeholder="样本券编制状态">
+          <el-select v-model="queryForm.sampleCompStatus" placeholder="样本券编制状态">
             <el-option
               v-for="(name, key) in $dict('SAMPLE_COMP_STATUS')"
               :key="key"
@@ -36,7 +36,7 @@
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
       <el-table-column prop="sampleCompStatus" label="样本券编制状态" width="150" show-overflow-tooltip>
         <template slot-scope="{ row }">
-          {{ $dft('SAMPLE_COMP_STATUS', row.buildStatus) }}
+          {{ $dft('SAMPLE_COMP_STATUS', row.sampleCompStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="sum" label="样本券总数" width="140" show-overflow-tooltip>
