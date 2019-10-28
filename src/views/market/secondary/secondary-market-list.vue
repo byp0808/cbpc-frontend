@@ -318,7 +318,6 @@ export default {
         checkedCurveNames: [],
         curveType: '',
         bondCode: '',
-        // period: '',
         // endPeriod: '',
         // startPeriod: '',
         issuer: '',
