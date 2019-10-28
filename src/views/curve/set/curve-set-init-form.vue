@@ -472,6 +472,7 @@ export default {
     },
     // 修改场景和行为
     curveHomologyXiuGai(index) {
+      debugger
       this.detaiColVisible = true
       // 获取记录
       this.detailForm = this.formulaEditList[index]
@@ -649,6 +650,10 @@ export default {
         newItem.formulaType = '2'
         newItem.sortNo = index
         this.detailList.push(newItem)
+        this.$message({
+          type: 'success',
+          message: '保存场景行为成功！'
+        })
       })
     },
     // 根据列表计算公式

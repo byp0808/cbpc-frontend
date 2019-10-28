@@ -142,6 +142,7 @@ export default {
         search_assignName_LIKE: '',
         search_assign_EQ: ''
       },
+      flag: false,
       order: {
         options: []
       },
@@ -205,11 +206,12 @@ export default {
     queryPersonSearch(queryString, cb) {
       const data = queryString ? { userName: queryString } : {}
       selectPerson(data).then(response => {
-        const results = response.map(i => {
+        this.results = response.map(i => {
           return { value: i.userId, label: i.userName }
         })
+        console.log(this.results)
         // 调用 callback 返回建议列表的数据
-        cb(results)
+        cb(this.results)
       })
     },
     handlePersonSelect(item) {
@@ -217,6 +219,7 @@ export default {
     },
     handlePersonSelect2(item) {
       this.person.userId = item.value
+      this.person.name = item.label
     },
     openDialog(item, val) {
       this.isMultiple = val || false
@@ -233,22 +236,31 @@ export default {
     },
     distribute() {
       const data = []
-      if (this.isMultiple) {
-        this.multipleSelection.map(i => {
-          data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
-        })
-      } else {
-        const i = Object.assign({}, this.selection, { assign: this.person.userId, assignName: this.person.username })
-        data.push(i)
-      }
-      updateTaskRules(data).then(() => {
-        this.$message.success('保存成功')
-        this.dialogFormVisible = false
-        this.getList()
+      this.results.map(v => {
+        if (this.person.username !== v.label || !this.person.userId) {
+          this.$message.warning('ssssss')
+          this.flag = true
+          return
+        }
       })
+      if (!this.flag) {
+        if (this.isMultiple) {
+          this.multipleSelection.map(i => {
+            data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
+          })
+        } else {
+          const i = Object.assign({}, this.selection, { assign: this.person.userId, assignName: this.person.username })
+          data.push(i)
+        }
+        updateTaskRules(data).then(() => {
+          this.$message.success('保存成功')
+          this.dialogFormVisible = false
+          this.getList()
+        })
+      }
     },
     download() {
-      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks')
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks', this.task)
     },
     upload(param) {
       const data = new FormData()

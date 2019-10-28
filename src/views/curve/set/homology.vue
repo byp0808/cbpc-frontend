@@ -28,14 +28,14 @@
     </el-row>
 
     <el-form-item label="选择同调曲线" :disabled="disabled">
-      <el-select ref="homologyCurve" v-model="homologyCurveId" :disabled="disabled" placeholder="请选择同调曲线">
+      <el-select ref="homologyCurve" v-model="homologyCurveId" :disabled="disabled || !(this.mainInfo.curveId)" placeholder="请选择同调曲线">
         <el-option v-for="item in selectCurveHomology" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        :disabled="disabled"
+        :disabled="disabled || !(this.mainInfo.curveId)"
         @click="curveHomologyAdd"
       >
         添加
@@ -145,6 +145,7 @@ export default {
 
     // 选择同调曲线并添加到列表
     curveHomologyAdd() {
+      debugger
       var homologyCurveId = this.homologyCurveId
       var label = this.$refs.homologyCurve.selectedLabel
       if (!homologyCurveId) {
