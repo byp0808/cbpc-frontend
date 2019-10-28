@@ -258,40 +258,45 @@ export default {
     },
     // 曲线发布
     toAddCurveProduct() {
-      this.curveOrderVisible = true
-      this.checkCouponVisible = false
-      // 获取已经勾选的行
-      // eslint-disable-next-line no-unused-vars
-      var selection = this.$refs.refCurveOrderList.selection
-      if (selection.length <= 0) {
-        this.$message({
-          type: 'error',
-          message: '请选择需要发布的曲线'
-        })
-        return false
-      }
-      for (var i = 0; i < selection.length; i++) {
-        // eslint-disable-next-line eqeqeq
-        if (selection[i].buildStatus != '6') {
+      if (this.checkCouponVisible) {
+        this.curveOrderVisible = true
+        this.checkCouponVisible = false
+      } else {
+        this.curveOrderVisible = true
+        this.checkCouponVisible = false
+        // 获取已经勾选的行
+        // eslint-disable-next-line no-unused-vars
+        var selection = this.$refs.refCurveOrderList.selection
+        if (selection.length <= 0) {
           this.$message({
             type: 'error',
-            message: '请选择已复核过的曲线进行发布'
+            message: '请选择需要发布的曲线'
           })
           return false
         }
-      }
-      // 曲线发布
-      var data = {
-        action: '7',
-        computes: selection
-      }
-      deployAndCheckCurve(data).then(response => {
-        this.$message({
-          type: 'success',
-          message: '曲线发布成功！'
+        for (var i = 0; i < selection.length; i++) {
+          // eslint-disable-next-line eqeqeq
+          if (selection[i].buildStatus != '6') {
+            this.$message({
+              type: 'error',
+              message: '请选择已复核过的曲线进行发布'
+            })
+            return false
+          }
+        }
+        // 曲线发布
+        var data = {
+          action: '7',
+          computes: selection
+        }
+        deployAndCheckCurve(data).then(response => {
+          this.$message({
+            type: 'success',
+            message: '曲线发布成功！'
+          })
+          setTimeout(1.5 * 1000)
         })
-        setTimeout(1.5 * 1000)
-      })
+      }
     },
     // 批量复核
     check() {
@@ -330,19 +335,35 @@ export default {
     },
     // 检查样本券
     checkCoupon() {
+      // 当前页面不是样本券页面，跳转前判断是否勾选曲线
+      if (!this.checkCouponVisible) {
+        var selection = this.$refs.refCurveOrderList.selection
+        if (selection.length <= 0) {
+          this.$message({
+            type: 'error',
+            message: '请选择需要检查的曲线'
+          })
+          return false
+        }
+        for (const item of selection) {
+          if (item.buildStatus !== '7') {
+            this.$message({
+              type: 'error',
+              message: '只能选择已发布的曲线'
+            })
+            return false
+          }
+        }
+        var data = {
+          action: '3',
+          computes: selection
+        }
+        checkCurveSample(data).then(response => {
+          setTimeout(1.5 * 1000)
+        })
+      }
       this.curveOrderVisible = false
       this.checkCouponVisible = true
-      // var selection = this.$refs.refCurveOrderList.selection
-      // if (selection.length <= 0) {
-      //   this.$message({
-      //     type: 'error',
-      //     message: '请选择需要发布的曲线'
-      //   })
-      //   return false
-      // }
-      checkCurveSample(this.$refs.refCurveOrderList.selection).then(response => {
-        setTimeout(1.5 * 1000)
-      })
     },
     // 跳转质检页面
     toCheck() {
@@ -352,8 +373,6 @@ export default {
     // 发布样本券
     deployCoupon() {
       var selection = this.$refs.refCurveOrderList.selection
-      console.info()
-      console.info(this)
       var data = {
         action: '3',
         computes: selection
