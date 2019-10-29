@@ -183,19 +183,19 @@ export default {
         return this.$message.warning('请输入点差')
       }
       if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '02') {
-        if (!schemeInfo.spreadStart && schemeInfo.spreadStart !== 0) {
+        if (!schemeInfo.valuationScheme.spreadStart && schemeInfo.valuationScheme.spreadStart !== 0) {
           return this.$message.warning('请输入初始点差')
         }
-        if (!schemeInfo.spreadEnd && schemeInfo.spreadEnd !== 0) {
+        if (!schemeInfo.valuationScheme.spreadEnd && schemeInfo.valuationScheme.spreadEnd !== 0) {
           return this.$message.warning('请输入最终点差')
         }
-        if (schemeInfo.spreadStart >= schemeInfo.spreadEnd) {
+        if (schemeInfo.valuationScheme.spreadStart >= schemeInfo.valuationScheme.spreadEnd) {
           return this.$message.warning('最终点差应大于初始点差')
         }
-        if (schemeInfo.cdsAdjValue >= (schemeInfo.spreadEnd - schemeInfo.spreadStart)) {
+        if (schemeInfo.valuationScheme.cdsAdjValue >= (schemeInfo.valuationScheme.spreadEnd - schemeInfo.valuationScheme.spreadStart)) {
           return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
         }
-        if (!schemeInfo.cdsAdjValue && schemeInfo.cdsAdjValue !== 0) {
+        if (!schemeInfo.valuationScheme.cdsAdjValue && schemeInfo.valuationScheme.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
       }

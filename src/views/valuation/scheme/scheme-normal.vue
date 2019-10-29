@@ -12,7 +12,6 @@
                 :value="key"
               />
             </el-select>
-
           </el-form-item>
           <el-form-item v-show="normalInfo.valuationScheme.cdsPremAdjWay === '01'" label-width="0" class="display-inline">
             <el-select v-model="normalInfo.valuationScheme.cdsPremAdjType" with="80%" size="small" placeholder="请选择">
@@ -30,19 +29,23 @@
           <el-button v-show="normalInfo.valuationScheme.cdsPremAdjWay === '03'" size="small" type="">选择市场价格</el-button>
           <template>
             <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '01'">
-              <el-form-item v-if="normalInfo.valuationScheme.cdsPremAdjType === '01'" class="display-inline" label="">
-                <el-input-number v-model="normalInfo.valuationScheme.spreadValue" size="small" :min="-99999" :max="99999" />
-              </el-form-item>
+              <template v-if="normalInfo.valuationScheme.cdsPremAdjType === '01'">
+                <el-form-item class="display-inline" label="">
+                  <el-input-number v-model="normalInfo.valuationScheme.spreadValue" size="small" :min="-99999" :max="99999" />
+                </el-form-item>
+                <el-tag type="info">相对点差:</el-tag>
+              </template>
               <template v-else-if="normalInfo.valuationScheme.cdsPremAdjType === '02'">
                 <el-form-item label="初始" class="display-inline" prop="spreadStart">
-                  <el-input-number v-model="normalInfo.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
+                  <el-input-number v-model="normalInfo.valuationScheme.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
                 </el-form-item>
                 <el-form-item label="调整幅度" class="display-inline">
-                  <el-input-number v-model="normalInfo.cdsAdjValue" size="small" @change="handleChange" /><span class="unit">BP/批</span>
+                  <el-input-number v-model="normalInfo.valuationScheme.cdsAdjValue" size="small" @change="handleChange" /><span class="unit">BP/批</span>
                 </el-form-item>
                 <el-form-item label="最终" class="display-inline">
-                  <el-input-number v-model="normalInfo.spreadEnd" size="small" :min="-99999" :max="99999" @change="handleChange" />
+                  <el-input-number v-model="normalInfo.valuationScheme.spreadEnd" size="small" :min="-99999" :max="99999" @change="handleChange" />
                 </el-form-item>
+                <el-tag type="info">相对点差:</el-tag>
               </template>
             </div>
             <el-form-item label="目标流动性点差">
@@ -233,10 +236,10 @@ export default {
       fileList: [],
       showTime: false,
       normalInfo: {
-        spreadStart: this.schemeInfo.spreadStart,
-        spreadEnd: this.schemeInfo.spreadEnd,
-        cdsAdjValue: this.schemeInfo.cdsAdjValue,
         valuationScheme: {
+          spreadStart: this.schemeInfo.spreadStart,
+          spreadEnd: this.schemeInfo.spreadEnd,
+          cdsAdjValue: this.schemeInfo.cdsAdjValue,
           curveId: this.schemeInfo.curveId,
           marketGrade: this.schemeInfo.marketGrade,
           cdsPremAdjType: this.schemeInfo.cdsPremAdjType,
@@ -317,24 +320,24 @@ export default {
           this.$message.warning('请填写点差')
           return false
         }
-        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02' && !this.normalInfo.spreadStart) {
+        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02' && !this.normalInfo.valuationScheme.spreadStart) {
           this.$message.warning('请填写初始点差')
           return false
         }
         if (this.normalInfo.valuationScheme.cdsPremAdjType === '02') {
-          if (!this.normalInfo.spreadStart && this.normalInfo.spreadStart !== 0) {
+          if (!this.normalInfo.valuationScheme.spreadStart && this.normalInfo.valuationScheme.spreadStart !== 0) {
             return this.$message.warning('请输入初始点差')
           }
-          if (!this.normalInfo.spreadEnd && this.normalInfo.spreadEnd !== 0) {
+          if (!this.normalInfo.valuationScheme.spreadEnd && this.normalInfo.valuationScheme.spreadEnd !== 0) {
             return this.$message.warning('请输入最终点差')
           }
-          if (this.normalInfo.spreadStart >= this.normalInfo.spreadEnd) {
+          if (this.normalInfo.valuationScheme.spreadStart >= this.normalInfo.valuationScheme.spreadEnd) {
             return this.$message.warning('最终点差应大于初始点差')
           }
-          if (this.normalInfo.cdsAdjValue >= (this.normalInfo.spreadEnd - this.normalInfo.spreadStart)) {
+          if (this.normalInfo.valuationScheme.cdsAdjValue >= (this.normalInfo.valuationScheme.spreadEnd - this.normalInfo.valuationScheme.spreadStart)) {
             return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
           }
-          if (!this.normalInfo.cdsAdjValue && this.normalInfo.cdsAdjValue !== 0) {
+          if (!this.normalInfo.valuationScheme.cdsAdjValue && this.normalInfo.valuationScheme.cdsAdjValue !== 0) {
             return this.$message.warning('请输入调整幅度')
           }
         }
