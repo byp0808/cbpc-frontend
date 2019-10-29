@@ -2,7 +2,7 @@
   <div class="app-container">
     <div style="margin-bottom: 20px">
       <el-input
-        v-model="search_bondId_LIKE"
+        v-model="queryBond"
         style="width: 20%"
         clearable
         placeholder="输入资产编码/资产简称"
@@ -184,7 +184,7 @@ export default {
       bondsNonpList: [],
       bondFilterList: [],
       bondsNonpData: {},
-      search_bondId_LIKE: '',
+      queryBond: '',
       file: {
         attach: ''
       },
@@ -212,7 +212,7 @@ export default {
   },
   methods: {
     loadTable() {
-      const query = this.search_bondId_LIKE ? { search_bondId_LIKE: this.search_bondId_LIKE } : {}
+      const query = this.queryBond ? { bondId: this.queryBond } : {}
       queryBondsNonpList(Object.assign(query, { page: this.page })).then(response => {
         const { dataList, page } = response
         this.page = page

@@ -4,7 +4,7 @@
       :data="haveSelectList"
       style="width: 100%"
       max-height="300"
-      :header-cell-style="{background:'#efefef'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row
@@ -88,7 +88,7 @@
       :data="allList"
       style="width: 100%"
       max-height="400"
-      :header-cell-style="{background:'#efefef'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row

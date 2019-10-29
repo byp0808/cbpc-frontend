@@ -46,7 +46,7 @@
       >
         <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
           <template slot-scope="scope">
-            <span :class="offerIsLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
+            <span :class="offerIsLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -74,9 +74,16 @@
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
       >
-        <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
+        <el-table-column
+          v-for="item in tableHeader"
+          :key="item.colName"
+          :prop="item.colName"
+          :label="item.colChiName"
+          align="center"
+          width="180px"
+        >
           <template slot-scope="scope">
-            <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
+            <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -114,6 +121,7 @@
         <ScreeningCheckboxForm
           v-if="formType===4"
           ref="ScreeningCheckboxForm"
+          :options-list="optionHeader"
           @dateCallBack="screeningCallBack"
         />
       </keep-alive>
@@ -159,8 +167,7 @@
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
           <el-select v-model="queryForm.curveType" :clearable="true" placeholder="请选择曲线编制类型">
-            <el-option label="利率" value="利率" />
-            <el-option label="信用" value="信用" />
+            <el-option v-for="item in curveOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="曲线名称">
@@ -313,6 +320,7 @@ import ScreeningStringForm from '@/views/market/secondary/screening-string-form.
 import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-form.vue'
 import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
+import { optioins } from '@/api/curve/code-type.js'
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -323,6 +331,7 @@ export default {
   },
   data() {
     return {
+      optionHeader: [],
       // 特殊条款
       specialChecked: [],
       // 编辑模板弹框
@@ -410,9 +419,12 @@ export default {
       marketLoading: false
     }
   },
+  computed: {
+    curveOptions() {
+      return optioins(this, 'CURVE_BUILD_TYPE')
+    }
+  },
   beforeMount() {
-    // this.offerLoadTable()
-    // this.loadTable()
     this.initTable()
   },
   methods: {
@@ -520,12 +532,10 @@ export default {
       // 清空筛选表单数据
       this.screeningFormReset()
       this.currentTable = 1
-      // console.info(column.property)
-      // console.info(column)
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      if (key === 'SPECIAL_PROVISIONS') {
+      if (key === 'specialProvisions') {
         this.formType = 5
       } else {
         // 默认该表头没有筛选过
@@ -537,9 +547,8 @@ export default {
         }
         const tab = this.offerTableHeader.filter(tab => tab.colName === key)
         const type = tab[0].colType
-        // console.info('在这')
-        // console.info(type)
-
+        this.optionHeader = optioins(this, tab[0].realColName)
+        // console.log('11', this.optionHeader)
         switch (type) {
           case 'DATE':// 日期型
             this.formType = 1
@@ -605,14 +614,14 @@ export default {
       }
       getTempById(val).then(res => {
         const { showCols, colData } = res
-        console.info(showCols)
+        // console.info(showCols)
         // this.offerTableHeader = showCols
         this.offerTableHeader = []
         this.$nextTick(() => {
           for (let i = 0; i < showCols.length; i++) {
             this.offerTableHeader.splice(i, 0, showCols[i])
           }
-          console.info(this.offerTableHeader)
+          // console.info(this.offerTableHeader)
         })
         this.offerColData = colData
       })
@@ -629,19 +638,13 @@ export default {
       if (this.offerCurrentModuleId !== '') {
         this.activeName = 'second'
         const module = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
-        console.info(module)
+        // console.info(module)
         this.editModuleForm.offerModuleName = module[0].tempName
 
         const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
         offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
         const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
         tableHeaderDetail.map(res => this.editTableHeaders.push(res))
-
-        // this.offerTableHeader.map(res => this.editOfferTableHeaders.push(res))
-        // this.tableHeader.map(res => this.editTableHeaders.push(res))
-        // console.info('报价')
-        // console.info(this.offerTableHeader)
-        // console.info(this.tableHeader)
         this.editModuleIsOpen = true
         this.$nextTick(() => {
           this.editOfferTableHeaders.map(obj => {
@@ -697,8 +700,8 @@ export default {
       }
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
+      this.optionHeader = optioins(this, tab[0].realColName)
+      console.log('11', this.optionHeader)
 
       switch (type) {
         case 'DATE':// 日期型
@@ -727,7 +730,6 @@ export default {
       const tab = tabs[0]
       console.info(row[title])
       if (tab.modiFlag === 'Y') {
-        console.info('进来啦')
         this.currentRow = row
         this.currentHeader.key = column.property
         this.currentHeader.label = column.label
@@ -762,14 +764,14 @@ export default {
       }
       getTempById(val).then(res => {
         const { showCols, colData } = res
-        console.info(showCols)
+        // console.info(showCols)
         // this.tableHeader = showCols
         this.tableHeader = []
         this.$nextTick(() => {
           for (let i = 0; i < showCols.length; i++) {
             this.tableHeader.splice(i, 0, showCols[i])
           }
-          console.info(this.tableHeader)
+          // console.info(this.tableHeader)
         })
         this.colData = colData
       })
@@ -798,7 +800,7 @@ export default {
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
-        console.info(this.editModuleForm)
+        // console.info(this.editModuleForm)
 
         const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.colName).length > 0)
         offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
@@ -1271,13 +1273,13 @@ export default {
           case 'NUMBER':// 数值型
             obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
-            if (typeof data.screeningNum === 'undefined') {
+            if (typeof data.screeningNum === 'undefined' || data.screeningNum === '') {
               // 范围
               obj.operator = 'BETWEEN'
-              if (typeof data.startNum !== 'undefined') {
+              if (typeof data.startNum !== 'undefined' && data.startNum !== '') {
                 obj.beginvalue = data.startNum + ''
               }
-              if (typeof data.endNum !== 'undefined') {
+              if (typeof data.endNum !== 'undefined' && data.endNum !== '') {
                 obj.endvalue = data.endNum + ''
               }
             } else {
@@ -1316,7 +1318,7 @@ export default {
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
-              if (typeof data.screeningChecked === 'undefined') {
+              if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
                 if (data.screeningChecked.length > 0) {
@@ -1330,8 +1332,18 @@ export default {
                 }
               }
             } else {
-              obj.operator = 'LIKE'
-              obj.value = data.screeningCheckString
+              // obj.value = data.screeningCheckString
+              obj.operator = 'IN'
+              obj.value = ''
+              if (data.screeningCheckString.length > 0) {
+                for (let i = 0; i < data.screeningCheckString.length; i++) {
+                  if (i === (data.screeningCheckString.length - 1)) {
+                    obj.value = obj.value + data.screeningCheckString[i]
+                  } else {
+                    obj.value = obj.value + data.screeningCheckString[i] + ','
+                  }
+                }
+              }
             }
             break
         }
@@ -1349,6 +1361,19 @@ export default {
         return 'warning-row'
       }
       return ''
+    },
+    codeFormatter(row, column) {
+      if (column.colType === 'OPTION' && column.colName === 'curveBuildType') {
+        const options = optioins(this, column.realColName)
+        const opt = options.filter(opt => opt.value === row[column.colName])
+        if (opt.length > 0) {
+          return opt[0].label
+        } else {
+          return row[column.colName]
+        }
+      } else {
+        return row[column.colName]
+      }
     }
   }
 

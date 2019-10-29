@@ -221,6 +221,7 @@ export default {
       const chartFutureOptions = this.chartFutureOptions
       chartFutureOptions.series[0].data = this.yields[0]
       chartFutureOptions.series[1].data = this.yields[1]
+      console.log(chartFutureOptions.series)
       return chartFutureOptions
     },
     makeSpotData() {

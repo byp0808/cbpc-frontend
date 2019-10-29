@@ -228,6 +228,7 @@ export default {
         })
         return false
       }
+      const shortNameFun = refSceneList[0].getProductShortName
       let isAllOk = true
       refSceneList.map((sceneInfo, index) => {
         sceneInfo.$refs['detailInfo'].validate((valid) => {
@@ -282,8 +283,8 @@ export default {
       // 计算公式
       console.log(this.tmp_sceneList)
       console.log(this.tmp_actionList)
-      const sceneFormula = this.toFormula(this.tmp_sceneList) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
-      const actionFormula = this.detailForm.actionFormulaValue === 0 ? this.toFormula(this.tmp_actionList) : this.toFormula(this.tmp_actionList) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
+      const sceneFormula = this.toFormula(this.tmp_sceneList, shortNameFun) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
+      const actionFormula = this.detailForm.actionFormulaValue === 0 ? this.toFormula(this.tmp_actionList, shortNameFun) : this.toFormula(this.tmp_actionList, shortNameFun) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
       console.info('sceneFormula:' + sceneFormula)
       console.info('actionFormula:' + actionFormula)
 
@@ -322,9 +323,9 @@ export default {
       })
     },
     // 根据列表计算公式
-    toFormula(detailList) {
+    toFormula(detailList, func) {
       // 权重 * [产品 关键期限 指标]
-      return detailList.map(item => divide(item.percent, 100) + ' * #[' + item.depCurveId + '' + item.depStandSlip + '' + item.depInd + ']').join('+')
+      return detailList.map(item => divide(item.percent, 100) + ' * #[' + func(item.depCurveId) + '' + item.depStandSlip + '' + item.depInd + ']').join('+')
     },
     save() {
       const _formula = this.formulaEditList.map(value => value.sceneFormula + ' ? ' + value.actionFormula + ' : ').join('') + '0'

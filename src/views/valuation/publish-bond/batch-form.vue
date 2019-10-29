@@ -41,7 +41,7 @@
       :data="allList"
       style="width: 100%"
       max-height="500"
-      :header-cell-style="{background:'#eee'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row
@@ -180,7 +180,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .haveBackground {
-    background: #cfc;
+    background: #ff8901;
+    color: #fff;
 }
 .noBackground {
     background: #fff;

@@ -63,7 +63,7 @@
         <ScreeningCheckboxForm
           v-if="formType===4"
           ref="ScreeningCheckboxForm"
-          :business-id="orderInfoId"
+          :options-list="optionHeader"
           @dateCallBack="screeningTable"
         />
       </keep-alive>
@@ -141,6 +141,7 @@ import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
 import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
+import { optioins } from '@/api/curve/code-type.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -151,6 +152,7 @@ export default {
   },
   data() {
     return {
+      optionHeader: [],
       // 模板编辑
       editModuleIsOpen: false,
       editModuleForm: {
@@ -326,6 +328,7 @@ export default {
 
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
+      this.optionHeader = optioins(this, tab[0].realColName)
 
       switch (type) {
         case 'DATE':// 日期型
@@ -602,13 +605,13 @@ export default {
           case 'NUMBER':// 数值型
             obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
-            if (typeof data.screeningNum === 'undefined') {
+            if (typeof data.screeningNum === 'undefined' || data.screeningNum === '') {
               // 范围
               obj.operator = 'BETWEEN'
-              if (typeof data.startNum !== 'undefined') {
+              if (typeof data.startNum !== 'undefined' && data.startNum !== '') {
                 obj.beginvalue = data.startNum + ''
               }
-              if (typeof data.endNum !== 'undefined') {
+              if (typeof data.endNum !== 'undefined' && data.endNum !== '') {
                 obj.endvalue = data.endNum + ''
               }
             } else {
@@ -647,7 +650,7 @@ export default {
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
-              if (typeof data.screeningChecked === 'undefined') {
+              if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
                 if (data.screeningChecked.length > 0) {
@@ -661,8 +664,18 @@ export default {
                 }
               }
             } else {
-              obj.operator = 'LIKE'
-              obj.value = data.screeningCheckString
+              // obj.value = data.screeningCheckString
+              obj.operator = 'IN'
+              obj.value = ''
+              if (data.screeningCheckString.length > 0) {
+                for (let i = 0; i < data.screeningCheckString.length; i++) {
+                  if (i === (data.screeningCheckString.length - 1)) {
+                    obj.value = obj.value + data.screeningCheckString[i]
+                  } else {
+                    obj.value = obj.value + data.screeningCheckString[i] + ','
+                  }
+                }
+              }
             }
             break
         }

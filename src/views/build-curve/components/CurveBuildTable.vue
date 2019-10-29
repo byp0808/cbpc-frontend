@@ -54,7 +54,7 @@
           <template slot="edit-component-slot">
             <el-option value="-" label="请选择" />
             <el-option v-for="option in options" :key="option.id" :value="option.value" :label="option.label" />
-            <el-option :value="row.homology" label="自定义" />
+            <el-option value="" label="自定义" />
           </template>
         </editable-cell>
       </el-table-column>
@@ -68,6 +68,7 @@
           v-model="row.adjRange"
           slot-scope="{ row }"
           size="mini"
+          oninput="value = value.replace(/[^\d]/g,'')"
           :name="'adjRange'"
           :row-data="row"
           :can-edit="editModeEnabled && !lockEnabled"
@@ -86,6 +87,7 @@
           v-model="row.adjResult"
           slot-scope="{ row }"
           size="mini"
+          oninput="value = value.replace(/[^\d.]/g,'')"
           :name="'adjResult'"
           :row-data="row"
           :can-edit="editModeEnabled && !lockEnabled"
@@ -255,8 +257,10 @@ export default {
       if (name === 'adjRange') {
         console.log(divide(row[name], 100))
         row.adjResult = add(row.lastYield, divide(row[name], 100))
+        row.adjReason = '手工调整'
       } else if (name === 'adjResult') {
         row.adjRange = multiply(subtract(row[name], row.lastYield), 100)
+        row.adjReason = '手工调整'
       } else if (name === 'homology') {
         if (row.homology === '') {
           this.formulaRow = row

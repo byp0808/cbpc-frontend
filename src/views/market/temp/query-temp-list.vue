@@ -96,6 +96,7 @@ export default {
     return {
       marketTempFormVisible: false,
       marketTempId: '',
+      copyTempId: '',
       radio: '',
       opType: '',
       isCopy: false,
@@ -126,7 +127,7 @@ export default {
   methods: {
     clickRow(id) {
       // console.log(id)
-      this.marketTempId = id
+      this.copyTempId = id
     },
     loadTable() {
       queryTempList({ page: this.page }).then(response => {
@@ -146,6 +147,9 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+      if (val.length === 0) {
+        this.copyTempId = ''
+      }
     },
     save(formName) {
       this.marketTempId = ''
@@ -159,6 +163,7 @@ export default {
       // console.log(id)
       this.opType = opType
       this.marketTempId = id
+      this.isCopy = false
       this.marketTempFormVisible = true
     },
     toDelete(id) {
@@ -185,6 +190,7 @@ export default {
       this.marketTempFormVisible = true
     },
     copyAdd() {
+      this.marketTempId = this.copyTempId
       if (this.marketTempId === '') {
         this.$message({
           type: 'warning',
@@ -212,5 +218,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+  .el-tooltip__popper {
+    max-width: 400px;
+  }
 </style>
