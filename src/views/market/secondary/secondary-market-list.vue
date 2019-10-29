@@ -1332,8 +1332,18 @@ export default {
                 }
               }
             } else {
-              obj.operator = 'LIKE'
-              obj.value = data.screeningCheckString
+              // obj.value = data.screeningCheckString
+              obj.operator = 'IN'
+              obj.value = ''
+              if (data.screeningCheckString.length > 0) {
+                for (let i = 0; i < data.screeningCheckString.length; i++) {
+                  if (i === (data.screeningCheckString.length - 1)) {
+                    obj.value = obj.value + data.screeningCheckString[i]
+                  } else {
+                    obj.value = obj.value + data.screeningCheckString[i] + ','
+                  }
+                }
+              }
             }
             break
         }
