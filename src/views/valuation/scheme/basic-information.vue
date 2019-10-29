@@ -4,7 +4,7 @@
       :data="haveSelectList"
       style="width: 100%"
       max-height="300"
-      :header-cell-style="{background:'#e5e9f2'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row
@@ -380,7 +380,7 @@
       :data="creditList"
       style="width: 100%"
       max-height="300"
-      :header-cell-style="{background:'#e5e9f2'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row
@@ -674,7 +674,7 @@
       :data="moneyList"
       style="width: 100%"
       max-height="200"
-      :header-cell-style="{background:'#e5e9f2'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       border
       fit
       highlight-current-row
@@ -813,7 +813,7 @@ export default {
     border: 1px solid #eee;
   }
   .bg-purple-light {
-    background: #e5e9f2;
+    background: #f4f7fc;
   }
 
 </style>
