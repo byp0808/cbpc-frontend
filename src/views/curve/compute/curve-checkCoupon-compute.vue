@@ -134,6 +134,7 @@
 import { checkCurveCouponList, findAll, findAddOrSub, certainIgnore, checkOrDeployComp } from '@/api/curve/curve-order-compute.js'
 export default {
   name: 'CurveCheckCouponCompute',
+  props: ['orderId'],
   data() {
     return {
       multipleSelection: [],
