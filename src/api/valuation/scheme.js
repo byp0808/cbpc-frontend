@@ -66,3 +66,14 @@ export function taskScheme(data) {
     }
   )
 }
+
+// 点差转换
+export function convertSpread(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/convert-spread`,
+      method: 'post',
+      data
+    }
+  )
+}

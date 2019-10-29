@@ -288,7 +288,18 @@ aside {
     }
   }
 }
-
+.el-button--default { // 默认按钮激活样式
+  &:hover {
+    background: #fff;
+    color: #1e222e;
+    border: 1px solid #666;
+  }
+  &:active {
+    background: #eee;
+    border: 1px solid #666;
+    color: #1e222e;
+  }
+}
 //卡片调整
 .el-card__body {
   .curve-image & {

@@ -5,8 +5,8 @@
       <el-tab-pane label="历史估值方案" name="02" />
     </el-tabs>
     <transition name="el-fade-in-linear">
-      <div v-if="activeName === '01'" :adjust-data="adjustData">
-        <scheme-normal />
+      <div v-if="activeName === '01'">
+        <scheme-normal :task-info="adjustData" />
       </div>
     </transition>
     <transition name="el-fade-in-linear">

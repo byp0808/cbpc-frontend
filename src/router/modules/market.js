@@ -17,12 +17,12 @@ const marketRouter = {
       path: 'primary-market-list',
       component: () => import('@/views/market/primary/primary-market-list.vue'),
       name: 'PrimaryMarketList',
-      meta: { title: '一级发行', noCache: true, roles: ['OrderInfoList'] }
+      meta: { title: '一级发行', noCache: true, roles: ['primaryMarket'] }
     }, {
       path: 'secondary-market-list',
       component: () => import('@/views/market/secondary/secondary-market-list.vue'),
       name: 'SecondaryMarketList',
-      meta: { title: '二级市场', noCache: true, roles: ['OrderInfoList'] }
+      meta: { title: '二级市场', noCache: true, roles: ['secondaryMarket'] }
     },
     {
       path: 'para-info',
@@ -34,7 +34,7 @@ const marketRouter = {
       path: 'query-temp',
       component: () => import('@/views/market/temp/query-temp-list.vue'),
       name: 'QueryTempList',
-      meta: { title: '模板设置', noCache: true }
+      meta: { title: '模板设置', noCache: true, roles: ['queryTemp'] }
     }
   ]
 }

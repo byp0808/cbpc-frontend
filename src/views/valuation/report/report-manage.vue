@@ -117,9 +117,6 @@ export default {
   },
   data() {
     return {
-      approveStatus_C: [
-
-      ],
       ReportFormVisible: false,
       businessNo: '',
       file: {
@@ -189,14 +186,18 @@ export default {
         this.$alert('报表 [' + row.reportName + '] ' + this.showStatus(row.approveStatus) + '，不能发布')
         return false
       }
-      publishReport(row.id).then((response) => {
-        this.$message({
-          message: '发布成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认发布此报告吗?', '提示', {
+        type: 'info'
+      }).then(() => {
+        publishReport(row.id).then((response) => {
+          this.$message({
+            message: '发布成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
+        }).catch(() => {
         })
-        this.loadTable()
-      }).catch(() => {
       })
     },
     toUpload(item) {
@@ -208,7 +209,8 @@ export default {
         this.$message.success('文件上传成功')
         this.loadTable()
       }).catch(() => {
-        this.$message.error('上传失败，请联系管理员')
+        this.$alert('上传失败，上传文件大小不能超过20MB，请检查。若仍然上传失败，请联系管理员')
+        this.$refs.uploadZone.clearFiles()
       })
     },
     toDownload(id) {
