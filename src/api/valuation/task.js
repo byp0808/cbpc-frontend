@@ -15,9 +15,9 @@ export function getAllTableList(data) {
 export function getUserName(id) {
   return request(
     {
-      url: `${basic_api_portal}/sys/user/getOrgUsers/${id}`,
-      method: 'get'
-      // params: { orgId: id }
+      url: `${basic_api_portal}/sys/user/getOrgUsers`,
+      method: 'post',
+      data: id
     }
   )
 }

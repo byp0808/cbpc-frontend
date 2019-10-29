@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <el-col :span="2" style="width: 80px;">
-      <el-tabs tab-position="left" style="height: 200px;" @tab-click="orderTabClick">
-        <el-tab-pane v-for="(item) in orderList" :key="item.id" :label="item.orderName" />
+    <el-col :span="4">
+      <el-tabs tab-position="left" style="height: 100%;" @tab-click="orderTabClick">
+        <el-tab-pane v-for="(item) in orderList" :key="item.id" :label="item.orderName" :title="item.orderName" />
       </el-tabs>
     </el-col>
     <el-col :span="20" style="margin: 20px 0;">
@@ -63,5 +63,8 @@ export default {
 <style>
 .el-tabs__content {
   display: none;
+}
+.el-tabs--left .el-tabs__header.is-left{
+  width: 100%;
 }
 </style>
