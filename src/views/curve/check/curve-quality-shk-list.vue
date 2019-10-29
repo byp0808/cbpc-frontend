@@ -76,13 +76,14 @@ import { qryCurveShkQcRpt } from '@/api/curve/curve-quality.js'
 
 export default {
   name: 'CurveShkQcRpt', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'curveId'],
   data() {
     return {
       shkQcRptList: {
         compDate: '',
         refObjCd: '02',
         batchId: '',
+        curveId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -92,6 +93,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryCurveShkQcRpt()
   },
   methods: {
     handleFilter() {
@@ -113,6 +117,7 @@ export default {
     qryCurveShkQcRpt() {
       this.shkQcRptList.compDate = this.taskDay
       this.shkQcRptList.batchId = this.orderId
+      this.shkQcRptList.curveId = this.curveId
       qryCurveShkQcRpt(this.shkQcRptList).then(response => {
         console.info('qryCurveShkQcRpt.qryCurveShkQcRpt...')
         const { dataList, page } = response
