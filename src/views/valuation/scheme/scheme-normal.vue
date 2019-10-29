@@ -14,7 +14,7 @@
             </el-select>
           </el-form-item>
           <el-form-item class="placeholder" label="推荐曲线">
-            <span>{{ getCurveName(recCurveName) }}</span>
+            <span>{{ getCurveName(normalInfo.valuationScheme.curveId) }}</span>
           </el-form-item>
         </div>
       </el-col>
