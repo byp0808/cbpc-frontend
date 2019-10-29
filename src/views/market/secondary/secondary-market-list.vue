@@ -1271,13 +1271,13 @@ export default {
           case 'NUMBER':// 数值型
             obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
-            if (typeof data.screeningNum === 'undefined') {
+            if (typeof data.screeningNum === 'undefined' || data.screeningNum === '') {
               // 范围
               obj.operator = 'BETWEEN'
-              if (typeof data.startNum !== 'undefined') {
+              if (typeof data.startNum !== 'undefined' && data.startNum !== '') {
                 obj.beginvalue = data.startNum + ''
               }
-              if (typeof data.endNum !== 'undefined') {
+              if (typeof data.endNum !== 'undefined' && data.endNum !== '') {
                 obj.endvalue = data.endNum + ''
               }
             } else {
