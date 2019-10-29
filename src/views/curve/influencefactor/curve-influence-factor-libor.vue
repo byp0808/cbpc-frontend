@@ -2,10 +2,10 @@
   <div class="flex-container">
     <div class="flex-item">
       <el-card class="flex-children curve-build">
-        <el-form :inline="true">
+        <el-form :inline="true" :model="queryForm">
           <el-form-item>
-            <el-select v-model="liborDataList.curveId" @change="handleOptionChange">
-              <el-option v-for="item in curveList.dataList" :key="item.id" :label="item.orderName" :value="item.id" />
+            <el-select v-model="queryForm.curveId" @change="handleOptionChange">
+              <el-option v-for="item in curveList.dataList" :key="item.id" :label="item.orderName" :value="item.orderName" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -23,7 +23,7 @@
             >
               <el-table-column label="利率期限">
                 <template slot-scope="scope">
-                  {{ scope.row.timeLimit }}
+                  <el-button type="text" @click="initstandSlipSet(scope.$index)">{{ scope.row.timeLimit }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="利率 %">
@@ -42,7 +42,7 @@
             >
               <el-table-column label="利率期限">
                 <template slot-scope="scope">
-                  {{ scope.row.timeLimit }}
+                  <el-button type="text" @click="initstandSlipSet(scope.$index)">{{ scope.row.timeLimit }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="利率 %">
@@ -61,7 +61,7 @@
             >
               <el-table-column label="利率期限">
                 <template slot-scope="scope">
-                  {{ scope.row.timeLimit }}
+                  <el-button type="text" @click="initstandSlipSet(scope.$index)">{{ scope.row.timeLimit }}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="利率 %">
@@ -86,12 +86,10 @@ export default {
   data() {
     return {
       liborDataList: {
-        curveId: '',
         dataList: []
       },
       queryForm: {
-        taskDay: null,
-        orderId: ''
+        curveId: ''
       },
       curveList: {
         dataList: [
@@ -114,7 +112,7 @@ export default {
     // 根据 activeName 调用各个页面查询方法
     indexQuery() {
       console.info(this)
-      if (!this.queryForm.orderId) {
+      if (!this.queryForm.curveId) {
         this.$message({
           type: 'error',
           message: '请选择'
@@ -126,13 +124,17 @@ export default {
     handleOptionChange(pageSize) {
 
     },
+    // 点击利率期限
+    initstandSlipSet() {
+      console.info('点击利率期限')
+    },
     // 获取libor数据
     getQuerylibor() {
       const options = []
       const options1 = []
       const options2 = []
       const options3 = []
-      querylidor({}).then(response => {
+      querylidor(this.queryForm).then(response => {
         var datalist = response
         if (datalist && datalist.length > 0) {
           for (var i = 0; i < datalist.length; i++) {

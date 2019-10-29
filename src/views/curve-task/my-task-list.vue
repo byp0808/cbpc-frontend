@@ -17,7 +17,6 @@
           </el-col>
           <el-col :span="8" :offset="8">
             <el-button-group>
-              <el-button type="primary" icon="el-icon-refresh" @click="getList" />
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-button type="primary" @click="refund(null, true)">批量退回</el-button>
             </el-button-group>
