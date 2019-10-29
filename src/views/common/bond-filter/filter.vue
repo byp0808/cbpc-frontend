@@ -71,7 +71,7 @@
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
               <span>筛选结果<span class="text-smaller text-placeholder">共{{ bondListResult.length }}条</span></span>
-              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px" :disabled="disabled">
+              <el-input v-model="filterResult" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px" :disabled="disabled">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
             </div>
@@ -115,7 +115,7 @@
             <div slot="header" class="clearfix card-head">
               <div>黑名单</div>
               <div class="input-box">
-                <el-input v-model="input5" placeholder="请输入内容" size="mini" :disabled="disabled">
+                <el-input v-model="blacklist" placeholder="请输入内容" size="mini" :disabled="disabled">
                   <el-button slot="append" icon="el-icon-search" />
                 </el-input>
               </div>
@@ -188,7 +188,7 @@
             <div slot="header" class="clearfix card-head">
               <div>白名单</div>
               <div class="input-box">
-                <el-input v-model="input5" placeholder="请输入内容" size="mini" :disabled="disabled">
+                <el-input v-model="whitelist" placeholder="请输入内容" size="mini" :disabled="disabled">
                   <el-button slot="append" icon="el-icon-search" />
                 </el-input>
               </div>
@@ -368,6 +368,9 @@ export default {
       bondListResult: [],
       setRuleDialog: false,
       editRuleIndex: '',
+      filterResult: '', // 筛选结果
+      blacklist: '', // 黑名单
+      whitelist: '', // 白名单
       input5: ''
     }
   },
@@ -518,11 +521,15 @@ export default {
         type: 'warning'
       }).then(() => {
         this.bondTempSelect.tempId = ''
+        this.blacklist = ''
         this.blackList = []
+        this.whitelist = ''
         this.whiteList = []
         this.ruleList = []
         this.bondListAll = []
         this.bondListResult = []
+        this.filterResult = ''
+        this.input5 = ''
         this.$message({
           type: 'success',
           message: '清除成功!'

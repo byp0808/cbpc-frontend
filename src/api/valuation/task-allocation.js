@@ -57,8 +57,9 @@ export function delTaskRange(id) {
 export function personnelList(orgId) {
   return request(
     {
-      url: `${basic_api_portal}/sys/user/getOrgUsers/${orgId}`,
-      method: 'get'
+      url: `${basic_api_portal}/sys/user/getOrgUsers`,
+      method: 'post',
+      data: orgId
     }
   )
 }
