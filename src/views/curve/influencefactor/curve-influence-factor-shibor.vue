@@ -52,7 +52,7 @@
           </el-table-column>
           <el-table-column label="期限">
             <template slot-scope="scope">
-              {{ scope.row.data.timeLimit }}
+              <el-button type="text" @click="initstandSlipSet(scope.$index)">{{ scope.row.data.timeLimit }}</el-button>
             </template>
           </el-table-column>
           <el-table-column label="利率 （%）">
@@ -113,15 +113,14 @@ export default {
         title: {
           text: 'Shibor'
         },
-        credits: {
+        credits: {// 显示版权信息
           enabled: false
         },
-        legend: {
+        legend: {// 图例
           layout: 'vertical',
           backgroundColor: '#fff',
-          floating: true,
-          align: 'right',
-          verticalAlign: 'top',
+          align: 'center',
+          verticalAlign: 'bottom',
           x: 0,
           y: -10
         },
@@ -129,20 +128,23 @@ export default {
           title: {
             text: ''
           },
-          gridLineWidth: 1
+          categories: [],
+          gridLineWidth: 0
         },
+
         yAxis: {
           title: {
             text: ''
           },
+          categories: [1.9, 2.1, 2.3, 2.5, 2.7, 2.9, 3.1, 3.3],
           gridLineWidth: 1
         },
         series: [{
           name: '本次收益率',
-          data: [1, 2, 3]
+          data: []
         }, {
           name: '上一批次收益率',
-          data: [3, 2, 1]
+          data: []
         }]
       }
     }
@@ -150,6 +152,7 @@ export default {
   mounted() {
     // 加载数据
     this.shiborDataList.dataList = this.getQueryShidor()
+    this.clickQueryShidor()
   },
   methods: {
     // 主页面查询方法
@@ -160,7 +163,7 @@ export default {
       if (!this.queryForm.orderId) {
         this.$message({
           type: 'error',
-          message: '请选择批次'
+          message: '请选择'
         })
         return false
       }
@@ -170,42 +173,43 @@ export default {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
     },
+    // 点击期限
+    initstandSlipSet() {
+      console.info('点击期限')
+    },
     // 获取shibor数据
     getQueryShidor() {
       const options = []
-      // this.queryForm.orderId = this.orderList.orderName
-      // this.queryForm.search_dateBegin_GTE = this.orderId
-      // this.queryForm.search_dateEnd_LTE = this.orderId
       queryShidor(this.queryForm).then(response => {
         response.map(data => options.push({ data }))
       })
       return options
     },
-    // queryShidor() {
-    //   this.rvsQcRptList.compDate = this.taskDay
-    //   this.rvsQcRptList.batchId = this.orderId
-    //   queryShidor(this.rvsQcRptList).then(response => {
-    //     console.info('queryShidor.queryShidor...')
-    //     const { dataList, page } = response
-    //     this.rvsQcRptList.dataList = dataList
-    //     this.rvsQcRptList.page = page
-    //     var income = []
-    //     var lastinCome = []
-    //     for (var i = 0; i < dataList.length; i++) {
-    //       // eslint-disable-next-line no-new-wrappers
-    //       var x = Number(dataList[i].keyTerm)
-    //       // eslint-disable-next-line no-new-wrappers
-    //       var y = Number(dataList[i].keyTermYield)
-    //       income.push([x, y])
-    //       // eslint-disable-next-line no-new-wrappers
-    //       lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
-    //     }
-    //     // // 本次收益率
-    //     // this.chartOptions.series[0].data = income
-    //     // // 上一批次收益率
-    //     // this.chartOptions.series[1].data = lastinCome
-    //   })
-    // },
+    // 关联曲线
+    clickQueryShidor() {
+      queryShidor(this.queryForm).then(response => {
+        var dataList = response
+        var income = []
+        var lastinCome = []
+        var xral = []
+        for (var i = 0; i < dataList.length; i++) {
+          var x = dataList[i].timeLimit
+          var y = Number(dataList[i].rate)
+          income.push([x, y])
+          lastinCome.push([dataList[i].timeLimit, Number(dataList[i].change)])
+          xral.push([x])
+        }
+        console.info('income')
+        console.info(income)
+        console.info(lastinCome)
+        // 本次收益率
+        this.chartOptions.series[0].data = income
+        // 上一批次收益率
+        this.chartOptions.series[1].data = lastinCome
+        // 横坐标
+        this.chartOptions.xAxis.categories = xral
+      })
+    },
     // 结束时间限制开始时间
     changeStart() {
       if (!this.queryForm.search_dateEnd_LTE) {

@@ -132,7 +132,6 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         delcurveHomologyDto(rows[index]).then(response => {
-          rows.splice(index, 1)
           this.$message({
             message: '操作成功！',
             type: 'success',

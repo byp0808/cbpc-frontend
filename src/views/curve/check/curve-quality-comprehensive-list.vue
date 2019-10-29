@@ -75,12 +75,13 @@ import { qryCurveComprehensiveQcRpt } from '@/api/curve/curve-quality.js'
 
 export default {
   name: 'CurveComprehensiveQcRpt', // 质检全面性
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'curveId'],
   data() {
     return {
       overallList: {
         compDate: '',
         batchId: '',
+        curveId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -91,6 +92,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryCurveComprehensiveQcRpt()
   },
   methods: {
     handleFilter() {
@@ -112,6 +116,7 @@ export default {
     qryCurveComprehensiveQcRpt() {
       this.overallList.compDate = this.taskDay
       this.overallList.batchId = this.orderId
+      this.overallList.curveId = this.curveId
       qryCurveComprehensiveQcRpt(this.overallList).then(response => {
         console.info('qryCurveComprehensiveQcRpt.qryCurveComprehensiveQcRpt...')
         const { dataList, page } = response

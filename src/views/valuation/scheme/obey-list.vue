@@ -4,7 +4,7 @@
       :data="allList"
       style="width: 100%"
       max-height="400"
-      :header-cell-style="{background:'#f6f6f6'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       tooltip-effect="dark"
       border
       fit
@@ -27,14 +27,14 @@
           <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="资产编码" align="center">
+      <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondId }}</el-button>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
         <template slot-scope="scope">
-          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</el-button>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发行人" align="center">
@@ -52,7 +52,7 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="回收率" align="center">
+      <el-table-column v-if="activeName === '02'" label="回收率" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.recovery }}</span>
         </template>
@@ -105,6 +105,10 @@ export default {
         return []
       }
     },
+    activeName: {
+      type: String,
+      default: '02'
+    },
     isMy: {
       type: Boolean,
       default: false
@@ -127,10 +131,13 @@ export default {
       }
     }
   },
+  watch: {
+    activeName(val) {
+      console.log('val', this.activeName)
+      this.activeName = val
+    }
+  },
   methods: {
-    // load() {
-
-    // },
     causeFilter(params) {
       switch (params) {
         case '01': return '新券'
@@ -157,16 +164,6 @@ export default {
         this.taskList = []
       }
       this.$emit('taskList', this.taskList)
-      // if (val.length > 0) {
-      //   val.map((v, i) => {
-      //     this.selectionList.push(v.id)
-      //   })
-      //   this.selectionList = Array.from(new Set(this.selectionList))
-      //   this.$emit('selectionList', this.selectionList)
-      // } else {
-      //   this.selectionList = []
-      //   this.taskList = []
-      // }
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize
@@ -183,6 +180,10 @@ export default {
 <style lang="scss" scoped>
  .box {
      margin-top: 10px;
+ }
+ .blue {
+   color:#ff8901;
+   cursor: pointer;
  }
  @keyframes dialog-fade-in {
    0% {

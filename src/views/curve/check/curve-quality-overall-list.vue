@@ -52,9 +52,9 @@
           {{ scope.row.assignName }}
         </template>
       </el-table-column>
-      <el-table-column prop="reason" label="原因" width="150" show-overflow-tooltip>
+      <el-table-column prop="reason" label="原因" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.reason }}
+          <el-button type="text" size="big" @click="singleRoute(scope.$index, overallList.dataList)">{{ scope.row.reason }}</el-button>
         </template>
       </el-table-column>
       <el-table-column prop="curveId" label="操作" width="100" show-overflow-tooltip>
@@ -206,7 +206,28 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
+    },
+    singleRoute(index, rows) {
+      let activeName = 'zl'
+      if (rows[index].reason === '跨线检查') {
+        activeName = 'qxkx'
+      } else if (rows[index].reason === '倒挂检查') {
+        activeName = 'qxdg'
+      } else if (rows[index].reason === '波动性检查') {
+        activeName = 'bdpc'
+      } else if (rows[index].reason === '全面性检查') {
+        activeName = 'qmxjc'
+      } else if (rows[index].reason === '容错') {
+        activeName = 'rc'
+      } else {
+        activeName = 'zl'
+      }
+      console.info('singleRouteCallback.reason:' + rows[index].reason)
+      console.info('singleRouteCallback.activeName:' + activeName)
+      console.info('singleRouteCallback.curveId:' + rows[index].curveId)
+      this.$emit('singleRouteCallback', rows[index].curveId, activeName)
     }
+
   }
 }
 </script>

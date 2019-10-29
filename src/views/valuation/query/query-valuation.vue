@@ -147,7 +147,7 @@
       />
       <el-table-column
         fixed="left"
-        prop="bondId"
+        prop="bondShort"
         label="债券简称"
         width="100"
       />

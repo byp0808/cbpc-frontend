@@ -4,7 +4,7 @@
       :data="allList"
       style="width: 100%"
       max-height="400"
-      :header-cell-style="{background:'#f6f6f6'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       tooltip-effect="dark"
       border
       fit
@@ -27,31 +27,26 @@
           <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="进入日期" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="调整人" align="center">
+      <el-table-column v-if="!isMy" label="调整人" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.userId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="资产编码" align="center">
+      <el-table-column label="资产编码" align="center" width="150">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.bondId }}</span> -->
-          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondId }}</el-button>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.bondShort }}</span> -->
-          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</el-button>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="发行人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.date }}</span>
         </template>
       </el-table-column>
       <el-table-column label="流通场所" align="center">
@@ -69,9 +64,9 @@
           <span>{{ scope.row.marketGrade }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="推荐方法" align="center">
+      <el-table-column label="推荐方向" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ scope.row.recoDire }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值方法" align="center">
@@ -129,10 +124,15 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="发布批次" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.filterId }}</span>
+        </template>
+      </el-table-column>
     </el-table>
     <transition name="dialog-fade-in">
       <el-dialog :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
-        <scheme-form />
+        <scheme-form :adjust-data="adjustParams" />
       </el-dialog>
     </transition>
 
@@ -175,9 +175,6 @@ export default {
     }
   },
   methods: {
-    // load() {
-
-    // },
     causeFilter(params) {
       switch (params) {
         case '01': return '新券'
@@ -233,6 +230,10 @@ export default {
 <style lang="scss" scoped>
  .box {
      margin-top: 10px;
+ }
+ .blue {
+   color:#ff8901;
+   cursor: pointer;
  }
  @keyframes dialog-fade-in {
    0% {

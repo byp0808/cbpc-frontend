@@ -5,7 +5,7 @@
       <el-tab-pane label="历史估值方案" name="02" />
     </el-tabs>
     <transition name="el-fade-in-linear">
-      <div v-if="activeName === '01'">
+      <div v-if="activeName === '01'" :adjust-data="adjustData">
         <scheme-normal />
       </div>
     </transition>
@@ -23,10 +23,21 @@ import SchemeHistory from '@/views/valuation/scheme/scheme-history.vue'
 export default {
   name: 'SchemeMethod',
   components: { SchemeNormal, SchemeHistory },
+  props: {
+    adjustData: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       activeName: '01'
     }
+  },
+  created() {
+    // console.log('112', this.adjustData)
   },
   methods: {
     tabClick(e) {
