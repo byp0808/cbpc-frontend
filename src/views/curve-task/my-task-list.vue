@@ -19,6 +19,7 @@
             <el-button-group>
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-button type="primary" @click="refund(null, true)">批量退回</el-button>
+              <el-button type="primary" @click="openBuild(null, true)">批量编制</el-button>
             </el-button-group>
           </el-col>
         </el-row>
@@ -184,9 +185,24 @@ export default {
         })
       })
     },
-    openBuild(item) {
+    openBuild(item, val) {
+      this.isMultiple = val || false
       const items = []
-      items.push(item)
+      if (this.isMultiple) {
+        if (this.multipleSelection.length < 1) {
+          this.$message({
+            message: '你没有选中任何记录，请先选择',
+            center: true,
+            type: 'warning'
+          })
+          return
+        }
+        this.multipleSelection.map(i => {
+          items.push(i)
+        })
+      } else {
+        items.push(item)
+      }
       localStorage.setItem('ids', JSON.stringify(items))
       const uri = window.location.href.split('#')[0]
       openWindow(uri + '#/curve-market', '曲线行情', 540, 540)
