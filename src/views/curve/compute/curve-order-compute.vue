@@ -278,26 +278,34 @@ export default {
           return false
         }
         for (var i = 0; i < selection.length; i++) {
-          // eslint-disable-next-line eqeqeq
-          if (selection[i].buildStatus != '6') {
+          if (selection[i].buildStatus !== '6') {
             this.$message({
               type: 'error',
-              message: '请选择已复核过的曲线进行发布'
+              message: '请选择状态为已复核的数据'
             })
             return false
           }
         }
+
         // 曲线发布
-        var data = {
-          action: '7',
-          computes: selection
-        }
-        deployAndCheckCurve(data).then(response => {
-          this.$message({
-            type: 'success',
-            message: '曲线发布成功！'
+        this.$confirm('是否确认发布', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          var data = {
+            action: '7',
+            computes: selection
+          }
+          deployAndCheckCurve(data).then(response => {
+            this.$message({
+              type: 'success',
+              message: '曲线发布成功！'
+            })
+            this.query()
+            setTimeout(1.5 * 1000)
           })
-          setTimeout(1.5 * 1000)
+        }).catch(() => {
+          console.info('cancle')
         })
       }
     },
@@ -314,26 +322,33 @@ export default {
         return false
       }
       for (var i = 0; i < selection.length; i++) {
-        // eslint-disable-next-line eqeqeq
-        if (selection[i].buildStatus != '4') {
+        if (selection[i].buildStatus !== '4') {
           this.$message({
             type: 'error',
-            message: '请选择已计算过的曲线进行复核'
+            message: '请选择状态为已计算的数据'
           })
           return false
         }
       }
       // 曲线复核
-      var data = {
-        action: '6',
-        computes: selection
-      }
-      deployAndCheckCurve(data).then(response => {
-        this.$message({
-          type: 'success',
-          message: '曲线复核成功！'
+      this.$confirm('是否确认复核', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        var data = {
+          action: '6',
+          computes: selection
+        }
+        deployAndCheckCurve(data).then(response => {
+          this.$message({
+            type: 'success',
+            message: '曲线复核成功！'
+          })
+          this.query()
+          setTimeout(1.5 * 1000)
         })
-        setTimeout(1.5 * 1000)
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     // 检查样本券
