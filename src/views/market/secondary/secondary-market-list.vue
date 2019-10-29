@@ -587,8 +587,8 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      if (typeof row.MODIFIED_COLS !== 'undefined') {
-        const modifiedCols = row.MODIFIED_COLS
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
         const mods = modifiedCols.split(',')
         const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
@@ -744,8 +744,8 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      if (typeof row.MODIFIED_COLS !== 'undefined') {
-        const modifiedCols = row.MODIFIED_COLS
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
         const mods = modifiedCols.split(',')
         const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
@@ -1345,7 +1345,7 @@ export default {
       })
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === '1') {
+      if (row.knock === '1' || row.netdeviationLimit === '1') {
         return 'warning-row'
       }
       return ''
