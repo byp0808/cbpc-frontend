@@ -1317,7 +1317,7 @@ export default {
           case 'OPTION':// 可选型
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
-            if (typeof data.screeningCheckString === 'undefined') {
+            if (typeof data.screeningCheckString === 'undefined' || data.screeningCheckString.length === 0) {
               if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
