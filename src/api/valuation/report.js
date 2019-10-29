@@ -33,6 +33,14 @@ export function deleteReport(data) {
   })
 }
 
+export function publishReport(data) {
+  return request({
+    url: `${basic_api_valuation}/report/publish`,
+    method: 'post',
+    data
+  })
+}
+
 export function previewReport(data) {
   return request({
     url: `${basic_api_valuation}/report/preview`,

@@ -72,6 +72,7 @@ export default {
     async initPageData() {
       const news = { curveId: this.initInfo, approveStatus: '02' }
       this.curveList = getQueryCurvOptions(news)
+      this.loadCurvePrdKd()
     },
     getCurveName(id) {
       return this.getCurveInfo(id).productName

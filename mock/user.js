@@ -106,7 +106,9 @@ export default [
             'CurveSetHisIndex',
             'QueryValuation',
             'OrderInfoList',
-            'QueryCountValuation'
+            'QueryCountValuation',
+            'SchemeTaskAllotList',
+            'ReportManage'
           ]
         },
         'msg': null,
