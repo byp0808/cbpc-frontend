@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="8">
+      <!-- <el-col :span="8">
         <div class="grid-content">
           <el-form-item label="目标估值曲线">
             <el-select v-model="normalInfo.valuationScheme.curveId" placeholder="请选择">
@@ -17,8 +17,8 @@
             <span>{{ getCurveName(recCurveName) }}</span>
           </el-form-item>
         </div>
-      </el-col>
-      <el-col :span="8">
+      </el-col> -->
+      <!-- <el-col :span="8">
         <div class="grid-content bg-purple-dark">
           <el-form-item label="市场隐含评级">
             <el-select v-model="normalInfo.valuationScheme.marketGrade" placeholder="请选择" @change="marketGradeChange">
@@ -34,7 +34,7 @@
             <span>{{ stockMarketGrade }}</span>
           </el-form-item>
         </div>
-      </el-col>
+      </el-col> -->
       <el-col :span="8">
         <el-form-item label="跨市场债方案同步">
           <el-switch

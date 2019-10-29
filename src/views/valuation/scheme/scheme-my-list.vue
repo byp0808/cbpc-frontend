@@ -40,7 +40,7 @@
       <el-tab-pane v-for="item in tabList" :key="item.scene" :label="tabName(item.scene)" :name="item.scene" />
     </el-tabs>
     <transition name="el-fade-in-linear">
-      <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tableLoading">
+      <div v-if="activeElement === '01'" v-loading="tableLoading">
         <asset-list :all-list="myList" :is-my="isMy" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
@@ -54,8 +54,36 @@
           @current-change="handleCurrentChange"
         />
       </div>
+      <div v-if="activeElement === '02'" v-loading="tableLoading">
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <el-pagination
+          style="margin-top:20px"
+          align="center"
+          :current-page="params.page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="params.page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="params.page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+      <div v-if="activeElement === '03'" v-loading="tableLoading">
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <el-pagination
+          style="margin-top:20px"
+          align="center"
+          :current-page="params.page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="params.page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="params.page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
       <div v-if="activeElement === '04'" v-loading="tableLoading">
-        <people-upload :all-list="uploadList" @taskList="taskList" />
+        <people-upload :all-list="uploadList" :is-my="isMy" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -481,6 +509,7 @@
 
 <script>
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
+import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
@@ -495,7 +524,8 @@ export default {
     AssetList,
     PeopleUpload,
     AdjustForm,
-    OppositeForm
+    OppositeForm,
+    ObeyList
   },
   data() {
     return {
@@ -962,6 +992,7 @@ export default {
     },
     handleSelect(e) {
       this.params.scene = e.name
+      this.activeElement = e.name
       this.loadTable()
     },
     handleSizeChange(pageSize) {

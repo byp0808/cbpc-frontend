@@ -295,9 +295,9 @@ export default {
       if (!info.publishType) {
         msg.push('批次所需发布方式不能为空')
       }
-      if (!info.curvePubType) {
-        msg.push('曲线发布类型不能为空')
-      }
+      // if (!info.curvePubType) {
+      //   msg.push('曲线发布类型不能为空')
+      // }
       if (!info.publishSampleFlag) {
         msg.push('是否发布样本券不能为空')
       }
@@ -339,6 +339,18 @@ export default {
               message: '批次【' + orderName + '】数据校验异常:' + msg
             })
             return false
+          }
+          // 如果构建远期，判断是否勾选发布类型
+          if (this.productInfo.maturityFlag === 'Y') {
+            if (!curvePrdOrder.curvePubType) {
+              this.$message({
+                type: 'warning',
+                duration: 10000,
+                showClose: true,
+                message: '批次【' + orderName + '】数据校验异常:曲线发布类型不能为空'
+              })
+              return false
+            }
           }
           // 验证发布关键期限
           if (!prdKtList || prdKtList.length <= 0) {
