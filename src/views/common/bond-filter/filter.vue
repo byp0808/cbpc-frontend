@@ -652,7 +652,7 @@ export default {
         rules: rules,
         filterApiScnCode: busiCode
       }
-      if ((data.rules || data.rules.length === 0) && (!data.blwls || data.blwls.length === 0)) {
+      if ((!data.rules || data.rules.length === 0) && (!data.blwls || data.blwls.length === 0)) {
         this.$message.error('您还未选择任何筛选条件,请先选择筛选条件')
         return false
       }

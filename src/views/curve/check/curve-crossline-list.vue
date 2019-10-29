@@ -39,7 +39,7 @@ export default {
   filters: {
     // showCodeLabel: showCodeLabel
   }, // 曲线样本券列表
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'curveId'],
   data() {
     return {
       postCode: '',
