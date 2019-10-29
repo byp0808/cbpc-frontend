@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form ref="valuSchemeForm" :model="schemeInfo" label-width="130px">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="8">
           <div class="grid-content bg-purple-dark">
             <el-form-item label="估值场景">
               <el-select v-model="schemeInfo.valuScene" placeholder="请选择">
@@ -19,6 +19,42 @@
             </el-form-item>
           </div>
         </el-col>
+        <template v-if="schemeInfo.valuScene === '01'">
+          <el-col :span="8">
+            <div class="grid-content">
+              <el-form-item label="目标估值曲线">
+                <el-select v-model="schemeInfo.curveId" placeholder="请选择">
+                  <el-option
+                    v-for="curve in curveList"
+                    :key="curve.id"
+                    :label="curve.name"
+                    :value="curve.id"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item class="placeholder" label="推荐曲线">
+                <span>{{ getCurveName(recCurveName) }}</span>
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="grid-content bg-purple-dark">
+              <el-form-item label="市场隐含评级">
+                <el-select v-model="schemeInfo.marketGrade" placeholder="请选择" @change="marketGradeChange">
+                  <el-option
+                    v-for="(name, key) in $dict('MARKET_GRADE')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item class="placeholder" label="存量隐含评级">
+                <span>{{ stockMarketGrade }}</span>
+              </el-form-item>
+            </div>
+          </el-col>
+        </template>
       </el-row>
       <template>
         <SchemeNormal
@@ -67,15 +103,24 @@
 import SchemeNormal from '@/views/valuation/scheme/scheme-normal.vue'
 import { queryDictList, uploadFile } from '@/api/common/common.js'
 import { basic_api_valuation } from '@/api/base-api.js'
-import { save } from '@/api/valuation/scheme.js'
+import { getCurveList, findCurveByMarketGrade, save, taskScheme } from '@/api/valuation/scheme.js'
 export default {
   name: 'ValuationSchemeForm',
   components: {
     SchemeNormal
   },
+  props: {
+    taskInfo: {
+      type: Object,
+      default: function() {
+        return null
+      }
+    }
+  },
   data() {
     return {
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
+      stockMarketGrade: '存量隐含评级',
       valWays: [],
       recovery: '',
       uploadTime: '',
@@ -98,12 +143,33 @@ export default {
         return this.valWays[index]
       }
       return {}
+    },
+    getCurveName() {
+      return function(curveId) {
+        const index = this.$lodash.findIndex(this.curveList, { id: curveId })
+        return index > -1 ? this.curveList[index].name : ''
+      }
     }
   },
+  created() {
+    console.log('112', this.adjustData)
+  },
   mounted() {
+    const that = this
+    getCurveList().then(response => {
+      const { dataList } = response
+      that.curveList = dataList
+    })
     queryDictList({ codetype: 'VAL_WAYS' }).then(response => {
       this.valWays = response
     })
+  },
+  beforeMount() {
+    if (this.taskInfo && this.taskInfo.taskId) {
+      taskScheme(this.taskInfo.taskId).then(response => {
+        this.schemeInfo = response
+      })
+    }
   },
   methods: {
     save() {
@@ -170,6 +236,11 @@ export default {
       uploadFile({ file: data.file }).then(response => {
         data.onSuccess(response)
         this.uploadTime = this.$moment().format('YYYY-MM-DD')
+      })
+    },
+    marketGradeChange(value) {
+      findCurveByMarketGrade(value).then(respnse => {
+        this.normalInfo.valuationScheme.curveId = respnse
       })
     }
   }

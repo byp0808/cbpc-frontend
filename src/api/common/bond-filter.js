@@ -25,7 +25,7 @@ export function queryBondsAll(bondName) {
   return request({
     url: `${basic_api_market}/bond-info/allBonds`,
     method: 'post',
-    params: { bondName }
+    data: { bondName }
   })
 }
 
