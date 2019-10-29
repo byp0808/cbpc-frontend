@@ -109,6 +109,7 @@
     <CurveCheckCouponCompute
       v-if="checkCouponVisible"
       ref="refCurveCheckCouponCompute"
+      :order-id="orderId"
       :visible.sync="checkCouponVisible"
     />
   </div>
@@ -337,6 +338,9 @@ export default {
     checkCoupon() {
       // 当前页面不是样本券页面，跳转前判断是否勾选曲线
       if (!this.checkCouponVisible) {
+        this.curveOrderVisible = false
+        this.checkCouponVisible = true
+
         var selection = this.$refs.refCurveOrderList.selection
         if (selection.length <= 0) {
           this.$message({

@@ -297,8 +297,8 @@ export default {
     },
     isLight(row, header) {
       // 判断是否高亮
-      if (typeof row.MODIFIED_COLS !== 'undefined') {
-        const modifiedCols = row.MODIFIED_COLS
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
         const mods = modifiedCols.split(',')
         const mod = mods.filter(val => val === header.colName)
         return mod.length > 0
