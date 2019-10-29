@@ -113,6 +113,7 @@ export default {
       flag: false,
       kdTempId: '',
       tmpKdTempId: '',
+      copyKdTempId: '',
       kdTempList: [],
       kdTempData: {},
       page: {
@@ -150,6 +151,7 @@ export default {
         this.$refs.refKdTempTable.toggleRowSelection(row, true)
         this.tmpKdTempId = row.id
       }
+      this.copyKdTempId = this.kdTempId
     },
     loadTable() {
       querykdTempList({ page: this.page }).then(response => {
@@ -170,6 +172,7 @@ export default {
         this.$refs.refKdTempTable.toggleRowSelection(val[1], true)
       } else if (val.length === 0) {
         this.kdTempId = ''
+        this.copyKdTempId = ''
       } else {
         this.kdTempId = val[0].id
       }
@@ -211,6 +214,7 @@ export default {
       this.kdTempFormVisible = true
     },
     copyAdd() {
+      this.kdTempId = this.copyKdTempId
       if (this.kdTempId === '') {
         this.$message({
           type: 'warning',

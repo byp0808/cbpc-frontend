@@ -111,6 +111,7 @@ export default {
       isCopy: false,
       flag: false,
       nkTempId: '',
+      copynkTempId: '',
       tmpNkTempId: '',
       nkTempList: [],
       nkTempData: {},
@@ -149,6 +150,7 @@ export default {
         this.$refs.refNkTempTable.toggleRowSelection(row, true)
         this.tmpNkTempId = row.id
       }
+      this.copynkTempId = this.nkTempId
     },
     loadTable() {
       querynkTempList({ page: this.page }).then(response => {
@@ -169,6 +171,7 @@ export default {
         this.$refs.refNkTempTable.toggleRowSelection(val[1], true)
       } else if (val.length === 0) {
         this.nkTempId = ''
+        this.copynkTempId = ''
       } else {
         this.nkTempId = val[0].id
       }
@@ -210,6 +213,7 @@ export default {
       this.nkTempFormVisible = true
     },
     copyAdd() {
+      this.nkTempId = this.copynkTempId
       if (this.nkTempId === '') {
         this.$message({
           type: 'warning',
