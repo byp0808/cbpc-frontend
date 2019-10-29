@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <el-col :span="4">
+    <el-col :span="5">
       <el-tabs tab-position="left" style="height: 100%;" @tab-click="orderTabClick">
         <el-tab-pane v-for="(item) in orderList" :key="item.id" :label="item.orderName" :title="item.orderName" />
       </el-tabs>
     </el-col>
-    <el-col :span="20" style="margin: 20px 0;">
+    <el-col :span="19" style="margin: 20px 0;">
       <CurveOrderCompute
         ref="refCurveOrderCompute"
         :order-id="selectOrder.id"
