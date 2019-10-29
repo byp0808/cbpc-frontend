@@ -55,3 +55,14 @@ export function history(data) {
     }
   )
 }
+
+// 估值任务方案
+export function taskScheme(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/scheme/task-scheme`,
+      method: 'post',
+      data
+    }
+  )
+}
