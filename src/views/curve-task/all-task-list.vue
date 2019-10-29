@@ -29,7 +29,6 @@
               >
                 <el-button type="primary">上传曲线方案</el-button>
               </el-upload>
-              <el-button type="primary" icon="el-icon-refresh" @click="getList" />
               <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
             </el-button-group>
           </el-col>
@@ -56,13 +55,7 @@
         </el-table-column>
         <el-table-column label="曲线编制状态">
           <template slot-scope="{ row }">
-            <span v-if="row.curveBuildStatusIn == 1">待分配</span>
-            <span v-if="row.curveBuildStatusIn == 2">待编制</span>
-            <span v-if="row.curveBuildStatusIn == 3">已确认</span>
-            <span v-if="row.curveBuildStatusIn == 4">已计算</span>
-            <span v-if="row.curveBuildStatusIn == 5">待复核</span>
-            <span v-if="row.curveBuildStatusIn == 6">已复核</span>
-            <span v-if="row.curveBuildStatusIn == 7">已发布</span>
+            <span>{{ $dft('CURVE_BUILD_STATUS', row.curveBuildStatusIn) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -133,6 +126,7 @@ export default {
         search_curveName_LIKE: '',
         search_curveId_EQ: ''
       },
+      flag: false,
       uploadUrl: `${basic_api_curve}/curve/uploadCurveSolutions`,
       person: {
         username: '',
@@ -194,11 +188,11 @@ export default {
     queryPersonSearch(queryString, cb) {
       const data = queryString ? { userName: queryString } : {}
       selectPerson(data).then(response => {
-        const results = response.map(i => {
+        this.results = response.map(i => {
           return { value: i.userId, label: i.userName }
         })
         // 调用 callback 返回建议列表的数据
-        cb(results)
+        cb(this.results)
       })
     },
     handlePersonSelect(item) {
@@ -218,19 +212,29 @@ export default {
       this.dialogFormVisible = true
     },
     distribute() {
+      this.flag = false
       const ids = []
-      if (this.isMultiple) {
-        this.multipleSelection.map(i => {
-          ids.push(i.id)
-        })
-      } else {
-        ids.push(this.selection.id)
-      }
-      updateCurveTask({ ids, assign: this.person.userId, assignName: this.person.username }).then(() => {
-        this.$message.success('保存成功')
-        this.dialogFormVisible = false
-        this.getList()
+      this.results.map(v => {
+        if (this.person.username !== v.label) {
+          this.$message.warning('没有查到对应的责任人信息')
+          this.flag = true
+          return
+        }
       })
+      if (!this.flag) {
+        if (this.isMultiple) {
+          this.multipleSelection.map(i => {
+            ids.push(i.id)
+          })
+        } else {
+          ids.push(this.selection.id)
+        }
+        updateCurveTask({ ids, assign: this.person.userId, assignName: this.person.username }).then(() => {
+          this.$message.success('保存成功')
+          this.dialogFormVisible = false
+          this.getList()
+        })
+      }
     },
     claim(item) {
       chaimCurveTask(item.id).then(() => {
