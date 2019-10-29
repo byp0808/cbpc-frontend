@@ -73,6 +73,14 @@ export default {
   components: {
     SchemeNormal
   },
+  props: {
+    adjustData: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
@@ -99,6 +107,9 @@ export default {
       }
       return {}
     }
+  },
+  created() {
+    console.log('112', this.adjustData)
   },
   mounted() {
     queryDictList({ codetype: 'VAL_WAYS' }).then(response => {

@@ -12,14 +12,18 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="filterId" label="日期" align="center" />
-        <!-- <el-table-column prop="lastUpdBy" label="操作人" align="center" /> -->
-        <el-table-column label="债券代码" align="center">
+        <!-- <el-table-column v-if="!isMy" prop="filterId" label="调整人" align="center" /> -->
+        <el-table-column v-if="!isMy" label="调整人" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.userId }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="资产编码" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.bondId }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="债券简称" align="center">
+        <el-table-column label="资产简称" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.bondShort }}</span>
           </template>
@@ -64,6 +68,16 @@
             <span>{{ scope.row.resultDirection }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="进入时间" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.date }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="发布批次" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.date }}</span>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <!-- <div>
@@ -94,6 +108,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    isMy: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
