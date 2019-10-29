@@ -171,7 +171,6 @@
             <el-form-item class="display-inline" label="跨市场债方案同步">
               <el-switch
                 v-model="isCover"
-                active-color="#13ce66"
               />
             </el-form-item>
             <el-form-item label-width="10" class="display-inline">
