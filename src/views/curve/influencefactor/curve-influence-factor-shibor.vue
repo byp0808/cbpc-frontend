@@ -122,7 +122,9 @@ export default {
           align: 'center',
           verticalAlign: 'bottom',
           x: 0,
-          y: -10
+          y: -10,
+          width: '300px',
+          display: 'flex'
         },
         xAxis: {
           title: {
@@ -144,7 +146,8 @@ export default {
           data: []
         }, {
           name: '上一批次收益率',
-          data: []
+          data: [],
+          color: 'orange'
         }]
       }
     }
@@ -196,12 +199,9 @@ export default {
           var x = dataList[i].timeLimit
           var y = Number(dataList[i].rate)
           income.push([x, y])
-          lastinCome.push([dataList[i].timeLimit, Number(dataList[i].change)])
+          lastinCome.push([(dataList[i].timeLimit), Number(dataList[i].change) / 100])
           xral.push([x])
         }
-        console.info('income')
-        console.info(income)
-        console.info(lastinCome)
         // 本次收益率
         this.chartOptions.series[0].data = income
         // 上一批次收益率

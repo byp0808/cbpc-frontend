@@ -14,7 +14,7 @@
         >
           <el-table-column label="名称">
             <template slot-scope="scope">
-              <el-button type="text" @click="initstandSlipSet(scope.$index)">{{ scope.row.data.bondName }}</el-button>
+              {{ scope.row.data.bondName }}
             </template>
           </el-table-column>
           <el-table-column label="债券收益率">
@@ -104,7 +104,8 @@ export default {
           data: []
         }, {
           name: '一年前',
-          data: []
+          data: [],
+          color: 'orange'
         }]
       },
       multipleSelection: '' // 选择记录
