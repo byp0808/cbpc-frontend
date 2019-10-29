@@ -54,8 +54,8 @@
       </el-table-column>
       <el-table-column label="事件明细" align="center" width="160px">
         <template slot-scope="scope">
-          <!-- <el-button type="text" size="small">{{ scope.row.taskName }}</el-button> -->
-          <span style="color:#09f;font-size:14px;cursor: pointer;" class="detail">{{ scope.row.taskName }}</span>
+          <!-- <el-button type="text">{{ scope.row.taskName }}</el-button> -->
+          <span style="color:#09f;font-size:14px;cursor: pointer;" class="detail" @click="toAudit(scope.row.businessNo, scope.row.taskStatus, scope.row.businessRouter)">{{ scope.row.taskName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" align="center">
@@ -187,6 +187,11 @@ export default {
           this.params.page = page
         }
       )
+    },
+    toAudit(businessNo, taskStatus, router) {
+      this.$store.commit('task/setBusinessNo', businessNo)
+      this.$store.commit('task/setTaskStatus', taskStatus)
+      this.$router.push({ name: router })
     },
     audit(businessNo, auditStatus, router) {
       this.$store.commit('task/setBusinessNo', businessNo)

@@ -9,7 +9,7 @@
                 <el-input v-model="nkTempInfo.id" disabled />
               </el-form-item>
               <el-form-item label="规则名称" prop="tempName">
-                <el-input v-model="nkTempInfo.tempName" :disabled="false" placeholder="请输入规则名称" type="text" />
+                <el-input v-model="nkTempInfo.tempName" :disabled="false" maxlength="42" placeholder="请输入规则名称" type="text" />
               </el-form-item>
             </el-form>
           </div>
@@ -60,7 +60,7 @@
         highlight-current-row
         :data="newsList"
         tooltip-effect="dark"
-        style="width: 401px;left: 200px"
+        style="width: 501px;left: 200px"
       >
         <el-table-column
           prop="nvalue"
@@ -76,6 +76,23 @@
           width="200"
           align="center"
         />
+        <el-table-column
+          prop="address"
+          label="操作"
+          width="100"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+
+              size="small"
+              @click.native.prevent="toDelete(scope.$index, newsList)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -94,7 +111,7 @@ export default {
       nkTempInfoRules: {
         tempName: [
           { required: true, message: '请输入规则名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { min: 1, max: 42, message: '超长', trigger: 'blur' },
           { validator: this.checkTempName, trigger: 'blur' }
         ]
       },
@@ -136,6 +153,15 @@ export default {
       }
       this.$refs.NkTempForm.validate((valid) => {
         if (valid) {
+          // console.log(this.newsList)
+          if (this.newsList.length === 0) {
+            this.$message({
+              message: 'NK值不能为空！',
+              type: 'error',
+              showClose: true
+            })
+            return false
+          }
           const data = this.nkTempInfo
           data.nkList = this.newsList
           savenkTemp(data).then(response => {
@@ -162,6 +188,20 @@ export default {
         })
         return false
       }
+      if (this.addDetail.nvalue === '0' && this.addDetail.kvalue === '0') {
+        this.$message({
+          message: 'N\K值不能同时为0',
+          type: 'error'
+        })
+        return false
+      }
+      if (Number(this.addDetail.nvalue) % 1 !== 0 || Number(this.addDetail.kvalue) % 1 !== 0) {
+        this.$message({
+          message: 'N\K值只能为整数',
+          type: 'error'
+        })
+        return false
+      }
       // 判断NK 是否互斥
       if (Number(this.addDetail.nvalue) + Number(this.addDetail.kvalue) !== Math.abs(Number(this.addDetail.nvalue) - Number(this.addDetail.kvalue))) {
         this.$message({
@@ -173,7 +213,7 @@ export default {
       // 判断NK重复
       var reflag = false
       for (const item of this.newsList) {
-        if (item.nvalue === this.addDetail.nvalue && item.kvalue === this.addDetail.kvalue) {
+        if (item.nvalue === Number(this.addDetail.nvalue).toFixed(1) && item.kvalue === Number(this.addDetail.kvalue).toFixed(1)) {
           reflag = true
           break
         }
@@ -206,6 +246,9 @@ export default {
           callback()
         }
       })
+    },
+    toDelete(index, rows) { // 删除改行
+      rows.splice(index, 1)
     }
   }
 }

@@ -4,7 +4,13 @@
       <el-row>
         <el-col :span="7">
           <el-form-item label="开始日期及批次期" prop="startDate">
-            <el-date-picker v-model="formData.startDate" type="date" placeholder="选择日期" clearable />
+            <el-date-picker
+              v-model="formData.startDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              @change="getStartBatchs"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="5">
@@ -12,9 +18,9 @@
             <el-select v-model="formData.startBatch" placeholder="选择批次">
               <el-option
                 v-for="item in startBatchs"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
           </el-form-item>
@@ -33,14 +39,21 @@
         </el-col>
         <el-col :span="5">
           <el-form-item label="债券代码" prop="CSIN">
-            <el-input v-model="formData.CSIN" style="width:60%" clearable />
+            <el-input v-model="formData.csin" style="width:60%" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="7">
           <el-form-item label="结束日期及批次期" prop="endDate">
-            <el-date-picker v-model="formData.endDate" type="date" placeholder="选择日期" clearable />
+            <el-date-picker
+              v-model="formData.endDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              clearable
+              @change="getEndBatchs"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="5">
@@ -48,9 +61,9 @@
             <el-select v-model="formData.endBatch" placeholder="请选择">
               <el-option
                 v-for="item in endBatchs"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
           </el-form-item>
@@ -128,7 +141,7 @@
 <script>
 import MethodList from '@/views/valuation/query/method-list.vue'
 import PeopleList from '@/views/valuation/query/people-list.vue'
-import { queryValuationScheme, queryPeopleValuation } from '@/api/valuation/query.js'
+import { queryValuationScheme, queryPeopleValuation, getTaskBatchList } from '@/api/valuation/query.js'
 import { basic_api_valuation } from '@/api/base-api'
 import { downloadFile } from '@/utils/file-request'
 export default {
@@ -149,22 +162,16 @@ export default {
         startBatch: '', // 开始批次
         endBatch: '', // 结束批次
         bondShort: '', // 债券简称
-        CSIN: '', // 债券代码
+        csin: '', // 债券代码
         bondQuality: '', // 债券品种
         yieldCurve: '', // 收益率曲线
         valuationMetnod: '', // 估值方法
         publisher: '' // 发行人
       },
       // 开始批次
-      startBatchs: [
-        { value: '1', label: '8：00' },
-        { value: '2', label: '9：00' }
-      ],
+      startBatchs: [],
       // 结束批次
-      endBatchs: [
-        { value: '1', label: '8：00' },
-        { value: '2', label: '9：00' }
-      ],
+      endBatchs: [],
       // 收益率曲线
       yieldCurves: [
         { value: '1', label: '中债收益率' },
@@ -190,6 +197,16 @@ export default {
   methods: {
     load() {
       this.activeElement === '01' ? this.loadMethodList() : this.loadPeopleList()
+    },
+    getStartBatchs() {
+      getTaskBatchList(this.formData.startDate).then(response => {
+        this.startBatchs = response
+      })
+    },
+    getEndBatchs() {
+      getTaskBatchList(this.formData.endDate).then(response => {
+        this.endBatchs = response
+      })
     },
     // 加载点差方案列表
     loadMethodList() {

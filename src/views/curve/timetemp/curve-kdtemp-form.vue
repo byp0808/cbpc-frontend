@@ -9,7 +9,7 @@
                 <el-input v-model="kdTempInfo.id" disabled />
               </el-form-item>
               <el-form-item label="规则名称" prop="tempName">
-                <el-input v-model="kdTempInfo.tempName" :disabled="false" placeholder="请输入规则名称" type="text" />
+                <el-input v-model="kdTempInfo.tempName" :disabled="false" maxlength="42" placeholder="请输入规则名称" type="text" />
               </el-form-item>
             </el-form>
           </div>
@@ -77,7 +77,7 @@ export default {
       kdTempInfoRules: {
         tempName: [
           { required: true, message: '请输入规则名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { min: 1, max: 42, message: '超长', trigger: 'blur' },
           { validator: this.checkTempName, trigger: 'blur' }
         ]
       },

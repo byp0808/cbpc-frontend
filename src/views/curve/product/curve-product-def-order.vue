@@ -153,7 +153,7 @@ export default {
       if (dataList && dataList.length > 0) {
         for (var i = 0; i < dataList.length; i++) {
           var item = dataList[i]
-          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime, remindTime: item.remindTime })
+          this.orderList.push({ id: item.id, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime, remindTime: item.remindTime })
         }
       }
 
@@ -306,6 +306,9 @@ export default {
       }
       if (!info.interestDueFreq) {
         msg.push('付息频率不能为空')
+      }
+      if (info.orderClosedFlag === '1' && (!(info.orderClosedSt) || !(info.orderClosedEt))) {
+        msg.push('批次关闭的生效时间,开始和结束时间都不可为空')
       }
       return msg.join('、')
     },

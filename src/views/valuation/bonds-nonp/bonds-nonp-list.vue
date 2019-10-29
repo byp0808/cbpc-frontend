@@ -38,12 +38,6 @@
         :selectable="selectToBatch"
       />
       <el-table-column
-        prop="bondsConceptType"
-        label="资产概念分类"
-        show-overflow-tooltip
-        width="120"
-      />
-      <el-table-column
         prop="bondId"
         label="资产编码"
         show-overflow-tooltip
@@ -229,6 +223,7 @@ export default {
       this.multipleSelection = val
     },
     convertMarket(val) {
+      if (!val) return ''
       let res = ''
       val = val.split(',')
       for (const x in val) {
@@ -321,7 +316,11 @@ export default {
               this.loadTable()
             })
           }).catch(() => {
+            this.$refs.uploadZone.clearFiles()
           })
+        } else if (res.respCode === 'YBL100002004') {
+          this.$alert(res.respMsg, '错误')
+          this.$refs.uploadZone.clearFiles()
         } else {
           this.$refs.uploadZone.clearFiles()
           this.$message.success('批量上传成功')

@@ -34,7 +34,7 @@ export async function getOrderListOptions(orderList) {
   if (dataList && dataList.length > 0) {
     for (var i = 0; i < dataList.length; i++) {
       var item = dataList[i]
-      orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
+      orderList.push({ id: item.id, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
     }
   }
   return orderList
@@ -106,6 +106,15 @@ export function queryPrdOrderKtInfoList(data) {
 export function queryPrdOrderAutoKts(data) {
   return request({
     url: `${basic_api_curve}/curveProductOrderAuto/prdOrderAutoKds`,
+    method: 'post',
+    data
+  })
+}
+
+// 查看曲线性质
+export function viewCurveProperty(data) {
+  return request({
+    url: `${basic_api_curve}/curveOrderCompute/viewCurveProperty`,
     method: 'post',
     data
   })

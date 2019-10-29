@@ -48,12 +48,12 @@
 </template>
 
 <script>
-import { getCurveProductIdOptions, queryCurvePrdKd } from '@/api/curve/curve-product-list.js'
+import { queryCurvePrdKd, getQueryCurvOptions } from '@/api/curve/curve-product-list.js'
 import { sortStandSlip } from '@/api/curve/curve-set-rela.js'
 
 export default {
   name: 'CurveSetInitDetailForm',
-  props: ['detailInfo', 'disabled'],
+  props: ['detailInfo', 'disabled', 'initInfo'],
   data() {
     return {
       curveList: [],
@@ -70,13 +70,17 @@ export default {
   methods: {
     // 初始化页面数据
     async initPageData() {
-      this.curveList = getCurveProductIdOptions()
+      const news = { curveId: this.initInfo, approveStatus: '02' }
+      this.curveList = getQueryCurvOptions(news)
     },
     getCurveName(id) {
       return this.getCurveInfo(id).productName
     },
+    getProductShortName(id) {
+      return this.getCurveInfo(id).productShortName
+    },
     getCurveInfo(id) {
-      var list = this.selectCurve
+      var list = this.curveList
       for (const index in list) {
         const item = list[index]
         if (id === item.curveId) {

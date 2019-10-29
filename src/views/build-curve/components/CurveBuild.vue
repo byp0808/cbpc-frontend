@@ -58,8 +58,11 @@ import RelationTable from '@/views/build-curve/components/RelationTable'
 import HighBright from '@/views/build-curve/components/HighBrightColumn'
 import { Chart } from 'highcharts-vue'
 import { mapState } from 'vuex'
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
 import { queryReferCurveYield, queryRelationsCurveYield, queryHomology, queryHistoryDivision, confirmBuild, refundBuild } from '@/api/curve/curve-build'
 import { subtract } from '@/utils/math'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'BuildCurve',
@@ -146,8 +149,6 @@ export default {
           title: {
             text: ''
           },
-          step: 0.01,
-          allowDecimals: true,
           gridLineWidth: 1
         },
         yAxis: {
@@ -186,16 +187,18 @@ export default {
       relationList: [],
       homology: [],
       status: false,
-      clickClose: false
+      clickClose: false,
+      websocket: null,
+      timer: null
     }
   },
   computed: {
     ...mapState({
       list: function(state) {
-        return state.curveBuild.curveBuildList[this.curveId]
+        return state.curveBuild.curveBuildList[this.curveId] || []
       },
       yields: function(state) {
-        return state.curveBuild.curveChartsList[this.curveId]
+        return state.curveBuild.curveChartsList[this.curveId] || []
       }
     }),
     makeNow() {
@@ -229,22 +232,26 @@ export default {
   },
   watch: {
     list: function(newlist, oldlist) {
-      console.log('========')
-      console.log(oldlist)
-      console.log(newlist)
-      console.log('========')
+    },
+    yields: function(newlist, oldlist) {
     }
   },
   created() {
   },
   mounted() {
     window.addEventListener('storage', () => {
+      console.log(JSON.parse(localStorage.getItem('watchStorage')))
       this.list[0].yield = JSON.parse(localStorage.getItem('watchStorage')).value
     })
     this.getCurve()
     this.getReferCurve()
     this.getRelationCurve()
     this.getOptions()
+    this.initWebsocket()
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+    this.disconnect()
   },
   methods: {
     getCurve() {
@@ -312,6 +319,45 @@ export default {
       queryHistoryDivision(this.list).then(response => {
         this.data = response.dataList
       })
+    },
+    // ws连接
+    initWebsocket() {
+      this.connection()
+      // 断开重连，尝试发送消息
+      this.timer = setInterval(() => {
+        try {
+          this.stompClient.send('msg')
+        } catch (err) {
+          console.log('websocket 请求断开了:', err)
+          this.connection()
+        }
+      }, 5000)
+    },
+    connection() {
+      // 建立连接
+      const url = 'http://' + window.location.host + process.env.VUE_APP_BASE_API + '/pi-curve/mq?token=' + getToken()
+      const socket = new SockJS(url)
+      // 获取stomp子协议的客户端对象
+      this.stompClient = Stomp.over(socket)
+      const headers = { token: getToken() }
+      // 发送websocket连接
+      this.stompClient.connect(headers, (frame) => {
+        console.log('frame is:', frame)
+        // 订阅服务
+        this.stompClient.subscribe('/matches', (msg) => {
+          console.log('广播成功')
+          console.log(msg) // msg.body存放的是服务端发送给我们的信息
+        }, headers)
+      }, (err) => {
+        // 连接发生错误时的处理函数
+        console.log('失败')
+        console.log(err)
+      })
+    },
+    disconnect() {
+      if (this.stompClient) {
+        this.stompClient.disconnect()
+      }
     }
   }
 }

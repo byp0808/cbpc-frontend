@@ -6,7 +6,7 @@
       </div>
       <el-form ref="task" :model="task" label-width="120px">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="曲线名称" prop="search_productName_LIKE">
               <el-input
                 v-model="task.search_productName_LIKE"
@@ -84,9 +84,7 @@
         </el-table-column>
         <el-table-column label="审批状态">
           <template slot-scope="{ row }">
-            <span v-if="row.approveStatus === '01'">待审核</span>
-            <span v-if="row.approveStatus === '02'">审核通过</span>
-            <span v-if="row.approveStatus === '03'">审核不通过</span>
+            <span>{{ $dft('APPROVE_STATUS', row.approveStatus) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -144,6 +142,7 @@ export default {
         search_assignName_LIKE: '',
         search_assign_EQ: ''
       },
+      flag: false,
       order: {
         options: []
       },
@@ -207,11 +206,12 @@ export default {
     queryPersonSearch(queryString, cb) {
       const data = queryString ? { userName: queryString } : {}
       selectPerson(data).then(response => {
-        const results = response.map(i => {
+        this.results = response.map(i => {
           return { value: i.userId, label: i.userName }
         })
+        console.log(this.results)
         // 调用 callback 返回建议列表的数据
-        cb(results)
+        cb(this.results)
       })
     },
     handlePersonSelect(item) {
@@ -234,23 +234,33 @@ export default {
       this.dialogFormVisible = true
     },
     distribute() {
+      this.flag = false
       const data = []
-      if (this.isMultiple) {
-        this.multipleSelection.map(i => {
-          data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
-        })
-      } else {
-        const i = Object.assign({}, this.selection, { assign: this.person.userId, assignName: this.person.username })
-        data.push(i)
-      }
-      updateTaskRules(data).then(() => {
-        this.$message.success('保存成功')
-        this.dialogFormVisible = false
-        this.getList()
+      this.results.map(v => {
+        if (this.person.username !== v.label) {
+          this.$message.warning('没有查到对应的责任人信息')
+          this.flag = true
+          return
+        }
       })
+      if (!this.flag) {
+        if (this.isMultiple) {
+          this.multipleSelection.map(i => {
+            data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
+          })
+        } else {
+          const i = Object.assign({}, this.selection, { assign: this.person.userId, assignName: this.person.username })
+          data.push(i)
+        }
+        updateTaskRules(data).then(() => {
+          this.$message.success('保存成功')
+          this.dialogFormVisible = false
+          this.getList()
+        })
+      }
     },
     download() {
-      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks')
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks', this.task)
     },
     upload(param) {
       const data = new FormData()
@@ -267,7 +277,7 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('上传失败')
+          this.$message.error('上传失败，请联系管理员')
         })
     }
   }

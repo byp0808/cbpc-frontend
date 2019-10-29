@@ -2,21 +2,21 @@
   <div class="x-scroll">
     <div v-for="curve in curves" :key="curve.id">
       <curve-build
-        :curve-id="curve.id"
-        :product-name="curve.productName"
+        :curve-id="curve.curveId"
+        :product-name="curve.curveName"
         :order-id="curve.orderId"
         :curve-order-id="curve.curveOrderId"
-        :curve-task-id="curve.curveTaskId"
+        :curve-task-id="curve.id"
       />
     </div>
     <float-curve v-if="true" ref="initCurveList" :mini-icon="'el-icon-info'">
       <div v-for="curve in curves" :key="curve.id">
         <init-curve
-          :curve-id="curve.id"
-          :product-name="curve.productName"
+          :curve-id="curve.curveId"
+          :product-name="curve.curveName"
           :order-id="curve.orderId"
           :curve-order-id="curve.curveOrderId"
-          :curve-task-id="curve.curveTaskId"
+          :curve-task-id="curve.id"
           @close-sidebar="closeSidebar"
         />
       </div>
@@ -33,13 +33,14 @@ export default {
   name: 'BuildCurve',
   components: { CurveBuild, FloatCurve, InitCurve },
   data() {
-    const temp = [
-      { id: 'CURVE_ID_01', orderId: 'ORDER_ID_1', curveOrderId: 'CURVE_ID_01-ORDER_ID_1', productName: '曲线产品1', curveTaskId: '2019101200001' }
-    ]
-    const curves = localStorage.getItem('ids') || temp
+    const curves = JSON.parse(localStorage.getItem('ids'))
+    console.log(curves)
     return {
       curves
     }
+  },
+  beforeDestroy() {
+    localStorage.removeItem('ids')
   },
   methods: {
     closeSidebar() {

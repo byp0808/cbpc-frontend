@@ -44,7 +44,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
-          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
+          {{ showStatus(row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -61,14 +61,6 @@
             查看
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
-            type="text"
-            size="small"
-            @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
-          >
-            {{ statusText(scope.row.busiStatus) }}
-          </el-button>
-          <el-button
             type="text"
             size="small"
             @click.native.prevent="toDownload(scope.row.id)"
@@ -76,10 +68,9 @@
             下载
           </el-button>
           <el-button
-            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
             type="text"
             size="small"
-            @click.native.prevent="toDelete(scope.row.id)"
+            @click.native.prevent="toDelete(scope.row)"
           >
             删除
           </el-button>
@@ -111,7 +102,7 @@
 import ReportForm from '@/views/valuation/report/report-form.vue'
 import { queryReportList, deleteReport, switchStatus, uploadReport } from '@/api/valuation/report.js'
 import { basic_api_valuation } from '@/api/base-api'
-import { downloadFile } from '@/utils/request-client'
+import { downloadFile } from '@/utils/file-request.js'
 export default {
   name: 'ReportList',
   components: {
@@ -119,6 +110,9 @@ export default {
   },
   data() {
     return {
+      approveStatus_C: [
+
+      ],
       ReportFormVisible: false,
       businessNo: '',
       file: {
@@ -148,6 +142,18 @@ export default {
     this.loadTable()
   },
   methods: {
+    showStatus(status) {
+      switch (status) {
+        case '01':
+          return '待复核'
+        case '02':
+          return '复核通过'
+        case '03':
+          return '复核不通过'
+        case '04':
+          return '已发布'
+      }
+    },
     loadTable() {
       queryReportList({ page: this.page }).then(response => {
         const { dataList, page } = response
@@ -162,11 +168,15 @@ export default {
       this.businessNo = id
       this.ReportFormVisible = true
     },
-    toDelete(id) {
+    toDelete(row) {
+      if (row.approveStatus !== '03') {
+        this.$alert('报表[' + row.reportName + ']待复核/复核通过/已发布，无法删除')
+        return false
+      }
       this.$confirm('确认删除此数据?', '提示', {
         type: 'warning'
       }).then(() => {
-        deleteReport(id).then(response => {
+        deleteReport(row.id).then(response => {
           this.$message({
             message: '删除成功！',
             type: 'success',

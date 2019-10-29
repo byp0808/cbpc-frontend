@@ -5,7 +5,7 @@
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="recCurveForm" :model="tempMain" label-width="150px">
-              <el-form-item label="曲线产品名称">
+              <el-form-item label="选择曲线">
                 <el-select ref="curveIdSelect" v-model="tempMain.curveId" style="width: 100%" filterable :disabled="curveSelectDisable" placeholder="请选择曲线" @change="curveSelect">
                   <el-option
                     v-for="item in curveList"
@@ -80,7 +80,7 @@
                 <el-input disabled :title="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" :value="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" />
               </el-col>
               <el-col :span="12">
-                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled" placeholder="请选择曲线">
+                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled || !(this.tmp_tempInfo.orderId)" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-col>
@@ -164,7 +164,19 @@
           </div>
         </el-col>
       </el-row>
-      <el-carousel style="margin-top: 20px" ref="relaFormTableCarousel" :interval="0" :initial-index="initialIndex" :autoplay="false" trigger="click" :loop="false" indicator-position="outside" type="card" height="440px" @change="carouselChange">
+      <el-carousel
+        ref="relaFormTableCarousel"
+        style="margin-top: 20px"
+        :interval="0"
+        :initial-index="initialIndex"
+        :autoplay="false"
+        trigger="click"
+        :loop="false"
+        indicator-position="outside"
+        type="card"
+height="440px"
+        @change="carouselChange"
+      >
         <el-carousel-item v-for="(item, index) in relaFormTableList" :key="index" style="height: 400px;overflow: scroll">
           <CurveSetRelaFormTable
             ref="refCurveSetRelaFormTable"
@@ -355,6 +367,7 @@ export default {
             })
           }
         }
+        this.sortTmpQuXJLixt()
         // 添加利差数据
         console.info('spreadFlag:' + spreadFlag)
         console.info('columnProp_LC:' + JSON.stringify(columnProp_LC))
@@ -455,7 +468,7 @@ export default {
       return this.getCurveInfo(id).productName
     },
     getProductGrade(id) {
-      return this.getCurveInfo(id).productGrade
+      return this.$dft('MARKET_GRADE', this.getCurveInfo(id).productGrade)
     },
     getCurveInfo(id) {
       var list = this.curveList
@@ -496,6 +509,15 @@ export default {
         }
       } else {
         this.tmp_curveId = newValue
+        const curveInfo = this.getCurveInfo(this.tempMain.curveId)
+        this.tmp_quXJList.push({
+          curveId: curveInfo.curveId,
+          productGrade: curveInfo.productGrade,
+          productName: curveInfo.productName,
+          referFlag: 'Y'
+        })
+
+        this.sortTmpQuXJLixt()
         this.$refs.curveIdSelect.blur()
       }
     },
@@ -568,6 +590,8 @@ export default {
       })
       // 根据区域排序，族系区放中间
       this.tmp_quXJList.sort(this.sortCurveByReferFlag)
+
+      this.sortTmpQuXJLixt()
     },
     quXJMove(index, opType) {
       if (opType === 'DEL') { // 删除
@@ -597,7 +621,7 @@ export default {
           var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
           if (resolveProductGrade2Num(curent_grade) < resolveProductGrade2Num(last_grade)) {
-            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},低于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+            var msg = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},低于${this.getCurveName(last_item.curveId)}曲线,请问是否确认调整顺序`
             this.$confirm(msg, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
@@ -638,7 +662,7 @@ export default {
           var last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
           if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
-            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,在质检时会产生跨线异常,请问是否确认调整顺序`
+            var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,请问是否确认调整顺序`
             this.$confirm(msg2, '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'
@@ -994,18 +1018,25 @@ export default {
     // 删除关系
     relaFormTableDelete(index) {
       console.info('curve-set-rela-form.vue...relaFormTableDelete...index:' + index)
-      // 删除并返回数据
-      const deletObj = this.relaFormTableList.splice(index, 1)[0]
-      /*
-       需要删除缓存数据 this.tempList
-      */
-      const _tmp_tempInfo = deletObj.tempInfo
-      for (var i in this.tempList) {
-        if (this.tempList[i].id === _tmp_tempInfo.id) {
-          this.tempList.splice(i, 1)
-          break
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        // 删除并返回数据
+        const deletObj = this.relaFormTableList.splice(index, 1)[0]
+        /*
+         需要删除缓存数据 this.tempList
+        */
+        const _tmp_tempInfo = deletObj.tempInfo
+        for (var i in this.tempList) {
+          if (this.tempList[i].id === _tmp_tempInfo.id) {
+            this.tempList.splice(i, 1)
+            break
+          }
         }
-      }
+      }).catch(() => {
+        console.info('cancle')
+      })
     },
     moveToPri(index) {
       console.info('curve-set-rela-form.vue...moveToPri...index:' + index)
@@ -1234,6 +1265,24 @@ export default {
         })
         this.$emit('saveCallBack')
       })
+    },
+    // 族系区根据曲线评级排序
+    sortTmpQuXJLixt() {
+      for (var i = 0; i < this.tmp_quXJList.length; i++) {
+        if (this.tmp_quXJList[i].referFlag === 'Y') {
+          this.tmp_quXJList.sort(this.compareGrade)
+        }
+      }
+    },
+    // 比较评级
+    compareGrade(currentRow, nextRow) {
+      var curent_grade = this.getProductGrade(currentRow.curveId)
+      var last_grade = this.getProductGrade(nextRow.curveId)
+      if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
+        return 1
+      } else {
+        return -1
+      }
     }
   }
 

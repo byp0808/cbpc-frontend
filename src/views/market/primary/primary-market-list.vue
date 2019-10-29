@@ -21,7 +21,7 @@
       @cell-dblclick="cellDblclick"
       @header-contextmenu="editCurrentModule"
     >
-      <el-table-column v-for="item in tableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
+      <el-table-column v-for="(item,index) in tableHeader" :key="index" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
           <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
         </template>
@@ -95,7 +95,7 @@
           <el-input v-model="editModuleForm.moduleName" placeholder="" style="width: 300px" />
         </el-form-item>
         <el-form-item>
-          <span style="font-size: 2px;color: #dddfdd">
+          <span style="color: #dddfdd">
             修改模板名称后保存，视为新模板
           </span>
         </el-form-item>
@@ -259,7 +259,7 @@ export default {
     },
     toUse() {
       // 应用模板
-      const val = this.moduleId
+      const val = this.moduleIdis
       if (val === '') {
         this.$message('请选择模板！')
         return
@@ -267,7 +267,13 @@ export default {
       getTempById(val).then(res => {
         const { colData, showCols } = res
         console.info(res)
-        this.tableHeader = showCols
+        this.tableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.tableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.tableHeader)
+        })
         this.colData = colData
       })
       // 清空筛选数据
@@ -291,14 +297,11 @@ export default {
     },
     isLight(row, header) {
       // 判断是否高亮
-      // console.info('行')
-      // console.info(row)
-      // console.info('头')
-      // console.info(header)
-      if (typeof row.modifiedCols !== 'undefined') {
-        const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
-        return mods.length > 0
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
+        const mods = modifiedCols.split(',')
+        const mod = mods.filter(val => val === header.colName)
+        return mod.length > 0
       } else {
         return false
       }
@@ -312,10 +315,13 @@ export default {
       this.currentHeader.label = column.label
 
       // 判断该字段是否已进行筛选
-      const index = this.isScreeningByheader(this.screeningFormList)
-      if (index != null && index !== '') {
-        const form = this.screeningFormList[index].screeningForm
-        this.screeningFormSet(form)
+      console.info('hahahha')
+      console.info(this.screeningFormList)
+      const form = this.screeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+      console.info(form)
+      if (form.length > 0) {
+        // const form = this.screeningFormList[index].screeningForm
+        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
       }
 
       const tab = this.tableHeader.filter(tab => tab.colName === key)
@@ -402,6 +408,17 @@ export default {
       const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
       // console.info('确定修改')
       // alert(content)
+      const str = headers[0].colName
+      this.currentRow[str]
+      // console.info('修改'+ this.currentRow[str])
+      if (content === this.currentRow[str] + '') {
+        this.updateForm.updateContent = ''
+        this.currentRow = {}
+        this.currentHeader = {}
+        this.updateFormVisible = false
+        return
+      }
+      this.currentRow[str] = content
       const data = {
         currentHeader: headers[0],
         currentRow: this.currentRow,
@@ -518,6 +535,7 @@ export default {
         marketTempInfo: module,
         colData: this.currentModuleId === '' ? [] : this.editTableHeaders.filter(v => this.multipleSelection.indexOf(v) !== -1)
       }
+      console.info('修改模板')
       console.info(data)
       let newTempId = this.currentModuleId
       saveTempInfo(data).then(res => {
@@ -529,11 +547,19 @@ export default {
       getTempById(newTempId).then(res => {
         const { colData, showCols } = res
         console.info(res)
-        this.tableHeader = showCols
+        this.tableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.tableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.tableHeader)
+        })
         this.colData = colData
       })
       // 获取满足条件的行情数据
       this.loadTable()
+      // 加载
+      this.moduleId = newTempId
       this.currentModuleId = newTempId
     },
     editCancel() {
@@ -556,7 +582,7 @@ export default {
         const data = val.screeningForm
         switch (type) {
           case 'DATE':// 日期型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'DATE'
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
@@ -574,13 +600,13 @@ export default {
             }
             break
           case 'NUMBER':// 数值型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
             if (typeof data.screeningNum === 'undefined') {
               // 范围
               obj.operator = 'BETWEEN'
               if (typeof data.startNum !== 'undefined') {
-                obj.startvalue = data.startNum + ''
+                obj.beginvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
                 obj.endvalue = data.endNum + ''
@@ -598,7 +624,7 @@ export default {
             }
             break
           case 'STRING':// 字符型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'STRING'
             // 单日
             obj.operator = 'LIKE'
@@ -608,7 +634,7 @@ export default {
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'EQSTRING'
             // 单日
             obj.operator = 'EQ'
@@ -618,7 +644,7 @@ export default {
             }
             break
           case 'OPTION':// 可选型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
               if (typeof data.screeningChecked === 'undefined') {

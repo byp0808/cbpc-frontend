@@ -9,6 +9,7 @@
       :cell-class-name="rowInterval"
       @cell-click="cellClick"
       @cell-dblclick="cellDbClick"
+      @header-click="headerClick"
     >
       <template v-for="col in columns">
         <slot :name="col.slot">
@@ -25,8 +26,8 @@
       <el-form ref="compute" :model="compute" label-width="120px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="待偿期" prop="term">
-              <el-input v-model="compute.term" readonly />
+            <el-form-item label="待偿期" prop="standSlip">
+              <el-input v-model="compute.standSlip" readonly />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -97,11 +98,15 @@ export default {
     interval: {
       type: Array,
       default: () => []
+    },
+    editEnable: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      highLight: this.data.map(v => Array(Object.keys(v).length).fill(false)),
+      highLight: [],
       selected: [],
       selectedType: '',
       selectedTerm: '',
@@ -120,7 +125,7 @@ export default {
       const i = this.interval
       const h = this.highLight
       return function({ rowIndex, columnIndex }) {
-        if (h[rowIndex][columnIndex]) {
+        if (h && h.length > 0 && h[rowIndex][columnIndex]) {
           return 'high-light'
         } else if (i[rowIndex] !== i[rowIndex + 1]) {
           return 'row-red'
@@ -130,8 +135,16 @@ export default {
       }
     }
   },
+  watch: {
+    data: function(newlist) {
+      this.highLight = newlist.map(v => Array(Object.keys(v).length).fill(false))
+    }
+  },
   methods: {
     cellClick(row, column) {
+      if (!this.editEnable) {
+        return
+      }
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
@@ -139,59 +152,65 @@ export default {
         return
       }
       this.selectedType = column.type
-      const flag = this.highLight[row.index][column.index]
-      this.highLight[row.index][column.index] = !flag
+      const _row = this.highLight[row.index]
+      const flag = _row[column.index]
+      this.interval.map((v, i) => {
+        if (v === this.interval[row.index]) {
+          this.$set(this.highLight, i, Array(this.highLight[i].length).fill(false))
+        }
+      })
+      _row[column.index] = !flag
+      this.$set(this.highLight, row.index, _row)
       clearTimeout(time)
       time = setTimeout(() => {
         // 高亮
-        // 价格计算 {term: 0, value: 0, bond: 0, slip: 0}
+        // 价格计算 {standSlip: 0, value: 0, bond: 0, slip: 0}
         if (flag) {
-          this.$lodash.pullAllWith(this.selected, [{ term: row.term, label: column.label, row }], this.$lodash.isEqual)
+          this.$lodash.pullAllWith(this.selected, [{ standSlip: row.standSlip, label: column.property, row }], this.$lodash.isEqual)
         } else {
-          this.selected.push({ term: row.term, label: column.label, row })
+          this.selected.push({ standSlip: row.standSlip, label: column.property, row })
         }
-        // if (_.find(this.highLight, { row: row.index, col: column.index })) {
-        //   _.pullAllWith(this.highLight, [{ row: row.index, col: column.index }], _.isEqual)
-        //   _.pullAllWith(this.selected, [{ term: row.term, label: column.label, row }], _.isEqual)
-        // } else {
-        //   this.selected.push({ term: row.term, label: column.label, row })
-        //   this.highLight.push({ row: row.index, col: column.index })
-        // }
       }, 300)
       // 价格辅助Dialog
       clearTimeout(time_dia)
       time_dia = setTimeout(() => {
-        if (this.selected.filter(value => value.term === row.term).length > 0) {
-          this.selectedTerm = row.term
+        if (this.selected.filter(value => value.standSlip === row.standSlip).length > 0) {
+          this.selectedTerm = row.standSlip
           this.dialogFlag = true
         }
       }, 800)
     },
     cellDbClick(row, column) {
+      if (!this.editEnable) {
+        return
+      }
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
       clearTimeout(time)
       clearTimeout(time_dia)
-      const flag = this.highLight[row.index][column.index]
+      this.$set(this.highLight, row.index, _row)
+      const _row = this.highLight[row.index]
+      const flag = _row[column.index]
       this.interval.map((v, i) => {
         if (v === this.interval[row.index]) {
-          this.highLight[i] = Array(this.highLight[i].length).fill(false)
+          this.$set(this.highLight, i, Array(this.highLight[i].length).fill(false))
         }
       })
-      this.highLight[row.index][column.index] = !flag
+      _row[column.index] = !flag
+      this.$set(this.highLight, row.index, _row)
       // if (_.find(this.highLight, { row: row.index, col: column.index })) {
       //   _.pullAllWith(this.highLight, [{ row: row.index, col: column.index }], _.isEqual)
       // } else {
       //   this.highLight.push({ row: row.index, col: column.index })
       // }
-      const item = Object.assign({}, { term: row.term, label: column.label, value: row[column.label], row })
+      const item = Object.assign({}, { standSlip: row.standSlip, label: column.label, value: row[column.property], row })
       this.resetSetItem('watchStorage', JSON.stringify(item))
     },
     openDialog() {
-      const arr = this.selected.filter(value => value.term === this.selectedTerm)
+      const arr = this.selected.filter(value => value.standSlip === this.selectedTerm)
       const compute = {}
-      this.$emit('open', { arr, term: this.selectedTerm, type: this.selectedType, result: compute })
+      this.$emit('open', { arr, standSlip: this.selectedTerm, type: this.selectedType, result: compute })
       this.compute = compute
     },
     closeDialog() {
@@ -201,11 +220,17 @@ export default {
     },
     saveData(v) {
       const value = this.compute[v]
-      const arr = this.selected.filter(value => value.term === this.selectedTerm)
+      const arr = this.selected.filter(value => value.standSlip === this.selectedTerm)
       this.dialogFlag = false
       const label = arr.map(e => e.label).filter((t, i, a) => a.indexOf(t, 0) === i).join(',')
       const item = Object.assign({}, arr[0], { label, value })
       this.resetSetItem('watchStorage', JSON.stringify(item))
+    },
+    headerClick(columns) {
+      if (!this.editEnable) {
+        return
+      }
+      this.$emit('header-click', columns)
     }
   }
 }

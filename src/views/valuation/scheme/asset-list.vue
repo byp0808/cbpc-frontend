@@ -3,7 +3,7 @@
     <el-table
       :data="allList"
       style="width: 100%"
-      max-height="280"
+      max-height="400"
       :header-cell-style="{background:'#f6f6f6'}"
       tooltip-effect="dark"
       border
@@ -22,9 +22,9 @@
           <span>{{ scope.row.taskStatus | taskStatus }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原因" align="center">
+      <el-table-column v-if="isMy" label="方案操作" align="center">
         <template slot-scope="scope">
-          <span>{{ causeFilter(scope.row.cause) }}</span>
+          <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center">
@@ -37,22 +37,24 @@
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作人" align="center">
+      <el-table-column label="调整人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.lastUpdBy }}</span>
+          <span>{{ scope.row.userId }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="债券代码" align="center">
+      <el-table-column label="资产编码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <!-- <span>{{ scope.row.bondId }}</span> -->
+          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondId }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="债券简称" align="center">
+      <el-table-column label="资产简称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <!-- <span>{{ scope.row.bondShort }}</span> -->
+          <el-button type="text" @click="goBasic(scope.row)">{{ scope.row.bondShort }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="场所" align="center">
+      <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.maketId }}</span>
         </template>
@@ -60,6 +62,21 @@
       <el-table-column label="债券性质" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.filterId }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="含权说明" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="推荐方法" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="估值方法" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.marketGrade }}</span>
         </template>
       </el-table-column>
       <el-table-column label="隐含评级" align="center">
@@ -102,38 +119,31 @@
           <span>{{ scope.row.yield }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否即期" align="center">
+      <el-table-column label="调整原因" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ causeFilter(scope.row.cause) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="发布批次" align="center">
+      <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
     </el-table>
-    <div>
-      <!-- <el-pagination
-        style="margin-top:20px"
-        align="center"
-        :current-page="page.pageNumber"
-        :page-sizes="[10, 20, 30, 40, 50]"
-        :page-size="page.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalRecord"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      /> -->
-    </div>
+    <transition name="dialog-fade-in">
+      <el-dialog :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
+        <scheme-form />
+      </el-dialog>
+    </transition>
+
   </div>
 </template>
 <script>
-
+import SchemeForm from '@/views/valuation/scheme/scheme-method.vue'
 export default {
   name: 'AssetList',
   components: {
-
+    SchemeForm
   },
   props: {
     allList: {
@@ -141,13 +151,18 @@ export default {
       default: function() {
         return []
       }
+    },
+    isMy: {
+      type: Boolean,
+      default: false
     }
   },
-  //   props: ['allList'],
   data() {
     return {
       ruleSetFormVisible: false,
+      AdjustDialog: false,
       taskRangeId: '',
+      adjustParams: {},
       selectionList: [],
       taskList: [],
       list: [],
@@ -175,19 +190,33 @@ export default {
         case '08': return '其他'
       }
     },
+    goBasic(e) {
+      this.$router.push({ name: 'SchemeConstruct', params: e })
+    },
+    adjust(e) {
+      this.AdjustDialog = true
+      this.adjustParams.taskId = e.id
+    },
+    getDataList() {
+      return this.taskList
+    },
     handleSelectionChange(val) {
       if (val.length > 0) {
-        val.map((v, i) => {
-          this.selectionList.push(v.bondId)
-          // this.taskList.push({ bondId: v.bondId })
-        })
-        this.selectionList = Array.from(new Set(this.selectionList))
-        this.$emit('selectionList', this.selectionList)
-        this.$emit('taskList', val)
+        this.taskList = val
       } else {
-        this.selectionList = []
         this.taskList = []
       }
+      this.$emit('taskList', this.taskList)
+      // if (val.length > 0) {
+      //   val.map((v, i) => {
+      //     this.selectionList.push(v.id)
+      //   })
+      //   this.selectionList = Array.from(new Set(this.selectionList))
+      //   this.$emit('selectionList', this.selectionList)
+      // } else {
+      //   this.selectionList = []
+      //   this.taskList = []
+      // }
     }
     // handleSizeChange(pageSize) {
     //   this.page.pageSize = pageSize
@@ -201,8 +230,20 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
  .box {
      margin-top: 10px;
  }
+ @keyframes dialog-fade-in {
+   0% {
+     transform:translate(0,50%);
+   }
+   50% {
+     transform:translate(0,100%);
+   }
+    100% {
+     transform:translate(0,0);
+   }
+ }
+
 </style>

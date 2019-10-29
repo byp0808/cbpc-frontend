@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="曲线发布类型">
         <el-checkbox-group v-model="curvePubTypeSelected">
-          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :disabled="true" :label="item.value">{{ item.label }}</el-checkbox>
+          <el-checkbox v-for="item in curvePubTypeOption" :key="item.value" :label="item.value" :disabled="disabled || setDisable(item)">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="是否发布曲线样本券">
@@ -67,7 +67,7 @@
           <div class="switch-item">
             <label class="switch-label">开始</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedSt" :disabled="disabled? true: !(this.curvePrdOrder.orderClosedFlag==='1')" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -75,7 +75,7 @@
           <div class="switch-item">
             <label class="switch-label">结束</label>
             <el-col :span="4">
-              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled" type="date" style="width:180px" value-format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
+              <el-date-picker v-model="curvePrdOrder.orderClosedEt" :disabled="disabled? true: !(this.curvePrdOrder.orderClosedFlag==='1')" type="date" style="width:180px" format="yyyy-MM-dd" placeholder="选择日期" @change="dateComparison()" />
             </el-col>
           </div>
         </el-row>
@@ -145,9 +145,11 @@
                 {{ orderName }}
               </template>
             </el-table-column>
-            <el-table-column prop="curveBuildStatus" label="所需状态" width="80" show-overflow-tooltip>
+            <el-table-column prop="curveBuildStatus" label="所需状态" width="120" show-overflow-tooltip>
               <template slot-scope="scope">
-                {{ scope.row.curveBuildStatus ? $t('dicts.CURVE_BUILD_STATUS' + '.' + (scope.row.curveBuildStatus)) : '' }}
+                <el-select v-model="scope.row.curveBuildStatus" placeholder="请选择产品状态" :disabled="disabled">
+                  <el-option v-for="item in prdStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
               </template>
             </el-table-column>
             <el-table-column prop="" label="操作" width="60" show-overflow-tooltip>
@@ -265,6 +267,9 @@ export default {
     // 自动编制规则
     autoRuleOptions() {
       return optioins(this, 'AUTO_RULE')
+    },
+    prdStatusOptions() {
+      return optioins(this, 'CURVE_BUILD_STATUS')
     }
   },
   watch: {
@@ -280,18 +285,19 @@ export default {
   },
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
-
     this.curvePrdOrder = this.orderData
     // 更新曲线发布类型、发布步长、付息频率
     if (this.curvePrdOrder) {
       if (this.curvePrdOrder.interestDueFreq) {
         this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
       }
-      if (this.curvePrdOrder.curvePubType) {
-        debugger
-        var maturityFlag = this.productInfo.maturityFlag
-        var spotFlag = this.productInfo.spotFlag
-        var forwardFlag = this.productInfo.forwardFlag
+      var maturityFlag = this.productInfo.maturityFlag
+      var spotFlag = this.productInfo.spotFlag
+      var forwardFlag = this.productInfo.forwardFlag
+
+      // 如果当前批次已经勾选过曲线发布类型，则不更新默认勾选
+      this.curvePubTypeSelected = []
+      if (!this.curvePrdOrder.curvePubType) {
         if (maturityFlag === 'Y') {
           this.curvePubTypeSelected.push('1')
         }
@@ -301,8 +307,28 @@ export default {
         if (forwardFlag === 'Y') {
           this.curvePubTypeSelected.push('3')
         }
-        // this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+      } else { // 去除已经勾选的内容
+        this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
+        if (maturityFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('1')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
+        if (spotFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('2')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
+        if (forwardFlag === 'N') {
+          const index = this.curvePubTypeSelected.indexOf('3')
+          if ( index >= 0 ) {
+            this.curvePubTypeSelected.splice(index,1)
+          }
+        }
       }
+
       if (this.curvePrdOrder.publishStepSize) {
         this.publishStepSizeSelected = this.curvePrdOrder.publishStepSize.split(',')
       }
@@ -504,7 +530,7 @@ export default {
             const item = this.curvePrdKdList[i]
             this.curveKdsIntersection.push(item.standSlip)
             // 添加不存在的
-            if (standSlipArray.indexOf(item.standSlip) < 0) {
+            if (standSlipArray.length > 0 && standSlipArray.indexOf(item.standSlip) < 0) {
               this.curvePrdOrderAutoKtList.push({ standSlip: item.standSlip })
             }
           }
@@ -616,7 +642,6 @@ export default {
           this.curvePrdOrder.publishType = '1'
         } else {
           this.publishTypeDisabled = false
-          this.curvePrdOrder.publishType = '2'
         }
       }
       if (this.disabled) {
@@ -636,7 +661,25 @@ export default {
           type: 'error',
           message: '结束时间要大于开始时间！'
         })
+        this.curvePrdOrder.orderClosedSt = ''
+        this.curvePrdOrder.orderClosedEt = ''
       }
+      return false
+    },
+    setDisable(item) {
+      var maturityFlag = this.productInfo.maturityFlag
+      var spotFlag = this.productInfo.spotFlag
+      var forwardFlag = this.productInfo.forwardFlag
+      if (maturityFlag === 'Y' && item.value === '1') {
+        item.disabled = false
+      } else if (spotFlag === 'Y' && item.value === '2') {
+        item.disabled = false
+      } else if (forwardFlag === 'Y' && item.value === '3') {
+        item.disabled = false
+      } else {
+        item.disabled = true
+      }
+      return item.disabled
     }
   }
 }

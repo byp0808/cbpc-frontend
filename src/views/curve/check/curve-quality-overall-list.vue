@@ -194,8 +194,7 @@ export default {
     },
     fallbackContact(index, rows) {
       var data = {
-        curveId: rows[index].curveId,
-        orderId: this.orderId
+        taskPKId: rows[index].taskPKId
       }
       fallbackContact(data).then(response => {
         this.$message({

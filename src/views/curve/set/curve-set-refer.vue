@@ -12,9 +12,9 @@
           <span>{{ scope.row.productName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="同调曲线" width="290px" align="center">
+      <el-table-column label="参考曲线" width="290px" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="curveReferDtoEdit(scope.$index, curveReferDtoList)">详情</span>
+          <span class="link-type" @click="curveReferDtoEdit(scope.$index, 'VIEW')">详情</span>
         </template>
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
@@ -27,7 +27,7 @@
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">编辑</el-button>
-          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, curveReferDtoList)">编辑</el-button>
+          <el-button v-else type="text" size="big" @click="curveReferDtoEdit(scope.$index, 'EDIT')">编辑</el-button>
           <el-button v-if="scope.row.approveStatus==='01'" type="text" size="small" @click="disableEdit">删除</el-button>
           <el-button v-else type="text" size="big" @click="curveReferDtoDel(scope.$index, curveReferDtoList)">删除</el-button>
         </template>
@@ -43,16 +43,22 @@
       @current-change="handleCurrentChange"
     />
 
-    <el-dialog :visible.sync="dialogFormVisible" width="50%">
+    <el-dialog
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      width="50%"
+      :close-on-click-modal="false"
+    >
       <Refer
         ref="refer"
-        :temp="temp"
+        :refer-id="selectedReferId"
+        :op-type="opType"
       />
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="storageCurveRefer()">
+        <el-button v-if="opType !== 'VIEW'" type="primary" @click="storageCurveRefer()">
           确定
         </el-button>
       </div>
@@ -75,6 +81,8 @@ export default {
   data() {
     return {
       curveReferDtoList: [],
+      opType: '',
+      selectedReferId: '',
       temp: {
         curveId: '',
         approveStatus: '',
@@ -88,7 +96,7 @@ export default {
       }
     }
   },
-  created() {
+  beforeMount() {
     this.getCurveReferDtoList()
   },
   methods: {
@@ -103,33 +111,48 @@ export default {
     // 新建规则
     curveReferCreate() {
       this.temp = []
+      this.selectedReferId = ''
       this.dialogFormVisible = true
+      this.opType = 'ADD'
     },
     // dto列表修改操作
-    curveReferDtoEdit(index, rows) {
-      this.temp = rows[index]
+    curveReferDtoEdit(index, opType) {
+      this.temp = this.curveReferDtoList[index]
+      this.selectedReferId = this.temp.referId
       this.dialogFormVisible = true
+      this.opType = opType
     },
     // dto列表删除
     curveReferDtoDel(index, rows) {
-      delCurveReferDto(rows[index]).then(response => {
-        rows.splice(index, 1)
-        this.$message({
-          message: '操作成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('是否删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        delCurveReferDto(rows[index]).then(response => {
+          rows.splice(index, 1)
+          this.$message({
+            message: '操作成功！',
+            type: 'success',
+            showClose: true
+          })
         })
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     storageCurveRefer() {
       var data = this.$refs.refer.obtainCurveRefer()
-      if (!data.curveReferList) {
-        alert('请选择同调曲线！')
+      debugger
+      if (!data.curveReferList || data.curveReferList.length <= 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择参考曲线'
+        })
         return
       }
       storageRefer(data).then(response => {
-        this.curveReferDtoList.unshift(this.temp)
         this.dialogFormVisible = false
+        this.getCurveReferDtoList()
         this.$message({
           message: '操作成功！',
           type: 'success',
@@ -148,7 +171,7 @@ export default {
     disableEdit() {
       this.$message({
         type: 'warning',
-        message: '不能操作待审核状态的数据'
+        message: '不能操作待审核的数据'
       })
     }
   }

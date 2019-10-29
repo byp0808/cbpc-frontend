@@ -76,7 +76,7 @@
               <h3 style="font-size:40px;">场<br><br>景</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
@@ -112,7 +112,7 @@
               <h3 style="font-size:40px;">行<br><br>为</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
@@ -199,7 +199,8 @@ export default {
         actionFormulaType: '', // 行为算号
         actionFormulaValue: 0, // 行为结果值
         formulaId: '' // 公式主键，用于判断新增、修改记录
-      }
+      },
+      querycueid: ''
     }
   },
   computed: {
@@ -266,14 +267,14 @@ export default {
 
       // 获取公式列表
       this.formulaList = []
-      await getInitFormulaList({ initId: this.initInfo.id }).then(response => {
+      await getInitFormulaList({ 'search_initId_EQ': this.initInfo.id }).then(response => {
         if (response) {
           this.formulaList = response
         }
       })
       // 获取场景、公式列表
       this.detailList = []
-      await getInitDetailList({ initId: this.initInfo.id }).then(response => {
+      await getInitDetailList({ 'search_initId_EQ': this.initInfo.id }).then(response => {
         if (response) {
           this.detailList = response
         }
@@ -284,14 +285,14 @@ export default {
       // 公式列表默认显示第一期限方案
       if (this.curentCurveOrderKt.length > 0) {
         this.initstandSlipSet(0)
-        this.formulaEditList = [this.formulaEditList[0]]
+        // this.formulaEditList = [this.formulaEditList[0]]
+        this.curveHomologyShow = true
         console.info('中间' + this.formulaEditList)
         if (this.formulaEditList.length > 0) {
           this.curveHomologyXiuGai(0)
           this.detailForm = this.formulaEditList[0]
+          this.detaiColVisible = true
         }
-        this.curveHomologyShow = true
-        this.detaiColVisible = true
       }
     },
     // 获取当前曲线关键期限列表
@@ -302,6 +303,8 @@ export default {
         await queryCurvePrdKd({ curveId: this.initInfo.curveId }).then(response => {
           this.curvePrdKdList = response.dataList
           const list = response.dataList
+          console.info('这是期限列表')
+          console.info(list)
           if (list && list.length > 0) {
             for (var i = 0; i < list.length; i++) {
               var item = list[i]
@@ -311,6 +314,7 @@ export default {
             }
             tmp_standSlip.sort(sortStandSlip)
           }
+          this.querycueid = this.curvePrdKdList[0].curveId
         })
       }
       // 组装列表
@@ -323,15 +327,16 @@ export default {
       // 公式列表默认显示第一期限方案  新建
       if (this.curentCurveOrderKt.length > 0) {
         this.initstandSlipSet(0)
-        this.formulaEditList = [this.formulaEditList[0]]
+        // this.formulaEditList = [this.formulaEditList[0]]
+        this.curveHomologyShow = true
         console.info('中间' + this.formulaEditList)
         if (this.formulaEditList.length > 0) {
           this.curveHomologyXiuGai(0)
           this.detailForm = this.formulaEditList[0]
+          this.detaiColVisible = true
         }
-        this.curveHomologyShow = true
-        this.detaiColVisible = true
       }
+      console.info(this)
       return this.curentCurveOrderKt
     },
     getCurveName(id) {
@@ -365,25 +370,34 @@ export default {
         this.currentSelectStandSlip = ''
 
         var row = this.curentCurveOrderKt[index]
-        var standSlip = row.standSlip
-        // 删除formuList对应记录
-        this.formulaList = this.formulaList.filter(function(item) {
-          if (('' + standSlip) === ('' + item.standSlip)) {
-            return false
-          }
-          return true
-        })
-        // 删除detaiList对应记录
-        this.detailList = this.detailList.filter(function(item) {
-          if (('' + standSlip) === ('' + item.standSlip)) {
-            return false
-          }
-          return true
-        })
+        // 删除已有数据
+        this.deleteStandSlipDate(row.standSlip)
+
         console.info('formula.length:' + this.formulaList.length)
         console.info('detailList.length:' + this.detailList.length)
       }).catch(() => {
         console.info('cancle')
+      })
+    },
+    // 删除关键期限下的数据
+    deleteStandSlipDate(standSlip) {
+      if (typeof (standSlip) === 'undefined') {
+        console.info('standSlip is undefined')
+        return
+      }
+      // 删除formuList对应记录
+      this.formulaList = this.formulaList.filter(function(item) {
+        if (('' + standSlip) === ('' + item.standSlip)) {
+          return false
+        }
+        return true
+      })
+      // 删除detaiList对应记录
+      this.detailList = this.detailList.filter(function(item) {
+        if (('' + standSlip) === ('' + item.standSlip)) {
+          return false
+        }
+        return true
       })
     },
     // 设置
@@ -413,21 +427,52 @@ export default {
       this.tmp_actionList = []
       this.tmp_sceneList = []
 
-      var row = this.curentCurveOrderKt[index - 1]
-      this.currentSelectStandSlip = row.standSlip
-      console.info('当前选中关键期限:' + this.currentSelectStandSlip)
-      // 从缓存中获取公式列表
-      console.info(this)
+      var currentRow = this.curentCurveOrderKt[index]
+      var lastRow = this.curentCurveOrderKt[index - 1]
+      this.currentSelectStandSlip = currentRow.standSlip
+      var lastStandSlip = lastRow.standSlip
+      console.info('当前选中关键期限:' + this.currentSelectStandSlip + ',lastStandSlip:' + lastStandSlip)
+
+      // 删除已有数据
+      this.deleteStandSlipDate(this.currentSelectStandSlip)
+
       this.formulaEditList = []
+      var lastFormula = []
+      // 从缓存中获取公式列表
+
       for (const item of this.formulaList) {
-        if (('' + this.currentSelectStandSlip) === ('' + item.standSlip)) {
-          this.formulaEditList.push(item)
+        if (('' + lastStandSlip) === ('' + item.standSlip)) {
+          lastFormula.push(item)
         }
       }
-      this.curentCurveOrderKt[index] = this.curentCurveOrderKt[index - 1]
+      // 上条为空
+      if (!lastFormula) {
+        lastFormula = []
+      }
+
+      for (const item of lastFormula) {
+        // eslint-disable-next-line no-undef
+        const newItem = _.assign({}, item)
+        newItem.standSlip = this.currentSelectStandSlip
+        newItem.formulaId = 'TMP_' + new Date().getTime()
+        this.formulaEditList.push(newItem)
+        this.formulaList.push(newItem)
+
+        // 获取场景明细
+        for (const detailItem of this.detailList) {
+          if (('' + lastStandSlip) === ('' + detailItem.standSlip) && detailItem.formulaId === item.formulaId) {
+            // eslint-disable-next-line no-undef
+            const newDetailItem = _.assign({}, detailItem)
+            newDetailItem.formulaId = newItem.formulaId
+            newDetailItem.standSlip = this.currentSelectStandSlip
+            this.detailList.push(newDetailItem)
+          }
+        }
+      }
     },
     // 修改场景和行为
     curveHomologyXiuGai(index) {
+      debugger
       this.detaiColVisible = true
       // 获取记录
       this.detailForm = this.formulaEditList[index]
@@ -483,6 +528,7 @@ export default {
       // 获取所有form,验证表单信息
       console.info('addDetalInit')
       // refSceneList
+      var shortNameFun
       var refSceneList = this.$refs.refSceneList
       var refActionList = this.$refs.refActionList
       if (!refSceneList || refSceneList.length <= 0) {
@@ -492,6 +538,8 @@ export default {
           showClose: true
         })
         return false
+      } else {
+        shortNameFun = refSceneList[0].getProductShortName
       }
       var isAllOk = true
       for (const index in refSceneList) {
@@ -550,8 +598,8 @@ export default {
       }
 
       // 计算公式
-      var sceneFormula = this.toFormula(this.tmp_sceneList) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
-      var actionFormula = this.toFormula(this.tmp_actionList) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
+      var sceneFormula = this.toFormula(shortNameFun, this.tmp_sceneList) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
+      var actionFormula = this.toFormula(shortNameFun, this.tmp_actionList) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
       console.info('sceneFormula:' + sceneFormula)
       console.info('actionFormula:' + actionFormula)
 
@@ -602,10 +650,14 @@ export default {
         newItem.formulaType = '2'
         newItem.sortNo = index
         this.detailList.push(newItem)
+        this.$message({
+          type: 'success',
+          message: '保存场景行为成功！'
+        })
       })
     },
     // 根据列表计算公式
-    toFormula(detailList) {
+    toFormula(shortNameFun, detailList) {
       // 权重 * [产品 关键期限 指标]
       var formula = ''
       if (detailList && detailList.length > 0) {
@@ -613,7 +665,7 @@ export default {
           if (formula) {
             formula += ' + '
           }
-          formula += item.percent / 100 + ' # [' + item.depCurveId + '|' + item.standSlip + '' + item.depInd + ']'
+          formula += item.percent / 100 + ' # [' + shortNameFun(item.depCurveId) + '' + item.standSlip + '' + item.depInd + ']'
         }
       }
       return formula

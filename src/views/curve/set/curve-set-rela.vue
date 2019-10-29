@@ -44,7 +44,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="dialogFormVisible" title="曲线间关系模板" :visible.sync="dialogFormVisible" width="90%">
+    <el-dialog v-if="dialogFormVisible" title="曲线间关系模板" :visible.sync="dialogFormVisible" width="90%" :close-on-click-modal="false">
       <CurveSetRelaForm
         ref="refCurveSetRelaForm"
         :temp-main-id="tempMainId"
@@ -55,7 +55,7 @@
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="storageCurveSetRela()">
+        <el-button v-if="opType !== 'VIEW'" type="primary" @click="storageCurveSetRela()">
           确定
         </el-button>
       </div>

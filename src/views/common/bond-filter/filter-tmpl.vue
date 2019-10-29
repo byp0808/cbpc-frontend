@@ -148,12 +148,12 @@
               >
                 <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
               </el-upload>
-              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <el-input v-model="inputB" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
             </div>
             <el-table
-              :data="blackList"
+              :data="blackList.filter(data => !inputB || blackList.csin.toLowerCase().includes(inputB.toLowerCase()))"
               style="width: 100%"
               height="300"
               :row-class-name="tableWarningClass"
@@ -302,6 +302,7 @@ export default {
       ruleList: [],
       bondListAll: [],
       bondListResult: [],
+      inputB: '',
       input5: ''
     }
   },
@@ -382,9 +383,7 @@ export default {
     tempList() {
       queryTempList().then(response => {
         const { datalist } = response
-        console.log(datalist)
         this.bondTemps = datalist
-        console.log(this.bondTemps)
       })
     },
     applicationTemp() {
@@ -516,6 +515,7 @@ export default {
             bondInfoBlack.bondSource = '其他'
             // 需要增加csin映射
             bondInfoBlack.csin = bondInfoBlack.bondName
+            bondInfoBlack.catelog = 'B'
             this.blackList.push(bondInfoBlack)
           }
         }
@@ -532,6 +532,7 @@ export default {
           } else {
             // 需要增加csin映射
             bondInfoWhite.csin = bondInfoWhite.bondName
+            bondInfoWhite.catelog = 'W'
             this.whiteList.push(bondInfoWhite)
           }
         }
@@ -555,6 +556,7 @@ export default {
           this.blackList = black
           this.whiteList = white
           this.ruleList = rules
+          // this.bondTemps.tempName = tempName
           this.tempNo = tempId
           // this.screenBonds()
         })

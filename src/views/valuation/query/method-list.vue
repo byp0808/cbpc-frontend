@@ -15,7 +15,7 @@
         <el-table-column align="center" label="全选" type="selection" />
         <el-table-column label="估值日期" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.cause }}</span>
+            <span>{{ scope.row.batchDate }}</span>
           </template>
         </el-table-column>
         <el-table-column label="估值批次" align="center">
@@ -40,7 +40,7 @@
         </el-table-column>
         <el-table-column label="流通场所" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.marketId }}</span>
+            <span>{{ scope.row.market }}</span>
           </template>
         </el-table-column>
         <el-table-column label="债券性质" align="center">
@@ -65,7 +65,7 @@
         </el-table-column>
         <el-table-column label="信用点差" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.spreadValue }}</span>
           </template>
         </el-table-column>
         <el-table-column label="相对点差" align="center">
@@ -85,7 +85,7 @@
         </el-table-column>
         <el-table-column label="总点差" align="center" width="120px">
           <template slot-scope="scope">
-            <span>{{ scope.row.spreadValue }}</span>
+            <span>{{ scope.row.sumSpread }}</span>
           </template>
         </el-table-column>
         <el-table-column label="估值收益率" align="center" width="110px">
@@ -95,7 +95,7 @@
         </el-table-column>
         <el-table-column label="回售率" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.filterId }}</span>
+            <span>{{ scope.row.recovery }}</span>
           </template>
         </el-table-column>
       </el-table>

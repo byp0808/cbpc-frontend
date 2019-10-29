@@ -119,6 +119,17 @@ const valuationRouter = {
       component: () => import('@/views/valuation/quality/val-quality-index.vue'),
       name: 'ValQualityIndex',
       meta: { title: '质检报告', noCache: true }
+    }, {
+      path: 'scheme-construct',
+      component: () => import('@/views/valuation/scheme/scheme-construct.vue'),
+      hidden: true,
+      name: 'SchemeConstruct',
+      meta: { title: '分析影响因子', noCache: true, breadcrumb: false }
+    }, {
+      path: 'publish-list',
+      component: () => import('@/views/valuation/publish-bond/publish-list.vue'),
+      name: 'PublishList',
+      meta: { title: '计算并发布估值产品', noCache: true }
     }
   ]
 }

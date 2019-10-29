@@ -393,6 +393,23 @@ export default {
           this.$message.warning('请填写初始点差')
           return false
         }
+        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02') {
+          if (!this.normalInfo.spreadStart && this.normalInfo.spreadStart !== 0) {
+            return this.$message.warning('请输入初始点差')
+          }
+          if (!this.normalInfo.spreadEnd && this.normalInfo.spreadEnd !== 0) {
+            return this.$message.warning('请输入最终点差')
+          }
+          if (this.normalInfo.spreadStart >= this.normalInfo.spreadEnd) {
+            return this.$message.warning('最终点差应大于初始点差')
+          }
+          if (this.normalInfo.cdsAdjValue >= (this.normalInfo.spreadEnd - this.normalInfo.spreadStart)) {
+            return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
+          }
+          if (!this.normalInfo.cdsAdjValue && this.normalInfo.cdsAdjValue !== 0) {
+            return this.$message.warning('请输入调整幅度')
+          }
+        }
       }
       spreadTrial().then(response => {
         const { dataList } = response

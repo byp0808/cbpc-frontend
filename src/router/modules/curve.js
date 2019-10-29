@@ -24,6 +24,11 @@ const curveRouter = {
       name: 'CurveSetInit',
       meta: { title: '设置信用债初始化方案', noCache: true }
     }, {
+      path: 'curve-influence-factor',
+      component: () => import('@/views/curve/influencefactor/curve-influence-factor-index.vue'),
+      name: 'CurveInfluenceFactor',
+      meta: { title: '曲线影响因子', noCache: true }
+    }, {
       path: 'curve-set-rela',
       component: () => import('@/views/curve/set/curve-set-rela.vue'),
       name: 'CurveSetRela',

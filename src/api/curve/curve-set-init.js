@@ -76,7 +76,7 @@ export function getTaskFinsih(data) {
 // 删除方案信息
 export function delInitList(id) {
   return request({
-    url: `${basic_api_curve}/curveSetInit/delete` + id,
+    url: `${basic_api_curve}/curveSetInit/delete/` + id,
     method: 'delete'
   })
 }

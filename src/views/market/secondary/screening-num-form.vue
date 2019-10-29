@@ -11,7 +11,7 @@
               </el-col>
               <el-col :span="20">
                 <el-row>
-                  <el-input v-model.number="screeningForm.screeningNum" style="width: 200px" :disabled="disable_1" />
+                  <el-input v-model="screeningForm.screeningNum" type="number" style="width: 200px" :disabled="disable_1" />
                 </el-row>
                 <el-row>
                   <el-checkbox v-model="screeningForm.absoluteValue" :disabled="disable_1">是否包含绝对值</el-checkbox>
@@ -26,16 +26,16 @@
               </el-col>
               <el-col :span="4">
                 <el-form-item prop="startNum">
-                  <el-input v-model.number="screeningForm.startNum" style="width: 80px" :disabled="disable_2" />
+                  <el-input v-model.number="screeningForm.startNum" type="number" style="width: 80px" :disabled="disable_2" />
                 </el-form-item>
               </el-col>
               <el-col :span="1" align="center">~</el-col>
               <el-col :span="4">
                 <el-form-item prop="endNum">
-                  <el-input v-model.number="screeningForm.endNum" style="width: 80px" :disabled="disable_2" />
+                  <el-input v-model.number="screeningForm.endNum" type="number" style="width: 80px" :disabled="disable_2" />
                 </el-form-item>
               </el-col>
-              <el-col :span="2">BP</el-col>
+              <el-col :span="2">&nbsp;</el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="" align="left">
@@ -69,9 +69,21 @@ export default {
       disable_2: true,
       isScreened: false,
       numFormRules: {
-        screeningNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
-        startNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }],
-        endNum: [{ type: 'number', required: false, message: '请输入数值', trigger: 'blur' }]
+        startNum: [{ validator: (rule, value, callback) => {
+          console.info(typeof value)
+          if (value > this.screeningForm.endNum && value !== '' && this.screeningForm.endNum !== '') {
+            callback(new Error('需小于等于' + this.screeningForm.endNum))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }],
+        endNum: [{ validator: (rule, value, callback) => {
+          if (value < this.screeningForm.startNum && value !== '' && this.screeningForm.startNum !== '') {
+            callback(new Error('需大于等于' + this.screeningForm.startNum))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }]
       }
     }
   },
@@ -101,7 +113,6 @@ export default {
         if (valid) {
           this.$emit('dateCallBack')
         } else {
-          this.$message('error submit!!')
           return false
         }
       })

@@ -19,7 +19,7 @@
 
 <script>
 
-import { getOrderList, getProductOrderList } from '@/api/curve/curve-product-order.js'
+import { getOrderList, getProductOrderList, viewCurveProperty } from '@/api/curve/curve-product-order.js'
 
 export default {
   name: 'CurveProductDefConfirm',
@@ -68,7 +68,7 @@ export default {
       if (dataList && dataList.length > 0) {
         for (var i = 0; i < dataList.length; i++) {
           var item = dataList[i]
-          this.orderList.push({ id: item.orderNo, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
+          this.orderList.push({ id: item.id, orderName: item.orderName, compTime: item.compTime, pubTime: item.pubTime })
         }
       }
 
@@ -99,7 +99,13 @@ export default {
 
       debugger
       item.curveSampleNumberVisible = true
-      item.curveSampleNumber = 123
+      var data = {
+        curveId: curveId
+      }
+      viewCurveProperty(data).then(response => {
+        item.curveSampleNumber = response
+        setTimeout(1.5 * 1000)
+      })
     }
   }
 }

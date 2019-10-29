@@ -155,6 +155,14 @@ export function querycurveHomology(data) {
   })
 }
 
+// 查询同调曲线主表信息
+export function querycurveHomologyMain(id) {
+  return request({
+    url: `${basic_api_curve}/curveHomology/get/` + id,
+    method: 'get'
+  })
+}
+
 // 同调曲线保存并发起流程
 export function storageHomology(data) {
   return request({
@@ -178,6 +186,14 @@ export function queryCurveReferDto(data) {
     url: `${basic_api_curve}/curveRefer/queryCurveReferDto`,
     method: 'post',
     data
+  })
+}
+
+// 查询参考曲线主表流程信息
+export function queryCurveReferMainInfo(id) {
+  return request({
+    url: `${basic_api_curve}/curveRefer/get/` + id,
+    method: 'get'
   })
 }
 
@@ -310,7 +326,7 @@ export function getTaskFinsih(data) {
 // 删除方案信息
 export function delInitList(id) {
   return request({
-    url: `${basic_api_curve}/curveSetInit/delete` + id,
+    url: `${basic_api_curve}/curveSetInit/delete/` + id,
     method: 'delete'
   })
 }
@@ -338,6 +354,21 @@ export function getDetalInitOptions() {
       for (var i = 0; i < datalist.length; i++) {
         var data = datalist[i]
         options.push({ data })
+      }
+    }
+  })
+  return options
+}
+
+// 获取初同调曲线始化列表，仅包含曲线产品，key为曲线产品编号
+export function getQueryCurvOptions(news) {
+  var options = []
+  querycurveHomology(news).then(response => {
+    var datalist = response.dataList
+    if (datalist && datalist.length > 0) {
+      for (var i = 0; i < datalist.length; i++) {
+        var item = datalist[i]
+        options.push({ label: item.productName, value: item.homologyCurveId, curveId: item.homologyCurveId, productName: item.productName, productShortName: item.productShortName })
       }
     }
   })

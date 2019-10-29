@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <div style="margin-top: -10px">
-      <el-button icon="el-icon-arrow-down" style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px" @click="drawerIsOpen = true" />
+      <el-button
+        icon="el-icon-arrow-down"
+        style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
+        @click="drawerIsOpen = true"
+      />
     </div>
     <div style="margin-bottom: 20px" align="right">
       <span>
@@ -34,8 +38,8 @@
         v-loading="offerMarketLoading"
         :data="offerMarketList"
         tooltip-effect="dark"
-        style="width: 100%"
-        height="200"
+        width="100%"
+        height="400px"
         @header-click="offerHeaderScreening"
         @header-contextmenu="offerEditCurrentModule"
         @cell-dblclick="offerCellDblclick"
@@ -65,6 +69,7 @@
         :data="marketList"
         tooltip-effect="dark"
         style="width: 100%"
+        :row-class-name="tableRowClassName"
         @header-click="headerScreening"
         @header-contextmenu="editCurrentModule"
         @cell-dblclick="cellDblclick"
@@ -112,6 +117,22 @@
           @dateCallBack="screeningCallBack"
         />
       </keep-alive>
+      <el-form v-if="formType === 5" ref="specialForm" status-icon label-width="150px">
+        <el-row :gutter="66" align="left">
+          <div class="grid-content bg-purple">
+            <el-form-item label="特殊条款">
+              <el-checkbox-group v-model="specialChecked">
+                <el-checkbox label="1">是否永续</el-checkbox><br>
+                <el-checkbox label="2">是否私募</el-checkbox><br>
+                <el-checkbox label="3">是否有担保</el-checkbox><br>
+                <el-checkbox label="4">是否公开</el-checkbox><br>
+                <el-checkbox label="5">是否休1</el-checkbox><br>
+                <el-checkbox label="6">是否休2</el-checkbox><br>
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </el-row>
+      </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="screening">确 定</el-button>
@@ -135,11 +156,11 @@
     </el-dialog>
     <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
       <!--查询条件-->
-      <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px">
+      <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
           <el-select v-model="queryForm.curveType" :clearable="true" placeholder="请选择曲线编制类型">
-            <el-option label="利率" value="1" />
-            <el-option label="信用" value="2" />
+            <el-option label="利率" value="利率" />
+            <el-option label="信用" value="信用" />
           </el-select>
         </el-form-item>
         <el-form-item label="曲线名称">
@@ -150,7 +171,7 @@
                 multiple
                 collapse-tags
                 filterable
-                placeholder="请选择"
+                placeholder="请选择曲线名称"
                 @visible-change="getcurveNames"
               >
                 <el-option
@@ -178,8 +199,16 @@
         <el-form-item label="债券代码" prop="bondCode">
           <el-input v-model="queryForm.bondCode" placeholder="请输入债券代码" style="width: 200px" />
         </el-form-item>
-        <el-form-item label="代偿期" prop="period">
-          <el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />
+        <el-form-item label="待偿期">
+          <!--<el-input v-model="queryForm.period" placeholder="如[1,2]" style="width: 200px" />-->
+          <el-row :gutter="22" s>
+            <el-form-item prop="startPeriod" style="display: inline-block">
+              <el-input v-model.number="queryForm.startPeriod" placeholder="开始" type="number" style="width: 90px" />&nbsp;~
+            </el-form-item>
+            <el-form-item prop="endPeriod" style="display: inline-block">
+              <el-input v-model.number="queryForm.endPeriod" placeholder="结束" type="number" style="width: 90px" />&nbsp;年
+            </el-form-item>
+          </el-row>
         </el-form-item>
         <el-form-item label="发行人" prop="issuer">
           <el-input v-model="queryForm.issuer" placeholder="请输入发行人" style="width: 200px" />
@@ -188,6 +217,7 @@
           <el-date-picker
             v-model="queryForm.updateTime"
             type="datetimerange"
+            value-format="yyyy-MM-dd HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -213,7 +243,7 @@
           <el-input v-model="editModuleForm.offerModuleName" placeholder="" style="width: 300px" />
         </el-form-item>
         <el-form-item>
-          <span style="font-size: 2px;color: #dddfdd">
+          <span style="color: #dddfdd">
             修改模板名称后保存，视为新模板
           </span>
         </el-form-item>
@@ -293,6 +323,8 @@ export default {
   },
   data() {
     return {
+      // 特殊条款
+      specialChecked: [],
       // 编辑模板弹框
       editModuleIsOpen: false,
       editModuleForm: {
@@ -310,13 +342,30 @@ export default {
         checkedCurveNames: [],
         curveType: '',
         bondCode: '',
-        period: '',
+        // endPeriod: '',
+        // startPeriod: '',
         issuer: '',
         updateTime: [],
-        checkedReferenceType: ['样本券维度', '估值曲线维度']
+        checkedReferenceType: ['曲线样本券', '估值进线规则']
+      },
+      queryFormRules: {
+        startPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.endPeriod !== '' && value > this.queryForm.endPeriod && value !== '') {
+            callback(new Error('需小于等于' + this.queryForm.endPeriod))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }],
+        endPeriod: [{ validator: (rule, value, callback) => {
+          if (this.queryForm.startPeriod !== '' && value < this.queryForm.startPeriod && value !== '') {
+            callback(new Error('需大于等于' + this.queryForm.startPeriod))
+          } else {
+            callback()
+          }
+        }, trigger: 'change' }]
       },
       checkAll: true,
-      referenceTypes: ['样本券维度', '估值曲线维度'],
+      referenceTypes: ['曲线样本券', '估值进线规则'],
       isIndeterminate: false,
       curveList: [],
       // 查询是否打开
@@ -368,9 +417,9 @@ export default {
   },
   methods: {
     // 初始化
-    initTable() {
-      this.initOfferTable()
-      this.initCJTable()
+    async initTable() {
+      await this.initOfferTable()
+      await this.initCJTable()
     },
     initOfferTable() {
       // 初始化报价表数据
@@ -392,7 +441,8 @@ export default {
       const data2 = {
         page: this.offerPage,
         dataMarket: '02',
-        shawArea: '01'
+        showArea: '01',
+        queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
         // console.info(response)
@@ -423,7 +473,8 @@ export default {
       const data2 = {
         page: this.page,
         dataMarket: '02',
-        showArea: '02'
+        showArea: '02',
+        queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
         console.info(response)
@@ -451,7 +502,8 @@ export default {
         showArea: '01',
         tempId: this.offerCurrentModuleId,
         searchParam: this.searchParam,
-        queryForm: this.queryForm
+        queryForm: this.queryForm,
+        specialChecked: this.specialChecked
       }
       queryMarketData(data).then(response => {
         console.info(response)
@@ -473,37 +525,41 @@ export default {
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      // 默认该表头没有筛选过
-      const index = this.isScreeningByHeader(this.offerScreeningFormList)
-      if (index != null && index !== '') {
-        // 该表头筛选过
-        const form = this.offerScreeningFormList[index].screeningForm
-        this.screeningFormSet(form)
-      }
-      const tab = this.offerTableHeader.filter(tab => tab.colName === key)
-      const type = tab[0].colType
-      // console.info('在这')
-      // console.info(type)
+      if (key === 'SPECIAL_PROVISIONS') {
+        this.formType = 5
+      } else {
+        // 默认该表头没有筛选过
+        const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+        console.info(form)
+        if (form.length > 0) {
+          // const form = this.screeningFormList[index].screeningForm
+          this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
+        }
+        const tab = this.offerTableHeader.filter(tab => tab.colName === key)
+        const type = tab[0].colType
+        // console.info('在这')
+        // console.info(type)
 
-      switch (type) {
-        case 'DATE':// 日期型
-          this.formType = 1
-          break
-        case 'NUMBER':// 数值型
-          this.formType = 2
-          break
-        case 'STRING':// 字符型
-          this.formType = 3
-          break
-        case 'EQSTRING':// 字符型（不能模糊查询）
-          this.formType = 3
-          break
-        case 'OPTION':// 可选型
-          this.formType = 4
-          break
-        default: // 自定义字段不予筛选
-          this.formType = 0
-          break
+        switch (type) {
+          case 'DATE':// 日期型
+            this.formType = 1
+            break
+          case 'NUMBER':// 数值型
+            this.formType = 2
+            break
+          case 'STRING':// 字符型
+            this.formType = 3
+            break
+          case 'EQSTRING':// 字符型（不能模糊查询）
+            this.formType = 3
+            break
+          case 'OPTION':// 可选型
+            this.formType = 4
+            break
+          default: // 自定义字段不予筛选
+            this.formType = 0
+            break
+        }
       }
       this.screeningFormVisible = true
     },
@@ -531,10 +587,11 @@ export default {
     },
     offerIsLight(row, header) {
       // 判断是否高亮
-      if (typeof row.modifiedCols !== 'undefined') {
-        const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
-        return mods.length > 0
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
+        const mods = modifiedCols.split(',')
+        const mod = mods.filter(val => val === header.colName)
+        return mod.length > 0
       } else {
         return false
       }
@@ -549,7 +606,14 @@ export default {
       getTempById(val).then(res => {
         const { showCols, colData } = res
         console.info(showCols)
-        this.offerTableHeader = showCols
+        // this.offerTableHeader = showCols
+        this.offerTableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.offerTableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.offerTableHeader)
+        })
         this.offerColData = colData
       })
       // 清空筛选数据
@@ -625,10 +689,11 @@ export default {
       const key = column.property
       this.currentHeader.key = key
       this.currentHeader.label = column.label
-      const index = this.isScreeningByHeader(this.screeningFormList)
-      if (index != null && index !== '') {
-        const form = this.screeningFormList[index].screeningForm
-        this.screeningFormSet(form)
+      const form = this.screeningFormList.filter(form => form.headerKey === this.currentHeader.key)
+      console.info(form)
+      if (form.length > 0) {
+        // const form = this.screeningFormList[index].screeningForm
+        this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
       }
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
@@ -679,10 +744,11 @@ export default {
     },
     isLight(row, header) {
       // 成交判断是否高亮
-      if (typeof row.modifiedCols !== 'undefined') {
-        const modifiedCols = row.modifiedCols
-        const mods = modifiedCols.filter(val => val.colName === header.key)
-        return mods.length > 0
+      if (typeof row.MODIFIED_COLS !== 'undefined') {
+        const modifiedCols = row.MODIFIED_COLS
+        const mods = modifiedCols.split(',')
+        const mod = mods.filter(val => val === header.colName)
+        return mod.length > 0
       } else {
         return false
       }
@@ -697,7 +763,14 @@ export default {
       getTempById(val).then(res => {
         const { showCols, colData } = res
         console.info(showCols)
-        this.tableHeader = showCols
+        // this.tableHeader = showCols
+        this.tableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.tableHeader.splice(i, 0, showCols[i])
+          }
+          console.info(this.tableHeader)
+        })
         this.colData = colData
       })
       // 清空筛选数据
@@ -747,12 +820,19 @@ export default {
 
     // 其他
     queryCell() {
-      // 确定查询
-      this.drawerIsOpen = false
-      // 查询成交表
-      this.loadTable()
-      // 查询报价表
-      this.offerLoadTable()
+      this.$refs['queryForm'].validate((valid) => {
+        if (valid) {
+          // 查询成交表
+          this.loadTable()
+          // 查询报价表
+          this.offerLoadTable()
+          // 确定查询
+          this.drawerIsOpen = false
+        } else {
+          // this.$message('error submit!!')
+          return false
+        }
+      })
     },
     screening() {
       // 确定筛选方法
@@ -768,6 +848,9 @@ export default {
           break
         case 4:
           this.$refs.ScreeningCheckboxForm.screening()
+          break
+        case 5:
+          this.screeningCallBack()
           break
       }
     },
@@ -843,6 +926,17 @@ export default {
         const headers = this.offerTableHeader.filter(tab => tab.colName === this.currentHeader.key)
         // console.info('确定修改')
         // alert(content)
+        const str = headers[0].colName
+        this.currentRow[str]
+        // console.info('修改'+ this.currentRow[str])
+        if (content === this.currentRow[str] + '') {
+          this.updateForm.updateContent = ''
+          this.currentRow = {}
+          this.currentHeader = {}
+          this.updateFormVisible = false
+          return
+        }
+        this.currentRow[str] = content
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
@@ -866,6 +960,17 @@ export default {
         const headers = this.tableHeader.filter(tab => tab.colName === this.currentHeader.key)
         // console.info('确定修改')
         // alert(content)
+        const str = headers[0].colName
+        this.currentRow[str]
+        // console.info('修改'+ this.currentRow[str])
+        if (content === this.currentRow[str] + '') {
+          this.updateForm.updateContent = ''
+          this.currentRow = {}
+          this.currentHeader = {}
+          this.updateFormVisible = false
+          return
+        }
+        this.currentRow[str] = content
         const data = {
           currentHeader: headers[0],
           currentRow: this.currentRow,
@@ -1059,7 +1164,13 @@ export default {
         getTempById(newTempId).then(res => {
           const { showCols, colData } = res
           console.info(showCols)
-          this.tableHeader = showCols
+          this.tableHeader = []
+          this.$nextTick(() => {
+            for (let i = 0; i < showCols.length; i++) {
+              this.tableHeader.splice(i, 0, showCols[i])
+            }
+            console.info(this.tableHeader)
+          })
           this.colData = colData
         })
         // 获取满足条件的行情数据
@@ -1087,7 +1198,14 @@ export default {
         getTempById(newTempId).then(res => {
           const { showCols, colData } = res
           console.info(showCols)
-          this.offerTableHeader = showCols
+          // this.offerTableHeader = showCols
+          this.offerTableHeader = []
+          this.$nextTick(() => {
+            for (let i = 0; i < showCols.length; i++) {
+              this.offerTableHeader.splice(i, 0, showCols[i])
+            }
+            console.info(this.offerTableHeader)
+          })
           this.offerColData = colData
         })
         // 获取满足条件的行情数据
@@ -1128,13 +1246,12 @@ export default {
         } else {
           headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
         }
-        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm
         switch (type) {
           case 'DATE':// 日期型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'DATE'
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
@@ -1152,13 +1269,13 @@ export default {
             }
             break
           case 'NUMBER':// 数值型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
             if (typeof data.screeningNum === 'undefined') {
               // 范围
               obj.operator = 'BETWEEN'
               if (typeof data.startNum !== 'undefined') {
-                obj.startvalue = data.startNum + ''
+                obj.beginvalue = data.startNum + ''
               }
               if (typeof data.endNum !== 'undefined') {
                 obj.endvalue = data.endNum + ''
@@ -1176,7 +1293,7 @@ export default {
             }
             break
           case 'STRING':// 字符型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'STRING'
             // 单日
             obj.operator = 'LIKE'
@@ -1186,7 +1303,7 @@ export default {
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'EQSTRING'
             // 单日
             obj.operator = 'EQ'
@@ -1196,7 +1313,7 @@ export default {
             }
             break
           case 'OPTION':// 可选型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
               if (typeof data.screeningChecked === 'undefined') {
@@ -1226,6 +1343,12 @@ export default {
       getCurveList().then(response => {
         this.curveList = response
       })
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.KNOCK === '1' || row.NETDEVIATION_LIMIT === '1') {
+        return 'warning-row'
+      }
+      return ''
     }
   }
 
@@ -1235,6 +1358,9 @@ export default {
 <style scoped>
   .light {
     color: #df1009;
+  }
+  .el-table .warning-row {
+    background: oldlace;
   }
 
 </style>
