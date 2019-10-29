@@ -107,7 +107,8 @@ export default [
             'QueryValuation',
             'OrderInfoList',
             'QueryCountValuation',
-            'SchemeTaskAllotList'
+            'SchemeTaskAllotList',
+            'ReportManage'
           ]
         },
         'msg': null,

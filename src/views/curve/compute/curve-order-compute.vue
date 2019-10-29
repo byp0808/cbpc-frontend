@@ -44,6 +44,7 @@
               :label="name"
               :value="key"
             />
+            <el-option label="全部" value=""></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="曲线编制状态">
@@ -54,6 +55,7 @@
               :label="name"
               :value="key"
             />
+            <el-option label="全部" value=""></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>

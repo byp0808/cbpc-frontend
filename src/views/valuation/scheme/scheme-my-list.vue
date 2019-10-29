@@ -54,8 +54,8 @@
           @current-change="handleCurrentChange"
         />
       </div>
-      <div v-if="activeElement === '02'" v-loading="tabLoading">
-        <obey-list :all-list="allList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+      <div v-if="activeElement === '02'" v-loading="tableLoading">
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -68,8 +68,8 @@
           @current-change="handleCurrentChange"
         />
       </div>
-      <div v-if="activeElement === '03'" v-loading="tabLoading">
-        <obey-list :all-list="allList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+      <div v-if="activeElement === '03'" v-loading="tableLoading">
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
           align="center"
