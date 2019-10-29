@@ -650,7 +650,7 @@ export default {
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
-              if (typeof data.screeningChecked === 'undefined') {
+              if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
                 if (data.screeningChecked.length > 0) {
