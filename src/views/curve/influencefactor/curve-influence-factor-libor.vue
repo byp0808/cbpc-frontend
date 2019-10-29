@@ -11,7 +11,7 @@
           <el-form-item>
             <el-button type="primary" @click="indexQuery">查询</el-button>
           </el-form-item>
-          <i style="float:right;font-size:22px;line-height:36px">2019-10-25</i>
+          <span id="time" style="float:right;font-size:22px;line-height:36px">{{ queryForm.nowdate }}</span>
         </el-form>
         <el-row>
           <el-col :span="8">
@@ -73,15 +73,26 @@
           </el-col>
         </el-row>
       </el-card>
+      <el-dialog v-if="dialogFormVisible" title="Libor曲线" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="90%">
+        <CurveInfluenceFactorLiborCur
+          ref="refCurveInfluenceFactorLiborCur"
+        />
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">
+            取消
+          </el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 <script>
 // import { formatTimeToStr } from '@/utils/date.js'
 import { querylidor } from '@/api/curve/curve-query.js'
-
+import CurveInfluenceFactorLiborCur from '@/views/curve/influencefactor/curve-influence-factor-libor-cur.vue'
 export default {
   name: 'CurveInfluenceFactorLibor',
+  components: { CurveInfluenceFactorLiborCur },
   //   props: ['taskDay', 'orderId'],
   data() {
     return {
@@ -89,8 +100,10 @@ export default {
         dataList: []
       },
       queryForm: {
-        curveId: ''
+        curveId: '',
+        nowdate: ''
       },
+      dialogFormVisible: false,
       curveList: {
         dataList: [
           { id: '选项一', orderName: '欧元' },
@@ -106,6 +119,7 @@ export default {
   },
   mounted() {
     this.liborDataList.dataList = this.getQuerylibor()
+    this.funtime()
   },
   methods: {
     // 主页面查询方法
@@ -124,9 +138,16 @@ export default {
     handleOptionChange(pageSize) {
 
     },
+    // 获取时间
+    funtime() {
+      var date = new Date()
+      console.info(date + '时间')
+      this.queryForm.nowdate = (date.getFullYear()) + '年' + (date.getMonth() + 1) + '月' + (date.getDate()) + '日'
+    },
     // 点击利率期限
     initstandSlipSet() {
       console.info('点击利率期限')
+      this.dialogFormVisible = true
     },
     // 获取libor数据
     getQuerylibor() {
