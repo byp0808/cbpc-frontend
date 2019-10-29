@@ -2,7 +2,12 @@
   <div class="flex-container">
     <div class="flex-item">
       <el-card class="flex-children curve-build curve-image">
-        <Chart :options="chartOptions" />
+        <el-row>
+          <el-col :span="20">
+            <Chart :options="chartOptions" />
+
+          </el-col>
+        </el-row>
       </el-card>
       <el-card class="flex-children curve-build">
         <el-table
@@ -88,6 +93,11 @@ export default {
           },
           gridLineWidth: 1
         },
+        // plotOptions: {
+        //   series: {
+        //     color: '#FF0000'
+        //   }
+        // },
         yAxis: {
           title: {
             text: ''
@@ -96,7 +106,8 @@ export default {
         },
         series: [{
           name: '现在',
-          data: [1, 2, 3]
+          data: [1, 2, 3],
+          color: '#f00'
         }, {
           name: '一个月前',
           data: [3, 2, 1]
