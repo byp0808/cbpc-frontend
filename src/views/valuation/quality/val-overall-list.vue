@@ -19,12 +19,12 @@
       </el-table-column>
       <el-table-column prop="market" label="流通场所" width="80" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.market }}
+          {{ $dft("EXCHNG", scope.row.market) }}
         </template>
       </el-table-column>
       <el-table-column prop="bondNature" label="债券性质" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.bondNature }}
+          {{ $dft("ASSET_DTL_CATEG_CODE", scope.row.bondNature) }}
         </template>
       </el-table-column>
       <el-table-column prop="residualMaturity" label="待偿期" width="100" show-overflow-tooltip>

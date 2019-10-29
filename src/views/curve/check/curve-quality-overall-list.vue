@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column prop="curvePubType" label="曲线类型" width="80" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.curvePubType }}
+          {{ $dft("CURVE_BUILD_TYPE", scope.row.curvePubType) }}
         </template>
       </el-table-column>
       <el-table-column prop="compDate" label="发布日期" width="100" show-overflow-tooltip>

@@ -25,7 +25,7 @@
       </el-table-column>
       <el-table-column prop="curvePubType" label="曲线类型" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.curvePubType }}
+          {{ $dft("CURVE_BUILD_TYPE", scope.row.curvePubType) }}
         </template>
       </el-table-column>
       <el-table-column prop="keyTerm" label="关键期限" width="100" show-overflow-tooltip>
@@ -117,6 +117,7 @@ export default {
     qryCurveShkQcRpt() {
       this.shkQcRptList.compDate = this.taskDay
       this.shkQcRptList.batchId = this.orderId
+      // this.shkQcRptList.batchId = '0000'
       this.shkQcRptList.curveId = this.curveId
       qryCurveShkQcRpt(this.shkQcRptList).then(response => {
         console.info('qryCurveShkQcRpt.qryCurveShkQcRpt...')

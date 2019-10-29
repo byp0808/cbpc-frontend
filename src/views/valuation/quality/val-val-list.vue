@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column prop="market" label="流通场所" width="80" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.market }}
+          {{ $dft("EXCHNG", scope.row.market) }}
         </template>
       </el-table-column>
       <el-table-column prop="yield" label="今日收益率" width="100" show-overflow-tooltip>
