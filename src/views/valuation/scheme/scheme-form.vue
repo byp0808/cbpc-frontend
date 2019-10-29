@@ -151,6 +151,9 @@ export default {
       }
     }
   },
+  created() {
+    console.log('112', this.adjustData)
+  },
   mounted() {
     const that = this
     getCurveList().then(response => {

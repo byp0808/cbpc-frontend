@@ -28,7 +28,7 @@
       <el-tab-pane v-for="item in tabList" :key="item.scene" :label="tabName(item.scene)" :name="item.scene" />
     </el-tabs>
     <transition name="el-fade-in-linear">
-      <div v-if="activeElement === '01' || activeElement === '02' || activeElement === '03'" v-loading="tabLoading">
+      <div v-if="activeElement === '01'" v-loading="tabLoading">
         <asset-list ref="assetList" :all-list="allList" :is-my="isMy" @taskList="taskLists" />
         <el-pagination
           style="margin-top:20px"
@@ -42,8 +42,36 @@
           @current-change="handleCurrentChange"
         />
       </div>
+      <div v-if="activeElement === '02'" v-loading="tabLoading">
+        <obey-list :all-list="allList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <el-pagination
+          style="margin-top:20px"
+          align="center"
+          :current-page="params.page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="params.page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="params.page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+      <div v-if="activeElement === '03'" v-loading="tabLoading">
+        <obey-list :all-list="allList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <el-pagination
+          style="margin-top:20px"
+          align="center"
+          :current-page="params.page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="params.page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="params.page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
       <div v-if="activeElement === '04'" v-loading="tabLoading">
-        <people-upload :all-list="uploadList" @taskList="taskLists" />
+        <people-upload :all-list="uploadList" :is-my="isMy" @taskList="taskLists" />
         <el-pagination
           align="center"
           :current-page="params.page.pageNumber"
@@ -198,6 +226,7 @@
 
 <script>
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
+import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
@@ -205,7 +234,8 @@ export default {
   name: 'SchemeAllList',
   components: {
     AssetList,
-    PeopleUpload
+    PeopleUpload,
+    ObeyList
   },
   data() {
     return {
@@ -352,6 +382,7 @@ export default {
     },
     handleSelect(e) {
       this.params.scene = e.name
+      this.activeElement = e.name
       this.loadTable_all()
     },
     nameChange() {
