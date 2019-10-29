@@ -21,9 +21,7 @@
               </el-col>
               <el-col :span="12">
                 <el-checkbox-group v-model="checked" :disabled="disable_2">
-                  <el-checkbox label="复选框 A" />
-                  <el-checkbox label="复选框 B" />
-                  <el-checkbox label="复选框 C" />
+                  <el-checkbox v-for="item in options" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
                 </el-checkbox-group>
               </el-col>
             </el-row>
@@ -42,6 +40,14 @@ export default {
   name: 'ScreeningCheckboxForm',
   components: {},
   // props: ['businessId', 'disabled'],
+  props: {
+    optionsList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       radio: '1',
@@ -66,6 +72,9 @@ export default {
     checked: 'checkedChange'
   },
   activated() {
+    this.optionsList.map(opt => {
+      this.options.push(opt)
+    })
     const form = this.screeningForm
     if (typeof form.screeningChecked !== 'undefined' && form.screeningChecked.length !== 0) {
       this.checked = form.screeningChecked

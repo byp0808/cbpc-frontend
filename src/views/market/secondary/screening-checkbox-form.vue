@@ -21,9 +21,7 @@
               </el-col>
               <el-col :span="12">
                 <el-checkbox-group v-model="checked" :disabled="disable_2">
-                  <el-checkbox label="复选框 A" />
-                  <el-checkbox label="复选框 B" />
-                  <el-checkbox label="复选框 C" />
+                  <el-checkbox v-for="item in options" :key="item.value" :label="item.value">{{ item.label }}</el-checkbox>
                 </el-checkbox-group>
               </el-col>
             </el-row>
@@ -36,21 +34,34 @@
 </template>
 
 <script>
-// import { saveOrderInfo, queryOrderInfo } from '@/api/market/market.js'
 
 export default {
   name: 'ScreeningCheckboxForm',
   components: {},
-  // props: ['businessId', 'disabled'],
+  // props: ['options'],
+  props: {
+    optionsList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       radio: '1',
       disable_1: false,
       disable_2: true,
+      options: [],
       checked: [],
       isScreened: false
     }
   },
+  // watch: {
+  //   options(val) {
+  //     console.log('val', val)
+  //   }
+  // },
   computed: {
     screeningForm: {
       get() {
@@ -66,6 +77,10 @@ export default {
     checked: 'checkedChange'
   },
   activated() {
+    // console.info(this.optionsList)
+    this.optionsList.map(opt => {
+      this.options.push(opt)
+    })
     const form = this.screeningForm
     if (typeof form.screeningChecked !== 'undefined' && form.screeningChecked.length !== 0) {
       this.checked = form.screeningChecked

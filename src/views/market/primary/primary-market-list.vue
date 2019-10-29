@@ -63,7 +63,7 @@
         <ScreeningCheckboxForm
           v-if="formType===4"
           ref="ScreeningCheckboxForm"
-          :business-id="orderInfoId"
+          :options-list="optionHeader"
           @dateCallBack="screeningTable"
         />
       </keep-alive>
@@ -141,6 +141,7 @@ import ScreeningNumForm from '@/views/market/primary/screening-num-form.vue'
 import ScreeningStringForm from '@/views/market/primary/screening-string-form.vue'
 import ScreeningCheckboxForm from '@/views/market/primary/screening-checkbox-form.vue'
 import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
+import { optioins } from '@/api/curve/code-type.js'
 export default {
   name: 'PrimaryMarketList',
   components: {
@@ -151,6 +152,7 @@ export default {
   },
   data() {
     return {
+      optionHeader: [],
       // 模板编辑
       editModuleIsOpen: false,
       editModuleForm: {
@@ -326,6 +328,7 @@ export default {
 
       const tab = this.tableHeader.filter(tab => tab.colName === key)
       const type = tab[0].colType
+      this.optionHeader = optioins(this, tab[0].realColName)
 
       switch (type) {
         case 'DATE':// 日期型
