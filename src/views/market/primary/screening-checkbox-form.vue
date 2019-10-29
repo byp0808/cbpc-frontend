@@ -54,6 +54,7 @@ export default {
       disable_1: false,
       disable_2: true,
       checked: [],
+      options: [],
       isScreened: false
     }
   },
