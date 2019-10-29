@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <div style="margin-top: -10px">
-      <el-button icon="el-icon-arrow-down" style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px" @click="drawerIsOpen = true" />
+      <el-button
+        icon="el-icon-arrow-down"
+        style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
+        @click="drawerIsOpen = true"
+      />
     </div>
     <div style="margin-bottom: 20px" align="right">
       <span>
@@ -1242,13 +1246,12 @@ export default {
         } else {
           headers = this.tableHeader.filter(tab => tab.colName === val.headerKey)
         }
-        console.info(headers[0])
         const type = headers[0].colType
         const obj = {}
         const data = val.screeningForm
         switch (type) {
           case 'DATE':// 日期型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'DATE'
             if (typeof data.singleDate === 'undefined' || data.singleDate === '') {
               // 范围
@@ -1266,7 +1269,7 @@ export default {
             }
             break
           case 'NUMBER':// 数值型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'NUMBER'
             if (typeof data.screeningNum === 'undefined') {
               // 范围
@@ -1290,7 +1293,7 @@ export default {
             }
             break
           case 'STRING':// 字符型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'STRING'
             // 单日
             obj.operator = 'LIKE'
@@ -1300,7 +1303,7 @@ export default {
             }
             break
           case 'EQSTRING':// 字符型（不能模糊查询）
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'EQSTRING'
             // 单日
             obj.operator = 'EQ'
@@ -1310,7 +1313,7 @@ export default {
             }
             break
           case 'OPTION':// 可选型
-            obj.colName = val.headerKey
+            obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
             if (typeof data.screeningCheckString === 'undefined') {
               if (typeof data.screeningChecked === 'undefined') {

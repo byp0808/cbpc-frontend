@@ -105,7 +105,6 @@ export default {
   },
   methods: {
     async init() {
-
       if (this.homologyId) {
         // 查询主表信息
         await querycurveHomologyMain(this.homologyId).then(response => {
@@ -155,13 +154,6 @@ export default {
         })
         return false
       }
-      if (homologyCurveId === this.mainInfo.curveId) {
-        this.$message({
-          type: 'error',
-          message: '不可选择目标曲线本身作为同调曲线！'
-        })
-        return false
-      }
       for (var i = 0; i < this.curveHomologyList.length; i++) {
         var item = this.curveHomologyList[i]
         if (item.homologyCurveId === homologyCurveId) {
@@ -188,7 +180,7 @@ export default {
     },
     // 主体曲线
     changeCurve() {
-      if (this.curveHomologyList && this.curveHomologyList.length>0) {
+      if (this.curveHomologyList && this.curveHomologyList.length > 0) {
         this.$confirm('更改主体曲线将清空选择的同调曲线列表?', '提示', {
           type: 'warning'
         }).then(() => {
