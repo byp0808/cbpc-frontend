@@ -120,6 +120,7 @@ export default {
   data() {
     return {
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
+      recCurveName: 'curve2',
       stockMarketGrade: '存量隐含评级',
       valWays: [],
       recovery: '',
@@ -133,7 +134,8 @@ export default {
         cdsPremAdjWay: '01',
         recoDire: '01'
       },
-      isCover: true
+      isCover: true,
+      curveList: []
     }
   },
   computed: {
