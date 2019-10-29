@@ -60,7 +60,6 @@
         <SchemeNormal
           v-if="schemeInfo.valuScene === '01'"
           ref="SchemeNormal"
-          :scheme-info="schemeInfo"
         />
         <div v-else-if="schemeInfo.valuScene === '02'">
           <el-row>
@@ -103,7 +102,8 @@
 import SchemeNormal from '@/views/valuation/scheme/scheme-normal.vue'
 import { queryDictList, uploadFile } from '@/api/common/common.js'
 import { basic_api_valuation } from '@/api/base-api.js'
-import { getCurveList, findCurveByMarketGrade, save, taskScheme } from '@/api/valuation/scheme.js'
+import { getCurveList, findCurveByMarketGrade, save } from '@/api/valuation/scheme.js'
+// import { get } from 'http'
 export default {
   name: 'ValuationSchemeForm',
   components: {
@@ -120,20 +120,22 @@ export default {
   data() {
     return {
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
+      recCurveName: 'curve2',
       stockMarketGrade: '存量隐含评级',
       valWays: [],
       recovery: '',
       uploadTime: '',
-      schemeInfo: {
-        bondId: '12344345',
-        curveId: 'curve2',
-        valuScene: '01',
-        marketGrade: '',
-        cdsPremAdjType: '01',
-        cdsPremAdjWay: '01',
-        recoDire: '01'
-      },
-      isCover: true
+      // schemeInfo: {
+      //   bondId: '12344345',
+      //   curveId: 'curve2',
+      //   valuScene: '01',
+      //   marketGrade: '',
+      //   cdsPremAdjType: '01',
+      //   cdsPremAdjWay: '01',
+      //   recoDire: '01'
+      // },
+      isCover: true,
+      curveList: []
     }
   },
   computed: {
@@ -149,6 +151,16 @@ export default {
         const index = this.$lodash.findIndex(this.curveList, { id: curveId })
         return index > -1 ? this.curveList[index].name : ''
       }
+    },
+    schemeInfo: {
+      get() {
+        return this.$store.state.scheme.schemeInfo
+      },
+      set(schemeInfo) {
+        this.$store.commit('scheme/setSchemeInfo', schemeInfo)
+      }
+      // console.log(this.schemeInfo)
+      // return this.schemeInfo
     }
   },
   created() {
@@ -166,65 +178,64 @@ export default {
   },
   beforeMount() {
     if (this.taskInfo && this.taskInfo.taskId) {
-      taskScheme(this.taskInfo.taskId).then(response => {
-        this.schemeInfo = response
-      })
+      this.$store.dispatch('scheme/initScheme', this.taskInfo)
     }
   },
   methods: {
     save() {
-      const schemeInfo = this.$refs.SchemeNormal.getData()
-      schemeInfo.valuationScheme.valuScene = this.schemeInfo.valuScene
-      schemeInfo.valuationScheme.bondId = this.schemeInfo.bondId
-      console.log('schemeInfo', schemeInfo)
-      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '01' && !schemeInfo.valuationScheme.spreadValue && schemeInfo.valuationScheme.spreadValue !== 0) {
+      // const schemeInfo = this.$refs.SchemeNormal.getData()
+      // this.schemeInfo.valuScene = this.schemeInfo.valuScene
+      // this.schemeInfo.bondId = this.schemeInfo.bondId
+      // this.schemeInfo.id = this.schemeInfo.id
+      // console.log('schemeInfo', schemeInfo)
+      if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '01' && !this.schemeInfo.spreadValue && this.schemeInfo.spreadValue !== 0) {
         return this.$message.warning('请输入点差')
       }
-      if (schemeInfo.valuationScheme.cdsPremAdjWay === '01' && schemeInfo.valuationScheme.cdsPremAdjType === '02') {
-        if (!schemeInfo.spreadStart && schemeInfo.spreadStart !== 0) {
+      if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '02') {
+        if (!this.schemeInfo.spreadStart && this.schemeInfo.spreadStart !== 0) {
           return this.$message.warning('请输入初始点差')
         }
-        if (!schemeInfo.spreadEnd && schemeInfo.spreadEnd !== 0) {
+        if (!this.schemeInfo.spreadEnd && this.schemeInfo.spreadEnd !== 0) {
           return this.$message.warning('请输入最终点差')
         }
-        if (schemeInfo.spreadStart >= schemeInfo.spreadEnd) {
+        if (this.schemeInfo.spreadStart >= this.schemeInfo.spreadEnd) {
           return this.$message.warning('最终点差应大于初始点差')
         }
-        if (schemeInfo.cdsAdjValue >= (schemeInfo.spreadEnd - schemeInfo.spreadStart)) {
+        if (this.schemeInfo.cdsAdjValue >= (this.schemeInfo.spreadEnd - this.schemeInfo.spreadStart)) {
           return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
         }
-        if (!schemeInfo.cdsAdjValue && schemeInfo.cdsAdjValue !== 0) {
+        if (!this.schemeInfo.cdsAdjValue && this.schemeInfo.cdsAdjValue !== 0) {
           return this.$message.warning('请输入调整幅度')
         }
       }
-      if (schemeInfo.valuationScheme.cdsPremAdjWay === '02' && !schemeInfo.valuationScheme.relaSpread && schemeInfo.valuationScheme.relaSpread !== 0) {
+      if (this.schemeInfo.cdsPremAdjWay === '02' && !this.schemeInfo.relaSpread && this.schemeInfo.relaSpread !== 0) {
         return this.$message.warning('请输入相对点差')
       }
-      if (!schemeInfo.valuationScheme.flAdjValue && schemeInfo.valuationScheme.flAdjValue !== 0) {
+      if (!this.schemeInfo.flAdjValue && this.schemeInfo.flAdjValue !== 0) {
         return this.$message.warning('请输入目标流动性点差')
       }
-      if (!schemeInfo.valuationScheme.otAdjValue && schemeInfo.valuationScheme.otAdjValue !== 0) {
+      if (!this.schemeInfo.otAdjValue && this.schemeInfo.otAdjValue !== 0) {
         return this.$message.warning('请输入目标其他点差')
       }
-      if (schemeInfo.valuationScheme.spreadValue >= 99999 || schemeInfo.valuationScheme.spreadValue <= -99999) {
+      if (this.schemeInfo.spreadValue >= 99999 || this.schemeInfo.spreadValue <= -99999) {
         return this.$message.warning('点差范围是-99999~+99999,请重新输入')
       }
-      if (schemeInfo.valuationScheme.relaSpread > 100 || schemeInfo.valuationScheme.relaSpread < 0) {
+      if (this.schemeInfo.relaSpread > 100 || this.schemeInfo.relaSpread < 0) {
         return this.$message.warning('相对点差范围是0~100,请重新输入')
       }
-      if (schemeInfo.valuationScheme.flAdjValue >= 99999 || schemeInfo.valuationScheme.flAdjValue <= -99999) {
+      if (this.schemeInfo.flAdjValue >= 99999 || this.schemeInfo.flAdjValue <= -99999) {
         return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
       }
-      if (schemeInfo.valuationScheme.otAdjValue >= 99999 || schemeInfo.valuationScheme.otAdjValue <= -99999) {
+      if (this.schemeInfo.otAdjValue >= 99999 || this.schemeInfo.otAdjValue <= -99999) {
         return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
       }
-      if (schemeInfo.valuationScheme.spreadStart >= 99999 || schemeInfo.valuationScheme.spreadStart <= -99999) {
+      if (this.schemeInfo.spreadStart >= 99999 || this.schemeInfo.spreadStart <= -99999) {
         return this.$message.warning('初始点差范围是-99999~+99999,请重新输入')
       }
-      if (schemeInfo.valuationScheme.spreadEnd >= 99999 || schemeInfo.valuationScheme.spreadEnd <= -99999) {
+      if (this.schemeInfo.spreadEnd >= 99999 || this.schemeInfo.spreadEnd <= -99999) {
         return this.$message.warning('最终点差范围是-99999~+99999,请重新输入')
       }
-      save(schemeInfo).then(response => {
+      save({ valuationScheme: this.schemeInfo }).then(response => {
         this.$message({
           showClose: true,
           message: `保存成功`,

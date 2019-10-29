@@ -4,20 +4,26 @@
 **/
 
 /* theme color */
-$--color-primary: #1890ff;
+$--color-primary: #ff8901;
 $--color-success: #13ce66;
 $--color-warning: #FFBA00;
 $--color-danger: #ff4949;
 // $--color-info: #1E1E1E;
 
 $--button-font-weight: 400;
+$--border-radius-base: 2px !default; // 按钮圆角
+$--box-shadow-base: 0 2px 12px 0 rgba(0,0,0,0.1)!default; // 背景阴影
 
 // $--color-text-regular: #1f2d3d;
-
+$--font-size-base: 14px !default; // 字体大小
+$--color-text-regular: #1e222e !default; // 字体颜色
 $--border-color-light: #dfe4ed;
 $--border-color-lighter: #e6ebf5;
 
 $--table-border:1px solid#dfe6ec;
+$--table-header-color: #1e222e!default; // 表头字体颜色
+$--table-header-background: #f4f7fc !default; // 表头背景色
+$--switch-on-color: $--color-primary !default;  // 转换按钮激活颜色
 
 /* icon font path, required */
 $--font-path: '~element-ui/lib/theme-chalk/fonts';

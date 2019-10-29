@@ -4,7 +4,7 @@
       :data="allList"
       style="width: 100%"
       max-height="400"
-      :header-cell-style="{background:'#f6f6f6'}"
+      :header-cell-style="{background:'#f4f7fc'}"
       tooltip-effect="dark"
       border
       fit
@@ -131,7 +131,7 @@
       </el-table-column>
     </el-table>
     <transition name="dialog-fade-in">
-      <el-dialog :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
+      <el-dialog v-if="AdjustDialog" :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
         <scheme-form :adjust-data="adjustParams" />
       </el-dialog>
     </transition>
@@ -232,7 +232,7 @@ export default {
      margin-top: 10px;
  }
  .blue {
-   color:#09f;
+   color:#ff8901;
    cursor: pointer;
  }
  @keyframes dialog-fade-in {

@@ -1,93 +1,70 @@
 <template>
   <div>
-    <el-row>
-      <!-- <el-col :span="8">
-        <div class="grid-content">
-          <el-form-item label="目标估值曲线">
-            <el-select v-model="normalInfo.valuationScheme.curveId" placeholder="请选择">
+    <el-row :gutter="10">
+      <el-col :span="12">
+        <el-card class="box-card margin-top">
+          <el-form-item label="目标信用点差" class="display-inline">
+            <el-select v-model="schemeInfo.cdsPremAdjWay" size="small" placeholder="请选择">
               <el-option
-                v-for="curve in curveList"
-                :key="curve.id"
-                :label="curve.name"
-                :value="curve.id"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item class="placeholder" label="推荐曲线">
-            <span>{{ getCurveName(recCurveName) }}</span>
-          </el-form-item>
-        </div>
-      </el-col> -->
-      <!-- <el-col :span="8">
-        <div class="grid-content bg-purple-dark">
-          <el-form-item label="市场隐含评级">
-            <el-select v-model="normalInfo.valuationScheme.marketGrade" placeholder="请选择" @change="marketGradeChange">
-              <el-option
-                v-for="(name, key) in $dict('MARKET_GRADE')"
+                v-for="(name, key) in $dict('ADJ_WAY')"
                 :key="key"
                 :label="name"
                 :value="key"
               />
             </el-select>
           </el-form-item>
-          <el-form-item class="placeholder" label="存量隐含评级">
-            <span>{{ stockMarketGrade }}</span>
+          <el-form-item v-show="schemeInfo.cdsPremAdjWay === '01'" label-width="0" class="display-inline">
+            <el-select v-model="schemeInfo.cdsPremAdjType" with="80%" size="small" placeholder="请选择">
+              <el-option
+                v-for="(name, key) in $dict('ADJ_TYPE')"
+                :key="key"
+                :label="name"
+                :value="key"
+              />
+            </el-select>
           </el-form-item>
-        </div>
-      </el-col> -->
-      <el-col :span="8">
-        <el-form-item label="跨市场债方案同步">
-          <el-switch
-            v-model="isCover"
-            active-color="#13ce66"
-          />
-        </el-form-item>
+          <el-form-item v-show="schemeInfo.cdsPremAdjWay === '02'" label-width="0" class="display-inline">
+            <el-input-number v-model="schemeInfo.relaSpread" size="small" /><span class="unit">%</span>
+          </el-form-item>
+          <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" type="">选择市场价格</el-button>
+          <template>
+            <div v-show="schemeInfo.cdsPremAdjWay === '01'">
+              <template v-if="schemeInfo.cdsPremAdjType === '01'">
+                <el-form-item class="display-inline" label="">
+                  <el-input-number v-model="schemeInfo.spreadValue" size="small" :min="-99999" :max="99999" @blur="convertSpread" />
+                </el-form-item>
+                <el-tag type="info">相对点差:</el-tag>
+              </template>
+              <template v-else-if="schemeInfo.cdsPremAdjType === '02'">
+                <el-form-item label="初始" class="display-inline" prop="spreadStart">
+                  <el-input-number v-model="schemeInfo.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
+                </el-form-item>
+                <el-form-item label="调整幅度" class="display-inline">
+                  <el-input-number v-model="schemeInfo.cdsAdjValue" size="small" @change="handleChange" /><span class="unit">BP/批</span>
+                </el-form-item>
+                <el-form-item label="最终" class="display-inline">
+                  <el-input-number v-model="schemeInfo.spreadEnd" size="small" :min="-99999" :max="99999" @change="handleChange" />
+                </el-form-item>
+                <el-tag type="info">相对点差:</el-tag>
+              </template>
+            </div>
+            <el-form-item label="目标流动性点差">
+              <el-input-number v-model="schemeInfo.flAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
+            </el-form-item>
+            <el-form-item label="目标其他点差">
+              <el-input-number v-model="schemeInfo.otAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
+            </el-form-item>
+            <el-button size="small" type="primary" style="margin: 0 0 20px 0" @click="spreadTrial">试算</el-button>
+          </template>
+        </el-card>
       </el-col>
-    </el-row>
-    <el-row :gutter="10">
-      <el-card class="box-card margin-top">
-        <el-form-item label="调整方式">
-          <el-select v-model="normalInfo.valuationScheme.cdsPremAdjWay" size="small" placeholder="请选择">
-            <el-option
-              v-for="(name, key) in $dict('ADJ_WAY')"
-              :key="key"
-              :label="name"
-              :value="key"
-            />
-          </el-select>
-        </el-form-item>
-        <template>
-          <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '01'">
-            <el-form-item label="调整类型" class="display-inline">
-              <el-select v-model="normalInfo.valuationScheme.cdsPremAdjType" with="80%" size="small" placeholder="请选择">
-                <el-option
-                  v-for="(name, key) in $dict('ADJ_TYPE')"
-                  :key="key"
-                  :label="name"
-                  :value="key"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="normalInfo.valuationScheme.cdsPremAdjType === '01'" class="display-inline" label="点差">
-              <el-input-number v-model="normalInfo.valuationScheme.spreadValue" size="small" :min="-99999" :max="99999" />
-            </el-form-item>
-            <template v-else-if="normalInfo.valuationScheme.cdsPremAdjType === '02'">
-              <el-form-item label="初始点差" class="display-inline" prop="spreadStart">
-                <el-input-number v-model="normalInfo.spreadStart" size="small" :min="-99999" :max="99999" @change="handleChange" />
-              </el-form-item>
-              <el-form-item label="最终点差" class="display-inline">
-                <el-input-number v-model="normalInfo.spreadEnd" size="small" :min="-99999" :max="99999" @change="handleChange" />
-              </el-form-item>
-              <el-form-item label="调整幅度" class="display-inline">
-                <el-input-number v-model="normalInfo.cdsAdjValue" size="small" @change="handleChange" /><span class="unit">/批</span>
-              </el-form-item>
-            </template>
+      <el-col :span="12">
+        <el-card class="box-card margin-top" style="border:0">
+          <div v-show="schemeInfo.cdsPremAdjWay === '01'">
             <el-row>
-              <el-button size="small" type="primary" style="margin: 0 0 20px 0" @click="spreadTrial">试算</el-button>
               <el-table
                 ref="spreadTable01"
-                :data="normalInfo.schemeSpreads"
-                border
+                :data="trialResult"
                 size="mini"
               >
                 <el-table-column
@@ -100,11 +77,6 @@
                 <el-table-column
                   prop="ttmValue"
                   label="待尝期"
-                />
-                <el-table-column
-                  prop="relaSpread"
-                  label="相对点差"
-                  width="180"
                 />
                 <el-table-column
                   prop="dprice"
@@ -120,37 +92,21 @@
                 />
                 <el-table-column
                   prop="recoDire"
-                  label="公式库推荐"
+                  label="推荐"
                 />
               </el-table>
             </el-row>
           </div>
-          <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '02'">
-            <!-- <el-form ref="relativeRule" :model="normalInfo.valuationScheme" :rules="relativeRule"> -->
-            <el-form-item label="相对点差" class="display-inline">
-              <el-input-number v-model="normalInfo.valuationScheme.relaSpread" size="small" /><span class="unit">%</span>
-            </el-form-item>
-            <!-- </el-form> -->
+          <div v-show="schemeInfo.cdsPremAdjWay === '02'">
             <el-row>
-              <el-button size="small" type="primary" style="margin: 0 0 20px 0">试算</el-button>
               <el-table
                 ref="spreadTable02"
-                :data="normalInfo.valuationScheme.schemeSpread"
-                border
+                :data="trialResult"
                 size="mini"
               >
                 <el-table-column
-                  type="selection"
-                  width="55"
-                />
-                <el-table-column
                   prop="date"
                   label="待尝期"
-                  width="180"
-                />
-                <el-table-column
-                  prop="name"
-                  label="绝对点差"
                   width="180"
                 />
                 <el-table-column
@@ -167,27 +123,18 @@
                 />
                 <el-table-column
                   prop="address"
-                  label="公式库推荐"
+                  label="推荐"
                 />
               </el-table>
             </el-row>
           </div>
-          <div v-show="normalInfo.valuationScheme.cdsPremAdjWay === '03'">
+          <div v-show="schemeInfo.cdsPremAdjWay === '03'">
             <el-row>
-              <div style="margin: 30px 0 20px 0">
-                <el-button size="small" type="">选择市场价格</el-button>
-                <el-button size="small" type="primary" @click="spreadTrial">试算</el-button>
-              </div>
               <el-table
                 ref="spreadTable03"
-                :data="normalInfo.valuationScheme.schemeSpread"
+                :data="trialResult"
                 size="mini"
-                border
               >
-                <el-table-column
-                  type="selection"
-                  width="55"
-                />
                 <el-table-column
                   prop="date"
                   label="待尝期"
@@ -218,62 +165,45 @@
                 </el-table-column>
                 <el-table-column
                   prop="address"
-                  label="绝对点差"
-                />
-                <el-table-column
-                  prop="address"
-                  label="相对点差 %"
-                />
-                <el-table-column
-                  prop="address"
-                  label="公式库推荐"
+                  label="推荐"
                 />
               </el-table>
             </el-row>
           </div>
-        </template>
-      </el-card>
-    </el-row>
-    <el-row :gutter="10">
-      <el-col :span="18">
-        <el-card class="box-card margin-top">
-          <el-form-item class="display-inline" label="目标流动性点差">
-            <el-input-number v-model="normalInfo.valuationScheme.flAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
-          </el-form-item>
-          <el-form-item class="display-inline" label="目标其他点差">
-            <el-input-number v-model="normalInfo.valuationScheme.otAdjValue" size="small" :min="-99999" :max="99999" @change="handleChange" />
-          </el-form-item>
-          <el-form-item class="display-inline" label="含权推荐方向">
-            <el-select v-model="normalInfo.valuationScheme.recoDire" placeholder="请选择">
-              <el-option
-                v-for="(name, key) in $dict('RECO_DIRE')"
-                :key="key"
-                :label="name"
-                :value="key"
+          <el-row class="margin-top" style="text-align:right">
+            <el-form-item class="display-inline" label="跨市场债方案同步">
+              <el-switch
+                v-model="isCover"
               />
-            </el-select>
-          </el-form-item>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="box-card margin-top">
-          <el-upload
-            class="upload-demo"
-            action=""
-            :before-upload="handlePreview"
-            name="attach"
-            :http-request="uploadFile"
-            :on-exceed="handleExceed"
-            :before-remove="remove"
-            multiple
-            :limit="1"
-            accept=".xlsx,.pdf,.xls,.doc,.docx"
-            :file-list="fileList"
-          >
-            <el-button size="small" type="primary">上传估值判断依据</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传world/excel/pdf文件，且不超过1MB</div>
-          </el-upload>
-          <div v-if="showTime" class="uploadTime">上传时间：{{ updateTime }}</div>
+            </el-form-item>
+            <el-form-item label-width="10" class="display-inline">
+              <el-select v-model="schemeInfo.recoDire" placeholder="请选择">
+                <el-option
+                  v-for="(name, key) in $dict('RECO_DIRE')"
+                  :key="key"
+                  :label="name"
+                  :value="key"
+                />
+              </el-select>
+            </el-form-item>
+            <el-upload
+              class="upload-demo"
+              action=""
+              :before-upload="handlePreview"
+              name="attach"
+              :http-request="uploadFile"
+              :on-exceed="handleExceed"
+              :before-remove="remove"
+              multiple
+              :limit="1"
+              accept=".xlsx,.pdf,.xls,.doc,.docx"
+              :file-list="fileList"
+            >
+              <el-button size="small" type="primary">上传估值判断依据</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传world/excel/pdf文件，且不超过1MB</div>
+            </el-upload>
+            <div v-if="showTime" class="uploadTime">上传时间：{{ updateTime }}</div>
+          </el-row>
         </el-card>
       </el-col>
     </el-row>
@@ -281,46 +211,25 @@
 </template>
 
 <script>
-import { getCurveList, findCurveByMarketGrade, spreadTrial } from '@/api/valuation/scheme.js'
+import { getCurveList, findCurveByMarketGrade, spreadTrial, convertSpread } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '@/api/base-api.js'
 import { upload } from '../../../utils/file-request'
+// import { get } from 'http'
 export default {
   name: 'ValuationSchemeNormal',
   components: {
   },
-  props: {
-    schemeInfo: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
       isCover: true,
-      recCurveName: this.schemeInfo.curveId,
+      recCurveName: '',
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
       stockMarketGrade: '存量隐含评级',
       selectSpreadVal: 1,
       updateTime: '',
       fileList: [],
       showTime: false,
-      normalInfo: {
-        spreadStart: this.schemeInfo.spreadStart,
-        spreadEnd: this.schemeInfo.spreadEnd,
-        cdsAdjValue: this.schemeInfo.cdsAdjValue,
-        valuationScheme: {
-          curveId: this.schemeInfo.curveId,
-          marketGrade: this.schemeInfo.marketGrade,
-          cdsPremAdjType: this.schemeInfo.cdsPremAdjType,
-          cdsPremAdjWay: this.schemeInfo.cdsPremAdjWay,
-          recoDire: this.schemeInfo.recoDire,
-          relaSpread: this.schemeInfo.relaSpread,
-          flAdjValue: this.schemeInfo.flAdjValue,
-          otAdjValue: this.schemeInfo.otAdjValue,
-          spreadValue: this.schemeInfo.otAdjValue
-        },
-        schemeSpreads: this.schemeInfo.schemeSpread
-      },
+      trialResult: [],
       curveList: []
     }
   },
@@ -330,9 +239,20 @@ export default {
         const index = this.$lodash.findIndex(this.curveList, { id: curveId })
         return index > -1 ? this.curveList[index].name : ''
       }
+    },
+    schemeInfo: {
+      get() {
+        return this.$store.state.scheme.schemeInfo
+      },
+      set(schemeInfo) {
+        this.$store.commit('scheme/setSchemeInfo', schemeInfo)
+      }
+      // console.log(this.schemeInfo)
+      // return this.schemeInfo
     }
   },
   mounted() {
+    console.log(this.schemeInfo)
     const that = this
     getCurveList().then(response => {
       const { dataList } = response
@@ -341,13 +261,18 @@ export default {
   },
   methods: {
     getData() {
-      return this.normalInfo
+      // return this.normalInfo
     },
     selectSpread(index) {
-      this.normalInfo.schemeSpreads[index].status = '1'
+      // this.normalInfo.schemeSpreads[index].status = '1'
+    },
+    convertSpread() {
+      convertSpread(this.schemeInfo).then(response => {
+        console.log(response)
+      })
     },
     // changePower(e) {
-    //   this.normalInfo.valuationScheme.recoDire = e
+    //   this.schemeInfo.recoDire = e
     // },
     uploadFile(data) {
       // const date = new Date()
@@ -384,29 +309,29 @@ export default {
 
     },
     spreadTrial() {
-      if (this.normalInfo.valuationScheme.cdsPremAdjWay === '01') {
-        if (this.normalInfo.valuationScheme.cdsPremAdjType === '01' && !this.normalInfo.valuationScheme.spreadValue) {
+      if (this.schemeInfo.cdsPremAdjWay === '01') {
+        if (this.schemeInfo.cdsPremAdjType === '01' && !this.schemeInfo.spreadValue) {
           this.$message.warning('请填写点差')
           return false
         }
-        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02' && !this.normalInfo.spreadStart) {
+        if (this.schemeInfo.cdsPremAdjType === '02' && !this.schemeInfo.spreadStart) {
           this.$message.warning('请填写初始点差')
           return false
         }
-        if (this.normalInfo.valuationScheme.cdsPremAdjType === '02') {
-          if (!this.normalInfo.spreadStart && this.normalInfo.spreadStart !== 0) {
+        if (this.schemeInfo.cdsPremAdjType === '02') {
+          if (!this.schemeInfo.spreadStart && this.schemeInfo.spreadStart !== 0) {
             return this.$message.warning('请输入初始点差')
           }
-          if (!this.normalInfo.spreadEnd && this.normalInfo.spreadEnd !== 0) {
+          if (!this.schemeInfo.spreadEnd && this.schemeInfo.spreadEnd !== 0) {
             return this.$message.warning('请输入最终点差')
           }
-          if (this.normalInfo.spreadStart >= this.normalInfo.spreadEnd) {
+          if (this.schemeInfo.spreadStart >= this.schemeInfo.spreadEnd) {
             return this.$message.warning('最终点差应大于初始点差')
           }
-          if (this.normalInfo.cdsAdjValue >= (this.normalInfo.spreadEnd - this.normalInfo.spreadStart)) {
+          if (this.schemeInfo.cdsAdjValue >= (this.schemeInfo.spreadEnd - this.schemeInfo.spreadStart)) {
             return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
           }
-          if (!this.normalInfo.cdsAdjValue && this.normalInfo.cdsAdjValue !== 0) {
+          if (!this.schemeInfo.cdsAdjValue && this.schemeInfo.cdsAdjValue !== 0) {
             return this.$message.warning('请输入调整幅度')
           }
         }
@@ -418,7 +343,7 @@ export default {
     },
     marketGradeChange(value) {
       findCurveByMarketGrade(value).then(respnse => {
-        this.normalInfo.valuationScheme.curveId = respnse
+        this.schemeInfo.curveId = respnse
       })
     }
   }

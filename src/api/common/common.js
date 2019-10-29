@@ -15,8 +15,8 @@ export function queryDictList(data) {
 export function uploadFile(data) {
   const form = new FormData()
   form.append('file', data.file)
-  form.append('zone', 'pek3b')
-  form.append('bucketName', 'leewd-test')
+  form.append('zone', 'zz1')
+  form.append('bucketName', 'app-bucket')
   return upload({
     url: `${basic_api_portal}/pi-sys/common/attach/upload`,
     method: 'post',

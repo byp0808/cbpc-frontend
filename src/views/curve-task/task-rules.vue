@@ -40,9 +40,9 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" :offset="12">
+          <el-col :span="12" :offset="10">
             <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
-            <el-button type="primary" @click="download">下载分配规则</el-button>
+            <el-button type="primary" style="margin-right: 9px" @click="download">下载分配规则</el-button>
             <el-upload
               style="display: inline-block;"
               action=""
@@ -52,7 +52,7 @@
               :show-file-list="false"
               :accept="'excel'"
             >
-              <el-button type="primary">导入分配规则</el-button>
+              <el-button type="primary" style="margin-right: 9px">导入分配规则</el-button>
             </el-upload>
             <el-button type="primary" @click="openDialog(null, true)">批量保存</el-button>
           </el-col>

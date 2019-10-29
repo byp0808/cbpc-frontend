@@ -79,14 +79,16 @@ export default {
           floating: true,
           align: 'left',
           verticalAlign: 'top',
-          x: 0,
-          y: -10
+          x: 10,
+          y: -18,
+          style: 'display:flex'
         },
         xAxis: {
           title: {
             text: ''
           },
-          gridLineWidth: 1
+          categories: ['1M', '3M', '6M', '1Y', '2Y', '3Y', '5Y', '7Y', '10Y', '30Y'],
+          gridLineWidth: 0
         },
         yAxis: {
           title: {
@@ -96,13 +98,14 @@ export default {
         },
         series: [{
           name: '现在',
-          data: [1, 2, 3]
+          data: []
         }, {
           name: '一个月前',
-          data: [3, 2, 1]
+          data: []
         }, {
           name: '一年前',
-          data: [2, 3, 1]
+          data: [],
+          color: 'orange'
         }]
       },
       multipleSelection: '' // 选择记录
@@ -110,11 +113,16 @@ export default {
   },
   mounted() {
     this.usaDataList.dataList = this.getQueryUstreasuries()
+    this.clickQueryUstreasuries()
   },
   methods: {
     handleSelectionChange(items) {
       console.info('handleSelectionChange' + JSON.stringify(items))
       this.multipleSelection = items
+    },
+    // 点击名称
+    initstandSlipSet() {
+      console.info('点击名称')
     },
     // 获取美国国债收益率曲线数据
     getQueryUstreasuries() {
@@ -123,32 +131,27 @@ export default {
         response.map(data => options.push({ data }))
       })
       return options
+    },
+    // 关联曲线
+    clickQueryUstreasuries() {
+      queryUstreasuries().then(response => {
+        var dataList = response
+        var innow = []
+        var lastmonth = []
+        var lastyear = []
+        for (var i = 0; i < dataList.length; i++) {
+          innow.push([Number(dataList[i].rate)])
+          lastmonth.push([Number(dataList[i].beforeVlaue)])
+          lastyear.push([Number(dataList[i].highValue)])
+        }
+        // 现在
+        this.chartOptions.series[0].data = innow
+        // 一个月前
+        this.chartOptions.series[1].data = lastmonth
+        // 一年前
+        this.chartOptions.series[2].data = lastyear
+      })
     }
-    // qryCurveRvsQcRpt() {
-    //   this.rvsQcRptList.compDate = this.taskDay
-    //   this.rvsQcRptList.batchId = this.orderId
-    //   qryCurveRvsQcRpt(this.rvsQcRptList).then(response => {
-    //     console.info('qryCurveRvsQcRpt.qryCurveRvsQcRpt...')
-    //     const { dataList, page } = response
-    //     this.rvsQcRptList.dataList = dataList
-    //     this.rvsQcRptList.page = page
-    //     var income = []
-    //     var lastinCome = []
-    //     for (var i = 0; i < dataList.length; i++) {
-    //       // eslint-disable-next-line no-new-wrappers
-    //       var x = Number(dataList[i].keyTerm)
-    //       // eslint-disable-next-line no-new-wrappers
-    //       var y = Number(dataList[i].keyTermYield)
-    //       income.push([x, y])
-    //       // eslint-disable-next-line no-new-wrappers
-    //       lastinCome.push([Number(dataList[i].keyTerm), Number(dataList[i].tgtKeyTermYield)])
-    //     }
-    //     // // 本次收益率
-    //     // this.chartOptions.series[0].data = income
-    //     // // 上一批次收益率
-    //     // this.chartOptions.series[1].data = lastinCome
-    //   })
-    // },
     // qryCurveRvsQcList() {
     //   this.rvsQcRptList.compDate = this.taskDay
     //   this.rvsQcRptList.batchId = this.orderId

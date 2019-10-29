@@ -7,7 +7,7 @@
             <el-form-item label="行情展示模板名称" class="blackItem" prop="tempName">
               <el-input v-model="marketTempInfo.tempName" :disabled="disabled" size="mini" />
             </el-form-item>
-            <el-form-item label="备注" class="blackItem">
+            <el-form-item label="备注" class="blackItem" prop="remark">
               <el-input v-model="marketTempInfo.remark" :disabled="disabled" type="textarea" />
             </el-form-item>
             <el-form-item label="数据行情" class="blackItem" prop="dataMarket">
@@ -15,7 +15,7 @@
                 <el-option v-for="item in dataMarketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <el-form-item label="展示区域" class="blackItem" prop="showArea" :required="marketTempInfo.dataMarket==='02'?true:false">
+            <el-form-item label="展示区域" class="blackItem" prop="showArea">
               <el-select
                 v-model="marketTempInfo.showArea"
                 value-key="value"
@@ -213,14 +213,17 @@ export default {
       tempInfoRules: {
         tempName: [
           { required: true, message: '请输入模板名称', trigger: 'blur' },
-          { min: 1, max: 128, message: '长度在 1 到 128 个字符', trigger: 'blur' },
+          { min: 1, max: 128, message: '长度在 1 到 40 个汉字', trigger: 'blur' },
           { validator: this.checkTempName, trigger: 'blur' }
+        ],
+        remark: [
+          { min: 1, max: 128, message: '长度在 1 到 150 个汉字', trigger: 'blur' }
         ],
         dataMarket: [
           { required: true, message: '请选择数据行情', trigger: 'blur' }
         ],
         showArea: [
-          { message: '请选择展示区域', trigger: 'blur' }
+          { validator: this.checkShowArea, message: '请选择展示区域', trigger: 'blur' }
         ]
       },
       marketTempFormVisible: false,
@@ -250,7 +253,11 @@ export default {
     },
     marketTempInfo: {
       get() {
-        return this.$store.state.marketTemp.marketTempInfo
+        var marketTempInfo = this.$store.state.marketTemp.marketTempInfo
+        if (this.isCopy) {
+          marketTempInfo.tempName = ''
+        }
+        return marketTempInfo
       },
       set(marketTempInfo) {
         this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
@@ -278,6 +285,9 @@ export default {
         this.disabled = true
       } else {
         this.disabled = false
+      }
+      if (this.isCopy) {
+        this.tempInfodisabled = false
       }
     } else {
       this.disabled = false
@@ -537,6 +547,12 @@ export default {
           callback()
         }
       })
+    },
+    checkShowArea(rule, value, callback) {
+      if (this.marketTempInfo.dataMarket === '02' && !this.marketTempInfo.showArea) {
+        callback(new Error('展示区域不能为空'))
+      }
+      callback()
     }
   }
 }
