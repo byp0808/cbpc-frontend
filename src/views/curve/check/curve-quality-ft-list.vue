@@ -45,12 +45,13 @@ import { qryCurveFTQcRpt } from '@/api/curve/curve-quality.js'
 
 export default {
   name: 'CurveFTQcRpt', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'curveId'],
   data() {
     return {
       curveFTQcRpt: {
         compDate: '',
         batchId: '',
+        curveId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -60,6 +61,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryCurveFTQcRpt()
   },
   methods: {
     handleFilter() {
@@ -81,6 +85,7 @@ export default {
     qryCurveFTQcRpt() {
       this.curveFTQcRpt.compDate = this.taskDay
       this.curveFTQcRpt.batchId = this.orderId
+      this.curveFTQcRpt.curveId = this.curveId
       qryCurveFTQcRpt(this.curveFTQcRpt).then(response => {
         console.info('qryCurveFTQcRpt.qryCurveFTQcRpt...')
         const { dataList, page } = response

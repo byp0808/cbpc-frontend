@@ -37,37 +37,37 @@
       <div slot="header" class="clearfix card-head">
         <h3>总览</h3>
       </div>
-      <CurveQualityOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveQualityOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" @singleRouteCallback="singleRoute" />
     </el-card>
     <el-card v-if="activeName === 'qmxjc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>全面性检查</h3>
       </div>
-      <CurveComprehensiveQcRpt ref="qmxjc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveComprehensiveQcRpt ref="qmxjc" :task-day="taskDayStr" :order-id="queryForm.orderId" :curve-id="queryForm.curveId" />
     </el-card>
     <el-card v-if="activeName === 'bdpc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>波动偏差</h3>
       </div>
-      <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveShkQcRpt ref="bdpc" :task-day="taskDayStr" :order-id="queryForm.orderId" :curve-id="queryForm.curveId" />
     </el-card>
     <el-card v-if="activeName === 'qxkx'" :task-day="taskDayStr" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线跨线</h3>
       </div>
-      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" :query-form="queryForm" />
+      <CurveCrsQcRpt ref="qxkx" :task-day="taskDayStr" :order-id="queryForm.orderId" :query-form="queryForm" :curve-id="queryForm.curveId" />
     </el-card>
     <el-card v-if="activeName === 'qxdg'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>曲线倒挂</h3>
       </div>
-      <CurveRvsQcRpt ref="qxdg" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveRvsQcRpt ref="qxdg" :task-day="taskDayStr" :order-id="queryForm.orderId" :curve-id="queryForm.curveId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
-      <CurveFTQcRpt ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <CurveFTQcRpt ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" :curve-id="queryForm.curveId" />
     </el-card>
 
     <el-dialog v-if="orderSetFormVisible" :lock-scroll="lockScroll" width="40%" title="设置曲线质检波动偏差值" :visible.sync="orderSetFormVisible">
@@ -124,7 +124,8 @@ export default {
       orderList: [], // 批次列表
       queryForm: {
         taskDay: null,
-        orderId: ''
+        orderId: '',
+        curveId: ''
       },
       activeName: 'zl'
     }
@@ -229,6 +230,11 @@ export default {
       // } else if (this.activeName === 'rc') {
       //   this.$refs.zl.handleFilter()
       // }
+    },
+    singleRoute(curveId, activeName) {
+      console.info('singleRoute.singleRoute...')
+      this.activeName = activeName
+      this.queryForm.curveId = curveId
     }
   }
 }
