@@ -74,6 +74,13 @@
           >
             删除
           </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="toPublish(scope.row)"
+          >
+            发布
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -100,7 +107,7 @@
 
 <script>
 import ReportForm from '@/views/valuation/report/report-form.vue'
-import { queryReportList, deleteReport, switchStatus, uploadReport } from '@/api/valuation/report.js'
+import { queryReportList, deleteReport, publishReport, uploadReport } from '@/api/valuation/report.js'
 import { basic_api_valuation } from '@/api/base-api'
 import { downloadFile } from '@/utils/file-request.js'
 export default {
@@ -127,16 +134,6 @@ export default {
     }
   },
   computed: {
-    statusText() {
-      return function(status) {
-        switch (status) {
-          case '02':
-            return '启用中'
-          case '03':
-            return '停用中'
-        }
-      }
-    }
   },
   beforeMount() {
     this.loadTable()
@@ -170,7 +167,7 @@ export default {
     },
     toDelete(row) {
       if (row.approveStatus !== '03') {
-        this.$alert('报表[' + row.reportName + ']待复核/复核通过/已发布，无法删除')
+        this.$alert('报表 [' + row.reportName + '] ' + this.showStatus(row.approveStatus) + '，无法删除')
         return false
       }
       this.$confirm('确认删除此数据?', '提示', {
@@ -184,6 +181,21 @@ export default {
           })
           this.loadTable()
         })
+      }).catch(() => {
+      })
+    },
+    toPublish(row) {
+      if (row.approveStatus !== '02') {
+        this.$alert('报表 [' + row.reportName + '] ' + this.showStatus(row.approveStatus) + '，不能发布')
+        return false
+      }
+      publishReport(row.id).then((response) => {
+        this.$message({
+          message: '发布成功！',
+          type: 'success',
+          showClose: true
+        })
+        this.loadTable()
       }).catch(() => {
       })
     },
@@ -217,20 +229,6 @@ export default {
       }
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/report/download', res)
       this.loadTable()
-    },
-    changeStatus(status, id) {
-      if (status === '02') {
-        switchStatus({ id: id, busiStatus: '03' }).then(response => {
-          this.loadTable()
-        })
-      } else if (status === '03') {
-        switchStatus({ id: id, busiStatus: '02' }).then(response => {
-          this.loadTable()
-        })
-      }
-    },
-    isShowChangeStatusBtn(status) {
-      return status === '02' || status === '03'
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
