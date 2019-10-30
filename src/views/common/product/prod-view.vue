@@ -93,7 +93,7 @@
             type="text"
             size="small"
             :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
-            @click.native.prevent="handleDelete(scope)"
+            @click.native.prevent="handleDelete(scope.row.prdType,scope.row.prdId)"
           >
             删除
           </el-button>
@@ -169,9 +169,7 @@ import CurveProductForm from '@/views/curve/product/curve-product-form.vue'
 import CurveProductDefForm from '@/views/curve/product/curve-product-def-form.vue'
 import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import ValuationProdForm from '@/views/valuation/prod/prod-form.vue'
-import { queryALlProductList, queryProdByID, dwnlProducts } from '@/api/common/prod-list.js'
-
-import { delCurveSample } from '@/api/curve/curve-sample.js'
+import { queryALlProductList, queryProdByID, dwnlProducts, delCurveProduct } from '@/api/common/prod-list.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
 
 export default {
@@ -292,27 +290,18 @@ export default {
       }
     },
     // 删除
-    handleDelete({ $index, row }) {
+    handleDelete(prdType, prdId) {
       this.$confirm('是否删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(async() => {
-        if (row.prdType !== 'CURVE_SAMPLE') {
-          // await delCurveProduct(row.rowNo)
-          this.queryProductList()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        } else {
-          await delCurveSample(row.rowNo)
-          this.queryProductList()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        }
+        await delCurveProduct(prdId)
+        this.queryProductList()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
       }).catch(err => { console.error(err) })
     },
     // 保存产品
