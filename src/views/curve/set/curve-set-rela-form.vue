@@ -367,7 +367,6 @@ export default {
             })
           }
         }
-        this.sortTmpQuXJLixt()
         // 添加利差数据
         console.info('spreadFlag:' + spreadFlag)
         console.info('columnProp_LC:' + JSON.stringify(columnProp_LC))
@@ -517,7 +516,6 @@ export default {
           referFlag: 'Y'
         })
 
-        this.sortTmpQuXJLixt()
         this.$refs.curveIdSelect.blur()
       }
     },
@@ -590,8 +588,6 @@ export default {
       })
       // 根据区域排序，族系区放中间
       this.tmp_quXJList.sort(this.sortCurveByReferFlag)
-
-      this.sortTmpQuXJLixt()
     },
     quXJMove(index, opType) {
       if (opType === 'DEL') { // 删除
@@ -1266,15 +1262,7 @@ export default {
         this.$emit('saveCallBack')
       })
     },
-    // 族系区根据曲线评级排序
-    sortTmpQuXJLixt() {
-      for (var i = 0; i < this.tmp_quXJList.length; i++) {
-        if (this.tmp_quXJList[i].referFlag === 'Y') {
-          this.tmp_quXJList.sort(this.compareGrade)
-        }
-      }
-    },
-    // 比较评级
+    // 曲线评级排序
     compareGrade(currentRow, nextRow) {
       var curent_grade = this.getProductGrade(currentRow.curveId)
       var last_grade = this.getProductGrade(nextRow.curveId)
