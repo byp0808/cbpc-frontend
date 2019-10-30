@@ -261,7 +261,7 @@ export default {
     },
     toUse() {
       // 应用模板
-      const val = this.moduleIdis
+      const val = this.moduleId
       if (val === '') {
         this.$message('请选择模板！')
         return
@@ -473,6 +473,7 @@ export default {
       // 编辑当前模板
       // 取消浏览器默认右击事件
       window.event.returnValue = false
+      this.editModuleIsOpen = true
       // 清空表头及多选项旧数据
       this.editTableHeaders = []
       this.editTableHeaders.map(obj => {
@@ -482,13 +483,8 @@ export default {
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
         console.info(this.editModuleForm)
-        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
-        // console.info('详细')
-        // console.info(this.tableHeader)
-        // console.info(this.colData)
-        // console.info(tableHeaderDetail)
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.realColName).length > 0)
         tableHeaderDetail.map(res => this.editTableHeaders.push(res))
-        this.editModuleIsOpen = true
         // 表头默认全选
         this.$nextTick(() => {
           this.editTableHeaders.map(obj => {

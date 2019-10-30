@@ -10,7 +10,6 @@
           :data="usaDataList.dataList"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange"
         >
           <el-table-column label="名称">
             <template slot-scope="scope">
@@ -107,8 +106,7 @@ export default {
           data: [],
           color: 'orange'
         }]
-      },
-      multipleSelection: '' // 选择记录
+      }
     }
   },
   mounted() {
@@ -116,10 +114,6 @@ export default {
     this.clickQueryUstreasuries()
   },
   methods: {
-    handleSelectionChange(items) {
-      console.info('handleSelectionChange' + JSON.stringify(items))
-      this.multipleSelection = items
-    },
     // 点击名称
     initstandSlipSet() {
       console.info('点击名称')

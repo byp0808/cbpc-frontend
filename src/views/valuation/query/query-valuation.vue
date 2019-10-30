@@ -27,12 +27,12 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="付息方式" prop="payingInterest">
-            <el-select v-model="formData.payingInterest" placeholder="选择付息方式">
+            <el-select v-model="formData.payingInterest" multiple placeholder="选择付息方式">
               <el-option
                 v-for="item in payingInterests"
-                :key="item.batchId"
-                :label="item.batchId"
-                :value="item.batchId"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
             </el-select>
           </el-form-item>
@@ -69,7 +69,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="债券品种" prop="bondQuality">
-            <el-select v-model="formData.bondQuality" placeholder="选择债券品种">
+            <el-select v-model="formData.bondQuality" multiple placeholder="选择债券品种">
               <el-option
                 v-for="item in bondQualitys"
                 :key="item.value"
@@ -88,7 +88,7 @@
       <el-row :gutter="10">
         <el-col :span="6">
           <el-form-item label="对应收益率曲线" prop="yieldCurve">
-            <el-select v-model="formData.yieldCurve" placeholder="选择收益率曲线">
+            <el-select v-model="formData.yieldCurve" multiple placeholder="选择收益率曲线">
               <el-option
                 v-for="item in yieldCurves"
                 :key="item.value"
@@ -100,7 +100,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="流通场所" prop="market">
-            <el-select v-model="formData.market" placeholder="选择流通场所">
+            <el-select v-model="formData.market" multiple placeholder="选择流通场所">
               <el-option
                 v-for="item in markets"
                 :key="item.value"
@@ -342,12 +342,12 @@ export default {
         endDate: '', // 结束日期
         startBatch: '', // 开始批次
         endBatch: '', // 结束批次
-        payingInterest: '', // 付息方式
+        payingInterest: [], // 付息方式
         bondShort: '', // 债券简称
         csin: '', // 债券代码
-        bondQuality: '', // 债券品种
-        yieldCurve: '', // 收益率曲线
-        market: '', // 流通场所
+        bondQuality: [], // 债券品种
+        yieldCurve: [], // 收益率曲线
+        market: [], // 流通场所
         publisher: '' // 发行人
       },
       // 开始批次

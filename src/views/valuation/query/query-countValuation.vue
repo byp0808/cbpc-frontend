@@ -179,8 +179,9 @@ export default {
       ],
       // 估值方法
       valuationMetnods: [
-        { value: '1', label: '估值方法1' },
-        { value: '2', label: '估值方法2' }
+        { value: '01', label: 'DCF' },
+        { value: '02', label: '清算法' },
+        { value: '03', label: '本金法' }
       ],
       peopleList: [], // 人工估值列表（未分页）
       methodList: [], // 估值点差方案列表（未分页）

@@ -78,10 +78,34 @@
     <el-row>
       <el-col :span="24"><div class="line" /></el-col>
     </el-row>
+    <!-- <el-row style="margin-top:20px;margin-bottom:20px">
+
+    </el-row> -->
     <el-row style="margin-top:20px;margin-bottom:20px">
-      <el-col :span="3" :offset="21">
-        <el-button v-loading="addLoading" type="primary" @click="addBatch">批量添加至我的任务</el-button>
-      </el-col>
+      <el-form>
+        <el-col :span="8">
+          <el-form-item label="估值方法" label-width="90px">
+            <el-select v-model="searchParams.method" filterable placeholder="请选择估值方法">
+              <el-option v-for="(item, index) in methodList" :key="index" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item label="市场隐含评级">
+            <el-select v-model="searchParams.marketGrade" placeholder="请选择" @change="marketGradeChange">
+              <el-option
+                v-for="(name, key) in $dict('MARKET_GRADE')"
+                :key="key"
+                :label="name"
+                :value="key"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-button v-loading="addLoading" type="primary" @click="addBatch">批量添加至我的任务</el-button>
+        </el-col>
+      </el-form>
     </el-row>
     <el-table
       v-loading="tabLoading"
@@ -194,6 +218,12 @@ export default {
       haveSelectList: [],
       allList: [],
       selectList: [],
+      methodList: [
+        { value: '1', label: 'DCF' },
+        { value: '2', label: '请算法' },
+        { value: '3', label: '本金法' }
+      ],
+      searchParams: {},
       selectId: [],
       id: '',
       tabLoading: false,
@@ -229,6 +259,12 @@ export default {
         })
         this.getAllList()
       })
+    },
+    marketGradeChange(val) {
+
+    },
+    methodChange(val) {
+
     },
     goPage() {
       this.$router.push('/market/secondary-market-list')
