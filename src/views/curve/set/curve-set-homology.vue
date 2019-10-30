@@ -53,7 +53,7 @@
     >
       <Homology
         ref="homology"
-        :homologyId="selectHomologyId"
+        :homology-id="selectHomologyId"
         :op-type="opType"
       />
       <div slot="footer" class="dialog-footer">

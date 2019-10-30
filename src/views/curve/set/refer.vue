@@ -115,12 +115,12 @@ export default {
           }
         })
         // 主表信息数据状态为 ‘05’ 为删除状态，列表信息要根据relId去查询
-        if( this.mainInfo.dataStatus === '05'){
+        if (this.mainInfo.dataStatus === '05') {
           // 查询曲线列表
           this.getCurveReferList({
             referId: this.mainInfo.relId
           })
-        }else{
+        } else {
           // 查询曲线列表
           this.getCurveReferList({
             referId: this.referId
@@ -194,7 +194,7 @@ export default {
     },
     // 主体曲线
     changeCurve() {
-      if (this.curveReferList && this.curveReferList.length>0) {
+      if (this.curveReferList && this.curveReferList.length > 0) {
         this.$confirm('更改主体曲线将清空选择的参考曲线列表?', '提示', {
           type: 'warning'
         }).then(() => {
