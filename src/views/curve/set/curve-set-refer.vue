@@ -129,9 +129,8 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         delCurveReferDto(rows[index]).then(response => {
-          rows.splice(index, 1)
           this.$message({
-            message: '操作成功！',
+            message: '删除流程发起成功！',
             type: 'success',
             showClose: true
           })
