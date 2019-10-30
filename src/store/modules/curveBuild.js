@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import _ from 'lodash'
 import { queryCurveYield, resetBuild, saveCurveBuild } from '@/api/curve/curve-build'
 
 export default {
@@ -13,9 +14,10 @@ export default {
       Vue.set(state.curveBuildList, curveId, data.solutions)
       Vue.set(state.curveChartsList, curveId, data.yields)
     },
-    UPDATE_BUILD(state, list, curveId) {
+    UPDATE_BUILD(state, data) {
+      const curveId = data.curveId
       const curves = state.curveBuildList[curveId]
-      Vue.set(state.curveBuildList, curveId, curves.map((value, index) => [...value, ...list[index]]))
+      Vue.set(state.curveBuildList, curveId, curves.map((value, index) => _.assign(value, data.list[index])))
     }
   },
   actions: {
@@ -24,8 +26,8 @@ export default {
         commit('SET_BUILD', response)
       })
     },
-    updateInitData({ commit }, list, curveId) {
-      commit('UPDATE_BUILD', list, curveId)
+    updateInitData({ commit }, data) {
+      commit('UPDATE_BUILD', data)
     },
     updateData({ commit }, list) {
       saveCurveBuild(list).then(response => {

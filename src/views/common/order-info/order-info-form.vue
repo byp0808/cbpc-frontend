@@ -21,7 +21,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="批次计算时间" prop="compTime">
+              <el-form-item label="计算时间点" prop="compTime">
                 <el-time-select
                   v-model="orderInfoForm.compTime"
                   :disabled="disabled"
@@ -47,7 +47,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="批次提醒时间" prop="remindTime">
+              <el-form-item label="发布提醒时间点" prop="remindTime">
                 <el-time-select
                   v-model="orderInfoForm.remindTime"
                   :disabled="disabled"

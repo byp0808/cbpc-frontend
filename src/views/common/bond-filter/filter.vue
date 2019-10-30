@@ -289,19 +289,50 @@
         </div>
       </el-col>
     </el-row>
-    <el-dialog append-to-body :visible.sync="setRuleDialog">
-      <el-row>
+    <el-dialog append-to-body :visible.sync="setRuleDialog" width="800px">
+      <el-row class="row-box">
         <el-col :span="18" :offset="2">
-          <el-input v-model="setRuleData" prefix-icon="el-icon-search" clearable @change="search" />
+          <el-input v-model="setRuleData" prefix-icon="el-icon-search" clearable @keyup.enter="search" />
         </el-col>
       </el-row>
-      <el-row>
+      <!-- <el-row>
         <el-col :span="18" :offset="2">
           <div class="checkBox-big">
             <el-checkbox-group v-model="interest" @change="haveSelect">
               <el-checkbox v-for="(value, index) in interestList" :key="index" :label="index">{{ value }}</el-checkbox>
             </el-checkbox-group>
           </div>
+        </el-col>
+      </el-row> -->
+      <el-row style="margin-top:20px">
+        <el-col :span="18" :offset="2">
+          <el-card class="box-card margin-top">
+            <el-table
+              :data="interestList"
+              style="width: 100%"
+              :show-header="showHead"
+              fit
+              max-height="300"
+            >
+              <el-table-column
+                prop="label"
+                width="400"
+              />
+              <el-table-column
+                width="100"
+              >
+                <template slot-scope="scope">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-plus"
+                    circle
+                    size="small"
+                    @click.native.prevent="haveSelect(scope.$index)"
+                  />
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
         </el-col>
       </el-row>
       <el-row>
@@ -311,7 +342,7 @@
       </el-row>
       <el-row>
         <el-col :span="18" :offset="2">
-          <el-tag v-for="item in selectionList" :key="item" style="margin-right:10px">{{ interestList[item] }}</el-tag>
+          <el-tag v-for="item in selectionList" :key="item" closable style="margin-right:10px" @close="handleClose(item)">{{ item.label }}</el-tag>
         </el-col>
       </el-row>
       <el-row>
@@ -352,16 +383,23 @@ export default {
         tempId: ''
       },
       blackList: [],
+      showHead: false,
       whiteList: [],
       interest: [],
       setRuleData: '',
       // interestList: ['上海', '北京', '广州', '深圳'],
-      interestList: {
-        '1': '码值1',
-        '2': '码值2',
-        '3': '码值3',
-        '4': '码值4'
-      },
+      // interestList: {
+      //   '1': '码值1',
+      //   '2': '码值2',
+      //   '3': '码值3',
+      //   '4': '码值4'
+      // },
+      interestList: [
+        { value: '01', label: '码值1' },
+        { value: '02', label: '码值2' },
+        { value: '03', label: '码值3' },
+        { value: '04', label: '码值4' }
+      ],
       selectionList: [],
       ruleList: [],
       bondListAll: [],
@@ -403,8 +441,15 @@ export default {
         data.onSuccess(response)
       })
     },
-    haveSelect(e) {
-      this.selectionList = e
+    haveSelect(index) {
+      // this.selectionList = e
+      this.selectionList.push(this.interestList[index])
+      this.interestList.splice(index, 1)
+    },
+    handleClose(e) {
+      console.log('e', e)
+      this.interestList.push(e)
+      this.selectionList.splice(this.selectionList.indexOf(e), 1)
     },
     search() {
 
@@ -729,18 +774,26 @@ export default {
   background: #ccc;
   margin: 40px 0 20px 0;
 }
+
 </style>
 <style lang="scss">
-.checkBox-big {
-  margin-top:30px;
-  border:1px solid #ccc;
-  padding:20px;
-.el-checkbox {
-  width:100%;
-  padding:10px 0;
-}
-.el-checkbox__label {
-  padding-left:50%;
+.row-box {
+.el-input--medium {
+  .el-input__inner {
+    border-radius:36px;
+  }
 }
 }
+// .checkBox-big {
+//   margin-top:30px;
+//   border:1px solid #ccc;
+//   padding:20px;
+// .el-checkbox {
+//   width:100%;
+//   padding:10px 0;
+// }
+// .el-checkbox__label {
+//   padding-left:50%;
+// }
+// }
 </style>

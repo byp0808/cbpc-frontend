@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column label="复核状态" align="center">
         <template slot-scope="{row}">
-          {{ $dft("APPROVE_STATUS", row.approveStatus) }}
+          {{ $dft("REVIEW_STATUS", row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">

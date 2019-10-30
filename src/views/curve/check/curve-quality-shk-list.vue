@@ -117,7 +117,6 @@ export default {
     qryCurveShkQcRpt() {
       this.shkQcRptList.compDate = this.taskDay
       this.shkQcRptList.batchId = this.orderId
-      // this.shkQcRptList.batchId = '0000'
       this.shkQcRptList.curveId = this.curveId
       qryCurveShkQcRpt(this.shkQcRptList).then(response => {
         console.info('qryCurveShkQcRpt.qryCurveShkQcRpt...')

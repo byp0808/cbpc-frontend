@@ -24,7 +24,7 @@
             <Chart :options="makeSpotData" />
           </el-tab-pane>
         </el-tabs>
-      </div>`
+      </div>
       <div class="flex-item">
         <div v-for="(refer, index) in referList" :key="index" class="curve-build">
           <ReferTable
@@ -221,13 +221,14 @@ export default {
       const chartFutureOptions = this.chartFutureOptions
       chartFutureOptions.series[0].data = this.yields[0]
       chartFutureOptions.series[1].data = this.yields[1]
-      console.log(chartFutureOptions.series)
+      console.log('future', chartFutureOptions.series)
       return chartFutureOptions
     },
     makeSpotData() {
       const chartSpotOptions = this.chartSpotOptions
       chartSpotOptions.series[0].data = this.yields[2]
       chartSpotOptions.series[1].data = this.yields[3]
+      console.log('spot', chartSpotOptions.series)
       return chartSpotOptions
     }
   },
