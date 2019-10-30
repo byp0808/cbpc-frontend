@@ -90,7 +90,7 @@ const curveRouter = {
       name: 'CurveNkTempList',
       meta: { title: '远期期限模板', noCache: true }
     }, {
-      path: 'curve-search-case',
+      path: 'curve-search-solutions',
       component: () => import('@/views/curve/report/curve-search-solutions.vue'),
       name: 'CurveSearchCase',
       meta: { title: '查询曲线方案', noCache: true }

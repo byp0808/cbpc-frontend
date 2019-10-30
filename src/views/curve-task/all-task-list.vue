@@ -186,7 +186,7 @@ export default {
       this.task.search_curveId_EQ = item.value
     },
     queryPersonSearch(queryString, cb) {
-      const data = queryString ? { userName: queryString } : {}
+      const data = queryString ? { userName: queryString, orgFlag: 'Y' } : {}
       selectPerson(data).then(response => {
         this.results = response.map(i => {
           return { value: i.userId, label: i.userName }
