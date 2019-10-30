@@ -133,7 +133,7 @@ export default {
       }).then(({ value }) => {
         delcurveHomologyDto(rows[index]).then(response => {
           this.$message({
-            message: '操作成功！',
+            message: '删除流程发起成功！',
             type: 'success',
             showClose: true
           })

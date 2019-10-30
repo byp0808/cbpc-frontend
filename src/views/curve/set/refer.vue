@@ -114,10 +114,18 @@ export default {
             this.mainInfo = response
           }
         })
-        // 查询曲线列表
-        this.getCurveReferList({
-          referId: this.referId
-        })
+        // 主表信息数据状态为 ‘05’ 为删除状态，列表信息要根据relId去查询
+        if( this.mainInfo.dataStatus === '05'){
+          // 查询曲线列表
+          this.getCurveReferList({
+            referId: this.mainInfo.relId
+          })
+        }else{
+          // 查询曲线列表
+          this.getCurveReferList({
+            referId: this.referId
+          })
+        }
       }
     },
     // 查询列表
