@@ -22,7 +22,7 @@
           {{ $dft("CURVE_BUILD_STATUS", scope.row.curveBuildStatus) }}
         </template>
       </el-table-column>
-      <el-table-column prop="errorMng" label="容错信息" width="200" show-overflow-tooltip>
+      <el-table-column prop="errorMng" label="异常原因" width="200" show-overflow-tooltip>
         <template slot-scope="scope">
           {{ scope.row.errorMng }}
         </template>

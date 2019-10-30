@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column prop="intrstPayMthod" label="付息方式" width="80" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.intrstPayMthod }}
+          {{ $dft("INT_CAL_MTHD_CODE", scope.row.intrstPayMthod) }}
         </template>
       </el-table-column>
       <el-table-column prop="couponRate" label="票面利率" width="100" show-overflow-tooltip>
@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column prop="baseRateKind" label="基准利率种类" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.baseRateKind }}
+          {{ $dft("BNCHMRK_INT_RATE_CLASS_CODE", scope.row.baseRateKind) }}
         </template>
       </el-table-column>
       <el-table-column prop="tenderRateSpread" label="招标利差" width="100" show-overflow-tooltip>
