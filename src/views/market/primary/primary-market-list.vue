@@ -261,7 +261,7 @@ export default {
     },
     toUse() {
       // 应用模板
-      const val = this.moduleIdis
+      const val = this.moduleId
       if (val === '') {
         this.$message('请选择模板！')
         return
