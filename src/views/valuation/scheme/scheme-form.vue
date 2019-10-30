@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="valuSchemeForm" :model="schemeInfo" label-width="130px">
+    <el-form ref="valuSchemeForm" :model="schemeInfo" label-width="115px" label-position="left" size="small">
       <el-row>
         <el-col :span="8">
           <div class="grid-content bg-purple-dark">
@@ -65,7 +65,7 @@
           <el-row>
             <el-col :span="7">
               <el-form-item class="display-inline" label="回收率">
-                <el-input-number v-model="recovery" size="small" :min="1" :max="10" />
+                <el-input-number v-model="schemeInfo.recovery" size="small" :min="1" :max="10" />
                 <span class="unit">%</span>
               </el-form-item>
             </el-col>
@@ -159,8 +159,14 @@ export default {
       set(schemeInfo) {
         this.$store.commit('scheme/setSchemeInfo', schemeInfo)
       }
-      // console.log(this.schemeInfo)
-      // return this.schemeInfo
+    },
+    marketInfo: {
+      get() {
+        return this.$store.state.scheme.marketInfo
+      },
+      set(marketInfo) {
+        this.$store.commit('scheme/setMarketInfo', marketInfo)
+      }
     }
   },
   created() {
@@ -183,59 +189,61 @@ export default {
   },
   methods: {
     save() {
-      // const schemeInfo = this.$refs.SchemeNormal.getData()
-      // this.schemeInfo.valuScene = this.schemeInfo.valuScene
-      // this.schemeInfo.bondId = this.schemeInfo.bondId
-      // this.schemeInfo.id = this.schemeInfo.id
-      // console.log('schemeInfo', schemeInfo)
-      if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '01' && !this.schemeInfo.spreadValue && this.schemeInfo.spreadValue !== 0) {
-        return this.$message.warning('请输入点差')
-      }
-      if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '02') {
-        if (!this.schemeInfo.spreadStart && this.schemeInfo.spreadStart !== 0) {
-          return this.$message.warning('请输入初始点差')
+      const data = { valuationScheme: this.schemeInfo }
+      if (this.schemeInfo.valuScene === '01') {
+        if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '01' && !this.schemeInfo.spreadValue && this.schemeInfo.spreadValue !== 0) {
+          return this.$message.warning('请输入点差')
         }
-        if (!this.schemeInfo.spreadEnd && this.schemeInfo.spreadEnd !== 0) {
-          return this.$message.warning('请输入最终点差')
+        if (this.schemeInfo.cdsPremAdjWay === '01' && this.schemeInfo.cdsPremAdjType === '02') {
+          if (!this.schemeInfo.spreadStart && this.schemeInfo.spreadStart !== 0) {
+            return this.$message.warning('请输入初始点差')
+          }
+          if (!this.schemeInfo.spreadEnd && this.schemeInfo.spreadEnd !== 0) {
+            return this.$message.warning('请输入最终点差')
+          }
+          if (this.schemeInfo.spreadStart >= this.schemeInfo.spreadEnd) {
+            return this.$message.warning('最终点差应大于初始点差')
+          }
+          if (this.schemeInfo.cdsAdjValue >= (this.schemeInfo.spreadEnd - this.schemeInfo.spreadStart)) {
+            return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
+          }
+          if (!this.schemeInfo.cdsAdjValue && this.schemeInfo.cdsAdjValue !== 0) {
+            return this.$message.warning('请输入调整幅度')
+          }
         }
-        if (this.schemeInfo.spreadStart >= this.schemeInfo.spreadEnd) {
-          return this.$message.warning('最终点差应大于初始点差')
+        if (this.schemeInfo.cdsPremAdjWay === '02' && !this.schemeInfo.relaSpread && this.schemeInfo.relaSpread !== 0) {
+          return this.$message.warning('请输入相对点差')
         }
-        if (this.schemeInfo.cdsAdjValue >= (this.schemeInfo.spreadEnd - this.schemeInfo.spreadStart)) {
-          return this.$message.warning('调整幅度应小于(最终点差-初始点差)')
+        if (!this.schemeInfo.flAdjValue && this.schemeInfo.flAdjValue !== 0) {
+          return this.$message.warning('请输入目标流动性点差')
         }
-        if (!this.schemeInfo.cdsAdjValue && this.schemeInfo.cdsAdjValue !== 0) {
-          return this.$message.warning('请输入调整幅度')
+        if (!this.schemeInfo.otAdjValue && this.schemeInfo.otAdjValue !== 0) {
+          return this.$message.warning('请输入目标其他点差')
+        }
+        if (this.schemeInfo.spreadValue >= 99999 || this.schemeInfo.spreadValue <= -99999) {
+          return this.$message.warning('点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.schemeInfo.relaSpread > 100 || this.schemeInfo.relaSpread < 0) {
+          return this.$message.warning('相对点差范围是0~100,请重新输入')
+        }
+        if (this.schemeInfo.flAdjValue >= 99999 || this.schemeInfo.flAdjValue <= -99999) {
+          return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.schemeInfo.otAdjValue >= 99999 || this.schemeInfo.otAdjValue <= -99999) {
+          return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.schemeInfo.spreadStart >= 99999 || this.schemeInfo.spreadStart <= -99999) {
+          return this.$message.warning('初始点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.schemeInfo.spreadEnd >= 99999 || this.schemeInfo.spreadEnd <= -99999) {
+          return this.$message.warning('最终点差范围是-99999~+99999,请重新输入')
+        }
+        if (this.schemeInfo.cdsPremAdjWay === '03') {
+        // 市场行情
+          data.schemeMarket = this.marketInfo
         }
       }
-      if (this.schemeInfo.cdsPremAdjWay === '02' && !this.schemeInfo.relaSpread && this.schemeInfo.relaSpread !== 0) {
-        return this.$message.warning('请输入相对点差')
-      }
-      if (!this.schemeInfo.flAdjValue && this.schemeInfo.flAdjValue !== 0) {
-        return this.$message.warning('请输入目标流动性点差')
-      }
-      if (!this.schemeInfo.otAdjValue && this.schemeInfo.otAdjValue !== 0) {
-        return this.$message.warning('请输入目标其他点差')
-      }
-      if (this.schemeInfo.spreadValue >= 99999 || this.schemeInfo.spreadValue <= -99999) {
-        return this.$message.warning('点差范围是-99999~+99999,请重新输入')
-      }
-      if (this.schemeInfo.relaSpread > 100 || this.schemeInfo.relaSpread < 0) {
-        return this.$message.warning('相对点差范围是0~100,请重新输入')
-      }
-      if (this.schemeInfo.flAdjValue >= 99999 || this.schemeInfo.flAdjValue <= -99999) {
-        return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
-      }
-      if (this.schemeInfo.otAdjValue >= 99999 || this.schemeInfo.otAdjValue <= -99999) {
-        return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
-      }
-      if (this.schemeInfo.spreadStart >= 99999 || this.schemeInfo.spreadStart <= -99999) {
-        return this.$message.warning('初始点差范围是-99999~+99999,请重新输入')
-      }
-      if (this.schemeInfo.spreadEnd >= 99999 || this.schemeInfo.spreadEnd <= -99999) {
-        return this.$message.warning('最终点差范围是-99999~+99999,请重新输入')
-      }
-      save({ valuationScheme: this.schemeInfo }).then(response => {
+      save(data).then(response => {
         this.$message({
           showClose: true,
           message: `保存成功`,
