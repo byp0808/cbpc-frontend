@@ -43,7 +43,6 @@
           :data="shiborDataList.dataList"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange"
         >
           <el-table-column label="日期">
             <template slot-scope="scope">
@@ -108,7 +107,6 @@ export default {
         { id: '选项七', orderName: '6M' },
         { id: '选项八', orderName: '9M' }
       ], // 批次列表
-      multipleSelection: '', // 选择记录
       chartOptions: {
         title: {
           text: 'Shibor'
@@ -171,10 +169,6 @@ export default {
         return false
       }
       this.getQueryShidor()
-    },
-    handleSelectionChange(items) {
-      console.info('handleSelectionChange' + JSON.stringify(items))
-      this.multipleSelection = items
     },
     // 点击期限
     initstandSlipSet() {
