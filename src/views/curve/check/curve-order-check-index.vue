@@ -160,7 +160,7 @@ export default {
     async init() {
       // 加载批次
       this.orderList = []
-      this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
+      // this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
       const data = {
         taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       }
