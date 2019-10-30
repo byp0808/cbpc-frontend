@@ -170,6 +170,7 @@ export default {
       }
       checkCurveCouponList(data).then(response => {
         this.checkCurveCouponList = response.dataList
+        this.page = response.page
         setTimeout(1.5 * 1000)
       })
     },

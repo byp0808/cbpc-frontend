@@ -180,6 +180,7 @@ export default {
       }
       queryCurveOrderComputeList(data).then(response => {
         this.curveOrderList = response.dataList
+        this.page = response.page
         setTimeout(1.5 * 1000)
       })
     },
