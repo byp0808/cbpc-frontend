@@ -180,6 +180,7 @@ export default {
       }
       queryCurveOrderComputeList(data).then(response => {
         this.curveOrderList = response.dataList
+        this.page = response.page
         setTimeout(1.5 * 1000)
       })
     },
@@ -363,6 +364,7 @@ export default {
           })
           return false
         }
+
         this.curveOrderVisible = false
         this.checkCouponVisible = true
         for (const item of selection) {
@@ -392,17 +394,17 @@ export default {
     },
     // 发布样本券
     deployCoupon() {
-      var selection = this.$refs.refCurveCheckCouponCompute.obtainCheckCurveCouponList
-      var data = {
-        action: '3',
-        computes: selection
-      }
-      if (selection.length <= 0) {
+      var selection = this.$refs.refCurveCheckCouponCompute.obtainCheckCurveCouponList()
+      if (!selection || selection.length <= 0) {
         this.$message({
           type: 'error',
           message: '请选择需要发布的曲线'
         })
         return false
+      }
+      var data = {
+        action: '3',
+        checkCoupons: selection
       }
       checkOrDeployComp(data).then(response => {
         this.$message({

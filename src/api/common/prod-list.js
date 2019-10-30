@@ -22,9 +22,12 @@ export function queryALlProductList(data) {
 
 export function dwnlProducts(data) {
   downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_market}` + '/prod-view/download', data)
-  // downloadFile({
-  //   url: `${basic_api_curve}` + '/file/file/dwnlCurveQcRpt',
-  //   method: 'post',
-  //   data: data
-  // })
+}
+
+export function delCurveProduct(data) {
+  return request({
+    url: `${basic_api_market}/prod-view/delete-prod/`,
+    method: 'post',
+    data: data
+  })
 }

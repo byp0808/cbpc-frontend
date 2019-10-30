@@ -230,7 +230,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
-// import { downloadFile, upload } from '@/utils/file-request'
+import { upload } from '@/utils/file-request'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -241,7 +241,7 @@ export default {
   data() {
     return {
       activeElement: '01',
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      uploadUrl: `${basic_api_valuation}/task/batch-valu-scheme`,
       downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       labelPosition: 'right',
       allocationDialog: false,
@@ -301,10 +301,10 @@ export default {
       },
       volumeAdd: {
         cause: '08',
-        batchId: '2222'
+        batchId: '11'
       },
       upLoadValution: {
-        batchId: '',
+        batchId: '11',
         excelFile: ''
       },
       nameList: [],
@@ -320,7 +320,8 @@ export default {
         },
         tab: '01',
         scene: '01'
-      }
+      },
+      taskParams: {}
     }
   },
   created() {
@@ -440,6 +441,30 @@ export default {
       this.remaindDialog = false
       this.volumeAddDialog = false
     },
+    saveValuation() {
+      if (!this.upLoadValution.batchId) {
+        return this.$message.info('请选择批次')
+      }
+      if (!this.upLoadValution.excelFile) {
+        return this.$message.warning('别着急, 您的文件还没有上传哦')
+      }
+      const fd = new FormData()
+      fd.append('data.attach', this.upLoadValution.excelFile)
+      fd.append('data.batchId', this.upLoadValution.batchId)
+      fd.append('data.tab', '01')
+      upload({
+        url: this.uploadUrl,
+        data: fd
+      }).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.methodUpload = false
+        this.uploadMethodDialog = false
+        this.loadTable_all()
+      })
+    },
     saveBatch() {
       if (!this.volumeAdd.batchId) {
         return this.$message.info('请选择批次')
@@ -518,9 +543,7 @@ export default {
     downLoadBond() {
       this.$refs.DomDownload.click()
     },
-    saveValuation() {
-      this.resetBondDialog()
-    },
+
     handleExceed() {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
     },
@@ -586,6 +609,7 @@ export default {
       this.resetTaskDialog()
     },
     uploadScheme() {
+      this.resetBondDialog()
       this.uploadMethodDialog = true
     },
     downScheme() {

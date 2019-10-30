@@ -18,6 +18,7 @@
           <el-col :span="8" :offset="8">
             <el-button-group>
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
+              <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
               <el-upload
                 style="display: inline-block;"
                 action=""
@@ -29,7 +30,6 @@
               >
                 <el-button type="primary">上传曲线方案</el-button>
               </el-upload>
-              <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
             </el-button-group>
           </el-col>
         </el-row>

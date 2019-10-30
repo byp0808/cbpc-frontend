@@ -62,7 +62,7 @@
 <script>
 
 import PersonnelSetForm from '@/views/valuation/task-allocation/personnel-set-form'
-import { taskAllocationList, editTaskAllocation, delTaskAllocation, personnelList } from '@/api/valuation/task-allocation.js'
+import { taskAllocationList, editTaskAllocation, delTaskAllocation, personnelList, getOederId } from '@/api/valuation/task-allocation.js'
 export default {
   name: 'PersonnelSetList',
   components: { PersonnelSetForm },
@@ -97,8 +97,10 @@ export default {
   },
   methods: {
     load() {
-      personnelList('00001').then(response => {
-        this.personnelList = response
+      getOederId().then(res => {
+        personnelList(res).then(response => {
+          this.personnelList = response
+        })
       })
       taskAllocationList({ page: this.page }).then(response => {
         const { taskAllocationDtoList, distRatioDetail, page } = response
