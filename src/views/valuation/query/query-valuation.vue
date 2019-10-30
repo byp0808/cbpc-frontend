@@ -316,11 +316,11 @@
     </el-table>
     <el-pagination
       align="center"
-      :current-page="page.pageNumber"
+      :current-page="formData.page.pageNumber"
       :page-sizes="[5,10, 20, 30, 40, 50]"
-      :page-size="page.pageSize"
+      :page-size="formData.page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="page.totalRecord"
+      :total="formData.page.totalRecord"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -348,7 +348,12 @@ export default {
         bondQuality: [], // 债券品种
         yieldCurve: [], // 收益率曲线
         market: [], // 流通场所
-        publisher: '' // 发行人
+        publisher: '', // 发行人
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       },
       // 开始批次
       startBatchs: [],
@@ -377,14 +382,14 @@ export default {
         { value: '04', label: '银行间' }
       ],
       // 查询到所有数据（未分页）
-      allValuationResultList: [],
+      // allValuationResultList: [],
       // 页面表格数据（分页后）
-      valuationResultList: [],
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
-      }
+      valuationResultList: []
+      // page: {
+      //   pageNumber: 1,
+      //   pageSize: 10,
+      //   totalRecord: 0
+      // }
     }
   },
   beforeMount() {
@@ -393,8 +398,10 @@ export default {
   methods: {
     load() {
       queryValuation(this.formData).then(response => {
-        this.allValuationResultList = response
-        this.pageData()
+        const { dataList, page } = response
+        this.valuationResultList = dataList
+        this.formData.page = page
+        // this.pageData()
       })
     },
     getStartBatchs() {
@@ -408,12 +415,12 @@ export default {
       })
     },
     // 前端分页
-    pageData() {
-      this.page.totalRecord = this.allValuationResultList.length
-      const start = (this.page.pageNumber - 1) * this.page.pageSize
-      const end = start + this.page.pageSize
-      this.valuationResultList = this.allValuationResultList.slice(start, end)
-    },
+    // pageData() {
+    //   this.page.totalRecord = this.allValuationResultList.length
+    //   const start = (this.page.pageNumber - 1) * this.page.pageSize
+    //   const end = start + this.page.pageSize
+    //   this.valuationResultList = this.allValuationResultList.slice(start, end)
+    // },
     resetForm() {
       this.$refs['refForm'].resetFields()
     },
@@ -427,11 +434,13 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.pageData()
+      this.load()
+      // this.pageData()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.pageData()
+      this.load()
+      // this.pageData()
     }
   }
 }
