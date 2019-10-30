@@ -355,9 +355,6 @@ export default {
     checkCoupon() {
       // 当前页面不是样本券页面，跳转前判断是否勾选曲线
       if (!this.checkCouponVisible) {
-        this.curveOrderVisible = false
-        this.checkCouponVisible = true
-
         var selection = this.$refs.refCurveOrderList.selection
         if (selection.length <= 0) {
           this.$message({
@@ -366,6 +363,8 @@ export default {
           })
           return false
         }
+        this.curveOrderVisible = false
+        this.checkCouponVisible = true
         for (const item of selection) {
           if (item.buildStatus !== '7') {
             this.$message({
@@ -393,7 +392,7 @@ export default {
     },
     // 发布样本券
     deployCoupon() {
-      var selection = this.$refs.refCurveOrderList.selection
+      var selection = this.$refs.refCurveCheckCouponCompute.obtainCheckCurveCouponList
       var data = {
         action: '3',
         computes: selection
@@ -406,6 +405,11 @@ export default {
         return false
       }
       checkOrDeployComp(data).then(response => {
+        this.$message({
+          message: '曲线样本券发布成功！',
+          type: 'success',
+          showClose: true
+        })
         setTimeout(1.5 * 1000)
       })
     }

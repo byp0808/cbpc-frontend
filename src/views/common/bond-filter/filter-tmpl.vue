@@ -27,11 +27,7 @@
                     style="width: 100%"
                     height="300"
                   >
-                    <el-table-column
-                      prop="ruleValue"
-                      label="指标列表"
-                      width="200"
-                    />
+                    <el-table-column prop="paraValue" label="指标列表" idth="200" show-overflow-tooltip />
                     <el-table-column
                       label="操作"
                       width="180"
@@ -48,8 +44,8 @@
                     </el-table-column>
                   </el-table>
                 </el-card>
-                <el-tag v-for="tag in ruleTags" :key="tag" closable :disable-transitions="false" @close="handleClose(tag)">
-                  {{ tag.ruleCode }}
+                <el-tag v-for="tag in ruleTags" :key="tag.paraName" closable :disable-transitions="false" @close="handleClose(tag)">
+                  {{ tag.paraValue }}
                 </el-tag>
                 <div slot="footer" class="dialog-footer">
                   <el-button @click="ruleFilterVisible = false">取 消</el-button>
@@ -62,11 +58,11 @@
               style="width: 100%"
               height="300"
             >
-              <el-table-column
-                prop="ruleCode"
-                label="规则指标"
-                width="180"
-              />
+              <el-table-column prop="ruleCode" label="规则指标" width="180">
+                <template slot-scope="scope">
+                  {{ getRuleName(scope.row.ruleCode) }}
+                </template>
+              </el-table-column>
               <el-table-column
                 prop="ruleValue"
                 label="规则值"
@@ -284,6 +280,7 @@
 import { basic_api_market } from '@/api/base-api.js'
 import { upload } from '../../../utils/file-request'
 import { addTempList, queryTempList, queryTempInfo, queryBondsAll, queryBondsResult } from '@/api/common/bond-filter-tmpl.js'
+import { getStandard } from '@/api/valuation/prod.js'
 export default {
   name: 'TmpBondFilter',
   props: ['filterId', 'disabled'],
@@ -292,8 +289,8 @@ export default {
       ruleFilterVisible: false,
       // ruleTags: [{id:1,ruleValue:'标签一'}, {id:2,ruleValue:'标签二'},{id:3,ruleValue:'标签三'}],
       ruleTags: [],
-      othRuleList: [{ ruleCode: '资产分类', ruleValue: '资产分类' }, { ruleCode: '计息方式', ruleValue: '计息方式' }, { ruleCode: '流通市场', ruleValue: '流通市场' }, { ruleCode: '资产信用评级', ruleValue: '资产信用评级' }, { ruleCode: '起息日', ruleValue: '起息日' }],
-      allRuleList: [],
+      othRuleList: [],
+      ruleListAll: [],
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/tmpl-filter/batch-in`,
       bondTemps: [],
       tempNo: '',
@@ -321,6 +318,7 @@ export default {
   beforeMount() {
     this.tempList()
     this.loading()
+    this.getAllParas()
   },
   methods: {
     uploadFile(data) {
@@ -333,23 +331,60 @@ export default {
         data.onSuccess(response)
       })
     },
+    getAllParas() {
+      getStandard({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+        const { paraName } = response
+        console.log('paraName' + paraName)
+        this.ruleListAll = response
+        this.othRuleList = JSON.parse(JSON.stringify(this.ruleListAll))
+      })
+    },
     toRules() {
       // 获取全量规则指标，然后ruleLists中去除rulelist的rulecode部分，去除部分显示在tag里
       this.ruleFilterVisible = true
+      this.exclude()
+    },
+    exclude() {
+      for (const key in this.ruleList) {
+        const index = this.$lodash.findIndex(this.othRuleList, { paraName: this.ruleList[key].ruleCode })
+        if (index >= 0) {
+          console.log(this.othRuleList[index])
+          this.ruleTags.push(this.othRuleList[index])
+          console.log('index!!!!')
+          this.othRuleList.splice(index, 1)
+        }
+        console.log('index-1')
+      }
+    },
+    getRuleName(ruleCode) {
+      const index = this.$lodash.findIndex(this.ruleListAll, { paraName: ruleCode })
+      return this.ruleListAll[index].paraValue
     },
     delRow(index, rows) {
       rows.splice(index, 1)
     },
     mvToTags(index) {
+      const index2 = this.$lodash.findIndex(this.ruleTags, { ruleCode: this.othRuleList[index].paraName })
+      if (index2 > 0) {
+        console.log('error')
+      }
       this.ruleTags.push(this.othRuleList[index])
+      const rule = { ruleCode: this.othRuleList[index].paraName, ruleType: this.othRuleList[index].paraValue1 }
+      this.ruleList.push(rule)
       this.othRuleList.splice(index, 1)
     },
     handleClose(tag) {
       this.othRuleList.push(tag)
       this.ruleTags.splice(this.ruleTags.indexOf(tag), 1)
+      const index = this.$lodash.findIndex(this.ruleList, { ruleCode: tag.paraName })
+      if (index < 0) {
+        console.log('handleClose:' + tag.paraName)
+      } else {
+        this.ruleList.splice(index, 1)
+      }
     },
     saveRuleList() {
-      this.ruleList = this.ruleTags
+      // this.ruleList = this.ruleTags
       this.ruleFilterVisible = false
     },
     setRuleValue(index, rows) {

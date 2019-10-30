@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-form ref="plan" :model="plan" :label-position="'right'" label-width="120px">
+      <el-form ref="plan" :model="plan" :label-position="'right'" label-width="130px">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="开始日期及批次" prop="search_dateBegin_GTE">
@@ -30,17 +30,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="批次" prop="search_buildType_EQ">
-              <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+            <el-form-item label="批次" prop="search_orderName_LIKE">
+              <el-autocomplete
+                v-model="plan.search_orderName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch1"
+                placeholder="请输入批次名称"
+              />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="6">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-input
@@ -74,6 +75,8 @@
           <el-col :span="6" :push="2">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
+            <!-- <el-button class="filter-item" type="primary" @click="download">下载曲线方案</el-button> -->
+            <i class="el-icon-download" title="下载曲线方案" style="font-size:30px;line-height:40px" @click="download" />
           </el-col>
         </el-row>
       </el-form>
@@ -83,7 +86,7 @@
       :data="dataList"
       tooltip-effect="dark"
       style="width: 100%"
-      @selection-change="getList"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="productName" label="曲线名称" width="100" />
@@ -113,8 +116,10 @@
 
 <script>
 import { queryCurveSolutions } from '@/api/curve/curve-query'
-import { selectCurve, selectPerson } from '@/api/curve/curve-task'
+import { selectCurve, selectPerson, queryOrder } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
+import { downloadFile } from '@/utils/file-request'
+import { basic_api_curve } from '@/api/base-api'
 
 export default {
   name: 'QueryCurveBuildSolu',
@@ -145,7 +150,8 @@ export default {
       },
       pickerOptionsStart: {},
       pickerOptionsEnd: {},
-      options: temp
+      options: temp,
+      multipleSelection: []
     }
   },
   beforeMount() {
@@ -162,6 +168,24 @@ export default {
     },
     reset() {
       this.$refs.plan.resetFields()
+    },
+    // 勾选框
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    // 下载曲线方案
+    download() {
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks', this.plan)
+    },
+    querySearch1(queryString, cb) {
+      const data = queryString ? { search_orderName_LIKE: queryString } : {}
+      queryOrder(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
+        const results = response.dataList.map(i => {
+          return { value: i.orderId, label: i.orderName }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
     },
     querySearch(queryString, cb) {
       const data = queryString ? { search_productName_LIKE: queryString } : {}

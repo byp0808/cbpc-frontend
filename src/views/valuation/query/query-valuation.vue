@@ -27,12 +27,12 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="付息方式" prop="payingInterest">
-            <el-select v-model="formData.payingInterest" placeholder="选择付息方式">
+            <el-select v-model="formData.payingInterest" multiple placeholder="选择付息方式">
               <el-option
                 v-for="item in payingInterests"
-                :key="item.batchId"
-                :label="item.batchId"
-                :value="item.batchId"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
             </el-select>
           </el-form-item>
@@ -69,7 +69,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="债券品种" prop="bondQuality">
-            <el-select v-model="formData.bondQuality" placeholder="选择债券品种">
+            <el-select v-model="formData.bondQuality" multiple placeholder="选择债券品种">
               <el-option
                 v-for="item in bondQualitys"
                 :key="item.value"
@@ -88,7 +88,7 @@
       <el-row :gutter="10">
         <el-col :span="6">
           <el-form-item label="对应收益率曲线" prop="yieldCurve">
-            <el-select v-model="formData.yieldCurve" placeholder="选择收益率曲线">
+            <el-select v-model="formData.yieldCurve" multiple placeholder="选择收益率曲线">
               <el-option
                 v-for="item in yieldCurves"
                 :key="item.value"
@@ -100,7 +100,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="流通场所" prop="market">
-            <el-select v-model="formData.market" placeholder="选择流通场所">
+            <el-select v-model="formData.market" multiple placeholder="选择流通场所">
               <el-option
                 v-for="item in markets"
                 :key="item.value"
@@ -316,11 +316,11 @@
     </el-table>
     <el-pagination
       align="center"
-      :current-page="page.pageNumber"
+      :current-page="formData.page.pageNumber"
       :page-sizes="[5,10, 20, 30, 40, 50]"
-      :page-size="page.pageSize"
+      :page-size="formData.page.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="page.totalRecord"
+      :total="formData.page.totalRecord"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -342,13 +342,18 @@ export default {
         endDate: '', // 结束日期
         startBatch: '', // 开始批次
         endBatch: '', // 结束批次
-        payingInterest: '', // 付息方式
+        payingInterest: [], // 付息方式
         bondShort: '', // 债券简称
         csin: '', // 债券代码
-        bondQuality: '', // 债券品种
-        yieldCurve: '', // 收益率曲线
-        market: '', // 流通场所
-        publisher: '' // 发行人
+        bondQuality: [], // 债券品种
+        yieldCurve: [], // 收益率曲线
+        market: [], // 流通场所
+        publisher: '', // 发行人
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       },
       // 开始批次
       startBatchs: [],
@@ -377,14 +382,14 @@ export default {
         { value: '04', label: '银行间' }
       ],
       // 查询到所有数据（未分页）
-      allValuationResultList: [],
+      // allValuationResultList: [],
       // 页面表格数据（分页后）
-      valuationResultList: [],
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
-      }
+      valuationResultList: []
+      // page: {
+      //   pageNumber: 1,
+      //   pageSize: 10,
+      //   totalRecord: 0
+      // }
     }
   },
   beforeMount() {
@@ -393,8 +398,10 @@ export default {
   methods: {
     load() {
       queryValuation(this.formData).then(response => {
-        this.allValuationResultList = response
-        this.pageData()
+        const { dataList, page } = response
+        this.valuationResultList = dataList
+        this.formData.page = page
+        // this.pageData()
       })
     },
     getStartBatchs() {
@@ -408,12 +415,12 @@ export default {
       })
     },
     // 前端分页
-    pageData() {
-      this.page.totalRecord = this.allValuationResultList.length
-      const start = (this.page.pageNumber - 1) * this.page.pageSize
-      const end = start + this.page.pageSize
-      this.valuationResultList = this.allValuationResultList.slice(start, end)
-    },
+    // pageData() {
+    //   this.page.totalRecord = this.allValuationResultList.length
+    //   const start = (this.page.pageNumber - 1) * this.page.pageSize
+    //   const end = start + this.page.pageSize
+    //   this.valuationResultList = this.allValuationResultList.slice(start, end)
+    // },
     resetForm() {
       this.$refs['refForm'].resetFields()
     },
@@ -427,11 +434,13 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.pageData()
+      this.load()
+      // this.pageData()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.pageData()
+      this.load()
+      // this.pageData()
     }
   }
 }

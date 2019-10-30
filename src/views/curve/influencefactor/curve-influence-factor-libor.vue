@@ -113,8 +113,7 @@ export default {
           { id: '选项五', orderName: '加元' },
           { id: '选项六', orderName: '澳元' }
         ]
-      },
-      multipleSelection: '' // 选择记录
+      }
     }
   },
   mounted() {

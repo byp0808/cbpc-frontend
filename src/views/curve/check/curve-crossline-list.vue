@@ -86,7 +86,7 @@ export default {
       }
     },
     queryCurveCrossLineList() {
-      qryCurveCrsQcRpt({ page: this.curveCrossLineList.page, batchId: this.orderId, compDate: this.taskDay }).then(response => {
+      qryCurveCrsQcRpt({ page: this.curveCrossLineList.page, batchId: this.orderId, compDate: this.taskDay, curveId: this.curveId }).then(response => {
         console.info('queryCurveCrossLineList.queryCurveCrossLineList...')
         this.titleProperties.length = 0
         this.titleDes.length = 0

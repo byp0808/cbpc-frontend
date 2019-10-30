@@ -11,7 +11,13 @@
               <el-input v-model="marketTempInfo.remark" :disabled="disabled" type="textarea" />
             </el-form-item>
             <el-form-item label="数据行情" class="blackItem" prop="dataMarket">
-              <el-select v-model="marketTempInfo.dataMarket" value-key="value" style="width:160px" :disabled="disabled || tempInfodisabled" @change="getOneAllcols">
+              <el-select
+                v-model="marketTempInfo.dataMarket"
+                value-key="value"
+                style="width:160px"
+                :disabled="disabled || tempInfodisabled"
+                @change="getOneAllcols"
+              >
                 <el-option v-for="item in dataMarketOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -481,13 +487,22 @@ export default {
     checkedShow: function(index, showOrhide) {
       // console.log(index, showOrhide)
       var that = this
+      that.colDataResult = []
       if (!showOrhide) {
-        that.colDataResult.splice(index, 1)
+        // that.colDataResult.splice(index, 1)
         that.colData[index].showOrhide = false
       } else {
-        that.colDataResult.splice(index, 0, this.colData[index])
+        // that.colDataResult.splice(index, 0, this.colData[index])
         that.colData[index].showOrhide = true
         // console.log(showOrhide)
+      }
+      var j = 0
+      for (var i = 0; i < that.colData.length; i++) {
+        if (that.colData[i].showOrhide) {
+          // console.log(that.colData[i])
+          that.colDataResult[j] = that.colData[i]
+          j++
+        }
       }
       // console.log(this.colData[index].showOrhide)
     },
@@ -516,6 +531,8 @@ export default {
       if (val === '01') {
         // 查询初始字段信息、数字型字段列表
         this.queryColsInfo('1')
+        // 清除展示区域内容
+        this.marketTempInfo.showArea = ''
       }
     },
     getTwoAllcols(val) {
