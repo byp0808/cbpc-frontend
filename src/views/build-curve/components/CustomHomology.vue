@@ -281,8 +281,6 @@ export default {
       }
 
       // 计算公式
-      console.log(this.tmp_sceneList)
-      console.log(this.tmp_actionList)
       const sceneFormula = this.toFormula(this.tmp_sceneList, shortNameFun) + ' ' + this.detailForm.sceneFormulaType + ' ' + this.detailForm.sceneFormulaValue
       const actionFormula = this.detailForm.actionFormulaValue === 0 ? this.toFormula(this.tmp_actionList, shortNameFun) : this.toFormula(this.tmp_actionList, shortNameFun) + ' ' + this.detailForm.actionFormulaType + ' ' + this.detailForm.actionFormulaValue
       console.info('sceneFormula:' + sceneFormula)
@@ -345,7 +343,6 @@ export default {
         list.push({ formulaId: 'TMP_' + index, sceneFormula: array[2 * index], actionFormula: array[2 * index + 1] })
       })
       this.formulaEditList = list.map(value => {
-        console.log(value.formulaId)
         const sceneList = value.sceneFormula.split(/(\*|\+|\!\=|\=\=|\<\=|\>\=|\<\>|\<|\>)/).map(value => value.trim()).filter(v1 => v1 !== '*' && v1 !== '+')
         sceneList.forEach((v, i) => {
           if (v.indexOf('#') !== -1) {

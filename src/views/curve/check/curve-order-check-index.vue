@@ -160,6 +160,7 @@ export default {
     async init() {
       // 加载批次
       this.orderList = []
+      // this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
       const data = {
         taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
       }
@@ -184,6 +185,7 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event)
+      this.queryForm.curveId = ''
     },
     // 下载
     download() {

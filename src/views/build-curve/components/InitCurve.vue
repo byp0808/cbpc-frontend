@@ -55,7 +55,7 @@ export default {
     changeInitData() {
       const _ = this.$lodash
       const list = this.initList.map(value => _.omit(value, ['lastYield', 'adjRange', 'adjResult', 'variations']))
-      this.$store.dispatch('curveBuild/updateInitData', list, this.curveId)
+      this.$store.dispatch('curveBuild/updateInitData', { list: list, curveId: this.curveId })
     },
     closeSidebar() {
       this.$emit('close-sidebar')
