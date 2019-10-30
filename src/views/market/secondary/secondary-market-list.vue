@@ -1363,7 +1363,8 @@ export default {
       return ''
     },
     codeFormatter(row, column) {
-      if (column.colType === 'OPTION' && column.colName === 'curveBuildType') {
+      //  && column.colName === 'curveBuildType'
+      if (column.colType === 'OPTION') {
         const options = optioins(this, column.realColName)
         const opt = options.filter(opt => opt.value === row[column.colName])
         if (opt.length > 0) {

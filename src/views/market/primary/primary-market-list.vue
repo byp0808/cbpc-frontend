@@ -23,7 +23,7 @@
     >
       <el-table-column v-for="(item,index) in tableHeader" :key="index" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
-          <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
+          <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -708,6 +708,20 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    codeFormatter(row, column) {
+      //  && column.colName === 'curveBuildType'
+      if (column.colType === 'OPTION') {
+        const options = optioins(this, column.realColName)
+        const opt = options.filter(opt => opt.value === row[column.colName])
+        if (opt.length > 0) {
+          return opt[0].label
+        } else {
+          return row[column.colName]
+        }
+      } else {
+        return row[column.colName]
+      }
     }
   }
 

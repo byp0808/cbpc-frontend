@@ -29,16 +29,15 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="批次" prop="search_buildType_EQ">
-              <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+          <el-col :span="6">
+            <el-form-item label="批次" prop="search_orderName_LIKE">
+              <el-autocomplete
+                v-model="plan.search_orderName_LIKE"
+                class="inline-input"
+                :value-key="'label'"
+                :fetch-suggestions="querySearch1"
+                placeholder="请输入批次名称"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -115,7 +114,7 @@
 
 <script>
 import { queryCurveSolutions } from '@/api/curve/curve-query'
-import { selectCurve, selectPerson } from '@/api/curve/curve-task' // 曲线产品  员工
+import { selectCurve, selectPerson, queryOrder } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -164,6 +163,16 @@ export default {
     },
     reset() {
       this.$refs.plan.resetFields()
+    },
+    querySearch1(queryString, cb) {
+      const data = queryString ? { search_orderName_LIKE: queryString } : {}
+      queryOrder(Object.assign(data, { page: { pageNumber: 1, pageSize: 10 }})).then(response => {
+        const results = response.dataList.map(i => {
+          return { value: i.orderId, label: i.orderName }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
     },
     querySearch(queryString, cb) {
       const data = queryString ? { search_productName_LIKE: queryString } : {}
