@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-form ref="plan" :model="plan" :label-position="'right'" label-width="120px">
+      <el-form ref="plan" :model="plan" :label-position="'right'" label-width="130px">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="开始日期及批次" prop="search_dateBegin_GTE">
@@ -29,7 +29,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="批次" prop="search_buildType_EQ">
               <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
                 <el-option
@@ -41,6 +41,8 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="6">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-input
@@ -113,7 +115,7 @@
 
 <script>
 import { queryCurveSolutions } from '@/api/curve/curve-query'
-import { selectCurve, selectPerson } from '@/api/curve/curve-task'
+import { selectCurve, selectPerson } from '@/api/curve/curve-task' // 曲线产品  员工
 import Pagination from '@/components/Pagination'
 
 export default {
