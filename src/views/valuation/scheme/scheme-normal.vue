@@ -26,26 +26,40 @@
           <el-form-item v-show="schemeInfo.cdsPremAdjWay === '02'" label-width="0" class="display-inline">
             <el-input-number v-model="schemeInfo.relaSpread" size="small" /><span class="unit">%</span>
           </el-form-item>
-          <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" type="">选择市场价格</el-button>
+          <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" @click="selectPrice">选择市场价格</el-button>
           <div v-show="schemeInfo.cdsPremAdjWay === '03'">
-            <div style="background:#fafafa;padding:5px 10px">
-              <el-form-item label-width="0">
-                <el-radio v-model="marketInfo.ttmType" label="01">行权</el-radio>
-                <el-radio v-model="marketInfo.ttmType" label="02">非行权</el-radio>
-              </el-form-item>
-              <el-form-item label="代偿期" class="display-inline">
-                <el-input v-model="marketInfo.ttmValue" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="净价" class="display-inline" style="margin-left:10px">
-                <el-input v-model="marketInfo.cPrice" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="全价" class="display-inline">
-                <el-input v-model="marketInfo.dPrice" placeholder="请输入内容" />
-              </el-form-item>
-              <el-form-item label="收益率" class="display-inline" style="margin-left:10px">
-                <el-input v-model="marketInfo.yield" placeholder="请输入内容" />
-              </el-form-item>
-            </div>
+            <el-row style="margin-left:10px">
+              <el-col :span="12">
+                <el-radio v-model="radio" label="1">行权</el-radio>
+                <el-radio v-model="radio" label="2">非行权</el-radio>
+              </el-col>
+            </el-row>
+            <el-form style="margin-top:15px">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="待偿期" label-width="60px">
+                    <el-input v-model="priceParams.residualMaturity" clearable />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="净价" label-width="50px">
+                    <el-input v-model="priceParams.netPrice" clearable />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="全价" label-width="50px">
+                    <el-input v-model="priceParams.fullPrice" clearable />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="收益率" label-width="60px">
+                    <el-input v-model="priceParams.yield" clearable />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
           </div>
           <template>
             <div v-show="schemeInfo.cdsPremAdjWay === '01'">
@@ -227,6 +241,112 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog :visible.sync="priceDialog" width="1000px">
+      <!-- <div style="margin-top: -10px">
+        <el-button
+          icon="el-icon-arrow-down"
+          style="margin-bottom: 10px;width: 100%;height: 15px;padding: 0;color: #fff;background: black;font-size: 15px"
+          @click="drawerIsOpen = true"
+        />
+      </div>
+      <div style="margin-bottom: 20px" align="right">
+        <span>
+          <el-select v-model="offerModuleId" filterable placeholder="报价展示模板" @visible-change="loadOfferModuleList">
+            <el-option
+              v-for="item in offerModuleList"
+              :key="item.id"
+              :label="item.tempName"
+              :value="item.id"
+            />
+          </el-select>
+          <el-button type="primary" @click="offerToUse">应用</el-button>
+        </span>
+        <span>
+          <el-select v-model="moduleId" filterable placeholder="成交展示模板" @visible-change="loadModuleList">
+            <el-option
+              v-for="item in moduleList"
+              :key="item.id"
+              :label="item.tempName"
+              :value="item.id"
+            />
+          </el-select>
+          <el-button type="primary" @click="toUse">应用</el-button>
+        </span>
+      </div> -->
+      <div>
+        <el-table
+          ref="offerMarketListTable"
+          v-loading="offerMarketLoading"
+          :data="offerMarketList"
+          tooltip-effect="dark"
+          width="100%"
+          height="300px"
+        >
+          <el-table-column v-for="item in offerTableHeader" :key="item.colName" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
+            <template slot-scope="scope">
+              <span :class="offerIsLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          align="center"
+          style="margin-top:20px"
+          :current-page="offerPage.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="offerPage.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="offerPage.totalRecord"
+          @size-change="offerHandleSizeChange"
+          @current-change="offerHandleCurrentChange"
+        />
+      </div>
+      <hr style="color: #b7bfa5">
+      <!--成交表格-->
+      <div style="margin-top: 20px">
+        <el-table
+          ref="marketListTable"
+          v-loading="marketLoading"
+          :data="marketList"
+          tooltip-effect="dark"
+          style="width: 100%"
+          max-height="300"
+          :row-class-name="tableRowClassName"
+          @cell-dblclick="offerCellDblclick"
+        >
+          <el-table-column
+            v-for="item in tableHeader"
+            :key="item.colName"
+            :prop="item.colName"
+            :label="item.colChiName"
+            align="center"
+            width="180px"
+          >
+            <template slot-scope="scope">
+              <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          align="center"
+          style="margin-top:20px"
+          :current-page="page.pageNumber"
+          :page-sizes="[10, 20, 30, 40, 50]"
+          :page-size="page.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalRecord"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+      <el-row>
+        <el-col :span="3" :offset="21">
+          <div class="dialog-footer">
+            <el-button @click="priceDialog = false">取 消</el-button>
+            <!-- <el-button v-loading="methodUpload" type="primary">确 定</el-button> -->
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -234,6 +354,9 @@
 import { getCurveList, findCurveByMarketGrade, spreadTrial, convertSpread } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '@/api/base-api.js'
 import { upload } from '../../../utils/file-request'
+import { queryDefaultCols, queryMarketData, getTempList, getTempById } from '@/api/market/market.js'
+import { optioins } from '@/api/curve/code-type.js'
+
 // import { get } from 'http'
 export default {
   name: 'ValuationSchemeNormal',
@@ -243,12 +366,39 @@ export default {
     return {
       isCover: true,
       recCurveName: '',
+      radio: '1',
       uploadUrl: `${basic_api_valuation}/scheme/upload`,
       stockMarketGrade: '存量隐含评级',
       selectSpreadVal: 1,
       updateTime: '',
       fileList: [],
+      offerModuleId: '',
+      offerModuleList: [],
+      offerMarketList: [],
+      offerTableHeader: [],
+      moduleId: '',
+      moduleList: [],
+      tableHeader: [],
+      priceParams: {
+        fullprice: '',
+        netPrice: '',
+        residualMaturity: '',
+        yield: ''
+      },
+      fullprice: '',
+      offerMarketLoading: false,
+      marketLoading: false,
+      marketList: [],
+      page: {
+        pageNumber: 1,
+        pageSize: 10
+      },
+      offerPage: {
+        pageNumber: 1,
+        pageSize: 10
+      },
       showTime: false,
+      priceDialog: false,
       trialResult: [],
       curveList: []
     }
@@ -267,15 +417,12 @@ export default {
       set(schemeInfo) {
         this.$store.commit('scheme/setSchemeInfo', schemeInfo)
       }
-    },
-    marketInfo: {
-      get() {
-        return this.$store.state.scheme.marketInfo
-      },
-      set(marketInfo) {
-        this.$store.commit('scheme/setMarketInfo', marketInfo)
-      }
+      // console.log(this.schemeInfo)
+      // return this.schemeInfo
     }
+  },
+  created() {
+    this.initTable()
   },
   mounted() {
     console.log(this.schemeInfo)
@@ -286,6 +433,235 @@ export default {
     })
   },
   methods: {
+    loadOfferModuleList(val) {
+      // 加载所有报价模板
+      if (val) {
+        const data = {
+          page: {
+            pageNumber: 1,
+            pageSize: 100
+          },
+          dataMarket: '02',
+          showArea: '01'
+        }
+        getTempList(data).then(res => {
+          console.info(res)
+          this.offerModuleList = res.dataList
+        })
+      }
+    },
+    loadModuleList(val) {
+      // 加载所有成交模板
+      if (val) {
+        const data = {
+          page: {
+            pageNumber: 1,
+            pageSize: 100
+          },
+          dataMarket: '02',
+          showArea: '02'
+        }
+        getTempList(data).then(res => {
+          console.info(res)
+          this.moduleList = res.dataList
+        })
+      }
+    },
+    offerToUse() {
+      // 应用报价表模板
+      const val = this.offerModuleId
+      if (val === '') {
+        this.$message('请选择报价展示模板！')
+        return
+      }
+      getTempById(val).then(res => {
+        const { showCols, colData } = res
+        this.offerTableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.offerTableHeader.splice(i, 0, showCols[i])
+          }
+          // console.info(this.offerTableHeader)
+        })
+        this.offerColData = colData
+      })
+      // 清空筛选数据
+      this.offerScreeningFormList = []
+      // 获取满足条件的行情数据
+      this.offerLoadTable()
+      this.offerCurrentModuleId = this.offerModuleId
+    },
+    toUse() {
+      // 应用成交表模板
+      const val = this.moduleId
+      if (val === '') {
+        this.$message('请选择模板！')
+        return
+      }
+      getTempById(val).then(res => {
+        const { showCols, colData } = res
+        // console.info(showCols)
+        // this.tableHeader = showCols
+        this.tableHeader = []
+        this.$nextTick(() => {
+          for (let i = 0; i < showCols.length; i++) {
+            this.tableHeader.splice(i, 0, showCols[i])
+          }
+          // console.info(this.tableHeader)
+        })
+        this.colData = colData
+      })
+      // 清空筛选数据
+      this.screeningFormList = []
+      // 获取满足条件的行情数据
+      this.initTable()
+      this.currentModuleId = this.moduleId
+    },
+    offerCellDblclick(row, column) { // 双击单元格
+      console.log('row', row)
+      console.log('column', column)
+      console.log('dd', column.label)
+      if (column.label.indexOf('全价') !== -1) {
+        this.priceParams.fullPrice = row[column.property]
+        console.log('ffff', row[column.property])
+        this.priceParams.residualMaturity = row.mtrty
+      }
+      if (column.label.indexOf('净价') !== -1) {
+        this.priceParams.netPrice = row[column.property]
+        this.priceParams.residualMaturity = row.mtrty
+      }
+      if (column.label.indexOf('收益率') !== -1) {
+        this.priceParams.yield = row[column.property]
+        this.priceParams.residualMaturity = row.mtrty
+      }
+    },
+    // 初始化
+    async initTable() {
+      await this.initOfferTable()
+      await this.initCJTable()
+    },
+    initOfferTable() {
+      // 初始化报价表数据
+      // 获取默认模板表头信息及行情列表信息
+      this.offerMarketLoading = true
+      // 查询默认表头
+      const data = {
+        dataMarket: '02',
+        showArea: '01'
+      }
+      queryDefaultCols(data).then(response => {
+        const { showCols, colData } = response
+        // console.info(showCols)
+        // console.info(colData)
+        this.offerTableHeader = showCols
+        this.offerColData = colData
+      })
+      // 获取满足条件的行情数据
+      const data2 = {
+        page: this.offerPage,
+        dataMarket: '02',
+        showArea: '01',
+        queryForm: this.queryForm
+      }
+      queryMarketData(data2).then(response => {
+        // console.info(response)
+        if (typeof response.page !== 'undefined') {
+          this.offerPage = response.page
+        }
+        this.offerMarketList = response.dataList
+      })
+      this.offerMarketLoading = false
+    },
+    initCJTable() {
+      // 初始化成交表数据
+      // 获取默认模板表头信息及行情列表信息
+      this.marketLoading = true
+      // 查询默认表头
+      const data = {
+        dataMarket: '02',
+        showArea: '02'
+      }
+      queryDefaultCols(data).then(response => {
+        const { showCols, colData } = response
+        // console.info(showCols)
+        // console.info(colData)
+        this.tableHeader = showCols
+        this.colData = colData
+      })
+      // 获取满足条件的行情数据
+      const data2 = {
+        page: this.page,
+        dataMarket: '02',
+        showArea: '02',
+        queryForm: this.queryForm
+      }
+      queryMarketData(data2).then(response => {
+        console.info(response)
+        if (typeof response.page !== 'undefined') {
+          this.page = response.page
+        }
+        this.marketList = response.dataList
+      })
+      this.marketLoading = false
+    },
+    offerIsLight(row, header) {
+      // 判断是否高亮
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.split(',')
+        const mod = mods.filter(val => val === header.colName)
+        return mod.length > 0
+      } else {
+        return false
+      }
+    },
+    isLight(row, header) {
+      // 成交判断是否高亮
+      if (typeof row.modifiedCols !== 'undefined') {
+        const modifiedCols = row.modifiedCols
+        const mods = modifiedCols.split(',')
+        const mod = mods.filter(val => val === header.colName)
+        return mod.length > 0
+      } else {
+        return false
+      }
+    },
+    codeFormatter(row, column) {
+      //  && (column.colName === 'curveBuildType' || column.colName === 'curveSource')
+      if (column.colType === 'OPTION' && (column.colName === 'curveBuildType' || column.colName === 'curveSource')) {
+        const options = optioins(this, column.realColName)
+        const opt = options.filter(opt => opt.value === row[column.colName])
+        if (opt.length > 0) {
+          return opt[0].label
+        } else {
+          return row[column.colName]
+        }
+      } else {
+        return row[column.colName]
+      }
+    },
+    offerHandleSizeChange(pageSize) {
+      this.offerPage.pageSize = pageSize
+      this.initOfferTable()
+    },
+    offerHandleCurrentChange(currentPage) {
+      this.offerPage.pageNumber = currentPage
+      this.initOfferTable()
+    },
+    handleSizeChange(pageSize) {
+      this.page.pageSize = pageSize
+      this.initCJTable()
+    },
+    handleCurrentChange(currentPage) {
+      this.page.pageNumber = currentPage
+      this.initCJTable()
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.knock === '1' || row.netdeviationLimit === '1') {
+        return 'warning-row'
+      }
+      return ''
+    },
     getData() {
       // return this.normalInfo
     },
@@ -296,6 +672,9 @@ export default {
       convertSpread(this.schemeInfo).then(response => {
         console.log(response)
       })
+    },
+    selectPrice() {
+      this.priceDialog = true
     },
     // changePower(e) {
     //   this.schemeInfo.recoDire = e
