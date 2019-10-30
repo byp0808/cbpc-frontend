@@ -487,13 +487,22 @@ export default {
     checkedShow: function(index, showOrhide) {
       // console.log(index, showOrhide)
       var that = this
+      that.colDataResult = []
       if (!showOrhide) {
-        that.colDataResult.splice(index, 1)
+        // that.colDataResult.splice(index, 1)
         that.colData[index].showOrhide = false
       } else {
-        that.colDataResult.splice(index, 0, this.colData[index])
+        // that.colDataResult.splice(index, 0, this.colData[index])
         that.colData[index].showOrhide = true
         // console.log(showOrhide)
+      }
+      var j = 0
+      for (var i = 0; i < that.colData.length; i++) {
+        if (that.colData[i].showOrhide) {
+          // console.log(that.colData[i])
+          that.colDataResult[j] = that.colData[i]
+          j++
+        }
       }
       // console.log(this.colData[index].showOrhide)
     },
