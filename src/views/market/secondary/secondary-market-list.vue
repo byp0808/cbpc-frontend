@@ -489,7 +489,7 @@ export default {
         queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
-        console.info(response)
+        // console.info(response)
         if (typeof response.page !== 'undefined') {
           this.page = response.page
         }
@@ -505,7 +505,7 @@ export default {
       this.offerMarketLoading = true
       this.searchParam = []
       // 处理筛选数据格式
-      console.info(this.offerScreeningFormList)
+      // console.info(this.offerScreeningFormList)
       this.formatScreeningForm(this.offerScreeningFormList)
       // 获取满足条件的行情数据
       const data = {
@@ -518,7 +518,7 @@ export default {
         specialChecked: this.specialChecked
       }
       queryMarketData(data).then(response => {
-        console.info(response)
+        // console.info(response)
         if (typeof response.page !== 'undefined') {
           this.offerPage = response.page
         }
@@ -540,7 +540,7 @@ export default {
       } else {
         // 默认该表头没有筛选过
         const form = this.offerScreeningFormList.filter(form => form.headerKey === this.currentHeader.key)
-        console.info(form)
+        // console.info(form)
         if (form.length > 0) {
           // const form = this.screeningFormList[index].screeningForm
           this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
@@ -578,7 +578,7 @@ export default {
       const title = column.property
       const tabs = this.offerTableHeader.filter(tab => tab.colName === title)
       const tab = tabs[0]
-      console.info(row[title])
+      // console.info(row[title])
       if (tab.modiFlag === 'Y') {
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -683,7 +683,7 @@ export default {
         queryForm: this.queryForm
       }
       queryMarketData(data).then(response => {
-        console.info(response)
+        // console.info(response)
         if (typeof response.page !== 'undefined') {
           this.page = response.page
         }
@@ -701,7 +701,7 @@ export default {
       this.currentHeader.key = key
       this.currentHeader.label = column.label
       const form = this.screeningFormList.filter(form => form.headerKey === this.currentHeader.key)
-      console.info(form)
+      // console.info(form)
       if (form.length > 0) {
         // const form = this.screeningFormList[index].screeningForm
         this.screeningFormSet(JSON.parse(JSON.stringify(form[0].screeningForm)))
@@ -736,7 +736,7 @@ export default {
       const title = column.property
       const tabs = this.tableHeader.filter(tab => tab.colName === title)
       const tab = tabs[0]
-      console.info(row[title])
+      // console.info(row[title])
       if (tab.modiFlag === 'Y') {
         this.currentRow = row
         this.currentHeader.key = column.property
@@ -954,10 +954,10 @@ export default {
           dataMarket: '02',
           showArea: '01'
         }
-        console.info('报价表修改')
-        console.info(data)
+        // console.info('报价表修改')
+        // console.info(data)
         saveMarketData(data).then(res => {
-          console.info(res)
+          // console.info(res)
           this.$message({
             type: 'success',
             message: '修改成功!'
@@ -988,10 +988,10 @@ export default {
           dataMarket: '02',
           showArea: '02'
         }
-        console.info('成交表修改')
-        console.info(data)
+        // console.info('成交表修改')
+        // console.info(data)
         saveMarketData(data).then(res => {
-          console.info(res)
+          // console.info(res)
           this.$message({
             type: 'success',
             message: '修改成功!'
@@ -1016,7 +1016,7 @@ export default {
     isScreeningByHeader(val) {
       // 根据当前表头查询是否已添加到搜索条件集合
       for (let i = 0; i < val.length; i++) {
-        console.info(i)
+        // console.info(i)
         if (val[i].headerKey === this.currentHeader.key) {
           return i
         }
@@ -1050,7 +1050,7 @@ export default {
           showArea: '01'
         }
         getTempList(data).then(res => {
-          console.info(res)
+          // console.info(res)
           this.offerModuleList = res.dataList
         })
       }
@@ -1067,7 +1067,7 @@ export default {
           showArea: '02'
         }
         getTempList(data).then(res => {
-          console.info(res)
+          // console.info(res)
           this.moduleList = res.dataList
         })
       }
@@ -1093,7 +1093,7 @@ export default {
     },
     offerHandleSelectionChange(val) {
       this.offerSelection = val
-      console.info()
+      // console.info()
     },
     topMoved(row) {
       // 模板编辑框表头上移
@@ -1150,7 +1150,7 @@ export default {
       }
     },
     saveEditCell() {
-      console.info(this.offerSelection)
+      // console.info(this.offerSelection)
       if (this.activeName === 'first') {
         // 编辑当前成交模板
         const modules = this.moduleList.filter(mod => mod.id === this.currentModuleId)
@@ -1165,7 +1165,7 @@ export default {
         }
         let newTempId = this.currentModuleId
         saveTempInfo(data).then(res => {
-          console.info(res)
+          // console.info(res)
           newTempId = res.tempId
         })
         this.editModuleIsOpen = false
@@ -1189,7 +1189,7 @@ export default {
         }
         let newTempId = this.offerCurrentModuleId
         saveTempInfo(data).then(res => {
-          console.info(res)
+          // console.info(res)
           newTempId = res.tempId
         })
         this.editModuleIsOpen = false
