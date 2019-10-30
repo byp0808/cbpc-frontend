@@ -75,6 +75,8 @@
           <el-col :span="6" :push="2">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
+            <!-- <el-button class="filter-item" type="primary" @click="download">下载曲线方案</el-button> -->
+            <i class="el-icon-download" title="下载曲线方案" style="font-size:30px;line-height:40px" @click="download" />
           </el-col>
         </el-row>
       </el-form>
@@ -84,7 +86,7 @@
       :data="dataList"
       tooltip-effect="dark"
       style="width: 100%"
-      @selection-change="getList"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="productName" label="曲线名称" width="100" />
@@ -116,6 +118,8 @@
 import { queryCurveSolutions } from '@/api/curve/curve-query'
 import { selectCurve, selectPerson, queryOrder } from '@/api/curve/curve-task'
 import Pagination from '@/components/Pagination'
+import { downloadFile } from '@/utils/file-request'
+import { basic_api_curve } from '@/api/base-api'
 
 export default {
   name: 'QueryCurveBuildSolu',
@@ -146,7 +150,8 @@ export default {
       },
       pickerOptionsStart: {},
       pickerOptionsEnd: {},
-      options: temp
+      options: temp,
+      multipleSelection: []
     }
   },
   beforeMount() {
@@ -163,6 +168,14 @@ export default {
     },
     reset() {
       this.$refs.plan.resetFields()
+    },
+    // 勾选框
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    // 下载曲线方案
+    download() {
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks', this.plan)
     },
     querySearch1(queryString, cb) {
       const data = queryString ? { search_orderName_LIKE: queryString } : {}

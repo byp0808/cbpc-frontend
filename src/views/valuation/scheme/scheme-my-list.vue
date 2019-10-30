@@ -119,7 +119,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
+              <a ref="moduleDownload" style="display: none" href="/model/bondTemplate.xlsx" download="估值添加债券模板" />
               模板文件下载
             </div>
           </el-form-item>
@@ -161,7 +161,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadPeople">
-              <a ref="peopleDownload" style="display: none" href="/model/module.xlsx" download="模板文件" />
+              <a ref="peopleDownload" style="display: none" href="/model/valuationResult.xlsx" download="人工估值模板" />
               模板文件下载</div>
           </el-form-item>
         </el-form>
@@ -237,13 +237,13 @@
           <!-- <el-row> -->
           <el-col :span="9">
             <el-form-item prop="starNumber">
-              <el-input v-model="interestObj.starNumber" type="number" clearable />
+              <el-input v-model="interestObj.starNumber" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
             <el-form-item prop="endNumber">
-              <el-input v-model="interestObj.endNumber" type="number" clearable />
+              <el-input v-model="interestObj.endNumber" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
           <!-- </el-row> -->
@@ -310,17 +310,17 @@
         <el-form-item label="交易量" required>
           <el-col :span="9">
             <el-form-item prop="starNumber">
-              <el-input v-model="creditObject.starNumber" type="number" clearable />
+              <el-input v-model="creditObject.starNumber" min="0" type="number" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
             <el-form-item prop="endNumber">
-              <el-input v-model="creditObject.endNumber" type="number" clearable />
+              <el-input v-model="creditObject.endNumber" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
         </el-form-item>
-        <el-form-item v-for="item in compareList" :key="item.name" :label="item.name" label-width="260px" required>
+        <!-- <el-form-item v-for="item in compareList" :key="item.name" :label="item.name" label-width="260px" required>
           <el-col :span="11">
             <el-form-item :prop="item.symbol">
               <el-select v-model="item.symbol" placeholder="请选择" clearable>
@@ -335,10 +335,31 @@
           </el-col>
           <el-col :span="10" :offset="1">
             <el-form-item :prop="item.number">
-              <el-input v-model="item.number" type="number" clearable />
+              <el-input v-model="item.number" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
-        </el-form-item>
+        </el-form-item> -->
+        <div v-for="(item,index) in compareList" :key="index" :label="item.name">
+          <el-form-item :label="item.name" label-width="260px" required>
+            <el-col :span="11">
+              <el-form-item :rules="creditRule.symbol">
+                <el-select v-model="item.symbol" placeholder="请选择">
+                  <el-option
+                    v-for="i in compare"
+                    :key="i.value"
+                    :label="i.label"
+                    :value="i.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10" :offset="1">
+              <el-form-item>
+                <el-input v-model="item.number" type="number" min="0" clearable @change="numberChange" />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
       </el-form>
       <div class="big-box">
         <!-- <div v-for="(i,index) in compareList" :key="index" class="bot-box">
@@ -570,11 +591,26 @@ export default {
       adjustList: [],
       creditList: [],
       interestObj: {},
-      creditObject: {},
+      creditObject: {
+        // compareList: [{
+        //   symbol: '',
+        //   number: ''
+        // }]
+      },
       compareObj: {},
       taskTitle: '',
       uploadList: [],
       selection: [],
+      compareList: [
+        { name: '本日经纪成交与市场收益率偏差(BP)' },
+        { name: '昨日经纪成交与市场收益率偏差(BP)' },
+        { name: '线的调整幅度与日间单券偏差只差(BP)' },
+        { name: '同业存单可靠成交（报价）待偿期' },
+        { name: '同业存单成交（报价）估值偏离' },
+        { name: '同业存单成交（报价）连续阈值' },
+        { name: '同业存单发行人成交（报价）历史总分' }
+
+      ],
       selectCreditList: [],
       selectInterestList: [],
       compare: [
@@ -593,19 +629,12 @@ export default {
         }, {
           label: '小于等于',
           value: '05'
+        }, {
+          label: '不等于',
+          value: '06'
         }
       ],
       exchangeObj: {},
-      compareList: [
-        { name: '本日经纪成交与市场收益率偏差(BP)' },
-        { name: '昨日经纪成交与市场收益率偏差(BP)' },
-        { name: '线的调整幅度与日间单券偏差只差(BP)' },
-        { name: '同业存单可靠成交（报价）待偿期' },
-        { name: '同业存单成交（报价）估值偏离' },
-        { name: '同业存单成交（报价）连续阈值' },
-        { name: '同业存单发行人成交（报价）历史总分' }
-
-      ],
       extends: '',
       volumeAdd: {
         cause: '08',
@@ -613,14 +642,28 @@ export default {
         attach: ''
       },
       interestRule: {
-        starNumber: [{ required: true, message: '请输入最小数量', trigger: 'blur' }],
-        endNumber: [{ required: true, message: '请输入最大数量', trigger: 'blur' }],
+        starNumber: [
+          { required: true, message: '请输入最小数量', trigger: 'blur' },
+          { validator: this.checkNumber, trigger: 'blur' }
+        ],
+        endNumber: [
+          { required: true, message: '请输入最大数量', trigger: 'blur' },
+          { validator: this.checkNumber, trigger: 'blur' }
+        ],
         baseTime: [{ type: 'string', required: true, message: '请选择时间', trigger: 'change' }],
         addZero: [{ required: true, message: '请上传点差补0的券', trigger: 'blur' }]
       },
       creditRule: {
-        starNumber: [{ required: true, message: '请输入最小数量', trigger: 'blur' }],
-        endNumber: [{ required: true, message: '请输入最大数量', trigger: 'blur' }]
+        starNumber: [
+          { required: true, message: '请输入最小数量', trigger: 'blur' },
+          { validator: this.checkNumber, trigger: 'blur' }
+        ],
+        endNumber: [
+          { required: true, message: '请输入最大数量', trigger: 'blur' },
+          { validator: this.checkNumber, trigger: 'blur' }
+        ],
+        symbol: [{ required: true, message: '请选择比较规则', trigger: 'change' }],
+        number: [{ required: true, message: '请选择比较数值', trigger: 'change' }]
       },
       rules: {
         batchId: [{ required: true, message: '请选择批次', trigger: 'change' }],
@@ -750,6 +793,31 @@ export default {
     // },
     taskList(data) { // 批量调整任务id
       this.taskLists = data
+    },
+    numberChange(e) {
+      console.log('fff', e)
+      if (e < 0) {
+        this.$message.warning('输入的值不能小于0')
+      }
+    },
+    checkNumber(rule, value, callback) {
+      if (this.interestObj.starNumber < 0 || this.interestObj.endNumber < 0) {
+        callback(new Error('交易量应大于等于0'))
+      }
+      if (this.interestObj.starNumber && this.interestObj.endNumber) {
+        if (this.interestObj.endNumber <= this.interestObj.starNumber) {
+          callback(new Error('最大交易量应大于最小交易量'))
+        }
+      }
+      if (this.creditObject.starNumber < 0 || this.creditObject.endNumber < 0) {
+        callback(new Error('交易量应大于等于0'))
+      }
+      if (this.creditObject.starNumber && this.creditObject.endNumber) {
+        if (this.creditObject.endNumber <= this.creditObject.starNumber) {
+          callback(new Error('最大交易量应大于最小交易量'))
+        }
+      }
+      callback()
     },
     radioChange(e) {
       this.radio = e

@@ -14,7 +14,7 @@
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <!-- <div style="margin-top:7px"> -->
           <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
-          <el-button type="primary">下载估值方案</el-button>
+          <el-button type="primary" @click="downScheme">下载估值方案</el-button>
           <!-- </div> -->
         </el-col>
       </el-row>
@@ -140,7 +140,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadMode">
-              <a ref="moduleDownload" style="display: none" href="/model/module.xlsx" download="估值添加债券模板" />
+              <a ref="moduleDownload" style="display: none" href="/model/bondTemplate.xlsx" download="估值添加债券模板" />
               模板文件下载</div>
           </el-form-item>
           <el-form-item label="选择调整原因">
@@ -181,7 +181,7 @@
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
             <div class="downLoad" @click="downLoadBond">
-              <a ref="DomDownload" style="display: none" href="/model/voluation.xlsx" download="估值点差上传汇总文件" />
+              <a ref="DomDownload" style="display: none" href="/model/valuationScheme.xlsx" download="估值方案模板" />
               模板文件下载</div>
           </el-form-item>
         </el-form>
@@ -230,6 +230,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
+// import { downloadFile, upload } from '@/utils/file-request'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -241,6 +242,7 @@ export default {
     return {
       activeElement: '01',
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       labelPosition: 'right',
       allocationDialog: false,
       noValuationDialog: false,
@@ -586,20 +588,10 @@ export default {
     uploadScheme() {
       this.uploadMethodDialog = true
     },
-    downloadScheme: function() {
+    downScheme() {
+      // downloadFile(this.downloadUrl, this.params).then(res => {
 
-    },
-    schemeAdjust: function() {
-
-    },
-    batchAdjust: function() {
-
-    },
-    taskBack: function() {
-
-    },
-    taskCommit: function() {
-
+      // })
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize

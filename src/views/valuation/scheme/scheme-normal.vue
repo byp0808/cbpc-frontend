@@ -27,6 +27,26 @@
             <el-input-number v-model="schemeInfo.relaSpread" size="small" /><span class="unit">%</span>
           </el-form-item>
           <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" type="">选择市场价格</el-button>
+          <div v-show="schemeInfo.cdsPremAdjWay === '03'">
+            <div style="background:#fafafa;padding:5px 10px">
+              <el-form-item label-width="0">
+                <el-radio v-model="marketInfo.ttmType" label="01">行权</el-radio>
+                <el-radio v-model="marketInfo.ttmType" label="02">非行权</el-radio>
+              </el-form-item>
+              <el-form-item label="代偿期" class="display-inline">
+                <el-input v-model="marketInfo.ttmValue" placeholder="请输入内容" />
+              </el-form-item>
+              <el-form-item label="净价" class="display-inline" style="margin-left:10px">
+                <el-input v-model="marketInfo.cPrice" placeholder="请输入内容" />
+              </el-form-item>
+              <el-form-item label="全价" class="display-inline">
+                <el-input v-model="marketInfo.dPrice" placeholder="请输入内容" />
+              </el-form-item>
+              <el-form-item label="收益率" class="display-inline" style="margin-left:10px">
+                <el-input v-model="marketInfo.yield" placeholder="请输入内容" />
+              </el-form-item>
+            </div>
+          </div>
           <template>
             <div v-show="schemeInfo.cdsPremAdjWay === '01'">
               <template v-if="schemeInfo.cdsPremAdjType === '01'">
@@ -247,8 +267,14 @@ export default {
       set(schemeInfo) {
         this.$store.commit('scheme/setSchemeInfo', schemeInfo)
       }
-      // console.log(this.schemeInfo)
-      // return this.schemeInfo
+    },
+    marketInfo: {
+      get() {
+        return this.$store.state.scheme.marketInfo
+      },
+      set(marketInfo) {
+        this.$store.commit('scheme/setMarketInfo', marketInfo)
+      }
     }
   },
   mounted() {
