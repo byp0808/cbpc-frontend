@@ -34,7 +34,7 @@ const marketRouter = {
       path: 'query-temp',
       component: () => import('@/views/market/temp/query-temp-list.vue'),
       name: 'QueryTempList',
-      meta: { title: '模板设置', noCache: true, roles: ['queryTemp'] }
+      meta: { title: '筛选模板设置', noCache: true, roles: ['queryTemp'] }
     }
   ]
 }

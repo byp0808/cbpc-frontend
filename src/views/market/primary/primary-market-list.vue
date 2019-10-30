@@ -23,7 +23,7 @@
     >
       <el-table-column v-for="(item,index) in tableHeader" :key="index" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
-          <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
+          <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -473,6 +473,7 @@ export default {
       // 编辑当前模板
       // 取消浏览器默认右击事件
       window.event.returnValue = false
+      this.editModuleIsOpen = true
       // 清空表头及多选项旧数据
       this.editTableHeaders = []
       this.editTableHeaders.map(obj => {
@@ -482,13 +483,8 @@ export default {
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
         console.info(this.editModuleForm)
-        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.colName).length > 0)
-        // console.info('详细')
-        // console.info(this.tableHeader)
-        // console.info(this.colData)
-        // console.info(tableHeaderDetail)
+        const tableHeaderDetail = this.colData.filter(col => this.tableHeader.filter(tab => col.colName === tab.realColName).length > 0)
         tableHeaderDetail.map(res => this.editTableHeaders.push(res))
-        this.editModuleIsOpen = true
         // 表头默认全选
         this.$nextTick(() => {
           this.editTableHeaders.map(obj => {
@@ -708,6 +704,20 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    codeFormatter(row, column) {
+      //  && column.colName === 'curveBuildType'
+      if (column.colType === 'OPTION') {
+        const options = optioins(this, column.realColName)
+        const opt = options.filter(opt => opt.value === row[column.colName])
+        if (opt.length > 0) {
+          return opt[0].label
+        } else {
+          return row[column.colName]
+        }
+      } else {
+        return row[column.colName]
+      }
     }
   }
 
