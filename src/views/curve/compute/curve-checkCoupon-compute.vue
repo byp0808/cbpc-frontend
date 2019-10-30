@@ -28,10 +28,13 @@
     </el-row>
     <!-- 檢查曲綫樣本券列表 -->
     <el-table
+      ref="checkCurveCouponList"
       :data="checkCurveCouponList"
       tooltip-effect="dark"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="curvePrdCode" label="曲线编码" width="140" />
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
       <el-table-column prop="sampleCompStatus" label="样本券编制状态" width="150" show-overflow-tooltip>
@@ -177,16 +180,16 @@ export default {
     checkOrDeployComp() {
       var data = {
         action: '2',
-        checkCoupons: this.checkCurveCouponList
+        checkCoupons: this.$refs.checkCurveCouponList.selection
       }
       checkOrDeployComp(data).then(response => {
         setTimeout(1.5 * 1000)
       })
     },
     // 获取相同批次下曲线所有的样本券
-    allCouponList() {
+    allCouponList(row) {
       var data = {
-        curveName: this.curveName,
+        curveName: this.row.curveName,
         orderId: this.orderId,
         taskDay: ''
       }
@@ -266,7 +269,10 @@ export default {
       this.queryCheckCurveCouponList()
     },
     obtainCheckCurveCouponList() {
-      return this.checkCurveCouponList
+      return this.$refs.checkCurveCouponList.selection
+    },
+    handleSelectionChange(items) {
+      this.multipleSelection = items
     }
   }
 }
