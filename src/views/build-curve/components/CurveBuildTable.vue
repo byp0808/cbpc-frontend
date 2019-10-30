@@ -167,13 +167,13 @@
           </el-col>
           <el-col :span="12">
             <el-form-item>
-              <el-button @click="calculusYield">计算加权收益率</el-button>
+              <el-button :disabled="makeCalcEnable" @click="calculusYield">计算加权收益率</el-button>
               <div v-if="showResult">计算结果{{ weight.yield }}</div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item>
-              <el-button @click="saveWeightYield">填写至关键期限</el-button>
+              <el-button :disabled="makeCalcEnable" @click="saveWeightYield">填写至关键期限</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -192,6 +192,7 @@
 import EditableCell from '@/views/build-curve/components/EditableCell'
 import CustomHomology from '@/views/build-curve/components/CustomHomology'
 import { queryCurveKeyTerm } from '@/api/curve/curve-build'
+import { queryBondsAll } from '@/api/common/bond-filter'
 import { add, subtract, multiply, divide } from '@/utils/math'
 
 export default {
@@ -250,12 +251,15 @@ export default {
   computed: {
     makeData() {
       return this.list
+    },
+    makeCalcEnable() {
+      const l = Object.keys(this.weight).filter(value => !!this.weight[value]).length
+      return l !== 7
     }
   },
   methods: {
     changeData(name, row) {
       if (name === 'adjRange') {
-        console.log(divide(row[name], 100))
         row.adjResult = add(row.lastYield, divide(row[name], 100))
         row.adjReason = '手工调整'
       } else if (name === 'adjResult') {
@@ -268,6 +272,8 @@ export default {
           this.customEnabled = true
           return
         }
+      } else if (name === 'weight') {
+        row.adjReason = '加权选点'
       }
       this.$emit('change-data', row)
     },
@@ -292,17 +298,15 @@ export default {
       if (queryString) {
         data.push({ colName: 'VAL_ASSET_CODE', value: queryString, colType: 'STRING', operator: 'EQ' })
       }
-      // TODO
-      // selectPerson(data).then(response => {
-      //   const results = response.map(i => {
-      //     return { value: i.userId, label: i.userName }
-      //   })
-      //   // 调用 callback 返回建议列表的数据
-      //   cb(results)
-      // })
+      queryBondsAll(data).then(response => {
+        const results = response.map(i => {
+          return { value: i.valAssetCode, label: i.valAssetCode, bondName: i.valAssetShortName, slip: i.mtrty }
+        })
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+      })
     },
     handleSelect(item) {
-      // TODO
       this.weight.bondName = item.bondName
       this.weight.slip = item.slip
     },
