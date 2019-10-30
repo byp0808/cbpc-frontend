@@ -186,14 +186,18 @@ export default {
         this.$alert('报表 [' + row.reportName + '] ' + this.showStatus(row.approveStatus) + '，不能发布')
         return false
       }
-      publishReport(row.id).then((response) => {
-        this.$message({
-          message: '发布成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确认发布此报告吗?', '提示', {
+        type: 'info'
+      }).then(() => {
+        publishReport(row.id).then((response) => {
+          this.$message({
+            message: '发布成功！',
+            type: 'success',
+            showClose: true
+          })
+          this.loadTable()
+        }).catch(() => {
         })
-        this.loadTable()
-      }).catch(() => {
       })
     },
     toUpload(item) {

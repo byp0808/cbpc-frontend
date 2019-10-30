@@ -23,7 +23,7 @@
     >
       <el-table-column v-for="(item,index) in tableHeader" :key="index" :prop="item.colName" :label="item.colChiName" align="center" width="180px">
         <template slot-scope="scope">
-          <span :class="isLight(scope.row,item)?'light':''">{{ scope.row[item.colName] }}</span>
+          <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -649,7 +649,7 @@ export default {
           case 'OPTION':// 可选型
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
-            if (typeof data.screeningCheckString === 'undefined') {
+            if (typeof data.screeningCheckString === 'undefined' || data.screeningCheckString.length === 0) {
               if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
@@ -664,8 +664,18 @@ export default {
                 }
               }
             } else {
-              obj.operator = 'LIKE'
-              obj.value = data.screeningCheckString
+              // obj.value = data.screeningCheckString
+              obj.operator = 'IN'
+              obj.value = ''
+              if (data.screeningCheckString.length > 0) {
+                for (let i = 0; i < data.screeningCheckString.length; i++) {
+                  if (i === (data.screeningCheckString.length - 1)) {
+                    obj.value = obj.value + data.screeningCheckString[i]
+                  } else {
+                    obj.value = obj.value + data.screeningCheckString[i] + ','
+                  }
+                }
+              }
             }
             break
         }
@@ -698,6 +708,20 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    codeFormatter(row, column) {
+      //  && column.colName === 'curveBuildType'
+      if (column.colType === 'OPTION') {
+        const options = optioins(this, column.realColName)
+        const opt = options.filter(opt => opt.value === row[column.colName])
+        if (opt.length > 0) {
+          return opt[0].label
+        } else {
+          return row[column.colName]
+        }
+      } else {
+        return row[column.colName]
+      }
     }
   }
 

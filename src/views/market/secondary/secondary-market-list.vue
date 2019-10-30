@@ -1317,7 +1317,7 @@ export default {
           case 'OPTION':// 可选型
             obj.colName = headers[0].realColName
             obj.colType = 'OPTION'
-            if (typeof data.screeningCheckString === 'undefined') {
+            if (typeof data.screeningCheckString === 'undefined' || data.screeningCheckString.length === 0) {
               if (typeof data.screeningChecked !== 'undefined') {
                 obj.operator = 'IN'
                 obj.value = ''
@@ -1332,8 +1332,18 @@ export default {
                 }
               }
             } else {
-              obj.operator = 'LIKE'
-              obj.value = data.screeningCheckString
+              // obj.value = data.screeningCheckString
+              obj.operator = 'IN'
+              obj.value = ''
+              if (data.screeningCheckString.length > 0) {
+                for (let i = 0; i < data.screeningCheckString.length; i++) {
+                  if (i === (data.screeningCheckString.length - 1)) {
+                    obj.value = obj.value + data.screeningCheckString[i]
+                  } else {
+                    obj.value = obj.value + data.screeningCheckString[i] + ','
+                  }
+                }
+              }
             }
             break
         }
@@ -1353,7 +1363,8 @@ export default {
       return ''
     },
     codeFormatter(row, column) {
-      if (column.colType === 'OPTION' && column.colName === 'curveBuildType') {
+      //  && column.colName === 'curveBuildType'
+      if (column.colType === 'OPTION') {
         const options = optioins(this, column.realColName)
         const opt = options.filter(opt => opt.value === row[column.colName])
         if (opt.length > 0) {

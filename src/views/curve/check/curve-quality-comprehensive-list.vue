@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column prop="curvePubType" label="曲线类型" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.curvePubType }}
+          {{ $dft("CURVE_BUILD_TYPE", scope.row.curvePubType) }}
         </template>
       </el-table-column>
       <el-table-column prop="compDate" label="发布日期" width="100" show-overflow-tooltip>
@@ -34,17 +34,17 @@
       </el-table-column>
       <el-table-column prop="rateType" label="利率类型" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.rateType }}
+          {{ $dft("RATE_TYPE", scope.row.rateType) }}
         </template>
       </el-table-column>
       <el-table-column prop="interestDueFreq" label="付息频率" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.interestDueFreq }}
+          {{ $dft("INTEREST_DUE_FREQ", scope.row.interestDueFreq) }}
         </template>
       </el-table-column>
       <el-table-column prop="curveBuildStatus" label="曲线编制状态" width="100" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.curveBuildStatus }}
+          {{ $dft("CURVE_BUILD_STATUS", scope.row.curveBuildStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="assignName" label="责任人" width="100" show-overflow-tooltip>

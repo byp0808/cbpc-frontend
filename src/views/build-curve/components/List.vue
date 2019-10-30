@@ -124,6 +124,7 @@ export default {
     rowInterval() {
       const i = this.interval
       const h = this.highLight
+      console.log(h)
       return function({ rowIndex, columnIndex }) {
         if (h && h.length > 0 && h[rowIndex][columnIndex]) {
           return 'high-light'
@@ -189,7 +190,6 @@ export default {
       }
       clearTimeout(time)
       clearTimeout(time_dia)
-      this.$set(this.highLight, row.index, _row)
       const _row = this.highLight[row.index]
       const flag = _row[column.index]
       this.interval.map((v, i) => {

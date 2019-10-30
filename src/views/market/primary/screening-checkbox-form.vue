@@ -10,7 +10,21 @@
                 <el-radio v-model="radio" label="1">&nbsp;</el-radio>
               </el-col>
               <el-col :span="20">
-                <el-input v-model="screeningForm.screeningCheckString" placeholder="请输入内容" :disabled="disable_1" />
+                <!--<el-input v-model="screeningForm.screeningCheckString" placeholder="请输入内容" :disabled="disable_1" />-->
+                <el-select
+                  v-model="screeningForm.screeningCheckString"
+                  multiple
+                  collapse-tags
+                  filterable
+                  :disabled="disable_1"
+                >
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </el-col>
             </el-row>
           </el-form-item>
@@ -77,10 +91,12 @@ export default {
       this.options.push(opt)
     })
     const form = this.screeningForm
-    if (typeof form.screeningChecked !== 'undefined' && form.screeningChecked.length !== 0) {
+    if (typeof form.screeningChecked !== 'undefined' && form.screeningChecked !== []) {
       this.checked = form.screeningChecked
       this.radio = '2'
       this.isScreened = true
+    } else if (typeof form.screeningCheckString !== 'undefined' && form.screeningCheckString !== []) {
+      this.radio = '1'
     }
   },
   methods: {
@@ -105,7 +121,8 @@ export default {
     },
     reset() {
       this.checked = []
-      this.$store.commit('screeningDate/setScreeningDate', {})
+      // this.$store.commit('screeningDate/setScreeningDate', {})
+      this.screeningForm.screeningCheckString = []
     },
     getForm() {
       return this.screeningForm
