@@ -124,7 +124,6 @@ export default {
     rowInterval() {
       const i = this.interval
       const h = this.highLight
-      console.log(h)
       return function({ rowIndex, columnIndex }) {
         if (h && h.length > 0 && h[rowIndex][columnIndex]) {
           return 'high-light'
@@ -138,6 +137,7 @@ export default {
   },
   watch: {
     data: function(newlist) {
+      console.log(newlist)
       this.highLight = newlist.map(v => Array(Object.keys(v).length).fill(false))
     }
   },

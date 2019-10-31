@@ -46,9 +46,9 @@
           size="mini"
           :name="'homology'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled"
+          :can-edit="editModeEnabled && !lockEnabled && edit"
           close-event="change"
-          @change-data="changeData"
+          @change-data="changeHomology"
         >
           <span slot="content">{{ row.homology || '-' }}</span>
           <template slot="edit-component-slot">
@@ -71,7 +71,7 @@
           oninput="value = value.replace(/[^\d]/g,'')"
           :name="'adjRange'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled"
+          :can-edit="editModeEnabled && !lockEnabled && edit"
           @change-data="changeData"
         >
           <span slot="content">{{ row.adjRange }}</span>
@@ -90,7 +90,7 @@
           oninput="value = value.replace(/[^\d.]/g,'')"
           :name="'adjResult'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled"
+          :can-edit="editModeEnabled && !lockEnabled && edit"
           @change-data="changeData"
         >
           <span slot="content">{{ row.adjResult }}</span>
@@ -195,6 +195,18 @@ import { queryCurveKeyTerm } from '@/api/curve/curve-build'
 import { queryBondsAll } from '@/api/common/bond-filter'
 import { add, subtract, multiply, divide } from '@/utils/math'
 
+const r = {
+  bondNo: null,
+  bondName: null,
+  slip: null,
+  yield: null,
+  deviations: null,
+  homology: null,
+  itemName: null,
+  itemNameEng: null,
+  itemType: null,
+  liveFlag: null
+}
 export default {
   components: { EditableCell, CustomHomology },
   props: {
@@ -259,21 +271,32 @@ export default {
   },
   methods: {
     changeData(name, row) {
+      const _ = this.$lodash
       if (name === 'adjRange') {
-        row.adjResult = add(row.lastYield, divide(row[name], 100))
+        row = _.merge(row, r)
+        const value = row[name] || 0
+        row.adjRange = value
+        row.adjResult = add(row.lastYield, divide(value, 100))
         row.adjReason = '手工调整'
       } else if (name === 'adjResult') {
-        row.adjRange = multiply(subtract(row[name], row.lastYield), 100)
+        row = _.merge(row, r)
+        const value = row[name] || 0
+        row.adjResult = value
+        row.adjRange = multiply(subtract(value, row.lastYield), 100)
         row.adjReason = '手工调整'
-      } else if (name === 'homology') {
-        if (row.homology === '') {
-          this.formulaRow = row
-          console.log(row)
-          this.customEnabled = true
-          return
-        }
-      } else if (name === 'weight') {
-        row.adjReason = '加权选点'
+      }
+      this.$emit('change-data', row)
+    },
+    changeHomology(name, row) {
+      if (row.homology === '') {
+        this.formulaRow = row
+        console.log(row)
+        this.customEnabled = true
+        return
+      }
+      row.adjReason = '混合同调'
+      if (/^#\[[\d.]+(Y|R|YR|BR|YBR)\]/g.test(row.homology)) {
+        row.adjReason = '自身同调'
       }
       this.$emit('change-data', row)
     },
@@ -282,6 +305,7 @@ export default {
     },
     customHomology(data) {
       this.customEnabled = false
+      data.adjReason = '自定义同调'
       this.$emit('change-data', data)
     },
     openDialog() {
@@ -295,6 +319,7 @@ export default {
     },
     querySearch(queryString, cb) {
       const data = []
+      data.push({ colName: 'CURVE_ID', value: this.curveId, colType: 'STRING', operator: 'EQ' })
       if (queryString) {
         data.push({ colName: 'VAL_ASSET_CODE', value: queryString, colType: 'STRING', operator: 'EQ' })
       }
@@ -337,9 +362,12 @@ export default {
         return
       }
       const _ = this.$lodash
-      const row = _.merge(this.list[index], { bondNo: this.weight.bondNo, bondName: this.weight.bondName, adjReason: '加权选点', adjResult: this.weight.yield,
+      let row = _.merge(this.list[index], r)
+      const temp = add(multiply(this.weight.onePoint, this.weight.oneRate), multiply(this.weight.twoPoint, this.weight.twoRate))
+      this.weight.yield = _.round(divide(temp, add(this.weight.onePoint, this.weight.twoPoint)), 2)
+      row = _.merge(row, { bondNo: this.weight.bondNo, bondName: this.weight.bondName, adjReason: '加权选点', adjResult: this.weight.yield,
         itemName: '(' + this.weight.onePoint + '*' + this.weight.oneRate + '+' + this.weight.twoPoint + '*' + this.weight.twoRate + ')/(' + this.weight.onePoint + '+' + this.weight.twoPoint + ')' })
-      this.changeData('weight', row)
+      this.$emit('change-data', row)
       this.dialogEnable = false
     },
     confirmBuild() {
