@@ -318,10 +318,9 @@ export default {
       this.showResult = false
     },
     querySearch(queryString, cb) {
-      const data = []
-      data.push({ colName: 'CURVE_ID', value: this.curveId, colType: 'STRING', operator: 'EQ' })
+      const data = { curveId: this.curveId }
       if (queryString) {
-        data.push({ colName: 'VAL_ASSET_CODE', value: queryString, colType: 'STRING', operator: 'EQ' })
+        data.valAssetCode = queryString
       }
       queryBondsAll(data).then(response => {
         const results = response.map(i => {
