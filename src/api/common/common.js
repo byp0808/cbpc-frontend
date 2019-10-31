@@ -18,7 +18,7 @@ export function uploadFile(data) {
   form.append('zone', 'zz1')
   form.append('bucketName', 'app-bucket')
   return upload({
-    url: `${basic_api_portal}/pi-sys/common/attach/upload`,
+    url: `${basic_api_portal}/common/attach/upload`,
     method: 'post',
     data: form
   })

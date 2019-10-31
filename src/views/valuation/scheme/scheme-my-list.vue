@@ -536,8 +536,8 @@ import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust } from '@/api/valuation/task.js'
 import { getCurveList } from '@/api/valuation/scheme.js'
-// import { uploadFile } from '@/utils/request-client'
-// import { basic_api_valuation } from '@/api/base-api'
+import { basic_api_valuation } from '../../../api/base-api'
+import { upload } from '@/utils/file-request'
 export default {
   name: 'SchemeMyList',
   components: {
@@ -561,6 +561,7 @@ export default {
       isOpposite: false,
       volumeAddDialog: false,
       uploadMethodDialog: false,
+      uploadUrl: `${basic_api_valuation}/task/batch-valu-result`,
       oppositeDialog: false,
       tableLoading: false,
       isBatch: false,
@@ -1112,7 +1113,21 @@ export default {
     },
     saveValuation() {
       this.$refs['bondDom'].validate(val => {
-
+        const fd = new FormData()
+        fd.append('data.attach', this.upLoadValution.excelFile)
+        fd.append('data.batchId', this.upLoadValution.batchId)
+        fd.append('data.tab', '02')
+        upload({
+          url: this.uploadUrl,
+          data: fd
+        }).then(res => {
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
+          this.uploadMethodDialog = false
+          this.loadTable()
+        })
       })
     },
     resetTaskDialog() {
