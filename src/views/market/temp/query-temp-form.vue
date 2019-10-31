@@ -561,16 +561,20 @@ export default {
     },
     checkTempName(rule, value, callback) {
       var data = {}
-      data.tempName = value
-      data.id = this.marketTempInfo.id
-      checkTempName(data).then(response => {
-        // console.log(response)
-        if (response) {
-          callback(new Error('模板名称重复'))
-        } else {
-          callback()
-        }
-      })
+      if (value.replace(/\s*/g, '').length > 0) {
+        data.tempName = value
+        data.id = this.marketTempInfo.id
+        checkTempName(data).then(response => {
+          // console.log(response)
+          if (response) {
+            callback(new Error('模板名称重复'))
+          } else {
+            callback()
+          }
+        })
+      } else {
+        callback(new Error('请正确输入模板名称'))
+      }
     },
     checkShowArea(rule, value, callback) {
       if (this.marketTempInfo.dataMarket === '02' && !this.marketTempInfo.showArea) {
