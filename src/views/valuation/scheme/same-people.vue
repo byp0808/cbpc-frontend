@@ -249,7 +249,6 @@ export default {
       this.id = obj.id
       this.haveSelectList.push(obj)
     }
-    console.log('one', JSON.parse(sessionStorage.getItem('oneId')))
     this.getAllList()
   },
   methods: {

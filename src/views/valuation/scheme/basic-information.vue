@@ -759,11 +759,15 @@ export default {
     }
   },
   created() {
-    if (this.$route.params) {
+    if (this.$route.params.id) { // 刷新页面路由的参数不丢失
       this.haveSelectList.push(this.$route.params)
       this.id = this.$route.params.id
+      sessionStorage.setItem('oneId', JSON.stringify(this.$route.params))
+    } else {
+      const obj = JSON.parse(sessionStorage.getItem('oneId'))
+      this.id = obj.id
+      this.haveSelectList.push(obj)
     }
-    console.log('22', this.id)
     this.searchBond()
   },
   methods: {
