@@ -525,10 +525,17 @@ export default {
         // 清除展示区域内容
         this.marketTempInfo.showArea = ''
       }
+      if (val === '02' && this.marketTempInfo.showArea !== '' && typeof this.marketTempInfo.showArea !== 'undefined') {
+        // 先选展示区域，后选行情市场时，查询初始字段信息、数字型字段列表
+        this.queryColsInfo('2')
+      }
     },
     getTwoAllcols(val) {
       // 查询初始字段信息、数字型字段列表
-      this.queryColsInfo('2')
+      if (val !== '' && typeof val !== 'undefined') {
+        // 非清空展示区域时查询
+        this.queryColsInfo('2')
+      }
     },
     queryColsInfo(marketLevel) {
       var data = {}
