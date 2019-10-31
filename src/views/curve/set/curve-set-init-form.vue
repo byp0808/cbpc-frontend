@@ -472,7 +472,6 @@ export default {
     },
     // 修改场景和行为
     curveHomologyXiuGai(index) {
-      debugger
       this.detaiColVisible = true
       // 获取记录
       this.detailForm = this.formulaEditList[index]
@@ -665,7 +664,7 @@ export default {
           if (formula) {
             formula += ' + '
           }
-          formula += item.percent / 100 + ' # [' + shortNameFun(item.depCurveId) + '' + item.standSlip + '' + item.depInd + ']'
+          formula += item.percent / 100 + ' * #[' + shortNameFun(item.depCurveId) + '' + item.depStandSlip + '' + item.depInd + ']'
         }
       }
       return formula
