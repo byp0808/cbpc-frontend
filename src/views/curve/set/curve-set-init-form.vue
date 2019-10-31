@@ -664,7 +664,7 @@ export default {
           if (formula) {
             formula += ' + '
           }
-          formula += item.percent / 100 + ' # [' + shortNameFun(item.depCurveId) + '' + item.depStandSlip + '' + item.depInd + ']'
+          formula += item.percent / 100 + ' * #[' + shortNameFun(item.depCurveId) + '' + item.depStandSlip + '' + item.depInd + ']'
         }
       }
       return formula
