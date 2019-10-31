@@ -522,7 +522,13 @@ export default {
         if (typeof response.page !== 'undefined') {
           this.offerPage = response.page
         }
-        this.offerMarketList = response.dataList
+        const list = response.dataList
+        this.offerMarketList = JSON.parse(JSON.stringify(list))
+        // this.offerMarketList = []
+        // for (let i = 0; i < list.length; i++) {
+        //   // this.offerMarketList.splice(i, 0, list[i])
+        //   this.offerMarketList.push(list[i])
+        // }
       })
       this.offerMarketLoading = false
       this.searchParam = []
@@ -621,6 +627,7 @@ export default {
           }
           // console.info(this.offerTableHeader)
         })
+
         this.offerColData = colData
       })
       // 清空筛选数据
@@ -633,18 +640,18 @@ export default {
       // 报价表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
-      this.editModuleIsOpen = true
-      this.editOfferTableHeaders = []
-      this.editTableHeaders = []
-      this.$nextTick(() => {
-        this.editOfferTableHeaders.map(obj => {
-          this.$refs.editOfferTable.toggleRowSelection(obj, true)
-        })
-        this.editTableHeaders.map(obj => {
-          this.$refs.editTable.toggleRowSelection(obj, true)
-        })
-      })
       if (this.offerCurrentModuleId !== '') {
+        this.editModuleIsOpen = true
+        this.editOfferTableHeaders = []
+        this.editTableHeaders = []
+        this.$nextTick(() => {
+          this.editOfferTableHeaders.map(obj => {
+            this.$refs.editOfferTable.toggleRowSelection(obj, true)
+          })
+          this.editTableHeaders.map(obj => {
+            this.$refs.editTable.toggleRowSelection(obj, true)
+          })
+        })
         this.activeName = 'second'
         const module = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
         // console.info(module)
@@ -793,19 +800,19 @@ export default {
       // 成交表表头右击
       // 取消浏览器默认右击事件
       window.event.returnValue = false
-      this.editModuleIsOpen = true
-      // 清空表头及多选项旧数据
-      this.editOfferTableHeaders = []
-      this.editTableHeaders = []
-      this.$nextTick(() => {
-        this.editOfferTableHeaders.map(obj => {
-          this.$refs.editOfferTable.toggleRowSelection(obj, true)
-        })
-        this.editTableHeaders.map(obj => {
-          this.$refs.editTable.toggleRowSelection(obj, true)
-        })
-      })
       if (this.currentModuleId !== '') {
+        this.editModuleIsOpen = true
+        // 清空表头及多选项旧数据
+        this.editOfferTableHeaders = []
+        this.editTableHeaders = []
+        this.$nextTick(() => {
+          this.editOfferTableHeaders.map(obj => {
+            this.$refs.editOfferTable.toggleRowSelection(obj, true)
+          })
+          this.editTableHeaders.map(obj => {
+            this.$refs.editTable.toggleRowSelection(obj, true)
+          })
+        })
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
@@ -1171,6 +1178,9 @@ export default {
         this.editModuleIsOpen = false
         // 根据返回的模板id查询表头信息
         this.moduleId = newTempId
+        if (this.editModuleForm.moduleName !== module.tempName) {
+          this.loadModuleList(true)
+        }
         this.toUse()
         // 获取满足条件的行情数据
         // this.loadTable()
@@ -1208,6 +1218,9 @@ export default {
         //   this.offerColData = colData
         // })
         this.offerModuleId = newTempId
+        if (this.editModuleForm.moduleName !== module.tempName) {
+          this.loadOfferModuleList(true)
+        }
         this.offerToUse()
         // 获取满足条件的行情数据
         // this.offerLoadTable()
@@ -1354,7 +1367,7 @@ export default {
     },
     codeFormatter(row, column) {
       //  && (column.colName === 'curveBuildType' || column.colName === 'curveSource')
-      if (column.colType === 'OPTION') {
+      if (column.colType === 'OPTION' && (column.colName === 'curveBuildType' || column.colName === 'curveSource')) {
         const options = optioins(this, column.realColName)
         const opt = options.filter(opt => opt.value === row[column.colName])
         if (opt.length > 0) {
