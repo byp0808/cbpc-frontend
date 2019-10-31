@@ -38,6 +38,7 @@
         v-loading="offerMarketLoading"
         :data="offerMarketList"
         tooltip-effect="dark"
+        max-height="300"
         width="100%"
         height="400px"
         @header-click="offerHeaderScreening"
@@ -69,6 +70,7 @@
         :data="marketList"
         tooltip-effect="dark"
         style="width: 100%"
+        max-height="300"
         :row-class-name="tableRowClassName"
         @header-click="headerScreening"
         @header-contextmenu="editCurrentModule"
@@ -83,7 +85,7 @@
           width="180px"
         >
           <template slot-scope="scope">
-            <span :class="isLight(scope.row,item)?'light':''">{{ codeFormatter(scope.row,item) }}</span>
+            <span :class="isLight(scope.row,item)?(isCursor(scope.row,item)?'handLight': 'light'):((isCursor(scope.row,item)?'hand': ''))">{{ codeFormatter(scope.row,item) }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -162,7 +164,7 @@
         <el-button type="primary" @click="updateCell">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog v-if="drawerIsOpen" width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
+    <el-dialog v-if="drawerIsOpen" append-to-body width="100%" :visible.sync="drawerIsOpen" style="margin-top: 0;padding-bottom: 0" top="0">
       <!--查询条件-->
       <el-form ref="queryForm" status-icon :model="queryForm" label-width="150px" :rules="queryFormRules">
         <el-form-item label="曲线编制类型">
@@ -232,7 +234,6 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="queryCell">查询</el-button>
-          <el-button type="primary" @click="queryReSet">重置</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="width: 100%">
@@ -330,6 +331,14 @@ export default {
     ScreeningStringForm,
     ScreeningCheckboxForm
   },
+  props: {
+    marketInfo: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       optionHeader: [],
@@ -388,6 +397,7 @@ export default {
       currentHeader: {},
       formType: 0,
       screeningFormVisible: false,
+      isClick: false,
       updateFormVisible: false,
       // 报价表
       offerMarketList: [],
@@ -477,6 +487,8 @@ export default {
       }
       queryDefaultCols(data).then(response => {
         const { showCols, colData } = response
+        // console.info(showCols)
+        // console.info(colData)
         this.tableHeader = showCols
         this.colData = colData
       })
@@ -488,6 +500,7 @@ export default {
         queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
+        // console.info(response)
         if (typeof response.page !== 'undefined') {
           this.page = response.page
         }
@@ -520,11 +533,7 @@ export default {
         if (typeof response.page !== 'undefined') {
           this.offerPage = response.page
         }
-        const list = response.dataList
-        this.offerMarketList = []
-        for (let i = 0; i < list.length; i++) {
-          this.offerMarketList.splice(i, 0, list[i])
-        }
+        this.offerMarketList = response.dataList
       })
       this.offerMarketLoading = false
       this.searchParam = []
@@ -621,35 +630,32 @@ export default {
           for (let i = 0; i < showCols.length; i++) {
             this.offerTableHeader.splice(i, 0, showCols[i])
           }
-          console.info(this.offerTableHeader)
+          // console.info(this.offerTableHeader)
         })
-
         this.offerColData = colData
       })
       // 清空筛选数据
       this.offerScreeningFormList = []
       // 获取满足条件的行情数据
-      this.$nextTick(() => {
-        this.offerLoadTable()
-      })
+      this.offerLoadTable()
       this.offerCurrentModuleId = this.offerModuleId
     },
     offerEditCurrentModule() {
       // 报价表头右击事件
       // 取消浏览器默认右击事件
       window.event.returnValue = false
-      if (this.offerCurrentModuleId !== '') {
-        this.editModuleIsOpen = true
-        this.editOfferTableHeaders = []
-        this.editTableHeaders = []
-        this.$nextTick(() => {
-          this.editOfferTableHeaders.map(obj => {
-            this.$refs.editOfferTable.toggleRowSelection(obj, true)
-          })
-          this.editTableHeaders.map(obj => {
-            this.$refs.editTable.toggleRowSelection(obj, true)
-          })
+      this.editModuleIsOpen = true
+      this.editOfferTableHeaders = []
+      this.editTableHeaders = []
+      this.$nextTick(() => {
+        this.editOfferTableHeaders.map(obj => {
+          this.$refs.editOfferTable.toggleRowSelection(obj, true)
         })
+        this.editTableHeaders.map(obj => {
+          this.$refs.editTable.toggleRowSelection(obj, true)
+        })
+      })
+      if (this.offerCurrentModuleId !== '') {
         this.activeName = 'second'
         const module = this.offerModuleList.filter(mod => mod.id === this.offerCurrentModuleId)
         // console.info(module)
@@ -737,16 +743,28 @@ export default {
     },
     cellDblclick(row, column) {
       // 成交表格双击事件
-      this.currentTable = 2
-      const title = column.property
-      const tabs = this.tableHeader.filter(tab => tab.colName === title)
-      const tab = tabs[0]
-      // console.info(row[title])
-      if (tab.modiFlag === 'Y') {
-        this.currentRow = row
-        this.currentHeader.key = column.property
-        this.currentHeader.label = column.label
-        this.updateFormVisible = true
+      // this.currentTable = 2
+      // const title = column.property
+      // const tabs = this.tableHeader.filter(tab => tab.colName === title)
+      // const tab = tabs[0]
+      // if (tab.modiFlag === 'Y') {
+      //   this.currentRow = row
+      //   this.currentHeader.key = column.property
+      //   this.currentHeader.label = column.label
+      //   this.updateFormVisible = true
+      // }
+      if (column.label.indexOf('全价') !== -1) {
+        this.marketInfo.dPrice = row[column.property]
+        console.log('ffff', row[column.property])
+        this.marketInfo.ttmValue = row.mtrty
+      }
+      if (column.label.indexOf('净价') !== -1) {
+        this.marketInfo.cPrice = row[column.property]
+        this.marketInfo.ttmValue = row.mtrty
+      }
+      if (column.label.indexOf('收益率') !== -1) {
+        this.marketInfo.yield = row[column.property]
+        this.marketInfo.ttmValue = row.mtrty
       }
     },
     handleSizeChange(pageSize) {
@@ -756,6 +774,13 @@ export default {
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
       this.loadTable()
+    },
+    isCursor(row, header) { // 可点击的鼠标样式变手掌标志
+      if (header.colChiName.indexOf('全价') !== -1 || header.colChiName.indexOf('净价') !== -1 || header.colChiName.indexOf('收益率') !== -1) {
+        return true
+      } else {
+        return false
+      }
     },
     isLight(row, header) {
       // 成交判断是否高亮
@@ -791,31 +816,30 @@ export default {
       // 清空筛选数据
       this.screeningFormList = []
       // 获取满足条件的行情数据
-      this.$nextTick(() => {
-        this.loadTable()
-      })
+      this.loadTable()
       this.currentModuleId = this.moduleId
     },
     editCurrentModule() {
       // 成交表表头右击
       // 取消浏览器默认右击事件
       window.event.returnValue = false
-      if (this.currentModuleId !== '') {
-        this.editModuleIsOpen = true
-        // 清空表头及多选项旧数据
-        this.editOfferTableHeaders = []
-        this.editTableHeaders = []
-        this.$nextTick(() => {
-          this.editOfferTableHeaders.map(obj => {
-            this.$refs.editOfferTable.toggleRowSelection(obj, true)
-          })
-          this.editTableHeaders.map(obj => {
-            this.$refs.editTable.toggleRowSelection(obj, true)
-          })
+      this.editModuleIsOpen = true
+      // 清空表头及多选项旧数据
+      this.editOfferTableHeaders = []
+      this.editTableHeaders = []
+      this.$nextTick(() => {
+        this.editOfferTableHeaders.map(obj => {
+          this.$refs.editOfferTable.toggleRowSelection(obj, true)
         })
+        this.editTableHeaders.map(obj => {
+          this.$refs.editTable.toggleRowSelection(obj, true)
+        })
+      })
+      if (this.currentModuleId !== '') {
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
+        // console.info(this.editModuleForm)
 
         const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.realColName).length > 0)
         offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
@@ -848,16 +872,6 @@ export default {
           return false
         }
       })
-    },
-    queryReSet() {
-      this.queryForm = {
-        checkedCurveNames: [],
-        curveType: '',
-        bondCode: '',
-        issuer: '',
-        updateTime: [],
-        checkedReferenceType: ['曲线样本券', '估值进线规则']
-      }
     },
     screening() {
       // 确定筛选方法
@@ -1187,9 +1201,6 @@ export default {
         this.editModuleIsOpen = false
         // 根据返回的模板id查询表头信息
         this.moduleId = newTempId
-        if (this.editModuleForm.moduleName !== module.tempName) {
-          this.loadModuleList(true)
-        }
         this.toUse()
         // 获取满足条件的行情数据
         // this.loadTable()
@@ -1227,9 +1238,6 @@ export default {
         //   this.offerColData = colData
         // })
         this.offerModuleId = newTempId
-        if (this.editModuleForm.moduleName !== module.tempName) {
-          this.loadOfferModuleList(true)
-        }
         this.offerToUse()
         // 获取满足条件的行情数据
         // this.offerLoadTable()
@@ -1396,6 +1404,13 @@ export default {
 <style scoped>
   .light {
     color: #df1009;
+  }
+  .handLight {
+    color: #df1009;
+    cursor: pointer;
+  }
+  .hand {
+    cursor: pointer;
   }
   .el-table .warning-row {
     background: oldlace;

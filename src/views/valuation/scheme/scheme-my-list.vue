@@ -1020,16 +1020,24 @@ export default {
       this.activeName = e.name
     },
     countDiff() {
-      this.countTitle = '利率债点差调整'
-      this.isCredit = false
-      this.isLook = false
-      this.adjustDialog = true
+      this.$refs['interestDom'].validate(val => {
+        if (val) {
+          this.countTitle = '利率债点差调整'
+          this.isCredit = false
+          this.isLook = false
+          this.adjustDialog = true
+        }
+      })
     },
     lookDiff() {
-      this.countTitle = '利率债点差调整'
-      this.isCredit = false
-      this.isLook = true
-      this.adjustDialog = true
+      this.$refs['interestDom'].validate(val => {
+        if (val) {
+          this.countTitle = '利率债点差调整'
+          this.isCredit = false
+          this.isLook = true
+          this.adjustDialog = true
+        }
+      })
     },
     countcreditDiff() {
       this.countTitle = '信用债点差调整'
@@ -1336,7 +1344,7 @@ export default {
  }
  .downLoad {
    margin-left: 70px;
-   color: #ff8901;
+   color: #09f;
    margin-top: -10px;
     &:hover {
      cursor: pointer;

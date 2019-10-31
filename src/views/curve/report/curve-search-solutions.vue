@@ -3,7 +3,7 @@
     <div style="margin-bottom: 20px">
       <el-form ref="plan" :model="plan" :label-position="'right'" label-width="130px">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="开始日期及批次" prop="search_dateBegin_GTE">
               <el-date-picker
                 v-model="plan.search_dateBegin_GTE"
@@ -16,7 +16,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="结束日期及批次" prop="search_dateEnd_LTE">
               <el-date-picker
                 v-model="plan.search_dateEnd_LTE"
@@ -40,8 +40,9 @@
               />
             </el-form-item>
           </el-col>
+          <el-col :span="6" />
         </el-row>
-        <el-row>
+        <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-input
