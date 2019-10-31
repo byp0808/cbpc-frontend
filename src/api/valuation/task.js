@@ -77,4 +77,22 @@ export function batchAdjust(data) { // 批量调整
     }
   )
 }
+export function searchBond(data) { // 添加不估值
+  return request(
+    {
+      url: `${basic_api_valuation}/bonds-nonp/bonds-suport`,
+      method: 'post',
+      data: data
+    }
+  )
+}
+export function saveBond(data) { // 添加不估值
+  return request(
+    {
+      url: `${basic_api_valuation}/bonds-nonp/save`,
+      method: 'post',
+      data: data
+    }
+  )
+}
 

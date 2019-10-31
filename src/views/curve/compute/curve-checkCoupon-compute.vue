@@ -60,6 +60,11 @@
           <span class="link-type" @click="subNumDetails(scope.$index,checkCurveCouponList)">详情</span>
         </template>
       </el-table-column>
+      <el-table-column prop="ignoredCouponSum" label="忽略的样本券总数" width="140" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span>{{ scope.row.ignoredCouponSum }}</span>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       :current-page="page.pageNumber"
@@ -213,7 +218,6 @@ export default {
     },
     // 获取相同批次下曲线所有的样本券
     allDetails(index, rows) {
-      debugger
       this.allVisible = true
       var data = {
         curveId: rows[index].curveId,
@@ -231,7 +235,8 @@ export default {
       var data = {
         curveId: rows[index].curveId,
         orderId: this.orderId,
-        change: '1'
+        change: '1',
+        taskDay: rows[index].taskDay
       }
       findAddOrSub(data).then(response => {
         this.addNumList = response.dataList
@@ -244,7 +249,8 @@ export default {
       var data = {
         curveId: rows[index].curveId,
         orderId: this.orderId,
-        change: '2'
+        change: '2',
+        taskDay: rows[index].taskDay
       }
       findAddOrSub(data).then(response => {
         this.subNumList = response.dataList
