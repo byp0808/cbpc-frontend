@@ -143,12 +143,12 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         delcurveSetRela(rows[index]).then(response => {
-          rows.splice(index, 1)
           this.$message({
-            message: '操作成功！',
+            message: '发起删除流程成功！',
             type: 'success',
             showClose: true
           })
+          this.getCurveSetRelaList()
         })
       }).catch(() => {
         console.info('cancle')
