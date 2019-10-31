@@ -104,7 +104,7 @@
         </el-row>
       </div>
     </el-dialog>
-    <el-dialog v-loading="bondLoading" :visible.sync="noValuationDialog" title="添加不估值" width="1100px">
+    <el-dialog v-loading="bondLoading" :visible.sync="noValuationDialog" title="添加不估值" width="1100px" @close="cancleValuation">
       <div>
         <!-- <el-date-picker v-model="valuation.starTime" type="date" placeholder="请选择开始日期" />
         <el-date-picker v-model="valuation.endTime" type="date" placeholder="请结束开始日期" style="margin-left:20px" />
@@ -194,7 +194,7 @@
         <el-row style="margin-top:30px">
           <el-col :span="6" :offset="19">
             <div class="dialog-footer">
-              <el-button @click="noValuationDialog = false">取 消</el-button>
+              <el-button @click="cancleValuation">取 消</el-button>
               <el-button type="primary" @click="saveNovaluation">确 定</el-button>
             </div>
           </el-col>
@@ -600,6 +600,10 @@ export default {
       this.remaindDialog = false
       this.volumeAddDialog = false
     },
+    cancleValuation() {
+      this.noValuationDialog = false
+      this.bondsNonpInfo = {}
+    },
     saveNovaluation() {
       this.bondLoading = true
       const data = Object.assign({}, this.bondsNonpInfo)
@@ -613,6 +617,7 @@ export default {
             this.bondsNonpInfo = {}
           }).catch(() => {
             this.bondLoading = false
+            this.bondsNonpInfo = {}
           })
         }
       })
@@ -790,7 +795,6 @@ export default {
       console.log('this.taskList', this.taskList)
       const bondId = this.taskList[0].bondId
       searchBond(bondId).then(res => {
-        console.log('res22', res)
         this.noValuationDialog = true
         this.bondsNonpInfo.bondId = res.bondId
         this.bondsNonpInfo.bondsShortName = res.bondsShortName
