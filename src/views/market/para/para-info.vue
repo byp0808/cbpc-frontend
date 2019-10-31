@@ -48,7 +48,7 @@
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_7" label="净值偏差上限绝对值:">
-            <el-input v-model="paraform.para_7.paraValue" type="number" style="width:60px" /> /元
+            <el-input v-model="paraform.para_7.paraValue" type="number" style="width:60px" @change="notNullControl" /> /元
           </el-form-item>
         </el-col>
       </el-row>
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       disabled: false,
+      notNull: true,
       matchedParaList: [],
       paraform: {
         para_1: {
@@ -196,13 +197,27 @@ export default {
       this.$refs.Paraform.validate((valid) => {
         if (valid) {
           this.matchedParaList = []
-          this.matchedParaList.push(this.paraform.para_1)
-          this.matchedParaList.push(this.paraform.para_2)
-          this.matchedParaList.push(this.paraform.para_3)
-          this.matchedParaList.push(this.paraform.para_4)
-          this.matchedParaList.push(this.paraform.para_5)
-          this.matchedParaList.push(this.paraform.para_6)
-          this.matchedParaList.push(this.paraform.para_7)
+          if (this.paraform.para_1.paraValue.value) {
+            this.matchedParaList.push(this.paraform.para_1)
+          }
+          if (this.paraform.para_2.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_2)
+          }
+          if (this.paraform.para_3.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_3)
+          }
+          if (this.paraform.para_4.paraValue.value) {
+            this.matchedParaList.push(this.paraform.para_4)
+          }
+          if (this.paraform.para_5.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_5)
+          }
+          if (this.paraform.para_6.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_6)
+          }
+          if (this.paraform.para_7.paraValue) {
+            this.matchedParaList.push(this.paraform.para_7)
+          }
           var data = []
           data = this.matchedParaList
           saveParaInfo(data).then(response => {
@@ -218,15 +233,20 @@ export default {
         }
       })
     },
+    notNullControl(val) {
+      if (val) {
+        this.notNull = false
+      }
+    },
     checkValue(rule, value, callback) {
-      if (value.paraValue.value === '') {
+      if (value.paraValue.value === '' && this.notNull) {
         callback(new Error('不能为空'))
       }
       callback()
     },
     checkFrameValue(rule, value, callback) {
       if (value.maxParaValue !== '') {
-        if (!value.minParaValue) {
+        if (!value.minParaValue && this.notNull) {
           callback(new Error('不能为空'))
         }
         // if (Number(value.minParaValue) < 0 || Number(value.maxParaValue) < 0) {
@@ -236,7 +256,7 @@ export default {
           callback(new Error('最大值不能小于最小值'))
         }
       }
-      if (value.minParaValue === '' && value.maxParaValue === '') {
+      if (value.minParaValue === '' && value.maxParaValue === '' && this.notNull) {
         callback(new Error('不能为空'))
       }
       callback()
