@@ -106,7 +106,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button v-if="addIgnoreVisible" :visible.sync="addIgnoreVisible" type="text" size="big" @click="overpass(scope.$index, addNumList, 'ADD')">
+            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList, 'ADD')">
               忽略
             </el-button>
             <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList, 'ADD')">
@@ -137,10 +137,10 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button v-if="subIgnoreVisible" :visible.sync="subIgnoreVisible" type="text" size="big" @click="overpass(scope.$index, addNumList,'SUB')">
+            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList,'SUB')">
               忽略
             </el-button>
-            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList ,'SUB')">
+            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, subNumList ,'SUB')">
               取消忽略
             </el-button>
           </template>
@@ -177,9 +177,7 @@ export default {
       },
       allVisible: false,
       addNumVisible: false,
-      subNumVisible: false,
-      addIgnoreVisible: true,
-      subIgnoreVisible: true
+      subNumVisible: false
     }
   },
   created() {
@@ -240,6 +238,8 @@ export default {
       }
       findAddOrSub(data).then(response => {
         this.addNumList = response.dataList
+        // eslint-disable-next-line no-return-assign
+        this.addNumList.map(item => item.isCancle = true)
         setTimeout(1.5 * 1000)
       })
     },
@@ -254,26 +254,29 @@ export default {
       }
       findAddOrSub(data).then(response => {
         this.subNumList = response.dataList
+        // eslint-disable-next-line no-return-assign
+        this.subNumList.map(item => item.isCancle = true)
         setTimeout(1.5 * 1000)
       })
     },
     // 忽略
     overpass(index, rows, type) {
+      console.log()
       rows[index].change = '3'
       if (type === 'ADD') {
-        this.addIgnoreVisible = false
+        rows[index].isCancle = false
       } else {
-        this.subIgnoreVisible = false
+        rows[index].isCancle = false
       }
     },
     // 取消忽略
     cancleOverpass(index, rows, type) {
       if (type === 'ADD') {
         rows[index].change = '1'
-        this.addIgnoreVisible = true
+        rows[index].isCancle = true
       } else {
         rows[index].change = '2'
-        this.subIgnoreVisible = true
+        rows[index].isCancle = true
       }
     },
     // 确定忽略
