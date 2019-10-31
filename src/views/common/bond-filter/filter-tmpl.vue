@@ -9,7 +9,7 @@
           :value="temp.tempId"
         />
       </el-select>
-      <el-button type="primary" :disabled="disabled" @click="applicationTemp">应用模板</el-button>
+      <el-input v-model="remark" placeholder="请输入备注" size="mini" class="" style="width:150px;" />
       <el-button type="primary" :disabled="disabled" @click="screenBonds">债券筛选</el-button>
       <el-button type="danger" :disabled="disabled" @click="empty">清空所有条件</el-button>
     </el-card>
@@ -49,7 +49,7 @@
                 </el-tag>
                 <div slot="footer" class="dialog-footer">
                   <el-button @click="ruleFilterVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="saveRuleList">确 定</el-button>
+                  <el-button @click="ruleFilterVisible = false">确 定</el-button>
                 </div>
               </el-dialog>
             </div>
@@ -81,6 +81,21 @@
                   >
                     设置
                   </el-button>
+                  <el-dialog v-if="ruleValueSetVisible" width="30%" title="设置规则值" :visible.sync="ruleValueSetVisible" append-to-body>
+                    <div>{{ getRuleName(ruleCode) }}</div>
+                    <el-select v-model="ruleValue" placeholder="请选择">
+                      <el-option
+                        v-for="temp in ruleValueList"
+                        :key="temp.ruleCode"
+                        :label="temp.ruleValue"
+                        :value="temp.ruleValue"
+                      />
+                    </el-select>
+                    <div slot="footer" class="dialog-footer">
+                      <el-button @click="ruleValueSetVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="saveRuleValue(ruleCode,ruleValue)">确 定</el-button>
+                    </div>
+                  </el-dialog>
                   <el-button
                     type="text"
                     size="small"
@@ -96,12 +111,12 @@
           <el-card class="box-card margin-top">
             <div slot="header" class="clearfix card-head">
               <span>筛选结果</span>
-              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <el-input v-model="input" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
             </div>
             <el-table
-              :data="bondListResult"
+              :data="bondListResult.filter(data => !input || bondListResult.csin.toLowerCase().includes(input.toLowerCase()))"
               style="width: 100%"
               height="300"
             >
@@ -194,12 +209,12 @@
               >
                 <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
               </el-upload>
-              <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <el-input v-model="inputW" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input>
             </div>
             <el-table
-              :data="whiteList"
+              :data="whiteList.filter(data => !inputW || whiteList.csin.toLowerCase().includes(inputW.toLowerCase()))"
               style="width: 100%"
               height="300"
               :row-class-name="tableWarningClass"
@@ -231,11 +246,11 @@
       <el-col :span="8">
         <div class="grid-content bg-purple-light">
           <el-card class="box-card margin-top">
-            <el-input v-model="input5" placeholder="请输入内容" prefix-icon="el-icon-search">
+            <el-input v-model="inputBond" placeholder="请输入内容" prefix-icon="el-icon-search">
               <el-button slot="append" icon="el-icon-search" />
             </el-input>
             <el-table
-              :data="bondListAll"
+              :data="bondListAll.filter(data => !inputBond || bondListAll.bondName.toLowerCase().includes(inputBond.toLowerCase()))"
               style="width: 100%"
               height="745"
             >
@@ -287,20 +302,26 @@ export default {
   data() {
     return {
       ruleFilterVisible: false,
-      // ruleTags: [{id:1,ruleValue:'标签一'}, {id:2,ruleValue:'标签二'},{id:3,ruleValue:'标签三'}],
+      ruleValueSetVisible: false,
       ruleTags: [],
       othRuleList: [],
       ruleListAll: [],
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/tmpl-filter/batch-in`,
       bondTemps: [],
       tempNo: '',
+      ruleCode: '',
+      ruleValue: '',
       blackList: [],
       whiteList: [],
       ruleList: [],
       bondListAll: [],
       bondListResult: [],
+      ruleValueList: [{ ruleCode: '01', ruleValue: 'AAA' }, { ruleCode: '02', ruleValue: 'BBB' }, { ruleCode: '03', ruleValue: 'CCC' }],
+      remark: '',
       inputB: '',
-      input5: ''
+      inputW: '',
+      inputBond: '',
+      input: ''
     }
   },
   computed: {
@@ -383,24 +404,20 @@ export default {
         this.ruleList.splice(index, 1)
       }
     },
-    saveRuleList() {
+    saveRuleValue(key, value) {
       // this.ruleList = this.ruleTags
-      this.ruleFilterVisible = false
+      this.ruleValueSetVisible = false
+      const index = this.$lodash.findIndex(this.ruleList, { ruleCode: key })
+      if (index < 0) {
+        console.log('ERROR:saveRuleValue:' + key)
+      } else {
+        this.ruleList[index].ruleValue = value
+      }
     },
     setRuleValue(index, rows) {
-      this.$prompt('请输入指标值', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputValue: rows[index].ruleValue
-      }).then(({ value }) => {
-        rows[index].ruleValue = value
-        console.log(value)
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消输入'
-        })
-      })
+      console.log('setRuleValue:' + index)
+      this.ruleValueSetVisible = true
+      this.ruleCode = this.ruleList[index].ruleCode
     },
     emptyRuleValue(index, rows) {
       this.$confirm('是否清空指标值', '提示', {
@@ -419,28 +436,6 @@ export default {
       queryTempList().then(response => {
         const { datalist } = response
         this.bondTemps = datalist
-      })
-    },
-    applicationTemp() {
-      this.$confirm('是否确定应用所选择的模板', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        queryTempInfo(this.tempNo.toString()).then(response => {
-          const { tempId, black, white, rules } = response
-          this.tempNo = tempId
-          this.blackList = black
-          this.whiteList = white
-          this.ruleList = rules
-          this.bondListResult = []
-        })
-        // this.queryBondsList()
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消应用'
-        })
       })
     },
     screenBonds() {
