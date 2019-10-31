@@ -1345,7 +1345,7 @@ export default {
  .downLoad {
    margin-left: 70px;
    color: #09f;
-   margin-top: -10px;
+  //  margin-top: -10px;
     &:hover {
      cursor: pointer;
    }

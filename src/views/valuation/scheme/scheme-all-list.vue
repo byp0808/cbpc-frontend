@@ -104,7 +104,7 @@
         </el-row>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="noValuationDialog" title="添加不估值" width="1100px">
+    <el-dialog v-loading="bondLoading" :visible.sync="noValuationDialog" title="添加不估值" width="1100px">
       <div>
         <!-- <el-date-picker v-model="valuation.starTime" type="date" placeholder="请选择开始日期" />
         <el-date-picker v-model="valuation.endTime" type="date" placeholder="请结束开始日期" style="margin-left:20px" />
@@ -131,6 +131,7 @@
                     <el-input v-model="bondsNonpInfo.bondsConceptType" disabled />
                   </el-form-item>
                   <el-form-item
+                    prop="bondId"
                     label="资产编码"
                   >
                     <el-input v-model="bondsNonpInfo.bondId" placeholder="请输入资产编码" clearable />
@@ -146,10 +147,10 @@
                     <el-input v-model="bondsNonpInfo.bondsShortName" disabled />
                   </el-form-item>
                   <el-form-item label="流通场所" prop="marketId">
-                    <el-select v-model="bondsNonpInfo.marketId" style="width: 100%">
+                    <el-select v-model="bondsNonpInfo.marketId" multiple style="width: 100%">
                       <el-option
-                        v-for="item in filtedMarket"
-                        :key="item.key"
+                        v-for="(item, index) in filtedMarket"
+                        :key="index"
                         :label="item.name"
                         :value="item.key"
                         :disabled="item.disabled"
@@ -173,6 +174,7 @@
                     <el-input
                       v-model.number="bondsNonpInfo.indate"
                       placeholder="请输入有效期"
+                      clearable
                     />
                   </el-form-item>
                 </div>
@@ -336,7 +338,7 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -373,6 +375,7 @@ export default {
       allList: [],
       selection: [],
       causeList: [],
+      bondLoading: false,
       confirmDialog: {
         a: false,
         b: false,
@@ -598,10 +601,20 @@ export default {
       this.volumeAddDialog = false
     },
     saveNovaluation() {
-      // this.$refs['bondsNonpInfo'].validate(val => {
-      //   if (val) {
-      //   }
-      // })
+      this.bondLoading = true
+      const data = Object.assign({}, this.bondsNonpInfo)
+      data.marketId = this.bondsNonpInfo.marketId.toString()
+      this.$refs['bondsNonpInfo'].validate(val => {
+        if (val) {
+          saveBond(data).then(res => {
+            this.bondLoading = false
+            this.$message.success('保存成功')
+            this.noValuationDialog = false
+          }).catch(() => {
+            this.bondLoading = false
+          })
+        }
+      })
     },
     saveValuation() {
       if (!this.upLoadValution.batchId) {
@@ -770,12 +783,19 @@ export default {
       const origin = this.$dict('MARKET')
       // 初始化流通场所
       for (const key in origin) {
-        const res = { key: key, name: origin[key], disabled: true }
+        const res = { key: key, name: origin[key] }
         this.filtedMarket.push(res)
       }
       this.noValuationDialog = true
-      this.bondsNonpInfo.bondId = this.taskList[0].bondId
-      this.bondsNonpInfo.marketId = this.taskList[0].maketId
+      const bondId = this.taskList[0].bondId
+      searchBond(bondId).then(res => {
+        console.log('res22', res)
+        this.bondsNonpInfo.bondId = res.bondId
+        this.bondsNonpInfo.bondsShortName = res.bondsShortName
+        this.bondsNonpInfo.bondsConceptType = res.bondsConceptType
+        this.bondsNonpInfo.bondsIssuer = res.bondsIssuer
+        this.bondsNonpInfo.marketId = res.marketIds
+      })
     },
     batchAddTask() {
       this.isBatch = true
@@ -820,7 +840,7 @@ export default {
  .downLoad {
    margin-left: 70px;
    color: #09f;
-   margin-top: -10px;
+  //  margin-top: -10px;
     &:hover {
      cursor: pointer;
    }

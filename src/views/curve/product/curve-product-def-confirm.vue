@@ -1,18 +1,31 @@
 <template>
   <div class="app-container" style="margin: 0;padding-left:0;padding-right:0">
-    <el-row
-      v-for="(item) in productOrderListLocal"
-      :key="item.curveOrderId"
-    >
-      <el-row class="prd-order-top">
-        <el-col :span="4" class="prd-order-name">
-          {{ getOrderName(item.orderId) }}
-        </el-col>
-        <el-col v-if="item.curveSampleNumberVisible" :span="6" class="prd-order-name-sample">
-          <span>曲线样本券数量: {{ item.curveSampleNumber }}</span>
-        </el-col>
-      </el-row>
-      <el-button type="primary" size="mini" round :disabled="disabled" @click="showCurveInfo(item)">查看曲线性质</el-button>
+    <el-row>
+      <el-col :span="6">
+        <el-row
+          v-for="(item) in productOrderListLocal"
+          :key="item.curveOrderId"
+        >
+          <el-row class="prd-order-top">
+            <el-col :span="6" class="prd-order-name">
+              {{ getOrderName(item.orderId) }}
+            </el-col>
+<!--            <el-col v-if="item.curveSampleNumberVisible" :span="6" class="prd-order-name-sample">-->
+<!--              <span>曲线样本券数量: {{ item.curveSampleNumber }}</span>-->
+<!--            </el-col>-->
+          </el-row>
+          <el-button v-if="item.viewCurveSampleVisible" type="primary" size="mini" round :disabled="disabled" @click="showCurveInfo(item)">查看曲线性质</el-button>
+        </el-row>
+      </el-col>
+      <el-col :span="18">
+        <div class="filter-container">
+          <label v-if="this.curveSampleNumberVisible">曲线样本券数量：{{ this.curveSampleNumber }}</label>
+        </div>
+        <el-table :data="tableData" style="width: 100%" v-if="this.curveSampleNumberVisible">
+          <el-table-column prop="bondNo" label="资产编码" width="180" />
+          <el-table-column prop="bondName" label="资产简称" width="180" />
+        </el-table>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -33,7 +46,10 @@ export default {
       productOrderList: [], // 当前产品设置批次列表
       productOrderListLocal: [], // 当前产品设置批次列表
       orderList: [], // 批次模板列表
-      temp: ''
+      temp: '',
+      curveSampleNumber: '',
+      curveSampleNumberVisible: false,
+      tableData: []
     }
   },
   computed: {
@@ -79,12 +95,18 @@ export default {
         if (this.productOrderList && this.productOrderList.length > 0) {
           for (let i = 0; i < this.productOrderList.length; i++) {
             var item = this.productOrderList[i]
+            var viewCurveSampleVisible = false
+            if (item.publishType) {
+              viewCurveSampleVisible = true
+            } else {
+              viewCurveSampleVisible = false
+            }
             this.productOrderListLocal.push({
               index: i,
               orderId: item.orderId,
               curveId: item.curveId,
               curveOrderId: item.curveOrderId,
-              curveSampleNumberVisible: false,
+              viewCurveSampleVisible: viewCurveSampleVisible,
               curveSampleNumber: ''
             })
           }
@@ -96,14 +118,13 @@ export default {
       const curveId = item.curveId
       const curveOrderId = item.curveOrderId
       console.info(curveId, curveOrderId)
-
-      debugger
-      item.curveSampleNumberVisible = true
+      this.curveSampleNumberVisible = true
       var data = {
         curveId: curveId
       }
       viewCurveProperty(data).then(response => {
-        item.curveSampleNumber = response
+        this.tableData = response.dataList
+        this.curveSampleNumber = response.dataList.length
         setTimeout(1.5 * 1000)
       })
     }

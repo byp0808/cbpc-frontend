@@ -290,8 +290,14 @@ export default {
         }
         // 获取曲线关系模板主表信息
         await getRelaTempMain(tempMainId).then(response => {
+          debugger
           if (response) {
             this.tempMain = response
+            if (this.tempMain.dataStatus === '05') {
+              getRelaTempMain(tempMainId).then(response => {
+                this.tempMain = response
+              })
+            }
           }
         })
         console.info('initPageData this.tempMain:' + JSON.stringify(this.tempMain))
