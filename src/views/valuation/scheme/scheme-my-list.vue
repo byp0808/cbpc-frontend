@@ -1020,28 +1020,44 @@ export default {
       this.activeName = e.name
     },
     countDiff() {
-      this.countTitle = '利率债点差调整'
-      this.isCredit = false
-      this.isLook = false
-      this.adjustDialog = true
+      this.$refs['interestDom'].validate(val => {
+        if (val) {
+          this.countTitle = '利率债点差调整'
+          this.isCredit = false
+          this.isLook = false
+          this.adjustDialog = true
+        }
+      })
     },
     lookDiff() {
-      this.countTitle = '利率债点差调整'
-      this.isCredit = false
-      this.isLook = true
-      this.adjustDialog = true
+      this.$refs['interestDom'].validate(val => {
+        if (val) {
+          this.countTitle = '利率债点差调整'
+          this.isCredit = false
+          this.isLook = true
+          this.adjustDialog = true
+        }
+      })
     },
     countcreditDiff() {
-      this.countTitle = '信用债点差调整'
-      this.isCredit = true
-      this.isLook = false
-      this.adjustDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.countTitle = '信用债点差调整'
+          this.isCredit = true
+          this.isLook = false
+          this.adjustDialog = true
+        }
+      })
     },
     lookcreditDiff() {
-      this.countTitle = '信用债点差调整'
-      this.isCredit = true
-      this.isLook = true
-      this.adjustDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.countTitle = '信用债点差调整'
+          this.isCredit = true
+          this.isLook = true
+          this.adjustDialog = true
+        }
+      })
     },
     countOpposite() {
       this.creditObject.target = []
@@ -1049,12 +1065,20 @@ export default {
         this.creditObject.target.push({ symbol: v.symbol, number: v.number })
       })
       console.log('this.compareList', this.creditObject.target)
-      this.islookOpposite = false
-      this.oppositeDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.islookOpposite = false
+          this.oppositeDialog = true
+        }
+      })
     },
     lookOpposite() {
-      this.islookOpposite = true
-      this.oppositeDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.islookOpposite = true
+          this.oppositeDialog = true
+        }
+      })
     },
     upload() {
 
@@ -1336,8 +1360,8 @@ export default {
  }
  .downLoad {
    margin-left: 70px;
-   color: #ff8901;
-   margin-top: -10px;
+   color: #09f;
+  //  margin-top: -10px;
     &:hover {
      cursor: pointer;
    }

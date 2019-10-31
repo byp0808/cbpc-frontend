@@ -240,9 +240,14 @@ export default {
     }
   },
   created() {
-    if (this.$route.params) {
+    if (this.$route.params.id) {
       this.haveSelectList.push(this.$route.params)
       this.id = this.$route.params.id
+      sessionStorage.setItem('oneId', JSON.stringify(this.$route.params))
+    } else {
+      const obj = JSON.parse(sessionStorage.getItem('oneId'))
+      this.id = obj.id
+      this.haveSelectList.push(obj)
     }
     this.getAllList()
   },

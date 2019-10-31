@@ -38,26 +38,31 @@
       <el-table-column prop="curvePrdCode" label="曲线编码" width="140" />
       <el-table-column prop="curveName" label="曲线名称" width="200" show-overflow-tooltip />
       <el-table-column prop="sampleCompStatus" label="样本券编制状态" width="150" show-overflow-tooltip>
-        <template slot-scope="{ row }">
-          {{ $dft('SAMPLE_COMP_STATUS', row.sampleCompStatus) }}
+        <template slot-scope="scope">
+          {{ $dft('SAMPLE_COMP_STATUS', scope.row.sampleCompStatus) }}
         </template>
       </el-table-column>
       <el-table-column prop="sum" label="样本券总数" width="140" show-overflow-tooltip>
-        <template slot-scope="{ row }">
-          <span>{{ row.sum }}</span>
-          <span class="link-type" @click="allDetails(row)">详情</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.sum }}</span>
+          <span class="link-type" @click="allDetails(scope.$index,checkCurveCouponList)">详情</span>
         </template>
       </el-table-column>
       <el-table-column prop="addNum" label="较上一批增加数量" width="140" show-overflow-tooltip>
-        <template slot-scope="{ row }">
-          <span>{{ row.addNum }}</span>
-          <span class="link-type" @click="addNumDetails(row)">详情</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.addNum }}</span>
+          <span class="link-type" @click="addNumDetails(scope.$index,checkCurveCouponList)">详情</span>
         </template>
       </el-table-column>
       <el-table-column prop="subNum" label="较上一批减少数量" width="140" show-overflow-tooltip>
-        <template slot-scope="{ row }">
-          <span>{{ row.subNum }}</span>
-          <span class="link-type" @click="subNumDetails(row)">详情</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.subNum }}</span>
+          <span class="link-type" @click="subNumDetails(scope.$index,checkCurveCouponList)">详情</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ignoredCouponSum" label="忽略的样本券总数" width="140" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span>{{ scope.row.ignoredCouponSum }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -101,7 +106,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button v-if="addIgnoreVisible" :visible.sync="addIgnoreVisible" type="text" size="big" @click="overpass(scope.$index, addNumList, 'ADD')">
+            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList, 'ADD')">
               忽略
             </el-button>
             <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList, 'ADD')">
@@ -132,10 +137,10 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button v-if="subIgnoreVisible" :visible.sync="subIgnoreVisible" type="text" size="big" @click="overpass(scope.$index, addNumList,'SUB')">
+            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList,'SUB')">
               忽略
             </el-button>
-            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList ,'SUB')">
+            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, subNumList ,'SUB')">
               取消忽略
             </el-button>
           </template>
@@ -172,9 +177,7 @@ export default {
       },
       allVisible: false,
       addNumVisible: false,
-      subNumVisible: false,
-      addIgnoreVisible: true,
-      subIgnoreVisible: true
+      subNumVisible: false
     }
   },
   created() {
@@ -207,14 +210,15 @@ export default {
           type: 'success',
           showClose: true
         })
+        this.queryCheckCurveCouponList()
         setTimeout(1.5 * 1000)
       })
     },
     // 获取相同批次下曲线所有的样本券
-    allDetails(row) {
+    allDetails(index, rows) {
       this.allVisible = true
       var data = {
-        curveName: this.row.curveName,
+        curveId: rows[index].curveId,
         orderId: this.orderId,
         taskDay: ''
       }
@@ -224,50 +228,55 @@ export default {
       })
     },
     // 较上一批增加的样本券
-    addNumDetails(row) {
+    addNumDetails(index, rows) {
       this.addNumVisible = true
       var data = {
-        curveName: this.row.curveName,
+        curveId: rows[index].curveId,
         orderId: this.orderId,
-        change: '1'
+        change: '1',
+        taskDay: rows[index].taskDay
       }
       findAddOrSub(data).then(response => {
         this.addNumList = response.dataList
+        // eslint-disable-next-line no-return-assign
+        this.addNumList.map(item => item.isCancle = true)
         setTimeout(1.5 * 1000)
       })
     },
     // 较上一批次减少的的样本券
-    subNumDetails(row) {
+    subNumDetails(index, rows) {
       this.subNumVisible = true
       var data = {
-        curveName: this.row.curveName,
+        curveId: rows[index].curveId,
         orderId: this.orderId,
-        change: '2'
+        change: '2',
+        taskDay: rows[index].taskDay
       }
       findAddOrSub(data).then(response => {
         this.subNumList = response.dataList
+        // eslint-disable-next-line no-return-assign
+        this.subNumList.map(item => item.isCancle = true)
         setTimeout(1.5 * 1000)
       })
     },
     // 忽略
     overpass(index, rows, type) {
+      console.log()
       rows[index].change = '3'
-      // eslint-disable-next-line no-empty,eqeqeq
-      if (type == 'ADD') {
-        this.addIgnoreVisible = false
+      if (type === 'ADD') {
+        rows[index].isCancle = false
       } else {
-        this.subIgnoreVisible = false
+        rows[index].isCancle = false
       }
     },
     // 取消忽略
     cancleOverpass(index, rows, type) {
-      // eslint-disable-next-line no-empty,eqeqeq
-      if (type == 'ADD') {
+      if (type === 'ADD') {
         rows[index].change = '1'
-        this.addIgnoreVisible = true
+        rows[index].isCancle = true
       } else {
         rows[index].change = '2'
-        this.subIgnoreVisible = true
+        rows[index].isCancle = true
       }
     },
     // 确定忽略

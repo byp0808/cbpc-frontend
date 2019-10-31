@@ -412,6 +412,7 @@ export default {
           type: 'success',
           showClose: true
         })
+        this.$refs.refCurveCheckCouponCompute.queryCheckCurveCouponList()
         setTimeout(1.5 * 1000)
       })
     }

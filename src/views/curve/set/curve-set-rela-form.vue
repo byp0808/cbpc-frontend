@@ -80,7 +80,7 @@
                 <el-input disabled :title="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" :value="!tmp_tempInfo.orderId ? '' : getOrderName(tmp_tempInfo.orderId)" />
               </el-col>
               <el-col :span="12">
-                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled || !(this.tmp_tempInfo.orderId)" placeholder="请选择曲线">
+                <el-select v-model="selectedCurveId" style="width: 100%;" filterable :disabled="disabled || !(tmp_tempInfo.orderId)" placeholder="请选择曲线">
                   <el-option v-for="item in curveList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-col>
@@ -174,7 +174,7 @@
         :loop="false"
         indicator-position="outside"
         type="card"
-height="440px"
+        height="440px"
         @change="carouselChange"
       >
         <el-carousel-item v-for="(item, index) in relaFormTableList" :key="index" style="height: 400px;overflow: scroll">
@@ -209,6 +209,7 @@ export default {
   components: {
     CurveSetRelaFormTable
   },
+  // eslint-disable-next-line vue/require-prop-types
   props: ['tempMainId', 'opType', 'businessId'],
   data() {
     return {
@@ -289,8 +290,14 @@ export default {
         }
         // 获取曲线关系模板主表信息
         await getRelaTempMain(tempMainId).then(response => {
+          debugger
           if (response) {
             this.tempMain = response
+            if (this.tempMain.dataStatus === '05') {
+              getRelaTempMain(tempMainId).then(response => {
+                this.tempMain = response
+              })
+            }
           }
         })
         console.info('initPageData this.tempMain:' + JSON.stringify(this.tempMain))
@@ -588,7 +595,9 @@ export default {
       })
       // 根据区域排序，族系区放中间
       this.tmp_quXJList.sort(this.sortCurveByReferFlag)
+      this.sortTmpQuXJLixtpaixu()
     },
+    // 上移和下移
     quXJMove(index, opType) {
       if (opType === 'DEL') { // 删除
         this.$confirm('是否删除', '提示', {
@@ -641,6 +650,7 @@ export default {
         } else {
           curent_item.referFlag = last_item.referFlag
         }
+        this.sortTmpQuXJLixtpaixu()
       } else if (opType === 'DOWN') {
         if (index === (this.tmp_quXJList.length - 1)) {
           this.$message({
@@ -654,8 +664,8 @@ export default {
         const last_item = this.tmp_quXJList[index + 1]
         // 区域变更时，最变更区域，同区域内，则位置移动
         if (curent_item.referFlag === last_item.referFlag) {
-          var curent_grade = this.getProductGrade(curent_item.curveId)
-          var last_grade = this.getProductGrade(last_item.curveId)
+          curent_grade = this.getProductGrade(curent_item.curveId)
+          last_grade = this.getProductGrade(last_item.curveId)
           // 验证风险等级
           if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
             var msg2 = `${this.getCurveName(curent_item.curveId)}曲线的评级为${curent_grade},高于${this.getCurveName(last_item.curveId)}曲线,请问是否确认调整顺序`
@@ -679,6 +689,7 @@ export default {
         } else {
           curent_item.referFlag = last_item.referFlag
         }
+        this.sortTmpQuXJLixtpaixu()
       }
     },
     // 添加到自身列表
@@ -1262,15 +1273,49 @@ export default {
         this.$emit('saveCallBack')
       })
     },
-    // 曲线评级排序
+    // 族系区根据曲线评级排序
+    sortTmpQuXJLixtpaixu() {
+      var quyuyi = []
+      var zuxiqu = []
+      var quyuer = []
+      for (var i = 0; i < this.tmp_quXJList.length; i++) {
+        if (this.tmp_quXJList[i].referFlag === '1') {
+          quyuyi.push(this.tmp_quXJList[i])
+        }
+        if (this.tmp_quXJList[i].referFlag === 'Y') {
+          zuxiqu.push(this.tmp_quXJList[i])
+          zuxiqu.sort(this.compareGradeDown)
+        } if (this.tmp_quXJList[i].referFlag === '3') {
+          quyuer.push(this.tmp_quXJList[i])
+        }
+      }
+      console.info('族系区')
+      console.info(zuxiqu)
+      this.tmp_quXJList = []
+      // this.tmp_quXJList = this.tmp_quXJList.concat(quyuyi, zuxiqu, quyuer)
+      console.info('列表')
+      console.info(this.tmp_quXJList)
+      this.tmp_quXJList = this.tmp_quXJList.concat(quyuyi)
+      console.info('列表1')
+      console.info(this.tmp_quXJList)
+      this.tmp_quXJList = this.tmp_quXJList.concat(zuxiqu)
+      console.info('列表2')
+      console.info(this.tmp_quXJList)
+      this.tmp_quXJList = this.tmp_quXJList.concat(quyuer)
+      console.info('列表3')
+      console.info(this.tmp_quXJList)
+    },
+    // 曲线评级升序排序
     compareGrade(currentRow, nextRow) {
       var curent_grade = this.getProductGrade(currentRow.curveId)
       var last_grade = this.getProductGrade(nextRow.curveId)
-      if (resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)) {
-        return 1
-      } else {
-        return -1
-      }
+      return resolveProductGrade2Num(curent_grade) > resolveProductGrade2Num(last_grade)
+    },
+    // 曲线评级降序排序
+    compareGradeDown(currentRow, nextRow) {
+      var curent_grade = this.getProductGrade(currentRow.curveId)
+      var last_grade = this.getProductGrade(nextRow.curveId)
+      return resolveProductGrade2Num(last_grade) - resolveProductGrade2Num(curent_grade)
     }
   }
 

@@ -30,8 +30,18 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="black"
+        label="例外(不包括)"
+        width="120"
+        show-overflow-tooltip
+      >
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ blackDetail(scope.$index) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="whilte"
-        label="白名单"
+        label="例外(包括)"
         width="120"
         show-overflow-tooltip
       >
@@ -40,15 +50,11 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="black"
-        label="黑名单"
+        prop="remarks"
+        label="备注"
         width="120"
         show-overflow-tooltip
-      >
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ blackDetail(scope.$index) }}</span>
-        </template>
-      </el-table-column>
+      />
       <el-table-column
         prop="status"
         label="状态"
@@ -118,6 +124,7 @@
 <script>
 import TmpBondFilter from '@/views/common/bond-filter/filter-tmpl.vue'
 import { queryAllTempLists, deleteByTempId } from '@/api/common/bond-filter-tmpl.js'
+import { getStandard } from '@/api/valuation/prod.js'
 export default {
   name: 'TEMPLATES',
   components: {
@@ -137,13 +144,16 @@ export default {
           pageSize: 10,
           totalRecord: 0
         }
-      }
+      },
+      multipleSelection: '',
+      ruleListAll: []
     }
   },
   computed: {
   },
   beforeMount() {
     this.loadTable()
+    this.getAllParas()
   },
   methods: {
     handleSizeChange(pageSize) {
@@ -154,12 +164,18 @@ export default {
       this.bondTempFilters.page.pageNumber = currentPage
       this.loadTable()
     },
-
     loadTable() {
       queryAllTempLists({ page: this.bondTempFilters.page }).then(response => {
         const { dataList, page } = response
         this.bondTempFilters.dataList = dataList
         this.bondTempFilters.page = page
+      })
+    },
+    getAllParas() {
+      getStandard({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+        const { data } = response
+        console.log(data)
+        this.ruleListAll = response
       })
     },
     save() {
@@ -204,15 +220,19 @@ export default {
         })
       })
     },
+    getRuleName(ruleCode) {
+      const index = this.$lodash.findIndex(this.ruleListAll, { paraName: ruleCode })
+      return this.ruleListAll[index].paraValue
+    },
     ruleDetail(index) {
       const list = this.bondTempFilters.dataList[index].rules
       let ruleDetail = ''
-      this.$lodash.forEach(list, function(value, key) {
-        ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-        if (key < list.length - 1) {
+      for (const index2 in list) {
+        ruleDetail += this.getRuleName(list[index2].ruleCode) + ' = ' + list[index2].ruleValue
+        if (index2 < list.length - 1) {
           ruleDetail += ', '
         }
-      })
+      }
       return ruleDetail
     },
     whiteDetail(index) {
@@ -245,6 +265,13 @@ export default {
       this.bondFilterVisible = true
     },
     toAdd() {
+      if (this.multipleSelection.length !== 1) {
+        this.$message({
+          type: 'error',
+          message: '不可选择多个模板复制新增'
+        })
+        return false
+      }
       this.bondFilterVisible = true
       this.disabled = false
     },
@@ -259,6 +286,7 @@ export default {
       this.loadTable()
     },
     handleSelectionChange(row) {
+      this.multipleSelection = row
       if (row[0]) {
         console.log(row[0])
         this.tempId = row[0].tempId

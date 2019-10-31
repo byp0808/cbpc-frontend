@@ -534,10 +534,17 @@ export default {
         // 清除展示区域内容
         this.marketTempInfo.showArea = ''
       }
+      if (val === '02' && this.marketTempInfo.showArea !== '' && typeof this.marketTempInfo.showArea !== 'undefined') {
+        // 先选展示区域，后选行情市场时，查询初始字段信息、数字型字段列表
+        this.queryColsInfo('2')
+      }
     },
     getTwoAllcols(val) {
       // 查询初始字段信息、数字型字段列表
-      this.queryColsInfo('2')
+      if (val !== '' && typeof val !== 'undefined') {
+        // 非清空展示区域时查询
+        this.queryColsInfo('2')
+      }
     },
     queryColsInfo(marketLevel) {
       var data = {}
@@ -554,16 +561,20 @@ export default {
     },
     checkTempName(rule, value, callback) {
       var data = {}
-      data.tempName = value
-      data.id = this.marketTempInfo.id
-      checkTempName(data).then(response => {
-        // console.log(response)
-        if (response) {
-          callback(new Error('模板名称重复'))
-        } else {
-          callback()
-        }
-      })
+      if (value.replace(/\s*/g, '').length > 0) {
+        data.tempName = value
+        data.id = this.marketTempInfo.id
+        checkTempName(data).then(response => {
+          // console.log(response)
+          if (response) {
+            callback(new Error('模板名称重复'))
+          } else {
+            callback()
+          }
+        })
+      } else {
+        callback(new Error('请正确输入模板名称'))
+      }
     },
     checkShowArea(rule, value, callback) {
       if (this.marketTempInfo.dataMarket === '02' && !this.marketTempInfo.showArea) {

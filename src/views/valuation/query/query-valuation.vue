@@ -361,8 +361,10 @@ export default {
       endBatchs: [],
       // 付息方式
       payingInterests: [
-        { value: '1', label: '一年两息' },
-        { value: '2', label: '一年四息' }
+        { value: '1', label: '一年一次' },
+        { value: '2', label: '一年两次' },
+        { value: '3', label: '一年四次' },
+        { value: '4', label: '十年十二次' }
       ],
       // 债券品种
       bondQualitys: [

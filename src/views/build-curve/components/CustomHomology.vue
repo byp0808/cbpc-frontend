@@ -329,7 +329,7 @@ export default {
       const _formula = this.formulaEditList.map(value => value.sceneFormula + ' ? ' + value.actionFormula + ' : ').join('') + '0'
       console.log(_formula)
       const row = this.row
-      row.homology = _formula
+      row.homology = _formula === '0' ? '-' : _formula
       this.$emit('change-formula', row)
     },
     resolve(data) {
