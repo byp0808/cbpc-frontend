@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-row style="margin-bottom:30px;margin-top:15px">
+    <!-- <el-row style="margin-bottom:30px;margin-top:15px">
       <el-col :span="1" style="margin-top:8px">批次：</el-col>
       <el-col :span="23">
         <el-button v-for="item in batchTime" :key="item.value" :value="item.value" :class="isActive === item.value ? 'haveBackground': 'noBackground'" style="margin-right:20px" @click="changeBatch(item)">{{ item.name }}</el-button>
       </el-col>
-    </el-row>
+    </el-row> -->
     <el-row style="margin-bottom:20px" :gutter="20">
       <el-col :span="6">
         <el-form>
@@ -153,9 +153,9 @@ export default {
         { value: '05', name: '14:00' }
       ],
       allList: [
-        { marketId: '上海', value: '01' },
-        { marketId: '银行', value: '02' },
-        { marketId: '广州', value: '03' }
+        // { marketId: '上海', value: '01' },
+        // { marketId: '银行', value: '02' },
+        // { marketId: '广州', value: '03' }
       ],
       selectList: [],
       sizeList: [],
@@ -189,9 +189,9 @@ export default {
       if (!this.bondId) {
         return this.$message.warning('请输入资产编码')
       }
-      if (this.selectList.length === 0) {
-        return this.$message.warning('至少选择一条资产估值')
-      }
+      // if (this.selectList.length === 0) {
+      //   return this.$message.warning('至少选择一条资产估值')
+      // }
       this.addBondDialog = true
       this.checkedSite = this.sizeList
     },

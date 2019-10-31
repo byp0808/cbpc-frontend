@@ -3,7 +3,7 @@
     <el-row style="margin-bottom:30px;margin-top:15px">
       <el-col :span="1" style="margin-top:8px">批次：</el-col>
       <el-col :span="23">
-        <el-button v-for="item in batchTime" :key="item.value" :value="item.value" :class="isActive === item.value ? 'haveBackground': 'noBackground'" style="margin-right:20px" @click="changeBatch(item)">{{ item.name }}</el-button>
+        <el-button v-for="item in batches" :key="item.id" :value="item.orderName" :class="isActive === item.id ? 'haveBackground': 'noBackground'" style="margin-right:20px" @click="changeBatch(item)">{{ item.orderName }}</el-button>
       </el-col>
     </el-row>
     <el-row style="margin-bottom:30px">
@@ -38,7 +38,7 @@
     </el-row>
     <el-table
       v-loading="allLoading"
-      :data="allList"
+      :data="cmptBatchList"
       style="width: 100%"
       max-height="500"
       :header-cell-style="{background:'#f4f7fc'}"
@@ -47,25 +47,26 @@
       highlight-current-row
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" :selectable="selectable" />
+      <el-table-column align="center" type="selection" />
       <el-table-column label="基础产品名称" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+        <template slot-scope="{ row }">
+          {{ $dft('VALUATION_BASE_PROD', row.prodBasic) }}
+          <!-- <span>{{ scope.row.prodBasic }}</span> -->
         </template>
       </el-table-column>
       <el-table-column label="可售产品名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
+          <span>{{ scope.row.prodName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="曲线准备状态" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.curveIds }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.taskStatus }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -92,6 +93,8 @@
 </template>
 
 <script>
+import { queryBatches } from '@/api/common/common.js'
+import { cmptBatchList, cmptBatch } from '@/api/valuation/cmpt.js'
 export default {
   name: 'BatchForm',
   components: {
@@ -110,13 +113,8 @@ export default {
         { remark: '056' },
         { remark: '078' }
       ],
-      batchTime: [
-        { value: '', name: '10:00' },
-        { value: '02', name: '11:00' },
-        { value: '03', name: '12:00' },
-        { value: '04', name: '13:00' },
-        { value: '05', name: '14:00' }
-      ],
+      cmptBatchList: [],
+      batches: [],
       params: {
         page: {
           pageNumber: 1,
@@ -126,6 +124,27 @@ export default {
       }
     }
   },
+  watch: {
+    isActive: {
+      deep: true,
+      // immediate: true,
+      handler(val) {
+        cmptBatchList({ search_batchId_EQ: val }).then(response => {
+          this.cmptBatchList = response
+          // console.log(response)
+        })
+      }
+    }
+  },
+  beforeMount() {
+    queryBatches({ basePrd: '01' }).then(response => {
+      this.batches = response
+      if (response && response.length > 0) {
+        this.isActive = response[0].id
+      }
+      // console.log(response)
+    })
+  },
   created() {
   },
   methods: {
@@ -133,7 +152,7 @@ export default {
 
     },
     selectable(row, index) { // 是否可选
-      console.log('ddd', row)
+      // console.log('ddd', row)
       if (row.remark === '002') {
         return true
       } else {
@@ -141,13 +160,20 @@ export default {
       }
     },
     toCompute() {
-      //   const hour = date.getHours()
-      //   const minutes = date.getMinutes()
-      //   const second = date.getSeconds()
-    //   const time = this.$moment(new Date()).format('hh:mm:ss')
+      const prodIds = []
+      const curveIds = [1, 2, 3]
+      if (this.selectList && this.selectList.length > 0) {
+        this.$lodash(this.selectList).forEach(function(value, key) {
+          prodIds.push(value.prodId)
+          curveIds.push(value.curveIds)
+        })
+        cmptBatch({ prodIds: prodIds, curveIds: this.$lodash.join(curveIds, [',']), batchId: this.isActive }).then(response => {
+          console.log(response)
+        })
+      }
     },
     changeBatch(e) {
-      this.isActive = e.value
+      this.isActive = e.id
     },
     toCheckReport() {
 
