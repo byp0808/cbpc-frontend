@@ -137,11 +137,16 @@ export default {
   },
   watch: {
     data: function(newlist) {
-      console.log(newlist)
       this.highLight = newlist.map(v => Array(Object.keys(v).length).fill(false))
     }
   },
+  created() {
+    this.makeHighLight()
+  },
   methods: {
+    makeHighLight() {
+      this.highLight = this.data.map(v => Array(Object.keys(v).length).fill(false))
+    },
     cellClick(row, column) {
       if (!this.editEnable) {
         return
