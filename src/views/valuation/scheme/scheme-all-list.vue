@@ -134,7 +134,7 @@
                     prop="bondId"
                     label="资产编码"
                   >
-                    <el-input v-model="bondsNonpInfo.bondId" placeholder="请输入资产编码" clearable />
+                    <el-input v-model="bondsNonpInfo.bondId" disabled placeholder="请输入资产编码" clearable />
                   </el-form-item>
                 </div>
               </el-col>
@@ -147,7 +147,7 @@
                     <el-input v-model="bondsNonpInfo.bondsShortName" disabled />
                   </el-form-item>
                   <el-form-item label="流通场所" prop="marketId">
-                    <el-select v-model="bondsNonpInfo.marketId" multiple style="width: 100%">
+                    <el-select v-model="bondsNonpInfo.marketId" disabled multiple style="width: 100%">
                       <el-option
                         v-for="(item, index) in filtedMarket"
                         :key="index"
@@ -610,6 +610,7 @@ export default {
             this.bondLoading = false
             this.$message.success('保存成功')
             this.noValuationDialog = false
+            this.bondsNonpInfo = {}
           }).catch(() => {
             this.bondLoading = false
           })
@@ -786,10 +787,11 @@ export default {
         const res = { key: key, name: origin[key] }
         this.filtedMarket.push(res)
       }
-      this.noValuationDialog = true
+      console.log('this.taskList', this.taskList)
       const bondId = this.taskList[0].bondId
       searchBond(bondId).then(res => {
         console.log('res22', res)
+        this.noValuationDialog = true
         this.bondsNonpInfo.bondId = res.bondId
         this.bondsNonpInfo.bondsShortName = res.bondsShortName
         this.bondsNonpInfo.bondsConceptType = res.bondsConceptType

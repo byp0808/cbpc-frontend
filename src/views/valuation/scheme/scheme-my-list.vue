@@ -1040,16 +1040,24 @@ export default {
       })
     },
     countcreditDiff() {
-      this.countTitle = '信用债点差调整'
-      this.isCredit = true
-      this.isLook = false
-      this.adjustDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.countTitle = '信用债点差调整'
+          this.isCredit = true
+          this.isLook = false
+          this.adjustDialog = true
+        }
+      })
     },
     lookcreditDiff() {
-      this.countTitle = '信用债点差调整'
-      this.isCredit = true
-      this.isLook = true
-      this.adjustDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.countTitle = '信用债点差调整'
+          this.isCredit = true
+          this.isLook = true
+          this.adjustDialog = true
+        }
+      })
     },
     countOpposite() {
       this.creditObject.target = []
@@ -1057,12 +1065,20 @@ export default {
         this.creditObject.target.push({ symbol: v.symbol, number: v.number })
       })
       console.log('this.compareList', this.creditObject.target)
-      this.islookOpposite = false
-      this.oppositeDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.islookOpposite = false
+          this.oppositeDialog = true
+        }
+      })
     },
     lookOpposite() {
-      this.islookOpposite = true
-      this.oppositeDialog = true
+      this.$refs['creditDom'].validate(val => {
+        if (val) {
+          this.islookOpposite = true
+          this.oppositeDialog = true
+        }
+      })
     },
     upload() {
 
