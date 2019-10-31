@@ -148,6 +148,7 @@ export default {
             type: 'success',
             showClose: true
           })
+          this.getCurveSetRelaList()
         })
       }).catch(() => {
         console.info('cancle')
