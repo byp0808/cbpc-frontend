@@ -472,7 +472,6 @@ export default {
     },
     // 修改场景和行为
     curveHomologyXiuGai(index) {
-      debugger
       this.detaiColVisible = true
       // 获取记录
       this.detailForm = this.formulaEditList[index]
