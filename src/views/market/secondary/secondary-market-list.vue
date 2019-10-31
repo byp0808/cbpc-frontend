@@ -232,6 +232,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="queryCell">查询</el-button>
+          <el-button type="primary" @click="queryReSet">重置</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="width: 100%">
@@ -476,8 +477,6 @@ export default {
       }
       queryDefaultCols(data).then(response => {
         const { showCols, colData } = response
-        // console.info(showCols)
-        // console.info(colData)
         this.tableHeader = showCols
         this.colData = colData
       })
@@ -489,7 +488,6 @@ export default {
         queryForm: this.queryForm
       }
       queryMarketData(data2).then(response => {
-        // console.info(response)
         if (typeof response.page !== 'undefined') {
           this.page = response.page
         }
@@ -523,11 +521,9 @@ export default {
           this.offerPage = response.page
         }
         const list = response.dataList
-        // this.offerMarketList = JSON.parse(JSON.stringify(list))
         this.offerMarketList = []
         for (let i = 0; i < list.length; i++) {
           this.offerMarketList.splice(i, 0, list[i])
-          // this.offerMarketList.push(list[i])
         }
       })
       this.offerMarketLoading = false
@@ -852,6 +848,16 @@ export default {
           return false
         }
       })
+    },
+    queryReSet() {
+      this.queryForm = {
+        checkedCurveNames: [],
+        curveType: '',
+        bondCode: '',
+        issuer: '',
+        updateTime: [],
+        checkedReferenceType: ['曲线样本券', '估值进线规则']
+      }
     },
     screening() {
       // 确定筛选方法
