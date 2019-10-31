@@ -523,12 +523,12 @@ export default {
           this.offerPage = response.page
         }
         const list = response.dataList
-        this.offerMarketList = JSON.parse(JSON.stringify(list))
-        // this.offerMarketList = []
-        // for (let i = 0; i < list.length; i++) {
-        //   // this.offerMarketList.splice(i, 0, list[i])
-        //   this.offerMarketList.push(list[i])
-        // }
+        // this.offerMarketList = JSON.parse(JSON.stringify(list))
+        this.offerMarketList = []
+        for (let i = 0; i < list.length; i++) {
+          this.offerMarketList.splice(i, 0, list[i])
+          // this.offerMarketList.push(list[i])
+        }
       })
       this.offerMarketLoading = false
       this.searchParam = []
@@ -625,7 +625,7 @@ export default {
           for (let i = 0; i < showCols.length; i++) {
             this.offerTableHeader.splice(i, 0, showCols[i])
           }
-          // console.info(this.offerTableHeader)
+          console.info(this.offerTableHeader)
         })
 
         this.offerColData = colData
@@ -633,7 +633,9 @@ export default {
       // 清空筛选数据
       this.offerScreeningFormList = []
       // 获取满足条件的行情数据
-      this.offerLoadTable()
+      this.$nextTick(() => {
+        this.offerLoadTable()
+      })
       this.offerCurrentModuleId = this.offerModuleId
     },
     offerEditCurrentModule() {
@@ -793,7 +795,9 @@ export default {
       // 清空筛选数据
       this.screeningFormList = []
       // 获取满足条件的行情数据
-      this.loadTable()
+      this.$nextTick(() => {
+        this.loadTable()
+      })
       this.currentModuleId = this.moduleId
     },
     editCurrentModule() {
@@ -816,7 +820,6 @@ export default {
         this.activeName = 'first'
         const module = this.moduleList.filter(mod => mod.id === this.currentModuleId)
         this.editModuleForm.moduleName = module[0].tempName
-        // console.info(this.editModuleForm)
 
         const offerTableHeaderDetail = this.offerColData.filter(col => this.offerTableHeader.filter(tab => col.colName === tab.realColName).length > 0)
         offerTableHeaderDetail.map(res => this.editOfferTableHeaders.push(res))
