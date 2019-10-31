@@ -637,7 +637,9 @@ export default {
       // 清空筛选数据
       this.offerScreeningFormList = []
       // 获取满足条件的行情数据
-      this.offerLoadTable()
+      this.$nextTick(() => {
+        this.offerLoadTable()
+      })
       this.offerCurrentModuleId = this.offerModuleId
     },
     offerEditCurrentModule() {
@@ -816,7 +818,9 @@ export default {
       // 清空筛选数据
       this.screeningFormList = []
       // 获取满足条件的行情数据
-      this.loadTable()
+      this.$nextTick(() => {
+        this.loadTable()
+      })
       this.currentModuleId = this.moduleId
     },
     editCurrentModule() {
