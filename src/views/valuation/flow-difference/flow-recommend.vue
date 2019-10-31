@@ -487,7 +487,7 @@ export default {
       this.someBadRuleList()
     },
     joinSpreadParam(row) {
-      var result = '( ' + row.rangeStart + ', ' + row.rangeEnd + 'y ]'
+      var result = '[ ' + row.rangeStart + ', ' + row.rangeEnd + 'y )'
       return result
     }
   }
