@@ -46,7 +46,8 @@ export default {
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',
-        taskType: '02'
+        taskType: '02',
+        taskName: this.$store.state.task.taskName
       }).then(response => {
         this.$message({
           message: '提交成功！',
