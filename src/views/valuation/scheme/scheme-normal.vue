@@ -26,7 +26,7 @@
           <el-form-item v-show="schemeInfo.cdsPremAdjWay === '02'" label-width="0" class="display-inline">
             <el-input-number v-model="schemeInfo.relaSpread" size="small" /><span class="unit">%</span>
           </el-form-item>
-          <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" type="">选择市场价格</el-button>
+          <el-button v-show="schemeInfo.cdsPremAdjWay === '03'" size="small" @click="selectPrice">选择市场价格</el-button>
           <div v-show="schemeInfo.cdsPremAdjWay === '03'">
             <div style="background:#fafafa;padding:5px 10px">
               <el-form-item label-width="0">
@@ -227,10 +227,19 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog append-to-body :visible.sync="marketDialog" width="1100px">
+      <scheme-market :market-info="marketInfo" />
+      <el-row>
+        <el-col :span="2" :offset="22">
+          <el-button @click="marketDialog = false">取消</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import SchemeMarket from '@/views/valuation/scheme/scheme-market.vue'
 import { getCurveList, findCurveByMarketGrade, spreadTrial, convertSpread } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '@/api/base-api.js'
 import { upload } from '../../../utils/file-request'
@@ -238,6 +247,7 @@ import { upload } from '../../../utils/file-request'
 export default {
   name: 'ValuationSchemeNormal',
   components: {
+    SchemeMarket
   },
   data() {
     return {
@@ -250,7 +260,8 @@ export default {
       fileList: [],
       showTime: false,
       trialResult: [],
-      curveList: []
+      curveList: [],
+      marketDialog: false
     }
   },
   computed: {
@@ -291,6 +302,9 @@ export default {
     },
     selectSpread(index) {
       // this.normalInfo.schemeSpreads[index].status = '1'
+    },
+    selectPrice() {
+      this.marketDialog = true
     },
     convertSpread() {
       convertSpread(this.schemeInfo).then(response => {

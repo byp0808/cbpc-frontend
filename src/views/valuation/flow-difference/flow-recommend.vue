@@ -97,7 +97,7 @@
                 width="120px"
               >
                 <template slot-scope="scope">
-                  <span>{{ scope.row.marketGrad }}</span>
+                  <span>{{ getMarketGrad(scope.row.marketGrad) }}</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -201,7 +201,11 @@
                 prop="spreadRule.spreadType"
                 label="点差类型"
                 align="center"
-              />
+              >
+                <template slot-scope="scope">
+                  {{ getSpreadType(scope.row.spreadRule.spreadType) }}
+                </template>
+              </el-table-column>
               <el-table-column
                 label="状态"
                 align="center"
@@ -335,6 +339,13 @@ export default {
     this.someBadRuleList()
   },
   methods: {
+    getSpreadType(spreadType) {
+      switch (spreadType) {
+        case '01': return '流动性点差'
+        case '02': return '信用点差'
+        case '03': return '其他点差'
+      }
+    },
     assetTable() {
       getAssetData({ page: this.page }).then(response => {
         const { assetsGroupList, ruleDetail, pageInfo } = response
@@ -342,6 +353,14 @@ export default {
         this.assetList = assetsGroupList
         this.bondFilterList = ruleDetail
       })
+    },
+    getMarketGrad(marketGrad) {
+      switch (marketGrad) {
+        case '01': return 'AAA'
+        case '02': return 'AAA-'
+        case '03': return 'AA'
+        case '04': return 'AA'
+      }
     },
     spreadParamTable() {
       spreadParamList({ page: this.spreadParamPage }).then(response => {
