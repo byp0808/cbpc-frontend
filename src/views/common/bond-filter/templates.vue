@@ -114,8 +114,11 @@
         :disabled="disabled"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="bondFilterVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <span>备注</span>
+        <el-input placeholder="用来定义不同估值产品内包含的债券范围，不同产品的债券范围不能重合" style="width:500px;" />
+        <span>债券集合=筛选结果+白名单</span>
+        <el-button @click="bondFilterVisible = false">取消</el-button>
+        <el-button type="primary" @childFn="setTempName" @click="save">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -178,12 +181,15 @@ export default {
         this.ruleListAll = response
       })
     },
+    setTempName(message) {
+      this.tempName = message
+    },
     save() {
       if (this.disabled) {
         this.bondFilterVisible = false
         return
       }
-      this.$prompt('请输入模板名称', '提示', {
+      this.$prompt('保存模板', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         inputValue: this.tempName
@@ -222,7 +228,11 @@ export default {
     },
     getRuleName(ruleCode) {
       const index = this.$lodash.findIndex(this.ruleListAll, { paraName: ruleCode })
-      return this.ruleListAll[index].paraValue
+      if (index < 0) {
+        console.log('ERROR:getRuleName:' + ruleCode)
+      } else {
+        return this.ruleListAll[index].paraValue
+      }
     },
     ruleDetail(index) {
       const list = this.bondTempFilters.dataList[index].rules
