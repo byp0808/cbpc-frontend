@@ -1,17 +1,12 @@
 <template>
   <div class="margin-top">
     <el-card class="box-card">
-      <el-select v-model="tempNo" placeholder="请选择">
-        <el-option
-          v-for="temp in bondTemps"
-          :key="temp.tempId"
-          :label="temp.tempName"
-          :value="temp.tempId"
-        />
-      </el-select>
-      <el-input v-model="remark" placeholder="请输入备注" size="mini" class="" style="width:150px;" />
-      <el-button type="primary" :disabled="disabled" @click="screenBonds">债券筛选</el-button>
-      <el-button type="danger" :disabled="disabled" @click="empty">清空所有条件</el-button>
+      <div>
+        <span>模板名称</span>
+        <el-input v-model="tempName" :disabled="disabled" placeholder="请输入模板名称" class="" style="width:150px;" @change="inputChange" />
+        <el-button type="primary" :disabled="disabled" @click="screenBonds">债券筛选</el-button>
+        <el-button type="danger" :disabled="disabled" @click="empty">清空所有条件</el-button>
+      </div>
     </el-card>
     <el-row :gutter="10">
       <el-col :span="8">
@@ -308,7 +303,7 @@ export default {
       ruleListAll: [],
       uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/tmpl-filter/batch-in`,
       bondTemps: [],
-      tempNo: '',
+      tempName: '',
       ruleCode: '',
       ruleValue: '',
       blackList: [],
@@ -440,7 +435,7 @@ export default {
     },
     screenBonds() {
       const data = {
-        tempNo: this.tempNo,
+        tempName: this.tempName,
         rules: this.ruleList,
         blwls: this.whiteList.concat(this.blackList)
       }
@@ -455,7 +450,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.tempNo = ''
+        // this.tempName = ''
         this.blackList = []
         this.whiteList = []
         this.ruleList = []
@@ -582,12 +577,12 @@ export default {
     loading() {
       if (this.filterId) {
         queryTempInfo(this.filterId.toString()).then(response => {
-          const { tempId, rules, black, white } = response
+          const { tempName, rules, black, white } = response
           this.blackList = black
           this.whiteList = white
           this.ruleList = rules
           // this.bondTemps.tempName = tempName
-          this.tempNo = tempId
+          this.tempName = tempName
           // this.screenBonds()
         })
         // this.queryBondsList()
@@ -602,6 +597,9 @@ export default {
           showClose: true
         })
       })
+    },
+    inputChange() {
+      this.$emit('childFn', this.tempName)
     }
 
   }
