@@ -98,6 +98,10 @@ const taskRouter = {
       path: 'curve-set-init-task',
       component: () => import('@/views/curve/set/curve-set-init-task.vue'),
       name: 'CurveSetInitTask'
+    }, {
+      path: 'curve-rule-list',
+      component: () => import('@/views/curve/set/curve-set-rule-task.vue'),
+      name: 'CurveRuleTask'
     }
   ]
 }

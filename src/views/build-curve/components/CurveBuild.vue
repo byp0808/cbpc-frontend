@@ -7,14 +7,13 @@
           :name="productName"
           :curve-id="curveId"
           :order-id="orderId"
-          :edit="true"
+          :curve-order-id="curveOrderId"
+          :curve-task-id="curveTaskId"
+          :edit="!status"
           :show-division="true"
           :show-button="true"
           :options="homology"
           @change-data="changeData"
-          @confirm-build="confirmBuild"
-          @refund-build="refundBuild"
-          @reset-build="resetBuild"
           @click-history-division="historyDivision"
         />
         <el-tabs :tab-position="'top'" class="curve-image">
@@ -61,7 +60,7 @@ import { Chart } from 'highcharts-vue'
 import { mapState } from 'vuex'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import { queryReferCurveYield, queryRelationsCurveYield, queryHomology, queryHistoryDivision, confirmBuild, refundBuild } from '@/api/curve/curve-build'
+import { queryReferCurveYield, queryRelationsCurveYield, queryHomology, queryHistoryDivision } from '@/api/curve/curve-build'
 import { subtract } from '@/utils/math'
 import { getToken } from '@/utils/auth'
 
@@ -187,7 +186,6 @@ export default {
       referList: [],
       relationList: [],
       homology: [],
-      status: false,
       clickClose: false,
       websocket: null,
       timer: null
@@ -200,6 +198,9 @@ export default {
       },
       yields: function(state) {
         return state.curveBuild.curveChartsList[this.curveId] || []
+      },
+      status: function(state) {
+        return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].confirm : false
       }
     }),
     makeNow() {
@@ -292,36 +293,14 @@ export default {
       this.$set(this.list, i, data)
       this.getSaveCurveBuild()
     },
-    confirmBuild() {
-      confirmBuild({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }).then(response => {
-        this.status = true
-        this.$message({
-          type: 'success',
-          message: '确认成功!'
-        })
-      })
-    },
-    refundBuild() {
-      refundBuild({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }).then(response => {
-        this.status = false
-        this.$message({
-          type: 'success',
-          message: '退回成功!'
-        })
-      })
-    },
-    resetBuild() {
-      this.$store.dispatch('curveBuild/resetData', { curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId, curveTaskId: this.curveTaskId }, function() {
-        this.status = false
-        this.$message({
-          type: 'success',
-          message: '重置成功!'
-        })
-      })
-    },
     historyDivision() {
       queryHistoryDivision(this.list).then(response => {
-        this.data = response.dataList
+        const map = {}
+        response.forEach(el => {
+          const value = el.historyDivision
+          map[el.standSlip] = value + '%'
+        })
+        this.$store.dispatch('curveBuild/updateVariation', { curveId: this.curveId, map })
       })
     },
     // ws连接

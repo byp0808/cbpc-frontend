@@ -181,7 +181,7 @@ export default {
     }
   },
   created() {
-
+    this.queryCheckCurveCouponList()
   },
   methods: {
     // 查询样本券列表

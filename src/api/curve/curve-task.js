@@ -74,6 +74,15 @@ export function queryCurveTaskRules(data) {
   })
 }
 
+// 查询曲线任务规则(审核)
+export function queryCurveTempTaskRules(data) {
+  return request({
+    url: `${basic_api_curve}` + '/curve/queryTempTaskRules',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询曲线批次
 export function selectCurveOrder(data) {
   return request({
