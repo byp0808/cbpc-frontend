@@ -30,42 +30,42 @@
       <el-table-column align="center" label="全选" type="selection" />
       <el-table-column label="是否对敲" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.priority }}</span>
+          <span>{{ scope.row.deal.exchange }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值日" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.date }}</span>
+          <span>{{ scope.row.deal.brokerDealTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="曲线名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.curveName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="待偿期" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.residualMaturity }}</span>
+          <span>{{ scope.row.deal.compensatoryStage }}</span>
         </template>
       </el-table-column>
       <el-table-column label="加权待偿期" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.deal.weightingCompensatoryStage }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券简称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.bondName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券代码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <span>{{ scope.row.deal.bondCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="曲线收益率(%)" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.brokerDealRate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="参考单券估值收益率(%)" align="center" width="170px">
@@ -75,7 +75,7 @@
       </el-table-column>
       <el-table-column label="市场收益率(%)" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.marketRate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="收益率偏差值(市场收益率-参考日单券估值收益率)(BP)" align="center" width="260px">
@@ -85,27 +85,27 @@
       </el-table-column>
       <el-table-column label="加减点差值(BP)" align="center" width="130px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.point }}</span>
         </template>
       </el-table-column>
       <el-table-column label="付券简称" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.payBondName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="收券简称" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.revBondName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="交易量(万元)" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.dealVolume }}</span>
         </template>
       </el-table-column>
       <el-table-column label="成交日" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.deal.dealTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="T日结算净价" align="center" width="120px">
@@ -170,6 +170,9 @@ export default {
   },
   created() {
     this.getAllList()
+  },
+  beforeMount() {
+    this.adjustList = this.$store.state.scheme.adjustList
   },
   methods: {
     getAllList() {

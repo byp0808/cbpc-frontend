@@ -65,7 +65,7 @@ export function editCurveRelationBusiStatus(data) {
 export function delCurveRelation(data) {
   return request(
     {
-      url: `${basic_api_valuation}/curve-relation/edit-busi-status`,
+      url: `${basic_api_valuation}/curve-relation/del-curve-relation`,
       method: 'post',
       data: data
     }
