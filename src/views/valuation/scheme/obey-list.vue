@@ -27,6 +27,11 @@
           <el-button type="text" @click="adjust(scope.row)">调整</el-button>
         </template>
       </el-table-column>
+      <el-table-column v-if="!isMy" label="调整人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.userId }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
           <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.assetCode }}</span>

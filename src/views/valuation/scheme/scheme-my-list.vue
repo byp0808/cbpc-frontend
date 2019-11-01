@@ -21,7 +21,7 @@
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :xl="16" :lg="14">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
+          <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
@@ -311,20 +311,20 @@
         <el-form-item label="交易量" required>
           <el-col :span="9">
             <el-form-item prop="starNumber">
-              <el-input v-model="creditObject.starNumber" min="0" type="number" clearable />
+              <el-input v-model="param.minVolume" min="0" type="number" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
             <el-form-item prop="endNumber">
-              <el-input v-model="creditObject.endNumber" type="number" min="0" clearable />
+              <el-input v-model="param.maxVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
         </el-form-item>
-        <!-- <el-form-item v-for="item in compareList" :key="item.name" :label="item.name" label-width="260px" required>
+        <el-form-item label="本日经纪成交与市场收益率偏差(BP)" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :prop="item.symbol">
-              <el-select v-model="item.symbol" placeholder="请选择" clearable>
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.todayBrokerMarketOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
                   :key="i.value"
@@ -335,54 +335,126 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item :prop="item.number">
-              <el-input v-model="item.number" type="number" min="0" clearable />
+            <el-form-item>
+              <el-input v-model="param.todayBrokerMarketDiff" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
-        </el-form-item> -->
-        <div v-for="(item,index) in compareList" :key="index" :label="item.name">
-          <el-form-item :label="item.name" label-width="260px" required>
-            <el-col :span="11">
-              <el-form-item :rules="creditRule.symbol">
-                <el-select v-model="item.symbol" placeholder="请选择">
-                  <el-option
-                    v-for="i in compare"
-                    :key="i.value"
-                    :label="i.label"
-                    :value="i.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="10" :offset="1">
-              <el-form-item>
-                <el-input v-model="item.number" type="number" min="0" clearable @change="numberChange" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-        </div>
+        </el-form-item>
+        <el-form-item label="昨日经纪成交与市场收益率偏差(BP)" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.yesterdayBrokerMarketOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.yesterdayBrokerMarketDiff" type="number" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="线的调整幅度与日间单券偏差只差(BP)" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.curveRangeBondDayOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.curveRangeBondDayDiff" type="number" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="同业存单可靠成交（报价）待偿期" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.reliableYearOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.reliableYearValue" type="reliableYearValue" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="同业存单成交（报价）估值偏离" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.valuationDeviationOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.valuationDeviationValue" type="number" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="同业存单成交（报价）连续阈值" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.transactionContinuityOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.transactionContinuityValue" type="number" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="同业存单发行人成交（报价）历史总分" label-width="260px" required>
+          <el-col :span="11">
+            <el-form-item :rules="creditRule.symbol">
+              <el-select v-model="param.historyScoreOp" placeholder="请选择">
+                <el-option
+                  v-for="i in compare"
+                  :key="i.value"
+                  :label="i.label"
+                  :value="i.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="1">
+            <el-form-item>
+              <el-input v-model="param.historyScoreSum" type="number" min="0" clearable @change="numberChange" />
+            </el-form-item>
+          </el-col>
+        </el-form-item>
       </el-form>
-      <div class="big-box">
-        <!-- <div v-for="(i,index) in compareList" :key="index" class="bot-box">
-          <div class="left-box">{{ i.name }}</div>
-          <div class="input-box">
-            <el-select v-model="i.symbol" placeholder="请选择">
-              <el-option
-                v-for="item in compare"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </div>
-          <div class="input-box">
-            <el-input v-model="i.number" type="number" clearable />
-          </div>
-        </div> -->
-        <!-- <el-form :label-position="labelPosition">
-
-        </el-form> -->
-      </div>
       <el-row style="margin-top:20px">
         <el-col :span="23" :offset="1">
           <el-button type="primary" @click="countOpposite">计算对敲</el-button>
@@ -535,8 +607,8 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust } from '@/api/valuation/task.js'
-import { getCurveList } from '@/api/valuation/scheme.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
+import { getCurveList, calculateExchange } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -603,16 +675,25 @@ export default {
       taskTitle: '',
       uploadList: [],
       selection: [],
-      compareList: [
-        { name: '本日经纪成交与市场收益率偏差(BP)' },
-        { name: '昨日经纪成交与市场收益率偏差(BP)' },
-        { name: '线的调整幅度与日间单券偏差只差(BP)' },
-        { name: '同业存单可靠成交（报价）待偿期' },
-        { name: '同业存单成交（报价）估值偏离' },
-        { name: '同业存单成交（报价）连续阈值' },
-        { name: '同业存单发行人成交（报价）历史总分' }
-
-      ],
+      param: { // 往后台传递的参数
+        curves: [], // 曲线集合
+        minVolume: '', // 最小成交量
+        maxVolume: '', // 最大成交量
+        todayBrokerMarketOp: '',
+        todayBrokerMarketDiff: '',
+        yesterdayBrokerMarketOp: '',
+        yesterdayBrokerMarketDiff: '',
+        curveRangeBondDayOp: '',
+        curveRangeBondDayDiff: '',
+        reliableYearOp: '',
+        reliableYearValue: '',
+        valuationDeviationOp: '',
+        valuationDeviationValue: '',
+        transactionContinuityOp: '',
+        transactionContinuityValue: '',
+        historyScoreOp: '',
+        historyScoreSum: ''
+      },
       selectCreditList: [],
       selectInterestList: [],
       compare: [
@@ -767,7 +848,9 @@ export default {
         c: false,
         d: false,
         e: false
-      }
+      },
+      marketLists: [],
+      flag: false
     }
   },
   created() {
@@ -789,6 +872,20 @@ export default {
       getAllTableList({ tab: '02' }).then(res => {
         this.tabList = res
       })
+    },
+    querySearch(query, call) {
+      if (query) {
+        searchBondNum(query).then(res => {
+          console.log('sss', res)
+          this.marketLists = res.map(v => {
+            return { value: v.assetCode, label: v.bondShort }
+          })
+          call(this.marketLists)
+        })
+      }
+    },
+    handleSelectInput(e) {
+      this.selectBondId = e.value
     },
     // selectionList(data) {
     //   this.selection = data
@@ -1061,16 +1158,15 @@ export default {
       })
     },
     countOpposite() {
-      this.creditObject.target = []
-      this.compareList.map(v => {
-        this.creditObject.target.push({ symbol: v.symbol, number: v.number })
-      })
-      console.log('this.compareList', this.creditObject.target)
       this.$refs['creditDom'].validate(val => {
-        if (val) {
+        // if (val) {
+        calculateExchange(this.param).then(response => {
           this.islookOpposite = false
+          this.$store.commit('scheme/setAdjustList', response)
+          console.log(response)
           this.oppositeDialog = true
-        }
+        })
+        // }
       })
     },
     lookOpposite() {
@@ -1121,6 +1217,16 @@ export default {
     addTask() {
       if (!this.bondId) {
         return this.$message.warning('请输入资产编号')
+      }
+      console.log('bond', this.bondId)
+      this.marketLists.map(v => {
+        if (v.value === this.bondId) {
+          console.log('---', v.value)
+          this.flag = true
+        }
+      })
+      if (!this.flag) {
+        return this.$message.warning('请输入正确的资产编号')
       }
       this.isBatch = false
       this.volumeAddDialog = true
@@ -1194,6 +1300,7 @@ export default {
           message: '添加成功',
           type: 'success'
         })
+        this.bondId = ''
         this.loadTable()
       })
     },
@@ -1239,7 +1346,7 @@ export default {
             }
             delete this.volumeAdd.attach
             delete this.volumeAdd.busiCode
-            this.volumeAdd.csin = this.bondId
+            this.volumeAdd.assetCode = this.bondId
             this.volumeAdd.tab = '02'
             addOneTask(this.volumeAdd).then(res => {
               if (res.code) {

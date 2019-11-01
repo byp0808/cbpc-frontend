@@ -18,3 +18,30 @@ export function cmptBatch(data) {
     data
   })
 }
+
+// 单资产查询
+export function assetAdd(data) {
+  return request({
+    url: `${basic_api_valuation}/cmpt/asset-add`,
+    method: 'post',
+    data
+  })
+}
+
+// 单资产添加
+export function taskAdd(data) {
+  return request({
+    url: `${basic_api_valuation}/cmpt/task-add`,
+    method: 'post',
+    data
+  })
+}
+
+// 单资产计算
+export function taskCmpt(data) {
+  return request({
+    url: `${basic_api_valuation}/cmpt/task-cmpt`,
+    method: 'post',
+    data
+  })
+}
