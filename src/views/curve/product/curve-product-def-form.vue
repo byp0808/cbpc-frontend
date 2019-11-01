@@ -132,7 +132,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="曲线编制类型">
+            <el-form-item label="曲线编制类型" prop="curveBuildType">
               <el-select v-model="productInfo.curveBuildType" placeholder="请选择编制类型" :disabled="disabled">
                 <el-option v-for="item in curveBuildTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
@@ -309,6 +309,9 @@ export default {
         currency: [
           { required: true, message: '请选择币种', trigger: 'change' }
         ],
+        curveBuildType: [
+          { required: true, message: '请选择曲线编制类型', trigger: 'change' }
+        ],
         rateType: [
           { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
@@ -316,6 +319,7 @@ export default {
           { required: true, message: '请选择编制日历', trigger: 'change' }
         ],
         curveStartTime: [
+          { required: true, message: '上市日', trigger: 'change' },
           { validator: checkCurveStartTime, trigger: 'change' }
         ],
         curveEndTime: [

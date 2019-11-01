@@ -323,6 +323,15 @@ export function getTaskFinsih(data) {
   })
 }
 
+// 审批流程完成
+export function finishUpdateRule(data) {
+  return request({
+    url: `${basic_api_curve}/curve/finishUpdateRule`,
+    method: 'post',
+    data
+  })
+}
+
 // 删除方案信息
 export function delInitList(id) {
   return request({

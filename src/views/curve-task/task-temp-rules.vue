@@ -20,6 +20,7 @@
               <el-autocomplete
                 v-model="task.search_orderName_LIKE"
                 class="inline-input"
+                :value-key="'label'"
                 :fetch-suggestions="querySearch"
                 placeholder="请输入批次名称"
                 @select="handleSelect"
@@ -34,6 +35,7 @@
                 :value-key="'label'"
                 :fetch-suggestions="queryPersonSearch"
                 placeholder="请输入责任人"
+                :trigger-on-focus="false"
                 @select="handlePersonSelect"
               />
             </el-form-item>
@@ -123,14 +125,13 @@
 </template>
 
 <script>
-import { queryCurveTaskRules, queryOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
+import { queryCurveTempTaskRules, queryOrder, selectPerson, updateTaskRules } from '@/api/curve/curve-task'
 import { basic_api_curve } from '@/api/base-api'
-import Pagination from '@/components/Pagination'
 import { downloadFile, upload } from '@/utils/file-request'
 
 export default {
-  name: 'TaskRules',
-  components: { Pagination },
+  name: 'Rule',
+  props: ['relld', 'opType'],
   data() {
     return {
       task: {
@@ -140,6 +141,7 @@ export default {
         search_assignName_LIKE: '',
         search_assign_EQ: ''
       },
+      flag: false,
       order: {
         options: []
       },
@@ -171,10 +173,10 @@ export default {
   },
   methods: {
     getList() {
+      console.log('===11111111111111===relld:' + this.relld)
       this.listLoading = true
-      queryCurveTaskRules(Object.assign(this.task, { page: this.listQuery })).then(response => {
+      queryCurveTempTaskRules({ relld: this.relld }).then(response => {
         this.list = response.dataList
-        this.total = response.page.totalRecord
         this.listLoading = false
       })
     },
@@ -231,18 +233,16 @@ export default {
       this.dialogFormVisible = true
     },
     distribute() {
-      let flag = false
+      this.flag = false
       const data = []
       this.results.map(v => {
-        if (this.person.username === v.label) {
-          flag = true
+        if (this.person.username !== v.label) {
+          this.$message.warning('没有查到对应的责任人信息')
+          this.flag = true
           return
         }
       })
-      if (flag === false) {
-        this.$message.error('没有查到对应的责任人信息!')
-      }
-      if (flag) {
+      if (!this.flag) {
         if (this.isMultiple) {
           this.multipleSelection.map(i => {
             data.push(Object.assign(i, { assign: this.person.userId, assignName: this.person.username }))
