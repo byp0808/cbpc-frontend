@@ -316,6 +316,7 @@ export default {
           { required: true, message: '请选择编制日历', trigger: 'change' }
         ],
         curveStartTime: [
+          { required: true, message: '上市日', trigger: 'change' },
           { validator: checkCurveStartTime, trigger: 'change' }
         ],
         curveEndTime: [
