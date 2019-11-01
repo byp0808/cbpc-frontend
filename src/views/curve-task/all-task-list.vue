@@ -20,7 +20,7 @@
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
               <el-upload
-                style="display: inline-block;"
+                style="display: inline-block; float: right"
                 action=""
                 :multiple="false"
                 name="attach"

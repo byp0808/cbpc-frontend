@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column label="资产编码" align="center" width="150px">
         <template slot-scope="scope">
-          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondId }}</span>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.assetCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
@@ -39,17 +39,17 @@
       </el-table-column>
       <el-table-column label="发行人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.maketId }}</span>
+          <span>{{ scope.row.bondPublisher }}</span>
         </template>
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.maketId }}</span>
+          <span>{{ $dft('MARKET', scope.row.marketId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券性质" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.assetDtlCategCode }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="activeName === '02'" label="回收率" align="center">
@@ -64,7 +64,7 @@
       </el-table-column>
       <el-table-column label="全价" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.yield }}</span>
+          <span>{{ scope.row.dPrice }}</span>
         </template>
       </el-table-column>
       <el-table-column label="调整原因" align="center">
@@ -74,12 +74,12 @@
       </el-table-column>
       <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.createdTs }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布批次" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.batchId }}</span>
         </template>
       </el-table-column>
     </el-table>
