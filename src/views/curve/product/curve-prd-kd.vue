@@ -178,7 +178,7 @@
         </el-form-item>
       </el-form>
       <el-row>
-        <el-col :span="6" offset="19">
+        <el-col :span="6" :offset="19">
           <div >
             <el-button @click="curvePrdNkFormVisible = false">
               取消
@@ -564,7 +564,7 @@ export default {
         for (let i = 0; i < this.curvePrdKdList.length; i++) {
           // eslint-disable-next-line no-redeclare
           var item = this.curvePrdKdList[i]
-          if (standSlip < item.standSlip) {
+          if (Number(standSlip) < Number(item.standSlip)) {
             this.curvePrdKdList.splice(i, 0, {
               standSlip: standSlip,
               sampleIntervalDown: sampleIntervalDown,
@@ -680,16 +680,16 @@ export default {
     },
     // 对NK列表进行排序
     sortCurvePrdNkList(currentRow, nextRow) {
-      if (currentRow['nvalue'] === nextRow['nvalue']) {
-        if (currentRow['kvalue'] > nextRow['kvalue']) {
+      if (Number(currentRow['nvalue']) === Number(nextRow['nvalue'])) {
+        if (Number(currentRow['kvalue']) > Number(nextRow['kvalue'])) {
           return 1
-        } else if (currentRow['kvalue'] < nextRow['kvalue']) {
+        } else if (Number(currentRow['kvalue']) < Number(nextRow['kvalue'])) {
           return -1
         } else {
           return 0
         }
       } else {
-        if (currentRow['nvalue'] > nextRow['nvalue']) {
+        if (Number(currentRow['nvalue']) > Number(nextRow['nvalue'])) {
           return 1
         } else {
           return -1
