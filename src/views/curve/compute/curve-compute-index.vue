@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-col :span="5">
+    <el-col :span="5" class="compute-tab">
       <el-tabs tab-position="left" style="height: 100%;" @tab-click="orderTabClick">
         <el-tab-pane v-for="(item) in orderList" :key="item.id" :label="item.orderName" :title="item.orderName" />
       </el-tabs>
@@ -60,11 +60,11 @@ export default {
   }
 }
 </script>
-<style>
-.el-tabs__content {
+<style scoped>
+.compute-tab .el-tabs__content {
   display: none;
 }
-.el-tabs--left .el-tabs__header.is-left{
+.compute-tab .el-tabs--left .el-tabs__header.is-left{
   width: 100%;
 }
 </style>
