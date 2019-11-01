@@ -21,7 +21,7 @@
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :xl="16" :lg="14">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" style="width:200px" />
+          <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
@@ -607,7 +607,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust } from '@/api/valuation/task.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
 import { getCurveList, calculateExchange } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
@@ -848,7 +848,9 @@ export default {
         c: false,
         d: false,
         e: false
-      }
+      },
+      marketLists: [],
+      flag: false
     }
   },
   created() {
@@ -870,6 +872,20 @@ export default {
       getAllTableList({ tab: '02' }).then(res => {
         this.tabList = res
       })
+    },
+    querySearch(query, call) {
+      if (query) {
+        searchBondNum(query).then(res => {
+          console.log('sss', res)
+          this.marketLists = res.map(v => {
+            return { value: v.assetCode, label: v.bondShort }
+          })
+          call(this.marketLists)
+        })
+      }
+    },
+    handleSelectInput(e) {
+      this.selectBondId = e.value
     },
     // selectionList(data) {
     //   this.selection = data
@@ -1202,6 +1218,16 @@ export default {
       if (!this.bondId) {
         return this.$message.warning('请输入资产编号')
       }
+      console.log('bond', this.bondId)
+      this.marketLists.map(v => {
+        if (v.value === this.bondId) {
+          console.log('---', v.value)
+          this.flag = true
+        }
+      })
+      if (!this.flag) {
+        return this.$message.warning('请输入正确的资产编号')
+      }
       this.isBatch = false
       this.volumeAddDialog = true
       this.taskTitle = '添加任务'
@@ -1274,6 +1300,7 @@ export default {
           message: '添加成功',
           type: 'success'
         })
+        this.bondId = ''
         this.loadTable()
       })
     },
@@ -1319,7 +1346,7 @@ export default {
             }
             delete this.volumeAdd.attach
             delete this.volumeAdd.busiCode
-            this.volumeAdd.csin = this.bondId
+            this.volumeAdd.assetCode = this.bondId
             this.volumeAdd.tab = '02'
             addOneTask(this.volumeAdd).then(res => {
               if (res.code) {
