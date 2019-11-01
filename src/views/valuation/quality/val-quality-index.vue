@@ -120,6 +120,7 @@ import ReValList from '@/views/valuation/quality/val-reval-list.vue'
 import ValQcUploadForm from '@/views/valuation/quality/val-upload-excel.vue'
 import ValParamSetForm from '@/views/valuation/quality/val-param-set-form.vue'
 import { dwnlValQcRpt, uplValQcRpt, getValOrderList } from '@/api/valuation/val-quality.js'
+import { formatTimeToStr } from '@/utils/date.js'
 
 export default {
   name: 'ValQualityIndex',
@@ -180,7 +181,7 @@ export default {
     if (!taskDay) {
       taskDay = new Date()
     }
-    this.queryForm.taskDay = taskDay
+    this.queryForm.taskDay = formatTimeToStr(taskDay, 'yyyy-MM-dd')
     // 加载批次
     this.init(true)
     console.info('orderList.length' + this.orderList.length)
@@ -193,7 +194,7 @@ export default {
       // }
       this.orderList = []
       this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
-      this.orderList.push({ id: 'B0003', orderName: 'B0003' })
+      this.orderList.push({ id: 'PCID1', orderName: 'PCID1' })
       await this.getValOrderOptions(this.orderList)
       if (this.orderList && this.orderList.length > 0) {
         // 默认显示第一条

@@ -151,7 +151,7 @@ export default {
     if (!taskDay) {
       taskDay = new Date()
     }
-    this.queryForm.taskDay = taskDay
+    this.queryForm.taskDay = formatTimeToStr(taskDay, 'yyyy-MM-dd')
     this.queryForm.orderId = this.$store.state.curveOrderCompute.orderId
     // 加载批次
     this.init(true)
@@ -161,8 +161,10 @@ export default {
       // 加载批次
       this.orderList = []
       // this.orderList.push({ id: 'initBatch', orderName: '初始化批次' })
+      this.orderList.push({ id: 'PCID1', orderName: '初始化批次' })
       const data = {
-        taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
+        // taskDay: formatTimeToStr(this.queryForm.taskDay, 'yyyy-MM-dd')
+        taskDay: this.queryForm.taskDay
       }
       await getCurveTaskOrderOptions(this.orderList, data)
       if (this.orderList && this.orderList.length > 0) {

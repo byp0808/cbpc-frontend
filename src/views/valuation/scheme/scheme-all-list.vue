@@ -9,7 +9,8 @@
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
         <el-col :xl="16" :lg="14">
-          <el-input v-model="bondId" placeholder="输入资产根码后添加任务" clearable style="width:200px" />
+          <!-- <el-input v-model="bondId" placeholder="输入资产编码后添加任务" clearable style="width:200px" /> -->
+          <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
           <el-button type="primary" @click="addTask">添加任务</el-button>
           <el-button type="primary" @click="batchAddTask">批量添加</el-button>
           <!-- <div style="margin-top:7px"> -->
@@ -214,6 +215,7 @@
               ref="upload"
               class="upload-demo"
               action=""
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               :limit="1"
               drag
               :on-exceed="handleExceed"
@@ -255,6 +257,7 @@
               ref="upload1"
               class="upload-demo"
               action=""
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               :limit="1"
               drag
               :on-exceed="handleExceed1"
@@ -338,7 +341,7 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond, searchBondNum } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -441,6 +444,9 @@ export default {
       valuationAllTask: [],
       valuationMyTask: [],
       taskList: [],
+      marketLists: [],
+      selectBondId: '',
+      flag: false,
       params: {
         page: {
           pageNumber: 1,
@@ -473,6 +479,20 @@ export default {
         console.log(error)
         this.tabLoading = false
       })
+    },
+    querySearch(query, call) {
+      if (query) {
+        searchBondNum(query).then(res => {
+          console.log('sss', res)
+          this.marketLists = res.map(v => {
+            return { value: v.assetCode, label: v.bondShort }
+          })
+          call(this.marketLists)
+        })
+      }
+    },
+    handleSelectInput(e) {
+      this.selectBondId = e.value
     },
     // selectionList(data) {
     //   this.selection = data
@@ -690,7 +710,7 @@ export default {
         // }
         delete this.volumeAdd.attach
         delete this.volumeAdd.busiCode
-        this.volumeAdd.csin = this.bondId
+        this.volumeAdd.assetCode = this.bondId
         this.volumeAdd.tab = '01'
         addOneTask(this.volumeAdd).then(res => {
           if (res.code) {
@@ -704,6 +724,7 @@ export default {
               message: '添加成功',
               type: 'success'
             })
+            this.bondId = ''
             this.loadTable_all()
           }
         })
@@ -712,6 +733,14 @@ export default {
     addTask() {
       if (!this.bondId) {
         return this.$message.warning('请输入资产编号')
+      }
+      this.marketLists.map(v => {
+        if (v.value === this.bondId) {
+          this.flag = true
+        }
+      })
+      if (!this.flag) {
+        return this.$message.warning('请输入正确的资产编号')
       }
       this.isBatch = false
       this.volumeAddDialog = true

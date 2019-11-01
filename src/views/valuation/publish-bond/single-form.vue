@@ -10,7 +10,7 @@
       <el-col :span="6">
         <el-form>
           <el-form-item label="资产编码" label-width="70px">
-            <el-input v-model="bondId" clearable />
+            <el-input v-model="assetId" clearable />
           </el-form-item>
         </el-form>
       </el-col>
@@ -18,7 +18,7 @@
         <el-button type="primary" @click="add">添加</el-button>
       </el-col>
       <el-col :span="2">
-        <el-button type="primary">计算</el-button>
+        <el-button type="primary" @click="cmpt">计算</el-button>
       </el-col>
     </el-row>
     <!-- <el-row style="margin-bottom:30px">
@@ -28,7 +28,7 @@
     </el-row> -->
     <el-table
       v-loading="allLoading"
-      :data="allList"
+      :data="taskList"
       style="width: 100%"
       max-height="500"
       :header-cell-style="{background:'#f4f7fc'}"
@@ -50,7 +50,7 @@
       </el-table-column>
       <el-table-column label="资产编码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <span>{{ scope.row.assetCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column label="估值方法" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.valuScene }}</span>
         </template>
       </el-table-column>
       <el-table-column label="市场隐含评级" align="center" width="120px">
@@ -80,7 +80,7 @@
       </el-table-column>
       <el-table-column label="目标信用点差" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.spreadValue }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标流动性点差" align="center" width="120px">
@@ -94,28 +94,17 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      style="margin-top:20px"
-      align="center"
-      :current-page="params.page.pageNumber"
-      :page-sizes="[10, 20, 30, 40, 50]"
-      :page-size="params.page.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="params.page.totalRecord"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
     <el-dialog :visible.sync="addBondDialog" title="添加单资产估值">
       <el-row>
         <el-col :span="18" :offset="3">
           <el-form>
             <div class="bond-box">
               <span>资产编码:</span>
-              <span style="padding-left:8px">{{ bondId }}</span>
+              <span style="padding-left:8px">{{ assetId }}</span>
             </div>
             <el-form-item label="流通场所">
               <el-checkbox-group v-model="checkedSite" class="checkGroup" @change="changeSite">
-                <el-checkbox v-for="item in sizeList" :key="item" :label="item">{{ item }}</el-checkbox>
+                <el-checkbox v-for="item in bondList" :key="item" :label="item.id">{{ item.marketId }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-form>
@@ -132,8 +121,8 @@
     </el-dialog>
   </div>
 </template>
-
 <script>
+import { assetAdd, taskAdd, taskCmpt } from '@/api/valuation/cmpt.js'
 export default {
   name: 'SingleForm',
   components: {
@@ -144,6 +133,9 @@ export default {
       addBondDialog: false,
       isActive: '',
       bondId: '',
+      assetId: '',
+      bondList: [],
+      taskList: [],
       checkedSite: [],
       batchTime: [
         { value: '', name: '10:00' },
@@ -180,18 +172,19 @@ export default {
     },
     handleSelectionChange(e) {
       this.selectList = e
-      this.selectList.map(v => {
-        this.sizeList.push(v.marketId)
-        this.sizeList = Array.from(new Set(this.sizeList))
-      })
+      // this.selectList.map(v => {
+      //   this.sizeList.push(v.marketId)
+      //   this.sizeList = Array.from(new Set(this.sizeList))
+      // })
     },
     add() {
-      if (!this.bondId) {
+      if (!this.assetId) {
         return this.$message.warning('请输入资产编码')
       }
-      // if (this.selectList.length === 0) {
-      //   return this.$message.warning('至少选择一条资产估值')
-      // }
+      assetAdd(this.assetId).then(response => {
+        this.bondList = response
+      })
+
       this.addBondDialog = true
       this.checkedSite = this.sizeList
     },
@@ -200,7 +193,15 @@ export default {
       this.checkedSite = e
     },
     saveSite() {
-
+      taskAdd(this.checkedSite).then(response => {
+        this.taskList = response
+        this.addBondDialog = false
+      })
+    },
+    cmpt() {
+      taskCmpt(this.selectList).then(response => {
+        console.log(response)
+      })
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize

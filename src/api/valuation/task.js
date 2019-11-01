@@ -95,4 +95,13 @@ export function saveBond(data) { // 添加不估值
     }
   )
 }
+export function searchBondNum(data) { // 查询债券编码
+  return request(
+    {
+      url: `${basic_api_valuation}/task/query-asset`,
+      method: 'post',
+      data: data
+    }
+  )
+}
 

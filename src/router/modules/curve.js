@@ -53,7 +53,7 @@ const curveRouter = {
       path: 'curve-order-check-index',
       component: () => import('@/views/curve/check/curve-order-check-index.vue'),
       name: 'CurveOrderCheckIndex',
-      meta: { title: '质检报告', noCache: true }
+      meta: { title: '质检报告', noCache: true, roles: ['CurveQuality'] }
     }, {
       path: 'curve-set-homology',
       component: () => import('@/views/curve/set/curve-set-homology.vue'),
