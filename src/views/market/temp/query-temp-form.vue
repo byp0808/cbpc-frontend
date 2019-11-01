@@ -529,6 +529,7 @@ export default {
       console.log(this.extendColInfo.baseColChiName)
     },
     getOneAllcols(val) {
+      this.relationColsOptions = []
       if (val === '01') {
         // 查询初始字段信息、数字型字段列表
         this.queryColsInfo('1')
