@@ -373,15 +373,8 @@ export default {
       if (!this.checkCouponVisible) {
         var selection = this.$refs.refCurveOrderList.selection
         if (selection.length <= 0) {
-          this.$message({
-            type: 'error',
-            message: '请选择需要检查的曲线'
-          })
-          return false
+          selection = this.curveOrderList
         }
-
-        this.curveOrderVisible = false
-        this.checkCouponVisible = true
         for (const item of selection) {
           if (item.buildStatus !== '7') {
             this.$message({
@@ -396,6 +389,8 @@ export default {
           computes: selection
         }
         checkCurveSample(data).then(response => {
+          this.curveOrderVisible = false
+          this.checkCouponVisible = true
           setTimeout(1.5 * 1000)
         })
       }
