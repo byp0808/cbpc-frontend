@@ -26,7 +26,7 @@
                 v-model="marketTempInfo.showArea"
                 value-key="value"
                 style="width:160px"
-                :disabled="disabled || marketTempInfo.dataMarket==='01'?true:false || tempInfodisabled"
+                :disabled="disabled || marketTempInfo.dataMarket==='01'?true:false || tempInfodisabled || defaultDisabled"
                 clearable
                 @change="getTwoAllcols"
               >
@@ -216,6 +216,7 @@ export default {
     return {
       disabled: '',
       tempInfodisabled: '',
+      defaultDisabled: true,
       tempInfoRules: {
         tempName: [
           { required: true, message: '请输入模板名称', trigger: 'blur' },
@@ -533,10 +534,16 @@ export default {
         this.queryColsInfo('1')
         // 清除展示区域内容
         this.marketTempInfo.showArea = ''
-      }
-      if (val === '02' && this.marketTempInfo.showArea !== '' && typeof this.marketTempInfo.showArea !== 'undefined') {
-        // 先选展示区域，后选行情市场时，查询初始字段信息、数字型字段列表
-        this.queryColsInfo('2')
+      } else {
+        if (val === '02') {
+          this.defaultDisabled = false
+          if (this.marketTempInfo.showArea !== '' && typeof this.marketTempInfo.showArea !== 'undefined') {
+            // 先选展示区域，后选行情市场时，查询初始字段信息、数字型字段列表
+            this.queryColsInfo('2')
+          }
+        } else {
+          this.defaultDisabled = true
+        }
       }
     },
     getTwoAllcols(val) {
