@@ -369,24 +369,13 @@ export default {
     },
     // 检查样本券
     checkCoupon() {
-      // 当前页面不是样本券页面，跳转前判断是否勾选曲线
+      // 当前页面不是样本券页面查看所有
       if (!this.checkCouponVisible) {
-        var selection = this.$refs.refCurveOrderList.selection
-        if (selection.length <= 0) {
-          selection = this.curveOrderList
-        }
-        for (const item of selection) {
-          if (item.buildStatus !== '7') {
-            this.$message({
-              type: 'error',
-              message: '只能选择已发布的曲线'
-            })
-            return false
-          }
-        }
         var data = {
-          action: '3',
-          computes: selection
+          curveName: this.queryForm.curveName,
+          buildStatus: this.queryForm.buildStatus,
+          buildType: this.queryForm.buildType,
+          orderId: this.orderId
         }
         checkCurveSample(data).then(response => {
           this.curveOrderVisible = false
