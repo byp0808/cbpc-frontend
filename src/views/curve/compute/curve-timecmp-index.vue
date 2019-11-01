@@ -54,7 +54,4 @@ export default {
 }
 </script>
 <style>
-.el-tabs__content {
-  display: none;
-}
 </style>

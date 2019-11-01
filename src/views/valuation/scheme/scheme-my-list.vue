@@ -110,6 +110,7 @@
               ref="upload"
               class="upload-demo"
               action=""
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               :limit="1"
               drag
               :on-exceed="handleExceed"
