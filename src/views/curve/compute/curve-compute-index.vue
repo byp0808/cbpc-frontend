@@ -60,7 +60,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .compute-tab .el-tabs__content {
   display: none;
 }
