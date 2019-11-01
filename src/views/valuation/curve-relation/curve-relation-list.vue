@@ -30,8 +30,8 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.id,scope.row.curveId,scope.row.relativeCurveId)">编辑</el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delCurveRelation(scope.row.id)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
+            <el-button v-if="scope.row.busiStatus==='02'" :disabled="scope.row.approveStatus === '01'?true:false" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
+            <el-button v-else-if="scope.row.busiStatus==='03'" :disabled="scope.row.approveStatus === '01'?true:false" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
           </template>
         </el-table-column>
       </el-table>

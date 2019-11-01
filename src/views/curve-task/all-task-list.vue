@@ -20,7 +20,7 @@
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-button type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
               <el-upload
-                style="display: inline-block;"
+                style="display: inline-block; float: right"
                 action=""
                 :multiple="false"
                 name="attach"
@@ -126,7 +126,6 @@ export default {
         search_curveName_LIKE: '',
         search_curveId_EQ: ''
       },
-      flag: false,
       uploadUrl: `${basic_api_curve}/curve/uploadCurveSolutions`,
       person: {
         username: '',
@@ -212,16 +211,18 @@ export default {
       this.dialogFormVisible = true
     },
     distribute() {
-      this.flag = false
+      let flag = false
       const ids = []
       this.results.map(v => {
-        if (this.person.username !== v.label) {
-          this.$message.warning('没有查到对应的责任人信息')
-          this.flag = true
+        if (this.person.username === v.label) {
+          flag = true
           return
         }
       })
-      if (!this.flag) {
+      if (flag === false) {
+        this.$message.error('没有查到对应的责任人信息!')
+      }
+      if (flag) {
         if (this.isMultiple) {
           this.multipleSelection.map(i => {
             ids.push(i.id)

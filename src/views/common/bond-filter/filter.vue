@@ -38,7 +38,7 @@
                 show-overflow-tooltip
               >
                 <template slot-scope="scope">
-                  <span v-for="(value,key) in scope.row.ruleValue" :key="key">{{ interestList[value] + ";" }}</span>
+                  <span v-for="(value,key) in scope.row.ruleValue" :key="key">{{ interestName(value) + ";" }}</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -72,11 +72,11 @@
             <div slot="header" class="clearfix card-head">
               <span>筛选结果<span class="text-smaller text-placeholder">共{{ bondListResult.length }}条</span></span>
               <el-input v-model="filterResult" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px" :disabled="disabled">
-                <el-button slot="append" icon="el-icon-search" />
+                <el-button slot="append" icon="el-icon-search" @click="search('result')" />
               </el-input>
             </div>
             <el-table
-              :data="bondListResult"
+              :data="resultGrid"
               style="width: 100%"
               fit
               height="300"
@@ -115,8 +115,8 @@
             <div slot="header" class="clearfix card-head">
               <div>黑名单</div>
               <div class="input-box">
-                <el-input v-model="blacklist" placeholder="请输入内容" size="mini" :disabled="disabled">
-                  <el-button slot="append" icon="el-icon-search" />
+                <el-input v-model="blackListSearch" placeholder="请输入内容" size="mini" :disabled="disabled">
+                  <el-button slot="append" icon="el-icon-search" @click="search('black')" />
                 </el-input>
               </div>
               <div>
@@ -131,12 +131,12 @@
                   <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
                 </el-upload>
               </div>
-              <!-- <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <!-- <el-input v-model="bondSearch" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input> -->
             </div>
             <el-table
-              :data="blackList"
+              :data="blackGrid"
               style="width: 100%"
               height="300"
               fit
@@ -188,8 +188,8 @@
             <div slot="header" class="clearfix card-head">
               <div>白名单</div>
               <div class="input-box">
-                <el-input v-model="whitelist" placeholder="请输入内容" size="mini" :disabled="disabled">
-                  <el-button slot="append" icon="el-icon-search" />
+                <el-input v-model="whiteListSearch" placeholder="请输入内容" size="mini" :disabled="disabled">
+                  <el-button slot="append" icon="el-icon-search" @click="search('white')" />
                 </el-input>
               </div>
               <div>
@@ -204,12 +204,12 @@
                   <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
                 </el-upload>
               </div>
-              <!-- <el-input v-model="input5" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
+              <!-- <el-input v-model="bondSearch" placeholder="请输入内容" size="mini" class="" style="width:200px;float: right;margin-right: 10px">
                 <el-button slot="append" icon="el-icon-search" />
               </el-input> -->
             </div>
             <el-table
-              :data="whiteList"
+              :data="whiteGrid"
               style="width: 100%"
               height="300"
               fit
@@ -245,8 +245,8 @@
       <el-col :span="8">
         <div class="grid-content bg-purple-light">
           <el-card class="box-card margin-top">
-            <el-input v-model="input5" placeholder="请输入内容" prefix-icon="el-icon-search" :disabled="disabled">
-              <el-button slot="append" icon="el-icon-search" />
+            <el-input v-model="bondSearchVal" placeholder="请输入内容" prefix-icon="el-icon-search" :disabled="disabled">
+              <el-button slot="append" icon="el-icon-search" @click="bondSearch" />
             </el-input>
             <el-table
               :data="bondListAll"
@@ -342,7 +342,7 @@
       </el-row>
       <el-row>
         <el-col :span="18" :offset="2">
-          <el-tag v-for="item in selectionList" :key="item" closable style="margin-right:10px" @close="handleClose(item)">{{ item.label }}</el-tag>
+          <el-tag v-for="item in selectionList" :key="item.value" closable style="margin-right:10px" @close="handleClose(item)">{{ item.label }}</el-tag>
         </el-col>
       </el-row>
       <el-row>
@@ -387,13 +387,12 @@ export default {
       whiteList: [],
       interest: [],
       setRuleData: '',
-      // interestList: ['上海', '北京', '广州', '深圳'],
-      // interestList: {
-      //   '1': '码值1',
-      //   '2': '码值2',
-      //   '3': '码值3',
-      //   '4': '码值4'
-      // },
+      interestListDefault: [
+        { value: '01', label: '码值1' },
+        { value: '02', label: '码值2' },
+        { value: '03', label: '码值3' },
+        { value: '04', label: '码值4' }
+      ],
       interestList: [
         { value: '01', label: '码值1' },
         { value: '02', label: '码值2' },
@@ -407,15 +406,49 @@ export default {
       setRuleDialog: false,
       editRuleIndex: '',
       filterResult: '', // 筛选结果
-      blacklist: '', // 黑名单
-      whitelist: '', // 白名单
-      input5: ''
+      filterResultFirm: '', // 筛选结果
+      blackListSearch: '', // 黑名单
+      blackListSearchFirm: '', // 黑名单
+      whiteListSearch: '', // 白名单
+      whiteListSearchFirm: '', // 白名单
+      bondSearchVal: ''
     }
   },
   computed: {
     tableWarningClass() {
       return function({ rowIndex, row }) {
         return row.className
+      }
+    },
+    interestName() {
+      return function(value) {
+        console.log(value)
+        const index = this.$lodash.findIndex(this.interestListDefault, { value: value })
+        if (index > -1) {
+          return this.interestListDefault[index].label
+        }
+        return ''
+      }
+    },
+    blackGrid() {
+      // this.blackList =
+      if (this.blackListSearchFirm) {
+        return this.blackList.filter(item => (~item.bondName.indexOf(this.blackListSearchFirm) < 0))
+      }
+      return this.blackList
+    },
+    whiteGrid() {
+      if (this.whiteListSearchFirm) {
+        return this.whiteList.filter(item => (~item.bondName.indexOf(this.whiteListSearchFirm) < 0))
+      }
+      return this.whiteList
+    },
+    resultGrid() {
+      // this.bondListResult = this.bondListResult.filter(item => (~item.valAssetShortName.indexOf(this.filterResult) >= 0))
+      if (this.filterResultFirm) {
+        return this.bondListResult.filter(item => (~item.valAssetShortName.indexOf(this.filterResultFirm) < 0))
+      } else {
+        return this.bondListResult
       }
     }
   },
@@ -451,19 +484,43 @@ export default {
       this.interestList.push(e)
       this.selectionList.splice(this.selectionList.indexOf(e), 1)
     },
-    search() {
-
+    search(type) {
+      switch (type) {
+        case 'black':
+          this.blackListSearchFirm = this.blackListSearch
+          // this.blackList = this.blackList.filter(item => (~item.valAssetShortName.indexOf(this.blackListSearch) >= 0))
+          break
+        case 'white':
+          this.whiteListSearchFirm = this.whiteListSearch
+          // this.whiteList = this.whiteList.filter(item => (~item.valAssetShortName.indexOf(this.whiteListSearch) >= 0))
+          break
+        case 'result':
+          this.filterResultFirm = this.filterResult
+          // this.bondListResult = this.bondListResult.filter(item => (~item.valAssetShortName.indexOf(this.filterResult) >= 0))
+          break
+      }
+      // console.log(search)
+      // console.log(dataList)
+      // dataList = dataList.filter(item => (~item.valAssetShortName.indexOf(search)))
+      // console.log(dataList)
+    },
+    bondSearch() {
+      this.queryBondsList({
+        valAssetShortName: this.bondSearchVal
+      })
     },
     saveRules() {
       let e = ''
       const that = this
-      this.ruleList[this.editRuleIndex].ruleValue = this.selectionList
+      const tempRuleValue = []
       this.$lodash(this.selectionList).forEach(function(value, key) {
-        e += "'" + value + "' eq #x"
+        e += "'" + value.value + "' eq #x"
         if (key < that.selectionList.length - 1) {
           e += ' || '
         }
+        tempRuleValue.push(value.value)
       })
+      this.ruleList[this.editRuleIndex].ruleValue = tempRuleValue
       console.log(e)
       this.ruleList[this.editRuleIndex].ruleValueE = e
       this.setRuleDialog = false
@@ -543,12 +600,16 @@ export default {
         })
         return false
       }
-      const rules = this.$lodash.clone(this.ruleList)
-      this.$lodash(rules).forEach(function(rule, index) {
-        if (rule.ruleValue && rule.ruleValue instanceof Array) {
-          rule.ruleValue = that.$lodash.join(rule.ruleValue, [';'])
+      // const rules = this.$lodash.clone(this.ruleList)
+      const rules = []
+      this.$lodash(this.ruleList).forEach(function(rule, index) {
+        const tempRule = that.$lodash.clone(rule)
+        if (tempRule.ruleValue && tempRule.ruleValue instanceof Array) {
+          tempRule.ruleValue = tempRule.$lodash.join(tempRule.ruleValue, [';'])
         }
+        rules.push(tempRule)
       })
+      console.log(this.ruleList)
       const data = {
         tempId: this.bondTempSelect.tempId,
         rules: rules,
@@ -558,6 +619,7 @@ export default {
         const { dataList } = response
         this.bondListResult = dataList
       })
+      console.log(this.ruleList)
     },
     empty() {
       this.$confirm('是否要清除所有条件', '提示', {
@@ -574,7 +636,7 @@ export default {
         this.bondListAll = []
         this.bondListResult = []
         this.filterResult = ''
-        this.input5 = ''
+        this.bondSearch = ''
         this.$message({
           type: 'success',
           message: '清除成功!'
@@ -586,8 +648,9 @@ export default {
         })
       })
     },
-    queryBondsList() {
-      queryBondsAll().then(response => {
+    queryBondsList(data) {
+      data = data || {}
+      queryBondsAll(data).then(response => {
         // const { dataList } = response
         this.bondListAll = response
       })

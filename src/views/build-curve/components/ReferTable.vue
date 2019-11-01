@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import List from './List'
+import List from '@/views/build-curve/components/List'
 import { subtract, divide } from '@/utils/math'
 export default {
   components: { List },

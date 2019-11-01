@@ -190,6 +190,7 @@ export default {
       this.marketTempFormVisible = true
     },
     copyAdd() {
+      this.opType = 'EDIT'
       this.marketTempId = this.copyTempId
       if (this.marketTempId === '') {
         this.$message({

@@ -7,6 +7,7 @@
           :name="productName"
           :curve-id="curveId"
           :order-id="orderId"
+          :edit="true"
           :show-division="true"
           :show-button="true"
           :options="homology"
@@ -278,7 +279,8 @@ export default {
     getOptions() {
       queryHomology({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
         this.homology = response.map(v => {
-          return { label: '[' + v.curveName + v.standSlip + 'Y]', value: '#' + '[' + v.curveShortName + v.standSlip + 'Y]', id: v.id }
+          const name = v.curveId === this.curveId ? '' : v.curveShortName
+          return { label: '[' + name + v.standSlip + 'Y]', value: '#' + '[' + name + v.standSlip + 'Y]', id: v.id }
         })
       })
     },

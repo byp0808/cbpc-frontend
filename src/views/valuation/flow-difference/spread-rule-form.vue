@@ -12,7 +12,9 @@
                 <el-option
                   v-for="item in spreadTypes"
                   :key="item.key"
-                  :value="item.value"
+                  :label="item.value"
+                  :value="item.key"
+                  :disabled="item.disabled"
                 />
               </el-select>
             </el-form-item>
@@ -57,10 +59,13 @@
         width="120"
       />
       <el-table-column
-        prop="marketGrad"
         label="市场隐含评级"
         width="200"
-      />
+      >
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ getMarketGrad(scope.row.marketGrad) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         label="期限区间"
         width="200"
@@ -90,9 +95,9 @@ export default {
       allSpreadParamList: [], // 所有规则列表
       assetsList: [], // 资产组列表
       spreadTypes: [
-        { key: '流动性点差', value: '流动性点差' },
-        { key: '信用点差', value: '信用点差' },
-        { key: '其他点差', value: '其他点差' }
+        { key: '01', value: '流动性点差', disabled: false },
+        { key: '02', value: '信用点差', disabled: true },
+        { key: '03', value: '其他点差', disabled: true }
       ],
       rules: {
         ruleName: [{ required: true, message: '请输入规则名称', trigger: 'blur' }],
@@ -149,6 +154,14 @@ export default {
           return false
         }
       })
+    },
+    getMarketGrad(marketGrad) {
+      switch (marketGrad) {
+        case '01': return 'AAA'
+        case '02': return 'AAA-'
+        case '03': return 'AA'
+        case '04': return 'AA'
+      }
     },
     handleSelectionChange(val) {
       this.spreadParamSelects = val

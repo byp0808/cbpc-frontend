@@ -124,7 +124,6 @@ export default {
     rowInterval() {
       const i = this.interval
       const h = this.highLight
-      console.log(h)
       return function({ rowIndex, columnIndex }) {
         if (h && h.length > 0 && h[rowIndex][columnIndex]) {
           return 'high-light'
@@ -141,7 +140,13 @@ export default {
       this.highLight = newlist.map(v => Array(Object.keys(v).length).fill(false))
     }
   },
+  created() {
+    this.makeHighLight()
+  },
   methods: {
+    makeHighLight() {
+      this.highLight = this.data.map(v => Array(Object.keys(v).length).fill(false))
+    },
     cellClick(row, column) {
       if (!this.editEnable) {
         return

@@ -12,14 +12,14 @@
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_2" label="单笔数额区间:">
-            <el-input v-model="paraform.para_2.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
-            <el-input v-model="paraform.para_2.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
+            <el-input v-model="paraform.para_2.minParaValue" style="width:100px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_2.maxParaValue" style="width:100px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_3" label="对敲价差区间:">
-            <el-input v-model="paraform.para_3.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
-            <el-input v-model="paraform.para_3.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
+            <el-input v-model="paraform.para_3.minParaValue" style="width:100px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_3.maxParaValue" style="width:100px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
       </el-row>
@@ -33,14 +33,14 @@
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_5" label="单笔数额区间:">
-            <el-input v-model="paraform.para_5.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
-            <el-input v-model="paraform.para_5.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
+            <el-input v-model="paraform.para_5.minParaValue" style="width:100px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_5.maxParaValue" style="width:100px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
         <el-col :span="7">
           <el-form-item prop="para_6" label="对敲价差区间:">
-            <el-input v-model="paraform.para_6.minParaValue" type="number" style="width:80px" :disabled="disabled" /> 到
-            <el-input v-model="paraform.para_6.maxParaValue" type="number" style="width:80px" :disabled="disabled" /> (万元)
+            <el-input v-model="paraform.para_6.minParaValue" style="width:100px" :disabled="disabled" /> 到
+            <el-input v-model="paraform.para_6.maxParaValue" style="width:100px" :disabled="disabled" /> (万元)
           </el-form-item>
         </el-col>
       </el-row>
@@ -48,7 +48,7 @@
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_7" label="净值偏差上限绝对值:">
-            <el-input v-model="paraform.para_7.paraValue" type="number" style="width:60px" /> /元
+            <el-input v-model="paraform.para_7.paraValue" style="width:100px" @change="notNullControl" /> /元
           </el-form-item>
         </el-col>
       </el-row>
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       disabled: false,
+      notNull: true,
       matchedParaList: [],
       paraform: {
         para_1: {
@@ -185,8 +186,8 @@ export default {
     queryParaList(data).then(response => {
       const { paraform } = response
       if (Object.keys(paraform).length !== 0) {
-        console.log(paraform)
-        this.paraform = paraform
+        // console.log(paraform)
+        this.setParaInfo(paraform)
       }
     })
   },
@@ -196,13 +197,28 @@ export default {
       this.$refs.Paraform.validate((valid) => {
         if (valid) {
           this.matchedParaList = []
-          this.matchedParaList.push(this.paraform.para_1)
-          this.matchedParaList.push(this.paraform.para_2)
-          this.matchedParaList.push(this.paraform.para_3)
-          this.matchedParaList.push(this.paraform.para_4)
-          this.matchedParaList.push(this.paraform.para_5)
-          this.matchedParaList.push(this.paraform.para_6)
-          this.matchedParaList.push(this.paraform.para_7)
+          console.log(this.paraform.para_1.paraValue.value)
+          if (this.paraform.para_1.paraValue.value !== '') {
+            this.matchedParaList.push(this.paraform.para_1)
+          }
+          if (this.paraform.para_2.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_2)
+          }
+          if (this.paraform.para_3.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_3)
+          }
+          if (this.paraform.para_4.paraValue.value !== '') {
+            this.matchedParaList.push(this.paraform.para_4)
+          }
+          if (this.paraform.para_5.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_5)
+          }
+          if (this.paraform.para_6.minParaValue) {
+            this.matchedParaList.push(this.paraform.para_6)
+          }
+          if (this.paraform.para_7.paraValue) {
+            this.matchedParaList.push(this.paraform.para_7)
+          }
           var data = []
           data = this.matchedParaList
           saveParaInfo(data).then(response => {
@@ -211,22 +227,27 @@ export default {
               type: 'success'
             })
           })
-          this.$options.methods.loadform()
+          // this.$options.methods.loadform()
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
+    notNullControl(val) {
+      if (val) {
+        this.notNull = false
+      }
+    },
     checkValue(rule, value, callback) {
-      if (value.paraValue.value === '') {
+      if (value.paraValue.value === '' && this.notNull) {
         callback(new Error('不能为空'))
       }
       callback()
     },
     checkFrameValue(rule, value, callback) {
       if (value.maxParaValue !== '') {
-        if (!value.minParaValue) {
+        if (!this.checkNull(value.minParaValue) && this.notNull) {
           callback(new Error('不能为空'))
         }
         // if (Number(value.minParaValue) < 0 || Number(value.maxParaValue) < 0) {
@@ -236,8 +257,11 @@ export default {
           callback(new Error('最大值不能小于最小值'))
         }
       }
-      if (value.minParaValue === '' && value.maxParaValue === '') {
+      if (!this.checkNull(value.minParaValue) && !this.checkNull(value.maxParaValue) && this.notNull) {
         callback(new Error('不能为空'))
+      }
+      if (!this.checkNum(value.minParaValue) || !this.checkNum(value.maxParaValue)) {
+        callback(new Error('必须为数字'))
       }
       callback()
     },
@@ -245,8 +269,53 @@ export default {
       const data = {}
       queryParaList(data).then(response => {
         const { paraform } = response
-        this.paraform = paraform
+        this.setParaInfo(paraform)
       })
+    },
+    setParaInfo(value) {
+      // console.log(value)
+      if (value.para_1) {
+        this.paraform.para_1 = value.para_1
+      }
+      if (value.para_2) {
+        this.paraform.para_2 = value.para_2
+      }
+      if (value.para_3) {
+        this.paraform.para_3 = value.para_3
+      }
+      if (value.para_4) {
+        this.paraform.para_4 = value.para_4
+      }
+      if (value.para_5) {
+        this.paraform.para_5 = value.para_5
+      }
+      if (value.para_6) {
+        this.paraform.para_6 = value.para_6
+      }
+      if (value.para_7) {
+        this.paraform.para_7 = value.para_7
+        this.notNull = false
+      }
+    },
+    checkNull(val) {
+      val = val.replace(/(^\s*)|(\s*$)/g, '')
+      if (!val) {
+        return false
+      }
+      return true
+    },
+    checkNum(val) {
+      if (!val) {
+        return true
+      }
+      // console.log(val)
+      var numReg = /\d/
+      var numRe = new RegExp(numReg)
+      if (!numRe.test(val)) {
+        // console.log(val)
+        return false
+      }
+      return true
     }
   }
 }

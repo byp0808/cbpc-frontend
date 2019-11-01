@@ -21,11 +21,11 @@ export function queryTempInfo(tempId) {
 }
 
 // 查询所有的债券
-export function queryBondsAll(bondName) {
+export function queryBondsAll(data) {
   return request({
     url: `${basic_api_market}/bond-info/allBonds`,
     method: 'post',
-    data: { bondName }
+    data
   })
 }
 

@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      selectList: ['成交报价'],
+      selectList: ['成交报价', '报价行情'],
       table: tableList,
       sale: {
         list: [],

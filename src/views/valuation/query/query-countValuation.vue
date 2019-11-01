@@ -27,7 +27,7 @@
         </el-col>
         <el-col :span="7">
           <el-form-item label="对应收益率曲线" prop="yieldCurve">
-            <el-select v-model="formData.yieldCurve" placeholder="请选择" clearable style="margin-left:12px">
+            <el-select v-model="formData.yieldCurve" multiple placeholder="请选择" clearable style="margin-left:12px">
               <el-option
                 v-for="item in yieldCurves"
                 :key="item.value"
@@ -70,7 +70,7 @@
         </el-col>
         <el-col :span="7">
           <el-form-item label="估值方法" prop="valuationMetnod">
-            <el-select v-model="formData.valuationMetnod" placeholder="请选择" clearable style="width:60%" :disabled="disable">
+            <el-select v-model="formData.valuationMethod" multiple placeholder="请选择" clearable style="width:60%" :disabled="disable">
               <el-option
                 v-for="item in valuationMetnods"
                 :key="item.value"
@@ -164,8 +164,8 @@ export default {
         bondShort: '', // 债券简称
         csin: '', // 债券代码
         bondQuality: '', // 债券品种
-        yieldCurve: '', // 收益率曲线
-        valuationMetnod: '', // 估值方法
+        yieldCurve: [], // 收益率曲线
+        valuationMethod: [], // 估值方法
         publisher: '' // 发行人
       },
       // 开始批次

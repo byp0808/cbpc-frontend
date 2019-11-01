@@ -1,5 +1,5 @@
 import request from '@/utils/app-request'
-import { basic_api_portal } from '@/api/base-api.js'
+import { basic_api_portal, basic_api_market } from '@/api/base-api.js'
 import { upload } from '@/utils/file-request.js'
 
 // 查字典
@@ -18,8 +18,17 @@ export function uploadFile(data) {
   form.append('zone', 'zz1')
   form.append('bucketName', 'app-bucket')
   return upload({
-    url: `${basic_api_portal}/pi-sys/common/attach/upload`,
+    url: `${basic_api_portal}/common/attach/upload`,
     method: 'post',
     data: form
+  })
+}
+
+// 查询批次列表
+export function queryBatches(data) {
+  return request({
+    url: `${basic_api_market}/order/all-list`,
+    method: 'post',
+    data
   })
 }

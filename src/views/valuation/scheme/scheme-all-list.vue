@@ -104,15 +104,98 @@
         </el-row>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="noValuationDialog" title="添加不估值">
+    <el-dialog v-loading="bondLoading" :visible.sync="noValuationDialog" title="添加不估值" width="1100px" @close="cancleValuation">
       <div>
-        <el-date-picker v-model="valuation.starTime" type="date" placeholder="请选择开始日期" />
+        <!-- <el-date-picker v-model="valuation.starTime" type="date" placeholder="请选择开始日期" />
         <el-date-picker v-model="valuation.endTime" type="date" placeholder="请结束开始日期" style="margin-left:20px" />
         <el-row style="margin-top:30px">
           <el-col :span="8" :offset="17">
             <div class="dialog-footer">
               <el-button @click="noValuationDialog = false">取 消</el-button>
               <el-button type="primary" @click="saveName">确 定</el-button>
+            </div>
+          </el-col>
+        </el-row> -->
+        <el-card class="box-card">
+          <div slot="header" class="clearfix card-head">
+            <h3 style="margin: 0">基本信息</h3>
+          </div>
+          <el-form ref="bondsNonpInfo" status-icon :model="bondsNonpInfo" :rules="rules" label-width="150px">
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <div class="grid-content bg-purple">
+                  <el-form-item label="ID">
+                    <el-input v-model="bondsNonpInfo.id" disabled />
+                  </el-form-item>
+                  <el-form-item label="资产概念分类">
+                    <el-input v-model="bondsNonpInfo.bondsConceptType" disabled />
+                  </el-form-item>
+                  <el-form-item
+                    prop="bondId"
+                    label="资产编码"
+                  >
+                    <el-input v-model="bondsNonpInfo.bondId" disabled placeholder="请输入资产编码" clearable />
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="grid-content bg-purple">
+                  <el-form-item label="最后操作人">
+                    <el-input v-model="bondsNonpInfo.lastUpdBy" disabled />
+                  </el-form-item>
+                  <el-form-item label="资产简称">
+                    <el-input v-model="bondsNonpInfo.bondsShortName" disabled />
+                  </el-form-item>
+                  <el-form-item label="流通场所" prop="marketId">
+                    <el-select v-model="bondsNonpInfo.marketId" disabled multiple style="width: 100%">
+                      <el-option
+                        v-for="(item, index) in filtedMarket"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.key"
+                        :disabled="item.disabled"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col :span="8">
+                <div class="grid-content bg-purple">
+                  <el-form-item label="最后操作时间">
+                    <el-input v-model="bondsNonpInfo.lastUpdTs" disabled />
+                  </el-form-item>
+                  <el-form-item label="发行人">
+                    <el-input v-model="bondsNonpInfo.bondsIssuer" disabled />
+                  </el-form-item>
+                  <el-form-item
+                    label="有效期（天）"
+                    prop="indate"
+                  >
+                    <el-input
+                      v-model.number="bondsNonpInfo.indate"
+                      placeholder="请输入有效期"
+                      clearable
+                    />
+                  </el-form-item>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="16">
+                <div class="grid-content bg-purple">
+                  <el-form-item label="不参与原因">
+                    <el-input v-model="bondsNonpInfo.cause" type="textarea" placeholder="请输入不参与原因" maxlength="500" show-word-limit />
+                  </el-form-item>
+                </div>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-card>
+        <el-row style="margin-top:30px">
+          <el-col :span="6" :offset="19">
+            <div class="dialog-footer">
+              <el-button @click="cancleValuation">取 消</el-button>
+              <el-button type="primary" @click="saveNovaluation">确 定</el-button>
             </div>
           </el-col>
         </el-row>
@@ -131,6 +214,7 @@
               ref="upload"
               class="upload-demo"
               action=""
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               :limit="1"
               drag
               :on-exceed="handleExceed"
@@ -172,6 +256,7 @@
               ref="upload1"
               class="upload-demo"
               action=""
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               :limit="1"
               drag
               :on-exceed="handleExceed1"
@@ -221,6 +306,33 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog :visible="confirmDialog.a" @close="confirmDialog.a = false">
+      <div>{{ resMsg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="2" :offset="21">
+          <el-button type="primary" @click="taskconfirm('S101', 'a')">确认</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible="confirmDialog.b" @close="confirmDialog.b = false">
+      <div>{{ resMsg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="8" :offset="16">
+          <el-button @click="taskconfirm('S201', 'b')">不认领</el-button>
+          <el-button type="primary" @click="taskconfirm('S202', 'b')">仍然认领</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible="confirmDialog.c" @close="confirmDialog.c = false">
+      <div>{{ resMsg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="12" :offset="12">
+          <el-button @click="taskconfirm('S301','c')">不认领</el-button>
+          <el-button type="primary" @click="taskconfirm('S302', 'c')">认领并保留</el-button>
+          <el-button type="primary" @click="taskconfirm('S303', 'c')">认领不保留</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -228,9 +340,9 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
-// import { downloadFile, upload } from '@/utils/file-request'
+import { upload } from '@/utils/file-request'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -241,7 +353,7 @@ export default {
   data() {
     return {
       activeElement: '01',
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      uploadUrl: `${basic_api_valuation}/task/batch-valu-scheme`,
       downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
       labelPosition: 'right',
       allocationDialog: false,
@@ -257,6 +369,7 @@ export default {
       isMy: false,
       message: '',
       code: '',
+      bondsNonpInfo: {},
       failMessage: '',
       taskTitle: '',
       excelFile: '',
@@ -264,6 +377,24 @@ export default {
       allList: [],
       selection: [],
       causeList: [],
+      bondLoading: false,
+      confirmDialog: {
+        a: false,
+        b: false,
+        c: false
+      },
+      filtedMarket: [],
+      rules: {
+        bondId: [{ required: true, message: '请输入资产编码', trigger: 'blur' }],
+        indate: [
+          { required: true, message: '请输入有效期', trigger: 'blur' },
+          { type: 'number', message: '请输入一个整数', trigger: 'blur' },
+          { validator: this.validDayRange, trigger: 'blur' }
+        ],
+        marketId: [
+          { required: true, message: '请选择流通场所', trigger: ['blur'] }
+        ]
+      },
       taskRule: {
         userId: [{ required: true, message: '请选择任务调整人', trigger: 'change' }]
       },
@@ -301,10 +432,10 @@ export default {
       },
       volumeAdd: {
         cause: '08',
-        batchId: '2222'
+        batchId: '11'
       },
       upLoadValution: {
-        batchId: '',
+        batchId: '11',
         excelFile: ''
       },
       nameList: [],
@@ -320,7 +451,9 @@ export default {
         },
         tab: '01',
         scene: '01'
-      }
+      },
+      taskParams: {},
+      resMsg: ''
     }
   },
   created() {
@@ -346,31 +479,60 @@ export default {
     // selectionList(data) {
     //   this.selection = data
     // },
+    validDayRange(rule, value, callback) {
+      if (parseInt(value) < 1 || parseInt(value) > 999999) {
+        callback(new Error('1天≤有效期≤999999天'))
+      } else {
+        callback()
+      }
+    },
     taskLists(data) {
       this.taskList = data
       console.log('dd', this.taskList)
     },
     getTask() {
-      console.log('data', this.selection)
       if (this.taskList.length === 0) {
         return this.$message.warning('请选择任务')
       } else {
         this.selectionCheck()
         this.taskLoading = true
-        getTask(this.selection).then(res => {
-          this.$message({
-            message: '任务认领成功',
-            type: 'success'
-          })
-          this.taskLoading = false
-          this.loadTable_all()
-          this.taskList = []
+        this.taskParams.ids = this.selection
+        getTask(this.taskParams).then(res => {
+          console.log('res', res)
+          this.resMsg = res.respMsg
+          if (res.respCode === '0') {
+            this.$message({
+              message: '任务认领成功',
+              type: 'success'
+            })
+            this.taskLoading = false
+            this.loadTable_all()
+            this.taskList = []
+            delete this.taskParams.busiCode
+            // return true
+          }
+          if (res.respCode === 'YBL100001104-1') {
+            this.confirmDialog.a = true
+            this.taskLoading = false
+          }
+          if (res.respCode === 'YBL100001104-2') {
+            this.confirmDialog.b = true
+          }
+          if (res.respCode === 'YBL100001104-3') {
+            this.confirmDialog.c = true
+            this.taskLoading = false
+          }
         }).catch(() => {
           this.taskLoading = false
         })
       }
     },
-
+    taskconfirm(e, dialog) {
+      this.taskParams.busiCode = e
+      this.getTask()
+      this.confirmDialog[dialog] = false
+      console.log('dialog', dialog)
+    },
     tabName(param) {
       switch (param) {
         case '01': return '正常'
@@ -439,6 +601,52 @@ export default {
     cancle() {
       this.remaindDialog = false
       this.volumeAddDialog = false
+    },
+    cancleValuation() {
+      this.noValuationDialog = false
+      this.bondsNonpInfo = {}
+    },
+    saveNovaluation() {
+      this.bondLoading = true
+      const data = Object.assign({}, this.bondsNonpInfo)
+      data.marketId = this.bondsNonpInfo.marketId.toString()
+      this.$refs['bondsNonpInfo'].validate(val => {
+        if (val) {
+          saveBond(data).then(res => {
+            this.bondLoading = false
+            this.$message.success('保存成功')
+            this.noValuationDialog = false
+            this.bondsNonpInfo = {}
+          }).catch(() => {
+            this.bondLoading = false
+            this.bondsNonpInfo = {}
+          })
+        }
+      })
+    },
+    saveValuation() {
+      if (!this.upLoadValution.batchId) {
+        return this.$message.info('请选择批次')
+      }
+      if (!this.upLoadValution.excelFile) {
+        return this.$message.warning('别着急, 您的文件还没有上传哦')
+      }
+      const fd = new FormData()
+      fd.append('data.attach', this.upLoadValution.excelFile)
+      fd.append('data.batchId', this.upLoadValution.batchId)
+      fd.append('data.tab', '01')
+      upload({
+        url: this.uploadUrl,
+        data: fd
+      }).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.methodUpload = false
+        this.uploadMethodDialog = false
+        this.loadTable_all()
+      })
     },
     saveBatch() {
       if (!this.volumeAdd.batchId) {
@@ -518,9 +726,7 @@ export default {
     downLoadBond() {
       this.$refs.DomDownload.click()
     },
-    saveValuation() {
-      this.resetBondDialog()
-    },
+
     handleExceed() {
       this.$message.warning('当前限制选择1个文件,请删除后继续上传')
     },
@@ -576,8 +782,28 @@ export default {
 
     },
     addBondsNonp() {
-      this.valuation.starTime = new Date()
-      this.noValuationDialog = true
+      if (this.taskList.length > 1) {
+        return this.$message.warning('最多选择一条任务')
+      }
+      if (this.taskList.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
+      const origin = this.$dict('MARKET')
+      // 初始化流通场所
+      for (const key in origin) {
+        const res = { key: key, name: origin[key] }
+        this.filtedMarket.push(res)
+      }
+      console.log('this.taskList', this.taskList)
+      const bondId = this.taskList[0].bondId
+      searchBond(bondId).then(res => {
+        this.noValuationDialog = true
+        this.bondsNonpInfo.bondId = res.bondId
+        this.bondsNonpInfo.bondsShortName = res.bondsShortName
+        this.bondsNonpInfo.bondsConceptType = res.bondsConceptType
+        this.bondsNonpInfo.bondsIssuer = res.bondsIssuer
+        this.bondsNonpInfo.marketId = res.marketIds
+      })
     },
     batchAddTask() {
       this.isBatch = true
@@ -586,6 +812,7 @@ export default {
       this.resetTaskDialog()
     },
     uploadScheme() {
+      this.resetBondDialog()
       this.uploadMethodDialog = true
     },
     downScheme() {
@@ -621,7 +848,7 @@ export default {
  .downLoad {
    margin-left: 70px;
    color: #09f;
-   margin-top: -10px;
+  //  margin-top: -10px;
     &:hover {
      cursor: pointer;
    }
