@@ -35,7 +35,7 @@
       <el-table-column label="资产编码" align="center" width="150">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.bondId }}</span> -->
-          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.bondId }}</span>
+          <span type="text" class="blue" @click="goBasic(scope.row)">{{ scope.row.assetCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="资产简称" align="center">
@@ -46,17 +46,17 @@
       </el-table-column>
       <el-table-column label="发行人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.date }}</span>
+          <span>{{ scope.row.bondPublisher }}</span>
         </template>
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.maketId }}</span>
+          <span>{{ $dft('MARKET', scope.row.marketId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券性质" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.assetDtlCategCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="含权说明" align="center">
@@ -67,11 +67,6 @@
       <el-table-column label="推荐方向" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.recoDire }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="估值方法" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
         </template>
       </el-table-column>
       <el-table-column label="隐含评级" align="center">
@@ -86,7 +81,7 @@
       </el-table-column>
       <el-table-column label="信用点差" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.spreadValue }}</span>
         </template>
       </el-table-column>
       <el-table-column label="相对点差" align="center">
@@ -106,7 +101,7 @@
       </el-table-column>
       <el-table-column label="总点差（变动）" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.chgSpread }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值收益率" align="center" width="110px">
@@ -121,12 +116,12 @@
       </el-table-column>
       <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.createdTs }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布批次" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.filterId }}</span>
+          <span>{{ scope.row.batchId }}</span>
         </template>
       </el-table-column>
     </el-table>
