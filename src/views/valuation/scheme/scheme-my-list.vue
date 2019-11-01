@@ -608,7 +608,7 @@ import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
-import { getCurveList, calculateExchange } from '@/api/valuation/scheme.js'
+import { getCurveList, calculateExchange, viewExchange } from '@/api/valuation/scheme.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -1139,12 +1139,12 @@ export default {
     },
     countcreditDiff() {
       this.$refs['creditDom'].validate(val => {
-        if (val) {
-          this.countTitle = '信用债点差调整'
-          this.isCredit = true
-          this.isLook = false
-          this.adjustDialog = true
-        }
+        // if (val) {
+        this.countTitle = '信用债点差调整'
+        this.isCredit = true
+        this.isLook = false
+        this.adjustDialog = true
+        // }
       })
     },
     lookcreditDiff() {
@@ -1163,7 +1163,6 @@ export default {
         calculateExchange(this.param).then(response => {
           this.islookOpposite = false
           this.$store.commit('scheme/setAdjustList', response)
-          console.log(response)
           this.oppositeDialog = true
         })
         // }
@@ -1171,10 +1170,13 @@ export default {
     },
     lookOpposite() {
       this.$refs['creditDom'].validate(val => {
-        if (val) {
+        // if (val) {
+        viewExchange(this.param).then(response => {
           this.islookOpposite = true
+          this.$store.commit('scheme/setAdjustList', response)
           this.oppositeDialog = true
-        }
+        })
+        // }
       })
     },
     upload() {
