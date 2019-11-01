@@ -534,6 +534,7 @@ export default {
         this.queryColsInfo('1')
         // 清除展示区域内容
         this.marketTempInfo.showArea = ''
+        this.defaultDisabled = true
       } else {
         if (val === '02') {
           this.defaultDisabled = false
