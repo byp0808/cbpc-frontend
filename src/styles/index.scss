@@ -134,11 +134,24 @@ aside {
 .pagination-container {
   margin-top: 30px;
 }
-
+.bigTitle { // 大标题
+  font-size: 22px;
+}
+.mainTitle { // 主标题
+  font-size: 24px;
+}
+.middTitle { // 中标题
+  font-size: 18px;
+}
+.smallTitle { // 小标题
+  font-size: 16px;
+}
+.assitTitle { // 辅助标题
+  font-size: 12px;
+}
 .text-center {
   text-align: center
 }
-
 .sub-navbar {
   height: 50px;
   line-height: 50px;

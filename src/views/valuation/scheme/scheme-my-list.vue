@@ -1281,6 +1281,7 @@ export default {
       fd.append('data.batchId', this.volumeAdd.batchId)
       fd.append('data.cause', this.volumeAdd.cause)
       fd.append('data.tab', '02')
+      fd.append('data.busiCode', type)
       addBatchTask(fd).then(res => {
         this.remaindDialog = false
         this.volumeAddDialog = false
