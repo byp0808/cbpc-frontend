@@ -8,8 +8,7 @@ export function selectFormulaType() {
     { value: '>=', label: '>=' },
     { value: '<=', label: '<=' },
     { value: '==', label: '==' },
-    { value: '!=', label: '!=' },
-    { value: '<>', label: '<>' }
+    { value: '!=', label: '!=' }
   ]
 }
 
