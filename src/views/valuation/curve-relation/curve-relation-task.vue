@@ -25,6 +25,7 @@ export default {
   data() {
     return {
       businessNo: '',
+      taskName: '',
       data: {},
       isCopy: false,
       disabled: true
@@ -32,6 +33,7 @@ export default {
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
+    this.taskName = this.$store.state.task.taskName
   },
   mounted() {
     this.$store.commit('task/clear')
@@ -47,7 +49,7 @@ export default {
         taskStatus: status,
         taskOpinions: '',
         taskType: '02',
-        taskName: this.$store.state.task.taskName
+        taskName: this.taskName
       }).then(response => {
         this.$message({
           message: '提交成功！',
