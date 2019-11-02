@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column label="资产编码" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.bondId }}</span>
+            <span>{{ scope.row.assetCode }}</span>
           </template>
         </el-table-column>
         <el-table-column label="资产简称" align="center">
@@ -70,12 +70,12 @@
         </el-table-column>
         <el-table-column label="进入时间" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.date }}</span>
+            <span>{{ scope.row.cptDate }}</span>
           </template>
         </el-table-column>
         <el-table-column label="发布批次" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.date }}</span>
+            <span>{{ scope.row.batchId }}</span>
           </template>
         </el-table-column>
       </el-table>

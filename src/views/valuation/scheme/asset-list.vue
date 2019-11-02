@@ -116,7 +116,7 @@
       </el-table-column>
       <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createdTs }}</span>
+          <span>{{ scope.row.cptDate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布批次" align="center">
