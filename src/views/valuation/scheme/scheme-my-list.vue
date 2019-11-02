@@ -157,6 +157,7 @@
               drag
               :on-exceed="handleExceed1"
               :http-request="memSuccess1"
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             >
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -260,7 +261,7 @@
             placeholder="请选择基准时间"
           />
         </el-form-item>
-        <el-form-item label="点差补0的券" prop="addZero">
+        <el-form-item label="点差补0的券">
           <!-- <el-input v-model="interestObj.addZero" style="width:50%" />
           <div class="icon-box" @click="addZero">
             <i class="el-icon-circle-plus-outline" />
@@ -268,11 +269,11 @@
           <el-upload
             style="display: inline-block;"
             action=""
-            :multiple="false"
             name="attach"
-            :http-request="upload"
-            :show-file-list="false"
-            :accept="'excel'"
+            :http-request="uploadAddZero"
+            :on-exceed="handleExceed1"
+            limit="1"
+            accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           >
             <div class="icon-box">
               <el-button class="el-icon-circle-plus-outline" />
@@ -393,7 +394,7 @@
           </el-col>
           <el-col :span="10" :offset="1">
             <el-form-item prop="reliableYearValue">
-              <el-input v-model="param.reliableYearValue" type="reliableYearValue" min="0" clearable @change="numberChange" />
+              <el-input v-model="param.reliableYearValue" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -934,10 +935,12 @@ export default {
       // }
     },
     checkCompare(rule, value, callback) {
-      if (this.params.todayBrokerMarketDiff < 0 || this.params.yesterdayBrokerMarketDiff < 0 || this.params.curveRangeBondDayDiff < 0 ||
-      this.params.reliableYearValue < 0 || this.params.valuationDeviationValue < 0 || this.params.transactionContinuityValue < 0 ||
-      this.params.historyScoreSum < 0) {
+      if (this.param.todayBrokerMarketDiff < 0 || this.param.yesterdayBrokerMarketDiff < 0 || this.param.curveRangeBondDayDiff < 0 ||
+      this.param.reliableYearValue < 0 || this.param.valuationDeviationValue < 0 || this.param.transactionContinuityValue < 0 ||
+      this.param.historyScoreSum < 0) {
         callback(new Error('输入的值不能小于0'))
+      } else {
+        callback()
       }
     },
     checkNumber(rule, value, callback) {
@@ -1200,13 +1203,13 @@ export default {
     },
     countOpposite() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        calculateExchange(this.param).then(response => {
-          this.islookOpposite = false
-          this.$store.commit('scheme/setAdjustList', response)
-          this.oppositeDialog = true
-        })
-        // }
+        if (val) {
+          calculateExchange(this.param).then(response => {
+            this.islookOpposite = false
+            this.$store.commit('scheme/setAdjustList', response)
+            this.oppositeDialog = true
+          })
+        }
       })
     },
     lookOpposite() {
@@ -1220,7 +1223,7 @@ export default {
         // }
       })
     },
-    upload() {
+    uploadAddZero() {
 
     },
     handleSelect(e) {

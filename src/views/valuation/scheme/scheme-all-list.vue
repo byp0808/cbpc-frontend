@@ -334,6 +334,15 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog :visible="confirmDialog.d" @close="confirmDialog.d = false">
+      <div>{{ resMsg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="8" :offset="16">
+          <el-button @click="confirmDialog.d = false">取消</el-button>
+          <el-button type="primary" @click="taskconfirm('S101', 'd')">忽略并导入</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -382,7 +391,8 @@ export default {
       confirmDialog: {
         a: false,
         b: false,
-        c: false
+        c: false,
+        d: false
       },
       filtedMarket: [],
       rules: {
@@ -538,6 +548,10 @@ export default {
           }
           if (res.respCode === 'YBL100001104-3') {
             this.confirmDialog.c = true
+            this.taskLoading = false
+          }
+          if (res.respCode === 'YBL100001015' || res.respCode === 'YBL100001016') {
+            this.confirmDialog.d = true
             this.taskLoading = false
           }
         }).catch(() => {
