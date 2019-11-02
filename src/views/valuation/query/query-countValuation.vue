@@ -126,11 +126,11 @@
       <el-pagination
         style="margin-top:20px"
         align="center"
-        :current-page="page.pageNumber"
+        :current-page="formData.page.pageNumber"
         :page-sizes="[5,10, 20, 30, 40, 50]"
-        :page-size="page.pageSize"
+        :page-size="formData.page.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalRecord"
+        :total="formData.page.totalRecord"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -166,7 +166,12 @@ export default {
         bondQuality: '', // 债券品种
         yieldCurve: [], // 收益率曲线
         valuationMethod: [], // 估值方法
-        publisher: '' // 发行人
+        publisher: '', // 发行人\
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       },
       // 开始批次
       startBatchs: [],
@@ -182,14 +187,7 @@ export default {
         { value: '01', label: 'DCF' },
         { value: '02', label: '清算法' },
         { value: '03', label: '本金法' }
-      ],
-      peopleList: [], // 人工估值列表（未分页）
-      methodList: [], // 估值点差方案列表（未分页）
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
-      }
+      ]
     }
   },
   beforeMount() {
@@ -212,46 +210,18 @@ export default {
     // 加载点差方案列表
     loadMethodList() {
       queryValuationScheme(this.formData).then(response => {
-        this.methodList = response
-        // 初始化分页对象（防止两个子页面分页数据混乱）
-        this.page = {
-          pageNumber: 1,
-          pageSize: 10,
-          totalRecord: 0
-        }
-        // 数据分页
-        this.pageData()
+        const { dataList, page } = response
+        this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
+        this.formData.page = page
       })
     },
     // 加载人工估值列表
     loadPeopleList() {
       queryPeopleValuation(this.formData).then(response => {
-        this.peopleList = response
-        // 初始化分页对象（防止两个子页面分页数据混乱）
-        this.page = {
-          pageNumber: 1,
-          pageSize: 10,
-          totalRecord: 0
-        }
-        // 数据分页
-        this.pageData()
+        const { dataList, page } = response
+        this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
+        this.formData.page = page
       })
-    },
-    // 前端分页
-    pageData() {
-      this.page.totalRecord =
-          this.activeElement === '01'
-            ? this.methodList.length
-            : this.peopleList.length
-      const start = (this.page.pageNumber - 1) * this.page.pageSize
-      const end = start + this.page.pageSize
-      const dataList =
-          this.activeElement === '01'
-            ? this.methodList.slice(start, end)
-            : this.peopleList.slice(start, end)
-      this.activeElement === '01'
-        ? this.$store.commit('queryValuationScheme/setValuationSchemeList', dataList)
-        : this.$store.commit('queryValuationScheme/setPeopleValuationList', dataList)
     },
     handleSelect(e) {
       this.disable = this.activeElement !== '01'
@@ -274,11 +244,11 @@ export default {
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
-      this.pageData()
+      this.load()
     },
     handleCurrentChange(currentPage) {
       this.page.pageNumber = currentPage
-      this.pageData()
+      this.load()
     }
   }
 }

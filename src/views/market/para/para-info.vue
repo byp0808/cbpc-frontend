@@ -62,9 +62,12 @@
 </template>
 <script>
 import { optioins } from '@/api/curve/code-type.js'
-import { queryParaList, saveParaInfo, getAppRoles } from '@/api/market/market-para.js'
+import { queryParaList, saveParaInfo } from '@/api/market/market-para.js'
+import elepermission from '@/directive/elepermission'
+
 export default {
   name: 'Paraform',
+  directives: { elepermission },
   data() {
     return {
       disabled: false,
@@ -166,18 +169,21 @@ export default {
     }
   },
   beforeMount() {
-    console.log(this.$store)
-    const data = {}
-    // 查询用户角色
-    data.appId = '01'
-    getAppRoles(data).then(response => {
-      const { roles } = response
-      // console.log(this.roles)
-      if (roles[0].roleName === '估值师') {
-        this.disabled = true
-      }
-    })
+    // console.log(this.$store.getters.roles.indexOf('ElementControl'))
+    if (this.$store.getters.roles.indexOf('ElementControl') === -1) {
+      this.disabled = true
+    }
 
+    // 查询用户角色
+    // data.appId = '01'
+    // getAppRoles(data).then(response => {
+    //   const { roles } = response
+    //   // console.log(this.roles)
+    //   if (roles[0].roleName === '估值师') {
+    //     this.disabled = true
+    //   }
+    // })
+    const data = {}
     queryParaList(data).then(response => {
       const { paraform } = response
       if (Object.keys(paraform).length !== 0) {

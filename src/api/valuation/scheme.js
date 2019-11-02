@@ -89,3 +89,13 @@ export function calculateExchange(data) {
     }
   )
 }
+// 查看对敲
+export function viewExchange(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/point-adjust/calculate-exchange`,
+      method: 'post',
+      data
+    }
+  )
+}
