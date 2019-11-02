@@ -352,7 +352,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond, searchBondNum } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
-import { upload } from '@/utils/file-request'
+import { upload, downloadFile } from '@/utils/file-request'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -364,7 +364,7 @@ export default {
     return {
       activeElement: '01',
       uploadUrl: `${basic_api_valuation}/task/batch-valu-scheme`,
-      downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/task/download-task`,
       labelPosition: 'right',
       allocationDialog: false,
       noValuationDialog: false,
@@ -858,9 +858,7 @@ export default {
       this.uploadMethodDialog = true
     },
     downScheme() {
-      // downloadFile(this.downloadUrl, this.params).then(res => {
-
-      // })
+      downloadFile(this.downloadUrl)
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize

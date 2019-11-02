@@ -1183,12 +1183,12 @@ export default {
     },
     countcreditDiff() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        this.countTitle = '信用债点差调整'
-        this.isCredit = true
-        this.isLook = false
-        this.adjustDialog = true
-        // }
+        if (val) {
+          this.countTitle = '信用债点差调整'
+          this.isCredit = true
+          this.isLook = false
+          this.adjustDialog = true
+        }
       })
     },
     lookcreditDiff() {
@@ -1214,13 +1214,13 @@ export default {
     },
     lookOpposite() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        viewExchange(this.param).then(response => {
-          this.islookOpposite = true
-          this.$store.commit('scheme/setAdjustList', response)
-          this.oppositeDialog = true
-        })
-        // }
+        if (val) {
+          viewExchange(this.param).then(response => {
+            this.islookOpposite = true
+            this.$store.commit('scheme/setAdjustList', response)
+            this.oppositeDialog = true
+          })
+        }
       })
     },
     uploadAddZero() {
