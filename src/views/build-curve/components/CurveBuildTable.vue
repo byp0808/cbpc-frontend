@@ -2,14 +2,14 @@
   <div class="line-table">
     <h3 class="orange">{{ name }}
       <span v-if="showButton">
-        <el-button v-if="lockEnabled" size="mini" circle @click="lockEnabled = false"><svg-icon icon-class="lock" /></el-button>
-        <el-button v-else size="mini" circle @click="lockEnabled = true"><svg-icon icon-class="unlock" /></el-button>
+        <el-button v-if="!lockStatus" size="mini" circle @click="toggleLock(true)"><svg-icon icon-class="unlock" /></el-button>
+        <el-button v-else size="mini" circle @click="toggleLock(false)"><svg-icon icon-class="lock" /></el-button>
       </span>
-      <span v-if="showButton && !lockEnabled" class="right">
-        <el-button size="mini" icon="el-icon-plus" @click="dialogEnable = true">加权选点</el-button>
-        <el-button v-if="confirmEnabled && !status" size="mini" type="primary" @click="confirmBuild">确认曲线</el-button>
-        <el-button v-else size="mini" type="danger" @click="refundBuild">回退</el-button>
-        <el-button v-if="confirmEnabled && !status" size="mini" type="danger" @click="resetBuild">重置</el-button>
+      <span v-if="showButton" class="right">
+        <el-button v-if="edit && !lockStatus" size="mini" icon="el-icon-plus" @click="dialogEnable = true">加权选点</el-button>
+        <el-button v-if="edit" size="mini" type="primary" @click="confirmBuild">确认曲线</el-button>
+        <el-button v-if="!edit" size="mini" type="danger" @click="refundBuild">回退</el-button>
+        <el-button v-if="edit" size="mini" type="danger" @click="resetBuild">重置</el-button>
       </span>
     </h3>
     <el-table :data="makeData" size="mini" :fit="false" class="no-hover-row">
@@ -46,7 +46,7 @@
           size="mini"
           :name="'homology'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled && edit"
+          :can-edit="editModeEnabled && !lockStatus && edit"
           close-event="change"
           @change-data="changeHomology"
         >
@@ -71,7 +71,7 @@
           oninput="value = value.replace(/[^\d]/g,'')"
           :name="'adjRange'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled && edit"
+          :can-edit="editModeEnabled && !lockStatus && edit"
           @change-data="changeData"
         >
           <span slot="content">{{ row.adjRange }}</span>
@@ -90,7 +90,7 @@
           oninput="value = value.replace(/[^\d.]/g,'')"
           :name="'adjResult'"
           :row-data="row"
-          :can-edit="editModeEnabled && !lockEnabled && edit"
+          :can-edit="editModeEnabled && !lockStatus && edit"
           @change-data="changeData"
         >
           <span slot="content">{{ row.adjResult }}</span>
@@ -194,6 +194,7 @@ import CustomHomology from '@/views/build-curve/components/CustomHomology'
 import { queryCurveKeyTerm } from '@/api/curve/curve-build'
 import { queryBondsAll } from '@/api/common/bond-filter'
 import { add, subtract, multiply, divide } from '@/utils/math'
+import { mapState } from 'vuex'
 
 const r = {
   bondNo: null,
@@ -222,6 +223,14 @@ export default {
       type: String,
       default: ''
     },
+    curveOrderId: {
+      type: String,
+      default: ''
+    },
+    curveTaskId: {
+      type: String,
+      default: ''
+    },
     name: {
       type: String,
       default: ''
@@ -241,10 +250,6 @@ export default {
     showButton: {
       type: Boolean,
       default: false
-    },
-    status: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -255,12 +260,15 @@ export default {
       weight: {},
       showResult: false,
       limit: [],
-      lockEnabled: false,
-      confirmEnabled: true,
       formulaRow: {}
     }
   },
   computed: {
+    ...mapState({
+      lockStatus: function(state) {
+        return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].lock : false
+      }
+    }),
     makeData() {
       return this.list
     },
@@ -290,11 +298,13 @@ export default {
     changeHomology(name, row) {
       if (row.homology === '') {
         this.formulaRow = row
-        console.log(row)
         this.customEnabled = true
         return
       }
       row.adjReason = '混合同调'
+      if (row.homology.includes('?')) {
+        row.adjReason = '自定义同调'
+      }
       if (/^#\[[\d.]+(Y|R|YR|BR|YBR)\]/g.test(row.homology)) {
         row.adjReason = '自身同调'
       }
@@ -369,24 +379,43 @@ export default {
       this.$emit('change-data', row)
       this.dialogEnable = false
     },
+    toggleLock(flag) {
+      this.$store.dispatch('curveBuild/lockData', {
+        curveId: this.curveId,
+        orderId: this.orderId,
+        curveOrderId: this.curveOrderId,
+        curveTaskId: this.curveTaskId,
+        lock: flag
+      })
+    },
     confirmBuild() {
       this.$confirm('此操作将确认曲线方案, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$emit('confirm-build')
-        this.confirmEnabled = false
+        this.$store.dispatch('curveBuild/confirmData', {
+          curveId: this.curveId,
+          orderId: this.orderId,
+          curveOrderId: this.curveOrderId,
+          curveTaskId: this.curveTaskId,
+          callback: () => this.$message({ type: 'success', message: '确认成功!' })
+        })
       })
     },
     refundBuild() {
-      this.$confirm('此操作将确认曲线方案, 是否继续?', '提示', {
+      this.$confirm('此操作将回退曲线方案, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$emit('refund-build')
-        this.confirmEnabled = true
+        this.$store.dispatch('curveBuild/refundData', {
+          curveId: this.curveId,
+          orderId: this.orderId,
+          curveOrderId: this.curveOrderId,
+          curveTaskId: this.curveTaskId,
+          callback: () => this.$message({ type: 'success', message: '退回成功!' })
+        })
       })
     },
     resetBuild() {
@@ -396,6 +425,13 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$emit('reset-build')
+        this.$store.dispatch('curveBuild/resetData', {
+          curveId: this.curveId,
+          orderId: this.orderId,
+          curveOrderId: this.curveOrderId,
+          curveTaskId: this.curveTaskId,
+          callback: () => this.$message({ type: 'success', message: '重置成功!' })
+        })
       })
     }
   }

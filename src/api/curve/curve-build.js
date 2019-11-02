@@ -99,3 +99,12 @@ export function resetBuild(data) {
     data: data
   })
 }
+
+// 锁定曲线编制方案
+export function lockBuild(data) {
+  return request({
+    url: `${basic_api_curve}` + '/scheme/lockCurveBuild',
+    method: 'post',
+    data: data
+  })
+}

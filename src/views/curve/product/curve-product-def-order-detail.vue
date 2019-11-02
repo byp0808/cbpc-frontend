@@ -85,7 +85,7 @@
 
     <el-table
       ref="orderTable"
-      :data="curvePrdKdList"
+      :data="curvePrdOrderKdList"
       tooltip-effect="dark"
       style="width: 100%"
     >
@@ -197,7 +197,7 @@ export default {
   name: 'CurveProductDefOrderDetailForm',
   components: {
   },
-  props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds', 'productInfo'],
+  props: ['disabled', 'orderName', 'orderIndex', 'orderData', 'curvePrdOrderKdList', 'curvePrdKdList', 'curvePrdOrderAutoList', 'autoPrdOrderKts', 'prdOrderAutoKds', 'productInfo'],
   data() {
     return {
       lockScroll: true,
@@ -373,7 +373,7 @@ export default {
     },
     // 获取关键期限
     getPrdKtList() {
-      return this.curvePrdKdList
+      return this.curvePrdOrderKdList
     },
     // 获取自动编制
     getPrdOrderAutoList() {
@@ -402,7 +402,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({ value }) => {
-        this.curvePrdKdList.splice(index, 1)
+        this.curvePrdOrderKdList.splice(index, 1)
       }).catch(() => {
         console.info('cancle')
       })
@@ -525,6 +525,7 @@ export default {
 
         // 增加当前产品关键期限
         this.curveKdsIntersection = []
+        // 从产品中获取关键期限，非当前批次关键期限
         if (this.curvePrdKdList && this.curvePrdKdList.length > 0) {
           for (let i = 0; i < this.curvePrdKdList.length; i++) {
             const item = this.curvePrdKdList[i]

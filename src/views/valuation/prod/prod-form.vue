@@ -71,12 +71,18 @@
           <el-col :span="8">
             <div class="grid-content bg-purple">
               <el-form-item label="编制日历">
-                <el-select v-model="prodInfo.calendar" placeholder="请选择编制日历" style="width: 100%">
-                  <el-option
+                <el-select v-model="prodInfo.calendar" multiple placeholder="请选择编制日历" style="width: 100%">
+                  <!-- <el-option
                     v-for="calendar in calendarList"
                     :key="calendar.id"
                     :label="calendar.name"
                     :value="calendar.id"
+                  /> -->
+                  <el-option
+                    v-for="(name, key) in $dict('CALENDAR')"
+                    :key="key"
+                    :label="name"
+                    :value="key"
                   />
                 </el-select>
               </el-form-item>
@@ -598,6 +604,9 @@ export default {
         if (valuationProd.currency) {
           valuationProd.currency = this.$lodash.split(valuationProd.currency, ';')
         }
+        if (valuationProd.calendar) {
+          valuationProd.calendar = this.$lodash.split(valuationProd.calendar, ';')
+        }
         that.$store.commit('valuationProd/setProdInfo', valuationProd)
       } else if (this.stepActive === 2) {
         this.getStandard()
@@ -739,7 +748,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const prodInfo = this.$lodash.clone(this.prodInfo)
+          console.log('11', prodInfo.currency)
           prodInfo.currency = this.$lodash.join(prodInfo.currency, [';'])
+          prodInfo.calendar = this.$lodash.join(prodInfo.calendar, [';'])
           this.save({ valuationProd: prodInfo }, '产品信息')
         } else {
           return false

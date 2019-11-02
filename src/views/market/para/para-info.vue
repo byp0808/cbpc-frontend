@@ -5,7 +5,7 @@
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_1" label="利率曲线：检测对敲行情的时间范围">
-            <el-select v-model="paraform.para_1.paraValue" value-key="value" style="width:100px" :disabled="disabled">
+            <el-select v-model="paraform.para_1.paraValue" style="width:100px" :disabled="disabled">
               <el-option v-for="item in timeFrameOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -26,7 +26,7 @@
       <el-row>
         <el-col :span="8" :offset="1">
           <el-form-item prop="para_4" label="信用曲线：检测对敲行情的时间范围">
-            <el-select v-model="paraform.para_4.paraValue" value-key="value" style="width:100px" :disabled="disabled">
+            <el-select v-model="paraform.para_4.paraValue" style="width:100px" :disabled="disabled">
               <el-option v-for="item in timeFrameOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -62,9 +62,12 @@
 </template>
 <script>
 import { optioins } from '@/api/curve/code-type.js'
-import { queryParaList, saveParaInfo, getAppRoles } from '@/api/market/market-para.js'
+import { queryParaList, saveParaInfo } from '@/api/market/market-para.js'
+import elepermission from '@/directive/elepermission'
+
 export default {
   name: 'Paraform',
+  directives: { elepermission },
   data() {
     return {
       disabled: false,
@@ -74,10 +77,7 @@ export default {
         para_1: {
           id: '',
           curveType: '01',
-          paraValue: {
-            label: '',
-            value: ''
-          },
+          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -105,10 +105,7 @@ export default {
         para_4: {
           id: '',
           curveType: '02',
-          paraValue: {
-            label: '',
-            value: ''
-          },
+          paraValue: '',
           paraBelongTo: 'O',
           minParaValue: '',
           maxParaValue: '',
@@ -172,17 +169,21 @@ export default {
     }
   },
   beforeMount() {
-    const data = {}
-    // 查询用户角色
-    data.appId = '01'
-    getAppRoles(data).then(response => {
-      const { roles } = response
-      // console.log(this.roles)
-      if (roles[0].roleName === '估值师') {
-        this.disabled = true
-      }
-    })
+    // console.log(this.$store.getters.roles.indexOf('ElementControl'))
+    if (this.$store.getters.roles.indexOf('ElementControl') === -1) {
+      this.disabled = true
+    }
 
+    // 查询用户角色
+    // data.appId = '01'
+    // getAppRoles(data).then(response => {
+    //   const { roles } = response
+    //   // console.log(this.roles)
+    //   if (roles[0].roleName === '估值师') {
+    //     this.disabled = true
+    //   }
+    // })
+    const data = {}
     queryParaList(data).then(response => {
       const { paraform } = response
       if (Object.keys(paraform).length !== 0) {
@@ -197,8 +198,7 @@ export default {
       this.$refs.Paraform.validate((valid) => {
         if (valid) {
           this.matchedParaList = []
-          console.log(this.paraform.para_1.paraValue.value)
-          if (this.paraform.para_1.paraValue.value !== '') {
+          if (this.paraform.para_1.paraValue) {
             this.matchedParaList.push(this.paraform.para_1)
           }
           if (this.paraform.para_2.minParaValue) {
@@ -207,7 +207,7 @@ export default {
           if (this.paraform.para_3.minParaValue) {
             this.matchedParaList.push(this.paraform.para_3)
           }
-          if (this.paraform.para_4.paraValue.value !== '') {
+          if (this.paraform.para_4.paraValue) {
             this.matchedParaList.push(this.paraform.para_4)
           }
           if (this.paraform.para_5.minParaValue) {
@@ -216,12 +216,15 @@ export default {
           if (this.paraform.para_6.minParaValue) {
             this.matchedParaList.push(this.paraform.para_6)
           }
+          // console.log(this.paraform.para_7)
           if (this.paraform.para_7.paraValue) {
             this.matchedParaList.push(this.paraform.para_7)
           }
           var data = []
           data = this.matchedParaList
           saveParaInfo(data).then(response => {
+            const { paraform } = response
+            this.setParaInfo(paraform)
             this.$message({
               message: '保存成功！',
               type: 'success'
@@ -274,26 +277,27 @@ export default {
     },
     setParaInfo(value) {
       // console.log(value)
+      var that = this
       if (value.para_1) {
-        this.paraform.para_1 = value.para_1
+        that.paraform.para_1 = value.para_1
       }
       if (value.para_2) {
-        this.paraform.para_2 = value.para_2
+        that.paraform.para_2 = value.para_2
       }
       if (value.para_3) {
-        this.paraform.para_3 = value.para_3
+        that.paraform.para_3 = value.para_3
       }
       if (value.para_4) {
-        this.paraform.para_4 = value.para_4
+        that.paraform.para_4 = value.para_4
       }
       if (value.para_5) {
-        this.paraform.para_5 = value.para_5
+        that.paraform.para_5 = value.para_5
       }
       if (value.para_6) {
-        this.paraform.para_6 = value.para_6
+        that.paraform.para_6 = value.para_6
       }
       if (value.para_7) {
-        this.paraform.para_7 = value.para_7
+        that.paraform.para_7 = value.para_7
         this.notNull = false
       }
     },

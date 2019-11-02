@@ -114,6 +114,13 @@
       :order-id="orderId"
       :visible.sync="checkCouponVisible"
     />
+    <el-row>
+      <el-col :span="3" :offset="9">未计算:{{computeInfo.uncomplate}}个</el-col>
+      <el-col :span="3">计算中: 0个</el-col>
+      <el-col :span="3">计算完成:{{computeInfo.complate}}个</el-col>
+      <el-col :span="3">计算出错:{{computeInfo.error}}个</el-col>
+      <el-col :span="3">总曲线个数:{{computeInfo.total}}个</el-col>
+    </el-row>
   </div>
 </template>
 <script>
@@ -136,6 +143,7 @@ export default {
         buildType: '1',
         buildStatus: ''
       },
+      computeInfo: {},
       curveOrderList: [],
       page: {
         pageNumber: 1,
@@ -154,8 +162,8 @@ export default {
     this.initOrderTable()
   },
   created() {
-    this.getCurveOrderComputeList()
-    this.calculatCompletionRate()
+    // this.getCurveOrderComputeList()
+    // this.calculatCompletionRate()
   },
   methods: {
     // 初始化批次计算列表
@@ -193,7 +201,14 @@ export default {
       }
       calculatCompletionRate(data).then(response => {
         if (typeof (response) !== 'undefined') {
-          this.percentage = Number(response)
+          this.percentage = Number(response.percent)
+          // 计算总数、出错数、计算完成数、计算中、未计算
+          // complate: "0", total: "4", uncomplate: "4", error: "0", percent: "0.00"}
+          this.computeInfo.total = response.total
+          this.computeInfo.complate = response.complate
+          this.computeInfo.uncomplate = response.uncomplate
+          this.computeInfo.error = response.error
+          this.computeInfo.percent = response.percent
         }
         setTimeout(1.5 * 1000)
       })
@@ -354,33 +369,17 @@ export default {
     },
     // 检查样本券
     checkCoupon() {
-      // 当前页面不是样本券页面，跳转前判断是否勾选曲线
+      // 当前页面不是样本券页面查看所有
       if (!this.checkCouponVisible) {
-        var selection = this.$refs.refCurveOrderList.selection
-        if (selection.length <= 0) {
-          this.$message({
-            type: 'error',
-            message: '请选择需要检查的曲线'
-          })
-          return false
-        }
-
-        this.curveOrderVisible = false
-        this.checkCouponVisible = true
-        for (const item of selection) {
-          if (item.buildStatus !== '7') {
-            this.$message({
-              type: 'error',
-              message: '只能选择已发布的曲线'
-            })
-            return false
-          }
-        }
         var data = {
-          action: '3',
-          computes: selection
+          curveName: this.queryForm.curveName,
+          buildStatus: this.queryForm.buildStatus,
+          buildType: this.queryForm.buildType,
+          orderId: this.orderId
         }
         checkCurveSample(data).then(response => {
+          this.curveOrderVisible = false
+          this.checkCouponVisible = true
           setTimeout(1.5 * 1000)
         })
       }

@@ -195,12 +195,6 @@ export default {
         })
       })
     },
-    disableEdit() {
-      this.$message({
-        type: 'warning',
-        message: '不能操作待审核状态的数据'
-      })
-    },
     add() {
       this.disabled = false
       this.relationId = ''

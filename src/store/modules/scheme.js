@@ -26,7 +26,8 @@ export default {
       cPrice: '',
       yield: '',
       ttmType: ''
-    }
+    },
+    adjustList: []
   },
   mutations: {
     setSchemeInfo(state, schemeInfo) {
@@ -38,6 +39,9 @@ export default {
     setMarketInfo(state, marketInfo) {
       state.marketInfo = marketInfo
     },
+    setAdjustList(state, adjustList) {
+      state.adjustList = adjustList
+    },
     clearSchemeInfo(state) {
       state.schemeInfo = state.defaultSchemeInfo
     },
@@ -48,6 +52,9 @@ export default {
         cPrice: '',
         yield: ''
       }
+    },
+    clearAdjustList(state) {
+      state.adjustList = []
     }
   },
   actions: {

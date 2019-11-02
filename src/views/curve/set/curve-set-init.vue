@@ -9,7 +9,7 @@
     <el-table :data="initCaseList" tooltip-effect="dark" style="width: 100%">
       <el-table-column label="曲线名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.ccdcCurvePrdInfo.productName }}</span>
+          <span>{{ scope.row.curveName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="初始化方案" align="center">
@@ -130,9 +130,8 @@ export default {
         console.info('====delInitList====')
         console.info('delInitList:' + item.id)
         delInitList(item.id).then(response => {
-          this.initCaseList.splice(index, 1)
           this.$message({
-            message: '操作成功！',
+            message: '发起删除流程成功！',
             type: 'success',
             showClose: true
           })

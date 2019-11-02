@@ -205,8 +205,8 @@ export default {
       }
       localStorage.setItem('ids', JSON.stringify(items))
       const uri = window.location.href.split('#')[0]
-      openWindow(uri + '#/curve-market', '曲线行情', 540, 540)
-      openWindow(uri + '#/build-curve', '编制曲线方案', 540, 540)
+      openWindow(uri + '?t=' + Math.floor(Math.random() * 100000 + 1) + '#/curve-market', '曲线行情', 540, 540)
+      openWindow(uri + '?t=' + Math.floor(Math.random() * 100000 + 1) + '#/build-curve', '编制曲线方案', 540, 540)
     }
   }
 }
