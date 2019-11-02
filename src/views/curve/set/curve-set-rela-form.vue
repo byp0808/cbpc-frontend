@@ -294,7 +294,7 @@ export default {
           if (response) {
             this.tempMain = response
             if (this.tempMain.dataStatus === '05') {
-              getRelaTempMain(tempMainId).then(response => {
+              getRelaTempMain(this.tempMain.relId).then(response => {
                 this.tempMain = response
               })
             }
