@@ -483,11 +483,19 @@ export default {
       }
     }
   },
+  created() {
+    // 在页面刷新时将vuex里的信息保存到localStorage里
+    window.addEventListener('beforeunload', () => {
+      if (this.prodId) {
+        localStorage.setItem('valuation-prod-id', this.prodId)
+      }
+    })
+  },
   beforeMount() {
     this.initData()
     // this.getStandard()
-    if (this.$store.state.valuationProd.prodId) {
-      this.prodId = this.$store.state.valuationProd.prodId
+    if (this.$store.state.valuationProd.prodId || localStorage.getItem('valuation-prod-id')) {
+      this.prodId = this.$store.state.valuationProd.prodId || localStorage.getItem('valuation-prod-id')
       this.initDetailData()
     }
   },

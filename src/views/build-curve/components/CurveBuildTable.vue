@@ -20,12 +20,12 @@
       </el-table-column>
       <el-table-column label="所选券" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.bondName }}</span>
+          <span>{{ credit ? row.bondName : row.bondNo }}</span>
         </template>
       </el-table-column>
       <el-table-column label="所选券期限" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.slip }}</span>
+          <span>{{ credit ? row.standSlip : row.slip }}</span>
         </template>
       </el-table-column>
       <el-table-column label="所选收益率" align="center">
@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column label="所选偏差值" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.deviation }}</span>
+          <span>{{ row.deviations }}</span>
         </template>
       </el-table-column>
       <el-table-column label="同调">
@@ -193,21 +193,9 @@ import EditableCell from '@/views/build-curve/components/EditableCell'
 import CustomHomology from '@/views/build-curve/components/CustomHomology'
 import { queryCurveKeyTerm } from '@/api/curve/curve-build'
 import { queryBondsAll } from '@/api/common/bond-filter'
-import { add, subtract, multiply, divide } from '@/utils/math'
+import { add, multiply, divide } from '@/utils/math'
 import { mapState } from 'vuex'
 
-const r = {
-  bondNo: null,
-  bondName: null,
-  slip: null,
-  yield: null,
-  deviations: null,
-  homology: null,
-  itemName: null,
-  itemNameEng: null,
-  itemType: null,
-  liveFlag: null
-}
 export default {
   components: { EditableCell, CustomHomology },
   props: {
@@ -267,6 +255,9 @@ export default {
     ...mapState({
       lockStatus: function(state) {
         return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].lock : false
+      },
+      credit: function(state) {
+        return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].confirm : false
       }
     }),
     makeData() {
@@ -277,23 +268,40 @@ export default {
       return l !== 7
     }
   },
+  mounted() {
+    window.addEventListener('storage', () => {
+      const obj = JSON.parse(localStorage.getItem('watchStorage'))
+      if (this.credit || (!this.credit && obj.slip === obj.standSlip)) {
+        if (obj.yield) {
+          obj.adjResult = obj.yield
+        }
+        if (obj.deviations) {
+          obj.adjRange = obj.deviations
+        }
+      }
+      obj.adjReason = obj.isMultiple ? '多券选点' : '单券选点'
+      obj.calcYield = !!obj.yield
+      console.log(obj)
+      this.$store.dispatch('curveBuild/updateData', obj)
+    })
+  },
   methods: {
     changeData(name, row) {
-      const _ = this.$lodash
+      const obj = {}
       if (name === 'adjRange') {
-        row = _.merge(row, r)
-        const value = row[name] || 0
-        row.adjRange = value
-        row.adjResult = add(row.lastYield, divide(value, 100))
-        row.adjReason = '手工调整'
+        obj.adjRange = row[name] || 0
+        obj.calcYield = false
+        obj.standSlip = row.standSlip
+        obj.curveId = this.curveId
+        obj.adjReason = '手工调整'
       } else if (name === 'adjResult') {
-        row = _.merge(row, r)
-        const value = row[name] || 0
-        row.adjResult = value
-        row.adjRange = multiply(subtract(value, row.lastYield), 100)
-        row.adjReason = '手工调整'
+        obj.adjResult = row[name] || 0
+        obj.calcYield = true
+        obj.standSlip = row.standSlip
+        obj.curveId = this.curveId
+        obj.adjReason = '手工调整'
       }
-      this.$emit('change-data', row)
+      this.$store.dispatch('curveBuild/updateData', obj)
     },
     changeHomology(name, row) {
       if (row.homology === '') {
@@ -301,22 +309,25 @@ export default {
         this.customEnabled = true
         return
       }
-      row.adjReason = '混合同调'
+      const obj = {}
+      obj.calcYield = true
+      obj.standSlip = row.standSlip
+      obj.homology = row.homology
+      obj.curveId = this.curveId
+      obj.adjReason = '混合同调'
       if (row.homology.includes('?')) {
-        row.adjReason = '自定义同调'
+        obj.adjReason = '自定义同调'
       }
       if (/^#\[[\d.]+(Y|R|YR|BR|YBR)\]/g.test(row.homology)) {
-        row.adjReason = '自身同调'
+        obj.adjReason = '自身同调'
       }
-      this.$emit('change-data', row)
+      this.$store.dispatch('curveBuild/updateData', obj)
     },
     historyDivision() {
       this.$emit('click-history-division')
     },
     customHomology(data) {
       this.customEnabled = false
-      data.adjReason = '自定义同调'
-      this.$emit('change-data', data)
     },
     openDialog() {
       queryCurveKeyTerm({ curveId: this.curveId, orderId: this.orderId }).then(response => {
@@ -371,12 +382,12 @@ export default {
         return
       }
       const _ = this.$lodash
-      let row = _.merge(this.list[index], r)
       const temp = add(multiply(this.weight.onePoint, this.weight.oneRate), multiply(this.weight.twoPoint, this.weight.twoRate))
       this.weight.yield = _.round(divide(temp, add(this.weight.onePoint, this.weight.twoPoint)), 2)
-      row = _.merge(row, { bondNo: this.weight.bondNo, bondName: this.weight.bondName, adjReason: '加权选点', adjResult: this.weight.yield,
+      const obj = _.merge({}, { bondNo: this.weight.bondNo, bondName: this.weight.bondName, adjReason: '加权选点', adjResult: this.weight.yield,
         itemName: '(' + this.weight.onePoint + '*' + this.weight.oneRate + '+' + this.weight.twoPoint + '*' + this.weight.twoRate + ')/(' + this.weight.onePoint + '+' + this.weight.twoPoint + ')' })
-      this.$emit('change-data', row)
+      obj.calcYield = true
+      this.$store.dispatch('curveBuild/updateData', obj)
       this.dialogEnable = false
     },
     toggleLock(flag) {

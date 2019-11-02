@@ -362,9 +362,13 @@ export default {
     save() {
       const _formula = this.formulaEditList.map(value => value.sceneFormula + ' ? ' + value.actionFormula + ' : ').join('') + '0'
       console.log(_formula)
-      const row = this.row
-      row.homology = _formula === '0' ? '-' : _formula
-      this.$emit('change-formula', row)
+      const obj = {}
+      obj.curveId = this.row.curveId
+      obj.standSlip = this.row.standSlip
+      obj.homology = _formula === '0' ? '-' : _formula
+      obj.adjReason = _formula === '0' ? '' : '自定义同调'
+      this.$store.dispatch('curveBuild/updateData', obj)
+      this.$emit('change-formula')
     },
     // 解析公式
     resolve(data) {

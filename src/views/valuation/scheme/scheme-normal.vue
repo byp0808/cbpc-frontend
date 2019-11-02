@@ -96,7 +96,7 @@
                 </el-table-column>
                 <el-table-column
                   prop="ttmValue"
-                  label="待尝期"
+                  label="待偿期"
                 />
                 <el-table-column
                   prop="dprice"
@@ -126,7 +126,7 @@
               >
                 <el-table-column
                   prop="date"
-                  label="待尝期"
+                  label="待偿期"
                   width="180"
                 />
                 <el-table-column
@@ -157,7 +157,7 @@
               >
                 <el-table-column
                   prop="date"
-                  label="待尝期"
+                  label="待偿期"
                 />
                 <el-table-column
                   prop="dPrice"
