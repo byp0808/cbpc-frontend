@@ -1,7 +1,21 @@
 import Vue from 'vue'
 import _ from 'lodash'
+import { add, subtract, multiply, divide } from '@/utils/math'
 import { queryCurveYield, resetBuild, saveCurveBuild, confirmBuild, refundBuild, lockBuild } from '@/api/curve/curve-build'
 
+const temp = {
+  bondNo: null,
+  bondName: null,
+  slip: null,
+  yield: null,
+  deviations: null,
+  homology: null,
+  itemName: null,
+  itemNameEng: null,
+  itemType: null,
+  liveFlag: null,
+  historyDivision: null
+}
 export default {
   namespaced: true,
   state: {
@@ -14,7 +28,7 @@ export default {
       const curveId = data.curveId
       Vue.set(state.curveBuildList, curveId, data.solutions)
       Vue.set(state.curveChartsList, curveId, data.yields)
-      Vue.set(state.curveStatus, curveId, { confirm: data.confirmStatus, lock: data.lockStatus })
+      Vue.set(state.curveStatus, curveId, { confirm: data.confirmStatus, lock: data.lockStatus, credit: data.credit })
     },
     UPDATE_BUILD(state, data) {
       const curveId = data.curveId
@@ -45,7 +59,17 @@ export default {
     updateInitData({ commit }, data) {
       commit('UPDATE_BUILD', data)
     },
-    updateData({ commit }, list) {
+    updateData({ commit, state }, obj) {
+      console.log(state.curveBuildList)
+      const list = state.curveBuildList[obj.curveId]
+      const i = list.findIndex(v => v.standSlip === obj.standSlip)
+      _.merge(list[i], temp, obj)
+      if (obj.calcYield) {
+        list[i].adjRange = multiply(subtract(list[i].adjResult, list[i].lastYield), 100)
+      } else {
+        list[i].adjResult = add(list[i].lastYield, divide(list[i].adjRange, 100))
+      }
+      console.log('=========>', list)
       saveCurveBuild(list).then(response => {
         commit('SET_BUILD', response)
       })

@@ -12,6 +12,8 @@
       :data="sale.list"
       :total="sale.total"
       :limit="limit"
+      :type="'1'"
+      :curve-id="curveId"
       @refresh-list="getSaleList"
     />
     <quote-table
@@ -21,6 +23,8 @@
       :data="quote.list"
       :total="quote.total"
       :limit="limit"
+      :type="'2'"
+      :curve-id="curveId"
       @refresh-list="getQuoteList"
     />
   </div>
@@ -82,6 +86,7 @@ export default {
     getQuoteList(page, search) {
       const searchParam = search || []
       searchParam.push({ colName: 'CURVE_ID', colType: 'String', operator: 'EQ', value: this.curveId })
+      searchParam.push({ colName: 'MTRTY', colType: 'Number', sort: 'ASC' })
       const _data = {
         page: page || { pageNumber: 1, pageSize: 100 },
         dataMarket: '02',
@@ -96,6 +101,7 @@ export default {
     getSaleList(page, search) {
       const searchParam = search || []
       searchParam.push({ colName: 'CURVE_ID', colType: 'String', operator: 'EQ', value: this.curveId })
+      searchParam.push({ colName: 'MTRTY', colType: 'Number', sort: 'ASC' })
       const _data = {
         page: page || { pageNumber: 1, pageSize: 100 },
         dataMarket: '02',
