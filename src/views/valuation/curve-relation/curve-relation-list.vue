@@ -23,7 +23,7 @@
         </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
+            {{ $dft('REVIEW_STATUS', scope.row.approveStatus) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">

@@ -33,7 +33,7 @@
                 width="100px"
               >
                 <template slot-scope="scope">
-                  {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
+                  {{ $dft('REVIEW_STATUS', scope.row.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -120,7 +120,7 @@
                 width="100px"
               >
                 <template slot-scope="scope">
-                  {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
+                  {{ $dft('REVIEW_STATUS', scope.row.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -211,7 +211,7 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  {{ $dft('APPROVE_STATUS', scope.row.spreadRule.approveStatus) }}
+                  {{ $dft('REVIEW_STATUS', scope.row.spreadRule.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -421,23 +421,35 @@ export default {
       this.paramsDialog = true
     },
     deleteRow(id) {
-      deleteAssetData(id).then(response => {
-        this.$message({
-          message: '删除成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteAssetData(id).then(response => {
+          this.assetTable()
         })
-        this.assetTable()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     deleteParams(id) {
-      deleteSpreadParam(id).then(response => {
-        this.$message({
-          message: '删除成功！',
-          type: 'success',
-          showClose: true
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteSpreadParam(id).then(response => {
+          this.spreadParamTable()
         })
-        this.spreadParamTable()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     deleteRule(id) {

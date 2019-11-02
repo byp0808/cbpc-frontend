@@ -83,8 +83,5 @@ export function getMode(arr) {
       mode.push(prop)
     }
   }
-  if (mode.length === Object.keys(countList).length) {
-    mode = []
-  }
   return mode
 }

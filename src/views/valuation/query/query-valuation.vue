@@ -387,11 +387,6 @@ export default {
       // allValuationResultList: [],
       // 页面表格数据（分页后）
       valuationResultList: []
-      // page: {
-      //   pageNumber: 1,
-      //   pageSize: 10,
-      //   totalRecord: 0
-      // }
     }
   },
   beforeMount() {
@@ -435,12 +430,12 @@ export default {
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-query-valuation')
     },
     handleSizeChange(pageSize) {
-      this.page.pageSize = pageSize
+      this.formData.page.pageSize = pageSize
       this.load()
       // this.pageData()
     },
     handleCurrentChange(currentPage) {
-      this.page.pageNumber = currentPage
+      this.formData.page.pageNumber = currentPage
       this.load()
       // this.pageData()
     }
