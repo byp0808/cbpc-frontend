@@ -130,9 +130,8 @@ export default {
         console.info('====delInitList====')
         console.info('delInitList:' + item.id)
         delInitList(item.id).then(response => {
-          this.initCaseList.splice(index, 1)
           this.$message({
-            message: '操作成功！',
+            message: '发起删除流程成功！',
             type: 'success',
             showClose: true
           })

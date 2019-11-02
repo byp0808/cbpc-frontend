@@ -307,23 +307,23 @@
         </el-table-column>
         <el-table-column align="center" label="全选" type="selection" />
       </el-table>
-      <el-form ref="creditDom" style="margin-top:20px" :rules="creditRule" :model="creditObject" :label-position="labelPosition">
+      <el-form ref="creditDom" style="margin-top:20px" :rules="creditRule" :model="param" :label-position="labelPosition">
         <el-form-item label="交易量" required>
           <el-col :span="9">
-            <el-form-item prop="starNumber">
+            <el-form-item prop="minVolume">
               <el-input v-model="param.minVolume" min="0" type="number" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
-            <el-form-item prop="endNumber">
+            <el-form-item prop="maxVolume">
               <el-input v-model="param.maxVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="本日经纪成交与市场收益率偏差(BP)" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="todayBrokerMarketOp">
               <el-select v-model="param.todayBrokerMarketOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -335,14 +335,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="todayBrokerMarketDiff">
               <el-input v-model="param.todayBrokerMarketDiff" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="昨日经纪成交与市场收益率偏差(BP)" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="yesterdayBrokerMarketOp">
               <el-select v-model="param.yesterdayBrokerMarketOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -354,14 +354,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="yesterdayBrokerMarketDiff">
               <el-input v-model="param.yesterdayBrokerMarketDiff" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="线的调整幅度与日间单券偏差只差(BP)" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="curveRangeBondDayOp">
               <el-select v-model="param.curveRangeBondDayOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -373,14 +373,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="curveRangeBondDayDiff">
               <el-input v-model="param.curveRangeBondDayDiff" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="同业存单可靠成交（报价）待偿期" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="reliableYearOp">
               <el-select v-model="param.reliableYearOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -392,14 +392,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="reliableYearValue">
               <el-input v-model="param.reliableYearValue" type="reliableYearValue" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="同业存单成交（报价）估值偏离" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="valuationDeviationOp">
               <el-select v-model="param.valuationDeviationOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -411,14 +411,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="valuationDeviationValue">
               <el-input v-model="param.valuationDeviationValue" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="同业存单成交（报价）连续阈值" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="transactionContinuityOp">
               <el-select v-model="param.transactionContinuityOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -430,14 +430,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="transactionContinuityValue">
               <el-input v-model="param.transactionContinuityValue" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
         <el-form-item label="同业存单发行人成交（报价）历史总分" label-width="260px" required>
           <el-col :span="11">
-            <el-form-item :rules="creditRule.symbol">
+            <el-form-item prop="historyScoreOp">
               <el-select v-model="param.historyScoreOp" placeholder="请选择">
                 <el-option
                   v-for="i in compare"
@@ -449,7 +449,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="1">
-            <el-form-item>
+            <el-form-item prop="historyScoreSum">
               <el-input v-model="param.historyScoreSum" type="number" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
@@ -737,16 +737,50 @@ export default {
         addZero: [{ required: true, message: '请上传点差补0的券', trigger: 'blur' }]
       },
       creditRule: {
-        starNumber: [
+        minVolume: [
           { required: true, message: '请输入最小数量', trigger: 'blur' },
           { validator: this.checkNumber, trigger: 'blur' }
         ],
-        endNumber: [
+        maxVolume: [
           { required: true, message: '请输入最大数量', trigger: 'blur' },
           { validator: this.checkNumber, trigger: 'blur' }
         ],
-        symbol: [{ required: true, message: '请选择比较规则', trigger: 'change' }],
-        number: [{ required: true, message: '请选择比较数值', trigger: 'change' }]
+        todayBrokerMarketOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        yesterdayBrokerMarketOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        curveRangeBondDayOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        reliableYearOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        valuationDeviationOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        historyScoreOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        transactionContinuityOp: [{ required: true, message: '请输入比较规则', trigger: 'change' }],
+        todayBrokerMarketDiff: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        yesterdayBrokerMarketDiff: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        curveRangeBondDayDiff: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        reliableYearValue: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        valuationDeviationValue: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        transactionContinuityValue: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ],
+        historyScoreSum: [
+          { required: true, message: '请输入比较数值', trigger: 'blur' },
+          { validator: this.checkCompare, trigger: 'blur' }
+        ]
+
       },
       rules: {
         batchId: [{ required: true, message: '请选择批次', trigger: 'change' }],
@@ -895,8 +929,15 @@ export default {
     },
     numberChange(e) {
       console.log('fff', e)
-      if (e < 0) {
-        this.$message.warning('输入的值不能小于0')
+      // if (e < 0) {
+      //   this.$message.warning('输入的值不能小于0')
+      // }
+    },
+    checkCompare(rule, value, callback) {
+      if (this.params.todayBrokerMarketDiff < 0 || this.params.yesterdayBrokerMarketDiff < 0 || this.params.curveRangeBondDayDiff < 0 ||
+      this.params.reliableYearValue < 0 || this.params.valuationDeviationValue < 0 || this.params.transactionContinuityValue < 0 ||
+      this.params.historyScoreSum < 0) {
+        callback(new Error('输入的值不能小于0'))
       }
     },
     checkNumber(rule, value, callback) {
@@ -908,11 +949,11 @@ export default {
           callback(new Error('最大交易量应大于最小交易量'))
         }
       }
-      if (this.creditObject.starNumber < 0 || this.creditObject.endNumber < 0) {
+      if (this.param.minVolume < 0 || this.param.maxVolume < 0) {
         callback(new Error('交易量应大于等于0'))
       }
-      if (this.creditObject.starNumber && this.creditObject.endNumber) {
-        if (this.creditObject.endNumber <= this.creditObject.starNumber) {
+      if (this.param.minVolume && this.param.maxVolume) {
+        if (this.param.maxVolume <= this.param.minVolume) {
           callback(new Error('最大交易量应大于最小交易量'))
         }
       }
