@@ -91,7 +91,7 @@ export default {
   },
   data() {
     return {
-      chartFutureOptions: {
+      chartOptions: {
         title: {
           text: ''
         },
@@ -118,50 +118,6 @@ export default {
             text: ''
           },
           gridLineWidth: 1
-        },
-        series: [
-          {
-            name: '今日',
-            data: []
-          }, {
-            name: '昨日',
-            data: []
-          }
-        ]
-      },
-      chartSpotOptions: {
-        title: {
-          text: ''
-        },
-        credits: {
-          enabled: false
-        },
-        legend: {
-          // layout: 'vertical',
-          // backgroundColor: '#ff5f96',
-          floating: true,
-          align: 'right',
-          verticalAlign: 'bottom',
-          x: -10,
-          y: 20
-        },
-        xAxis: {
-          title: {
-            text: ''
-          },
-          gridLineWidth: 1
-        },
-        yAxis: {
-          title: {
-            text: ''
-          },
-          gridLineWidth: 1
-        },
-        plotOptions: {
-          series: {
-            pointStart: 0,
-            pointInterval: 0.01
-          }
         },
         series: [
           {
@@ -220,14 +176,14 @@ export default {
       })
     },
     makeFutureData() {
-      const chartFutureOptions = this.chartFutureOptions
+      const chartFutureOptions = this.chartOptions
       chartFutureOptions.series[0].data = this.yields[0]
       chartFutureOptions.series[1].data = this.yields[1]
       console.log('future', chartFutureOptions.series)
       return chartFutureOptions
     },
     makeSpotData() {
-      const chartSpotOptions = this.chartSpotOptions
+      const chartSpotOptions = this.chartOptions
       chartSpotOptions.series[0].data = this.yields[2]
       chartSpotOptions.series[1].data = this.yields[3]
       console.log('spot', chartSpotOptions.series)
@@ -236,17 +192,12 @@ export default {
   },
   watch: {
     list: function(newlist, oldlist) {
-    },
-    yields: function(newlist, oldlist) {
+      console.log(newlist)
     }
   },
   created() {
   },
   mounted() {
-    window.addEventListener('storage', () => {
-      console.log(JSON.parse(localStorage.getItem('watchStorage')))
-      this.list[0].yield = JSON.parse(localStorage.getItem('watchStorage')).value
-    })
     this.getCurve()
     this.getReferCurve()
     this.getRelationCurve()
