@@ -9,7 +9,7 @@
     <el-table :data="initCaseList" tooltip-effect="dark" style="width: 100%">
       <el-table-column label="曲线名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.ccdcCurvePrdInfo.productName }}</span>
+          <span>{{ scope.row.curveName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="初始化方案" align="center">
