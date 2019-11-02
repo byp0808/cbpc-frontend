@@ -14,8 +14,9 @@
       >
         <el-button type="primary">导入</el-button>
       </el-upload>
-      <el-button type="primary" @click="batchDownload">批量下载</el-button>
-
+      <el-button type="primary" style="margin-left: 10px;" @click="batchDelete">删除</el-button>
+      <el-button type="primary" @click="batchDownload">下载</el-button>
+      <el-button type="primary" @click="batchPublish">发布</el-button>
     </div>
     <el-table
       ref="refReportList"
@@ -231,6 +232,82 @@ export default {
       }
       downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/report/download', res)
       this.loadTable()
+    },
+    batchDelete() {
+      const res = []
+      this.multipleSelection.forEach(obj => {
+        res.push(obj.id)
+      })
+      if (res.length === 0) {
+        this.$message({
+          message: '请选择至少一条数据进行操作！',
+          type: 'warning',
+          showClose: true
+        })
+        return false
+      }
+      let msg = ''
+      const that = this
+      this.multipleSelection.forEach(function(value, index, array) {
+        if (value.approveStatus !== '03') {
+          msg += '报表 [' + value.reportName + '] ' + that.showStatus(value.approveStatus) + '，无法删除;'
+        }
+      })
+      if (!msg) {
+        this.$confirm('确认删除吗?', '提示', {
+          type: 'warning'
+        }).then(() => {
+          deleteReport(res).then(response => {
+            this.$message({
+              message: '删除成功！',
+              type: 'success',
+              showClose: true
+            })
+            this.loadTable()
+          })
+        }).catch(() => {
+        })
+      } else {
+        this.$alert(msg, '提示')
+      }
+    },
+    batchPublish() {
+      const res = []
+      this.multipleSelection.forEach(obj => {
+        res.push(obj.id)
+      })
+      if (res.length === 0) {
+        this.$message({
+          message: '请选择至少一条数据进行操作！',
+          type: 'warning',
+          showClose: true
+        })
+        return false
+      }
+      let msg = ''
+      const that = this
+      this.multipleSelection.forEach(function(value, index, array) {
+        if (value.approveStatus !== '02') {
+          msg += '报表 [' + value.reportName + '] ' + that.showStatus(value.approveStatus) + '，无法发布;'
+        }
+      })
+      if (!msg) {
+        this.$confirm('确认发布报告吗?', '提示', {
+          type: 'info'
+        }).then(() => {
+          publishReport(res).then((response) => {
+            this.$message({
+              message: '发布成功！',
+              type: 'success',
+              showClose: true
+            })
+            this.loadTable()
+          }).catch(() => {
+          })
+        })
+      } else {
+        this.$alert(msg, '提示')
+      }
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
