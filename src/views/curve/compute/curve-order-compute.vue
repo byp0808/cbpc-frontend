@@ -401,6 +401,15 @@ export default {
         })
         return false
       }
+      for (var i = 0; i < selection.length; i++) {
+        if (selection[i].sampleCompStatus !== '2') {
+          this.$message({
+            type: 'error',
+            message: '请选择状态为已复核的数据'
+          })
+          return false
+        }
+      }
       var data = {
         action: '3',
         checkCoupons: selection
