@@ -78,7 +78,7 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
       console.info('curve-order-check-set-form.vue handleClick:')
-      this.activeName = this.orderList[0].id
+      // this.activeName = this.orderList[0].id
       this.qryCurveQcParm()
     },
 
