@@ -114,6 +114,7 @@
       <BondFilter
         ref="refBondFilter"
         :filter-id="prodInfo.bondFilterId"
+        :check-exclude="parentFilterId"
       />
       <div class="text-center margin-top">
         <!--<el-button type="primary" @click="back">上一步</el-button>-->
@@ -400,6 +401,16 @@ export default {
     }
   },
   computed: {
+    parentFilterId: {
+      get() {
+        const parentFilterIds = []
+        const parentFilterId = this.$store.state.valuationProd.parentFilterId
+        if (parentFilterId) {
+          parentFilterIds.push(parentFilterId)
+        }
+        return parentFilterIds
+      }
+    },
     prodInfo: {
       get() {
         return this.$store.state.valuationProd.prodInfo
@@ -413,11 +424,6 @@ export default {
         return this.$store.state.valuationProd.prodIndices.basicIndices
       }
     },
-    // compIndices: {
-    //   get() {
-    //     return this.$store.state.valuationProd.prodIndices.compIndices
-    //   }
-    // },
     basicIndicesResult: {
       get() {
         return this.$store.state.valuationProd.prodIndices.basicIndicesResult

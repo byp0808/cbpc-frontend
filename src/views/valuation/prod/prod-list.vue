@@ -69,7 +69,7 @@
           <el-button type="text" size="small" @click="toDetail(row.id)">查看</el-button>
           <el-button v-if="row.approveStatus != '01' && !row.relationId" type="text" size="small" @click="toEdit(row.id)">编辑</el-button>
           <el-button v-if="!row.approveStatus" type="text" size="small" @click="toDelete(row.id)">删除</el-button>
-          <el-button v-if="row.approveStatus != '01' && row.relationId" type="text" size="small" @click="toEdit(row.relationId)">进入草稿箱</el-button>
+          <el-button v-if="row.approveStatus != '01' && row.relationId" type="text" size="small" @click="toEdit(row.relationId, row.bondFilterId)">进入草稿箱</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -106,8 +106,11 @@ export default {
       this.$store.commit('valuationProd/clear')
       this.$router.push({ name: 'ValuationProdForm' })
     },
-    toEdit(prodId) {
+    toEdit(prodId, parentFilterId) {
       this.$store.commit('valuationProd/setProdId', prodId)
+      if (parentFilterId) {
+        this.$store.commit('valuationProd/setParentFilterId', parentFilterId)
+      }
       this.$router.push({ name: 'ValuationProdForm' })
     },
     toDetail(prodId) {

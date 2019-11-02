@@ -254,6 +254,11 @@ export default {
         await getInitId(this.initId).then(response => {
           if (response) {
             this.initInfo = response
+            if (this.initInfo.dataStatus === '05') {
+              getInitId(this.initInfo.relId).then(response => {
+                this.initInfo = response
+              })
+            }
           }
         })
       }

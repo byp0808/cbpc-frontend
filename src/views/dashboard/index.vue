@@ -361,6 +361,7 @@ export default {
     },
     toApproval(businessNo, taskName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
+      this.$store.commit('task/setTaskStatus', '01')
       this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },

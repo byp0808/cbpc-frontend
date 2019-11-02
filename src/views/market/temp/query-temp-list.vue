@@ -70,7 +70,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
-    <el-dialog v-if="marketTempFormVisible" width="80%" top="5vh" :visible.sync="marketTempFormVisible" :close="closeDialog">
+    <el-dialog v-if="marketTempFormVisible" width="80%" top="2vh" :visible.sync="marketTempFormVisible" :close="closeDialog">
       <marketTempForm
         ref="MarketTempForm"
         :market-temp-data="marketTempData"
@@ -184,6 +184,8 @@ export default {
     },
     toAdd() {
       // console.log('toAdd')
+      this.disabled = false
+      this.isCopy = false
       this.marketTempId = ''
       this.opType = 'EDIT'
       this.$store.commit('marketTemp/setMarketTempInfo', {})
