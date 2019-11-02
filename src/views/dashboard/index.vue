@@ -76,7 +76,7 @@
                   <el-button
                     type="text"
                     size="small"
-                    @click.native.prevent="toApproval(scope.row.businessNo, scope.row.businessRouter)"
+                    @click.native.prevent="toApproval(scope.row.businessNo,scope.row.taskName, scope.row.businessRouter)"
                   >
                     审核
                   </el-button>
@@ -359,9 +359,10 @@ export default {
     queryTaskList() {
       this.$store.dispatch('homePage/queryTaskList')
     },
-    toApproval(businessNo, router) {
+    toApproval(businessNo, taskName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
       this.$store.commit('task/setTaskStatus', '01')
+      this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },
     getCalendarName(code) {

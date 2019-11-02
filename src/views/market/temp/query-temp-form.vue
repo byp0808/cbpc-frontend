@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <el-row :gutter="1" style="height: 1000px">
+    <el-row :gutter="1" style="height: 650px">
       <el-col :span="6">
         <el-card class="box-card margin-top calendar-job">
           <el-form ref="MarketTempForm" :model="marketTempInfo" :rules="tempInfoRules">
@@ -33,7 +33,7 @@
                 <el-option v-for="item in showAreaOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            <br><br><br><br><br><br><br><br><br><br><br>
             <el-form-item label="最后操作人" class="blackItem">
               <el-input v-model="marketTempInfo.lastUpdBy" disabled style="width:165px" size="mini" />
             </el-form-item>
@@ -44,14 +44,14 @@
         </el-card>
       </el-col>
       <el-col :span="11">
-        <el-row style="height: 600px">
+        <el-row>
           <el-card class="box-card margin-top calendar-job">
             <el-table
               ref="marketTempTable"
               :data="colData"
               tooltip-effect="dark"
               style="width: 100%"
-              height="550"
+              height="275px"
               :header-cell-style="tableHeaderColor"
             >
               <el-table-column
@@ -130,8 +130,8 @@
         <el-row>
           <el-card class="box-card margin-top calendar-job">
             <el-row>
-              <el-col :offset="3">
-                <el-form ref="extendColForm" :model="extendColInfo" :rules="tempInfoRules">
+              <el-col :offset="4">
+                <el-form ref="extendColForm" :model="extendColInfo" :rules="tempInfoRules" style="height: 200px">
                   <el-form-item label="字段名称" class="blackItem">&emsp;&emsp;&emsp;
                     <el-input v-model="extendColInfo.colChiName" :disabled="disabled" size="mini" style="width:180px" />
                   </el-form-item>
@@ -181,7 +181,7 @@
               :data="colDataResult"
               tooltip-effect="dark"
               style="width: 100%"
-              height="800"
+              height="512"
               :header-cell-style="tableHeaderColor"
             >
               <el-table-column
