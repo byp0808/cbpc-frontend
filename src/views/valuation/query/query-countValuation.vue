@@ -243,11 +243,11 @@ export default {
         : downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_valuation}` + '/query/download-people-valuation')
     },
     handleSizeChange(pageSize) {
-      this.page.pageSize = pageSize
+      this.formData.page.pageSize = pageSize
       this.load()
     },
     handleCurrentChange(currentPage) {
-      this.page.pageNumber = currentPage
+      this.formData.page.pageNumber = currentPage
       this.load()
     }
   }

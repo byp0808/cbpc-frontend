@@ -5,18 +5,18 @@ import { basic_api_portal } from '@/api/base-api.js'
 // 查询模板列表
 export function queryTempList(data) {
   return request({
-    url: `${basic_api_market}/bond-filter/tpl-list`,
-    method: 'get',
-    params: {}
+    url: `${basic_api_market}/tmpl-filter/tpl-list`,
+    method: 'post',
+    data
   })
 }
 
 // 查询模板列表
-export function queryTempInfo(tempId) {
+export function queryTempInfo(data) {
   return request({
-    url: `${basic_api_market}/bond-filter/tpl-view`,
-    method: 'get',
-    params: { tempId }
+    url: `${basic_api_market}/tmpl-filter/tpl-view`,
+    method: 'post',
+    data
   })
 }
 

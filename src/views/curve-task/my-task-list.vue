@@ -176,6 +176,7 @@ export default {
         type: 'warning'
       }).then(() => {
         refundCurveTask({ ids, assign: null, assignName: null }).then(() => {
+          this.$message.success('退回成功!')
           this.getList()
         })
       }).catch(() => {
