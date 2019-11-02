@@ -3,6 +3,7 @@ export default {
   namespaced: true,
   state: {
     prodId: '',
+    parentFilterId: '',
     prodInfo: {
       prodStatus: '',
       currency: []
@@ -45,6 +46,9 @@ export default {
     },
     setProdId(state, prodId) {
       state.prodId = prodId
+    },
+    setParentFilterId(state, parentFilterId) {
+      state.parentFilterId = parentFilterId
     },
     setProdInfo(state, prodInfo) {
       state.prodInfo = prodInfo

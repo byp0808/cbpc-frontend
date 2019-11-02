@@ -28,7 +28,7 @@ export default {
   computed: {
     taskStatus: {
       get() {
-        return this.$store.state.task.taskAudit
+        return this.$store.state.task.taskStatus
       }
     }
   },

@@ -31,7 +31,11 @@
                 label="规则指标"
                 width="180"
                 show-overflow-tooltip
-              />
+              >
+                <template slot-scope="scope">
+                  <span>{{ ruleIndex[scope.row.ruleCode] }}</span>
+                </template>
+              </el-table-column>
               <el-table-column
                 prop="ruleValue"
                 label="规则值"
@@ -370,6 +374,12 @@ export default {
       type: String,
       default: ''
     },
+    checkExclude: {
+      type: Array,
+      default: function() {
+        return null
+      }
+    },
     disabled: {
       type: Boolean,
       default: false
@@ -401,17 +411,19 @@ export default {
       ],
       selectionList: [],
       ruleList: [],
+      ruleIndex: {},
       bondListAll: [],
       bondListResult: [],
       setRuleDialog: false,
-      editRuleIndex: '',
+      editRuleIndex: [],
       filterResult: '', // 筛选结果
       filterResultFirm: '', // 筛选结果
       blackListSearch: '', // 黑名单
       blackListSearchFirm: '', // 黑名单
       whiteListSearch: '', // 白名单
       whiteListSearchFirm: '', // 白名单
-      bondSearchVal: ''
+      bondSearchVal: '',
+      repeatBonds: {} // 重复债券
     }
   },
   computed: {
@@ -460,7 +472,19 @@ export default {
     }
   },
   beforeMount() {
+    const that = this
     this.tempList()
+    queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+      // const ruleList = []
+      this.$lodash(response).forEach(function(value, index) {
+        that.ruleIndex[value.paraName] = value.paraValue
+        // ruleList.push({
+        //   ruleCode: value.paraName,
+        //   ruleName: value.paraValue
+        // })
+      })
+      // this.ruleIndex = ruleList
+    })
     this.loading()
   },
   methods: {
@@ -566,22 +590,11 @@ export default {
         type: 'warning'
       }).then(() => {
         this.queryBondsList()
-        queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
-          const ruleList = []
-          this.$lodash(response).forEach(function(value, index) {
-            ruleList.push({
-              ruleCode: value.paraName,
-              ruleName: value.paraValue,
-              ruleValue: '',
-              ruleValueE: ''
-            })
-          })
-          this.ruleList = ruleList
-        })
         queryTempInfo(this.bondTempSelect.tempId).then(response => {
-          // const { black, white } = response
-          // this.blackList = black
-          // this.whiteList = white
+          const { black, white, rules } = response
+          this.blackList = black
+          this.whiteList = white
+          this.ruleList = rules
           this.bondListResult = []
         })
       }).catch(() => {
@@ -636,7 +649,9 @@ export default {
         this.bondListAll = []
         this.bondListResult = []
         this.filterResult = ''
-        this.bondSearch = ''
+        this.blackListSearch = ''
+        this.whiteListSearch = ''
+        this.bondSearchVal = ''
         this.$message({
           type: 'success',
           message: '清除成功!'
@@ -746,6 +761,9 @@ export default {
     bwListCheck(dataList, data) {
       return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.exchng })
     },
+    getRepead() {
+      return this.repeatBonds
+    },
     getData(busiCode) {
       const that = this
       const rules = this.$lodash.clone(this.ruleList)
@@ -764,13 +782,17 @@ export default {
         this.$message.error('您还未选择任何筛选条件,请先选择筛选条件')
         return false
       }
+      if (this.checkExclude && this.checkExclude.length > 0) {
+        data.excludeFilter = this.checkExclude
+      }
       return new Promise((resolve, reject) => {
         if (!this.check()) {
           this.$message.error('您有债券同时存在于黑白名单列表中请检查')
           return false
         }
         checkRepeat(data).then(response => {
-          if (response && response.length > 0) {
+          if (response && Object.keys(response).length > 0) {
+            this.repeatBonds = response
             this.$message.error('债券已经存在其他同业务筛选器范围中')
             this.$lodash(response).forEach(function(value, key) {
               const index = that.$lodash.findIndex(that.bondListResult, { csin: value.csin, marketId: value.marketId })
