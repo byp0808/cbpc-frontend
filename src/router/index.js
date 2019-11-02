@@ -142,11 +142,13 @@ export const asyncRoutes = [
   {
     path: '/build-curve',
     component: () => import('@/views/build-curve/'),
+    meta: { title: '曲线编制', noCache: true },
     hidden: true
   },
   {
     path: '/curve-market',
     component: () => import('@/views/build-curve/market'),
+    meta: { title: '行情选点', noCache: true },
     hidden: true
   },
   // {
