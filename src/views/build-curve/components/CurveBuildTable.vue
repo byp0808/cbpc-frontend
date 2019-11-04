@@ -111,7 +111,7 @@
           <el-button size="mini" @click="historyDivision">历史分位点</el-button>
         </template>
         <template slot-scope="{ row }">
-          <span>{{ row.historyDivision }}</span>
+          <span>{{ row.historyDivision ? row.historyDivision + '%' : '' }}</span>
         </template>
       </el-table-column>
     </el-table>
