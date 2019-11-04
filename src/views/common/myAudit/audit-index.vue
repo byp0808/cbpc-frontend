@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-tabs v-model="activeName" type="card" @tab-click="tabClick">
       <el-tab-pane v-if="routerName === 'auditApprove' || routerName === 'auditAll'" label="我的审核" name="01" />
-      <el-tab-pane v-if="routerName === 'auditReview'" label="我的复核" name="01" />
-      <el-tab-pane v-if="routerName === 'auditAll'" label="我的复核" name="02" />
+      <el-tab-pane v-if="routerName === 'auditReview' || routerName === 'auditAll'" label="我的复核" name="02" />
+      <!-- <el-tab-pane v-if="routerName === 'auditAll'" label="我的复核" name="02" /> -->
     </el-tabs>
     <transition name="el-fade-in-linear">
       <div>
@@ -26,6 +26,9 @@ export default {
   },
   created() {
     this.routerName = this.$route.name
+    if (this.$route.name === 'auditReview') { // 复核时tab高亮
+      this.activeName = '02'
+    }
   },
   methods: {
     tabClick(e) {
