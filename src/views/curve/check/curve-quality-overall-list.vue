@@ -193,18 +193,27 @@ export default {
       })
     },
     fallbackContact(index, rows) {
-      var data = {
-        taskPKId: rows[index].taskPKId
-      }
-      fallbackContact(data).then(response => {
-        this.$message({
-          type: 'success',
-          message: '操作成功',
-          showClose: true
+      this.$confirm('是否确认退回', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        var data = {
+          taskPKId: rows[index].taskPKId
+        }
+        fallbackContact(data).then(response => {
+          this.$message({
+            type: 'success',
+            message: '操作成功',
+            showClose: true
+          })
+          this.qryCurveOverallQcRpt()
+          this.qryCurveOverallNum()
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1.5 * 1000)
         })
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+      }).catch(() => {
+        console.info('cancle')
       })
     },
     singleRoute(index, rows) {

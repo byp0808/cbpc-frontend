@@ -77,25 +77,3 @@ export function convertSpread(data) {
     }
   )
 }
-
-// 信用债点差调整
-// 计算对敲
-export function calculateExchange(data) {
-  return request(
-    {
-      url: `${basic_api_valuation}/point-adjust/calculate-exchange`,
-      method: 'post',
-      data
-    }
-  )
-}
-// 查看对敲
-export function viewExchange(data) {
-  return request(
-    {
-      url: `${basic_api_valuation}/point-adjust/calculate-exchange`,
-      method: 'post',
-      data
-    }
-  )
-}

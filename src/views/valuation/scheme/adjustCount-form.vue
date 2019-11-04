@@ -45,52 +45,52 @@
       </el-table-column>
       <el-table-column label="调整人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.date }}</span>
+          <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券代码" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondId }}</span>
+          <span>{{ scope.row.bondCode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券简称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.bondName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="待偿期" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.residualMaturity }}</span>
+          <span>{{ scope.row.compensatoryStage }}</span>
         </template>
       </el-table-column>
       <el-table-column label="加权待偿期" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.weightingCompensatoryStage }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券发行人" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.cause }}</span>
+          <span>{{ scope.row.bondIssuer }}</span>
         </template>
       </el-table-column>
       <el-table-column label="债券类型" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.pubType }}</span>
         </template>
       </el-table-column>
       <el-table-column label="曲线名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.curveName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否即期估值" align="center" width="110px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.isAdjust }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值点差" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.pricingPoint }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="!isCredit" label="当前收益率" align="center" width="110px">
@@ -105,12 +105,12 @@
       </el-table-column>
       <el-table-column label="今日调整幅度" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.todayRange }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="isCredit" label="明日调整幅度" align="center" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.tomorrowRange }}</span>
         </template>
       </el-table-column>
       <el-table-column label="调整后点差" align="center" width="110px">
@@ -125,12 +125,12 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.bondShort }}</span>
+          <span>{{ scope.row.status }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
+          <span>{{ scope.row.comment }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -177,7 +177,8 @@ export default {
     activeName: {
       type: String,
       default: '01'
-    }
+    },
+    adjustList: []
   },
   data() {
     return {
@@ -187,14 +188,6 @@ export default {
       selectionList: [],
       bondCodeList: [],
       bondManList: [],
-      adjustList: [
-        { date: '0000' },
-        { date: '0000' },
-        { date: '0000' },
-        { date: '0000' },
-        { date: '0000' }
-
-      ],
       page: {
         pageNumber: 1,
         pageSize: 10,
