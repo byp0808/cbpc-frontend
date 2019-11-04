@@ -88,9 +88,18 @@ export default {
     },
 
     setCurveQcParm() {
+      this.dataCheck()
       setCurveQcParm(this.orderSet).then(response => {
         console.info('setCurveQcParm.setCurveQcParm...')
       })
+    },
+    dataCheck() {
+      if (this.orderSet.curveCreditShkBp === null &&
+        this.orderSet.curveCreditShkPercent === null &&
+        this.orderSet.curveRateShkBp === null &&
+        this.orderSet.curveRateShkPercent === null) {
+        this.$message('没有输入阈值，无法保存')
+      }
     }
   }
 }
