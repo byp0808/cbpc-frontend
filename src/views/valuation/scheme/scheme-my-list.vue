@@ -55,7 +55,7 @@
         />
       </div>
       <div v-if="activeElement === '02'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -69,7 +69,7 @@
         />
       </div>
       <div v-if="activeElement === '03'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -608,7 +608,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum, confirm } from '@/api/valuation/task.js'
 import { getCurveList, calculateExchange, viewExchange, adjustCredit, adjustInterest } from '@/api/valuation/adjust.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
@@ -913,7 +913,14 @@ export default {
       })
     },
     confirmMethod() {
-
+      this.selectionCheck()
+      if (this.selection.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
+      confirm(this.selection).then(res => {
+        this.$message.success('方案确认成功')
+        this.loadTable()
+      })
     },
     querySearch(query, call) {
       if (query) {

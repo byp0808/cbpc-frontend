@@ -115,11 +115,11 @@
       :visible.sync="checkCouponVisible"
     />
     <el-row>
-      <el-col :span="3" :offset="9">未计算:{{computeInfo.uncomplate}}个</el-col>
+      <el-col :span="3" :offset="9">未计算:{{ computeInfo.uncomplate }}个</el-col>
       <el-col :span="3">计算中: 0个</el-col>
-      <el-col :span="3">计算完成:{{computeInfo.complate}}个</el-col>
-      <el-col :span="3">计算出错:{{computeInfo.error}}个</el-col>
-      <el-col :span="3">总曲线个数:{{computeInfo.total}}个</el-col>
+      <el-col :span="3">计算完成:{{ computeInfo.complate }}个</el-col>
+      <el-col :span="3">计算出错:{{ computeInfo.error }}个</el-col>
+      <el-col :span="3">总曲线个数:{{ computeInfo.total }}个</el-col>
     </el-row>
   </div>
 </template>
