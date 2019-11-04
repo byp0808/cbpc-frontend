@@ -77,13 +77,13 @@
     </el-card>
     <el-card v-if="activeName === 'gzwl'" class="box-card ">
       <div slot="header" class="clearfix card-head">
-        <h3>估值为0</h3>
+        <h3>估值收益率为0</h3>
       </div>
       <ValValList ref="gzwl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'cbf'" class="box-card ">
       <div slot="header" class="clearfix card-head">
-        <h3>成本法</h3>
+        <h3>估值净价为100</h3>
       </div>
       <ValNetPrcList ref="cbf" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
