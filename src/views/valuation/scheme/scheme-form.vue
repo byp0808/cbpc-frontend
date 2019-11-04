@@ -125,6 +125,7 @@ export default {
       valWays: [],
       recovery: '',
       uploadTime: '',
+      closeDialog: false,
       // schemeInfo: {
       //   bondId: '12344345',
       //   curveId: 'curve2',
@@ -169,9 +170,6 @@ export default {
       }
     }
   },
-  created() {
-    console.log('112', this.adjustData)
-  },
   mounted() {
     const that = this
     getCurveList().then(response => {
@@ -185,6 +183,7 @@ export default {
   beforeMount() {
     if (this.taskInfo && this.taskInfo.taskId) {
       this.$store.dispatch('scheme/initScheme', this.taskInfo)
+      console.log('cc', this.schemeInfo)
     }
   },
   methods: {
@@ -249,6 +248,8 @@ export default {
           message: `保存成功`,
           type: 'success'
         })
+        this.closeDialog = false
+        this.$store.commit('scheme/setCloseDialog', { closeDialog: this.closeDialog })
       })
     },
     uploadFile(data) {

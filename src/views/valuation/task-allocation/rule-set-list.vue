@@ -19,7 +19,7 @@
         </el-table-column>
         <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
+            {{ $dft('REVIEW_STATUS', scope.row.approveStatus) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="15%" prop="busiStatus">
@@ -28,8 +28,24 @@
             </el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="deleteInfo(scope.row.id)">删除
             </el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.id)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.id)">启用</el-button>
+            <el-button
+              v-if="scope.row.busiStatus==='02'"
+              type="text"
+              size="small"
+              :disabled="scope.row.approveStatus === '01'?true:false"
+              @click="stop(scope.row.id)"
+            >
+              停用
+            </el-button>
+            <el-button
+              v-else-if="scope.row.busiStatus==='03'"
+              type="text"
+              size="small"
+              :disabled="scope.row.approveStatus === '01'?true:false"
+              @click="start(scope.row.id)"
+            >
+              启用
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -126,21 +142,11 @@ export default {
     stop(id) {
       editBusiStatus({ id: id, busiStatus: '03' }).then(response => {
         this.load()
-        this.$message({
-          message: '已停用！',
-          type: 'success',
-          showClose: true
-        })
       })
     },
     start(id) {
       editBusiStatus({ id: id, busiStatus: '02' }).then(response => {
         this.load()
-        this.$message({
-          message: '已启用！',
-          type: 'success',
-          showClose: true
-        })
       })
     },
     addRule() {
@@ -159,11 +165,6 @@ export default {
       }).then(() => {
         delTaskRange(id).then(response => {
           this.load()
-          this.$message({
-            message: '删除成功！',
-            type: 'success',
-            showClose: true
-          })
         })
       }).catch(() => {
         this.$message({
