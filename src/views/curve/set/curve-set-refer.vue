@@ -19,9 +19,7 @@
       </el-table-column>
       <el-table-column label="复核状态" width="150px" align="center">
         <template slot-scope="scope">
-          <span v-if="scope.row.approveStatus==='01'">待审核</span>
-          <span v-else-if="scope.row.approveStatus==='02'">审核通过</span>
-          <span v-else>审批不通过</span>
+          {{ $dft("APPROVE_STATUS", scope.row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230px" class-name="small-padding fixed-width">

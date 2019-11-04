@@ -304,7 +304,7 @@ export default {
           { type: 'number', message: '排序必须为数字值' }
         ],
         markets: [
-          { required: true, message: '请选择市场', trigger: 'change' }
+          { required: true, message: '请选择市场', trigger: 'blur' }
         ],
         currency: [
           { required: true, message: '请选择币种', trigger: 'change' }
@@ -316,7 +316,7 @@ export default {
           { required: true, message: '请选择利率类型', trigger: 'change' }
         ],
         createCalendars: [
-          { required: true, message: '请选择编制日历', trigger: 'change' }
+          { required: true, message: '请选择编制日历', trigger: 'blur' }
         ],
         curveStartTime: [
           { required: true, message: '上市日', trigger: 'change' },
