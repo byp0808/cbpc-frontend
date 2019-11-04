@@ -267,6 +267,7 @@ export default {
     // 设置保存
     saveOrderSet() {
       console.info('saveOrderSet')
+      this.$refs.refValParamSetForm.setValQcParm()
       this.orderSetFormVisible = false
     },
     // 主页面查询方法
