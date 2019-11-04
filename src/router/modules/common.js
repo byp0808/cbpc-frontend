@@ -30,11 +30,6 @@ const commonsRouter = {
       meta: { title: '查询产品', noCache: true }
     },
     {
-      path: 'tmpl-filter',
-      component: () => import('@/views/common/bond-filter/templates.vue'),
-      name: 'TmplFilter',
-      meta: { title: '债券筛选模板', noCache: true }
-    }, {
       path: 'audit-index',
       component: () => import('@/views/common/myAudit/audit-index.vue'),
       name: 'audit',

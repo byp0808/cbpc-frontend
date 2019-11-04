@@ -120,8 +120,9 @@ export default {
     return {
       highLight: [],
       selected: [], // 多选使用，用于保存选择项
-      selectedType: '', // 选中类型
-      selectedTerm: '', // 价格辅助弹窗，使用的关键期限
+      selectedType: '', // 多选使用，选中类型
+      selectedTerm: '', // 多选使用，选中关键期限
+      selectedByRadio: [], // 单选使用，用于保存选择项
       compute: {},
       dialogFlag: false
     }
@@ -166,11 +167,24 @@ export default {
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
+      if (this.interval[row.index] === -1) {
+        return
+      }
       if (this.selectedType !== '' && this.selectedType !== column.type) {
+        return
+      }
+      if (this.selectedTerm !== '' && this.selectedTerm !== row.standSlip) {
+        return
+      }
+      if (this.selectedByRadio.length > 0) {
         return
       }
       let _row = this.highLight[row.index]
       const flag = _row[column.index]
+      if (!flag) {
+        this.selectedType = column.type
+        this.selectedTerm = row.standSlip
+      }
       if (this.$lodash.findIndex(this.selected, (value) => value.standSlip === row.standSlip) === -1) {
         this.interval.map((v, i) => {
           if (v === this.interval[row.index]) {
@@ -181,19 +195,22 @@ export default {
       }
       _row[column.index] = !flag
       this.$set(this.highLight, row.index, _row)
-      this.selectedType = column.type
       clearTimeout(time)
       time = setTimeout(() => {
         // 高亮
         // 价格计算 {standSlip: 0, value: 0, bond: 0, slip: 0}
         if (flag) {
           this.$lodash.pullAllWith(this.selected, [{ standSlip: row.standSlip, label: column.label, property: column.property, row }], this.$lodash.isEqual)
+          if (this.selected.length === 0) {
+            this.selectedType = ''
+            this.selectedTerm = ''
+            clearTimeout(time_dia)
+          }
         } else {
           this.selected.push({ standSlip: row.standSlip, label: column.label, property: column.property, row })
         }
       }, 300)
       // 价格辅助Dialog
-      this.selectedTerm = row.standSlip
       clearTimeout(time_dia)
       time_dia = setTimeout(() => {
         if (this.selected.filter(value => value.standSlip === row.standSlip).length > 0) {
@@ -208,6 +225,12 @@ export default {
       if (this.selectable.indexOf(column.label) === -1) {
         return
       }
+      if (this.interval[row.index] === -1) {
+        return
+      }
+      if (this.selected.length > 0) {
+        return
+      }
       clearTimeout(time)
       clearTimeout(time_dia)
       let _row = this.highLight[row.index]
@@ -220,8 +243,14 @@ export default {
       _row = Array(Object.keys(_row).length).fill(false)
       _row[column.index] = !flag
       this.$set(this.highLight, row.index, _row)
+      if (flag) {
+        this.selectedByRadio.pop()
+      } else {
+        this.selectedByRadio.push({ standSlip: row.standSlip, label: column.label, property: column.property, row })
+      }
       this.$lodash.pullAllBy(this.selected, [{ standSlip: row.standSlip }], 'standSlip')
       this.selectedType = ''
+      this.selectedTerm = ''
       const item = this.$lodash.assign({}, {
         bondNo: row.bondId,
         bondName: row.bondName,
@@ -234,8 +263,9 @@ export default {
         liveFlag: '0',
         isMultiple: false
       }, (column.type === '收益率' ? { yield: row[column.property] } : { deviations: row[column.property] }))
-      console.log(item)
-      this.resetSetItem('watchStorage', JSON.stringify(item))
+      if (!flag) {
+        this.resetSetItem('watchStorage', JSON.stringify(item))
+      }
     },
     openDialog() {
       const arr = this.selected.filter(value => value.standSlip === this.selectedTerm)
@@ -270,7 +300,6 @@ export default {
         liveFlag: '0',
         isMultiple: true
       }, obj, { bondNo: flag ? null : arr[0].bondId, bondName: flag ? null : arr[0].bondName })
-      console.log(item)
       this.resetSetItem('watchStorage', JSON.stringify(item))
     },
     headerClick(columns) {
