@@ -206,6 +206,7 @@ export default {
     // 设置保存
     saveOrderSet() {
       console.info('saveOrderSet')
+      this.$refs.refCurveOrderCheckSetForm.setCurveQcParm()
       this.orderSetFormVisible = false
     },
     // 主页面查询方法
