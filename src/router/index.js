@@ -11,11 +11,14 @@ import Layout from '@/layout'
 // import chartsRouter from './modules/charts'
 // import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
-import commonsRouter from './modules/common'
+// import commonsRouter from './modules/common'
 import valuationRouter from './modules/valuation'
 import curveRouter from './modules/curve'
 import taskRouter from './modules/task'
 import marketRouter from './modules/market'
+import mytaskRouter from './modules/mytask'
+import productRouter from './modules/product'
+import busimngRouter from './modules/busimng'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -84,7 +87,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'dashboard', affix: true, noCache: true }
+        meta: { title: '首页', icon: 'dashboard', affix: true, noCache: true, roles: ['Dashboard'] }
       }
     ]
   },
@@ -134,10 +137,13 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  commonsRouter,
-  valuationRouter,
+  mytaskRouter,
+  productRouter,
+  // commonsRouter,
   curveRouter,
+  valuationRouter,
   marketRouter,
+  busimngRouter,
   taskRouter,
   {
     path: '/build-curve',
