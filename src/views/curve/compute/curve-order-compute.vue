@@ -313,10 +313,17 @@ export default {
             computes: selection
           }
           deployAndCheckCurve(data).then(response => {
-            this.$message({
-              type: 'success',
-              message: '曲线发布成功！'
-            })
+            if (response.data === 'true') {
+              this.$message({
+                type: 'success',
+                message: new Date().format('YYYY-MM-DD') + ':' + this.orderInfo.orderName + '曲线数据已全部发布！发布时间：' + new Date().format('YYYY-MM-DD')
+              })
+            } else {
+              this.$message({
+                type: 'success',
+                message: '曲线发布成功！'
+              })
+            }
             this.query()
             setTimeout(1.5 * 1000)
           })
