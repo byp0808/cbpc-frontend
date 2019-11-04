@@ -123,8 +123,8 @@ export default {
         curveId: curveId
       }
       viewCurveProperty(data).then(response => {
-        this.tableData = response.dataList
-        this.curveSampleNumber = response.dataList.length
+        this.tableData = response.data
+        this.curveSampleNumber = response.data.length
         setTimeout(1.5 * 1000)
       })
     }

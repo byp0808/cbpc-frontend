@@ -27,11 +27,17 @@ export default {
       yield: '',
       ttmType: ''
     },
+    dialogInfo: {
+      closeDialog: false
+    },
     adjustList: []
   },
   mutations: {
     setSchemeInfo(state, schemeInfo) {
       state.schemeInfo = schemeInfo
+    },
+    setCloseDialog(state, dialogInfo) {
+      state.dialogInfo = dialogInfo
     },
     setDefaultSchemeInfo(state, defaultSchemeInfo) {
       state.defaultSchemeInfo = defaultSchemeInfo

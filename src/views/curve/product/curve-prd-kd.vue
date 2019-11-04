@@ -337,6 +337,7 @@ export default {
         console.info('====queryCurvePrdKd:')
         if (response && response.dataList) {
           this.curvePrdKdList = response.dataList
+          this.curvePrdKdList.sort((a, b) => Number(a.standSlip) - Number(b.standSlip))
         }
         setTimeout(() => {
           this.listLoading = false
@@ -349,6 +350,7 @@ export default {
       queryCurvePrdNk({ curveId: curveId }).then(response => {
         if (response && response.dataList) {
           this.curvePrdNkList = response.dataList
+          this.curvePrdNkList.sort(this.sortCurvePrdNkList)
         }
         setTimeout(() => {
           this.listLoading = false
@@ -403,7 +405,10 @@ export default {
         })
         return false
       }
-      this.curvePrdNkList = getCurvePrdNkListByModId(forwardFlagMod)
+      this.curvePrdNkList = getCurvePrdNkListByModId(this.forwardFlagModsList, forwardFlagMod)
+      if (this.curvePrdNkList) {
+        this.curvePrdNkList.sort(this.sortCurvePrdNkList)
+      }
     },
     handleEdit(index, rows) {
       // copy obj

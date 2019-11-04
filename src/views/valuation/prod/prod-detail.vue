@@ -212,7 +212,13 @@ export default {
   components: {
     BondFilter
   },
-  props: ['businessNo'],
+  // props: ['businessNo'],
+  props: {
+    businessNo: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       boolTrue: true,
@@ -344,11 +350,19 @@ export default {
       }
     }
   },
+  created() {
+    window.addEventListener('beforeunload', () => {
+      if (this.$store.state.valuationProd.prodId || this.businessNo) {
+        sessionStorage.setItem('prodId', this.$store.state.valuationProd.prodId || this.businessNo)
+      }
+    })
+  },
   beforeMount() {
     const that = this
-    if (this.$store.state.valuationProd.prodId || this.businessNo) {
-      this.prodId = this.$store.state.valuationProd.prodId || this.businessNo
+    if (this.$store.state.valuationProd.prodId || this.businessNo || sessionStorage.getItem('prodId')) {
+      this.prodId = this.$store.state.valuationProd.prodId || this.businessNo || sessionStorage.getItem('prodId')
     }
+    // this.prodId = sessionStorage.getItem('prodId')
     this.$store.dispatch('valuationProd/loadProdIndices')
     this.$store.dispatch('valuationProd/loadProdIndices')
     const ways = []

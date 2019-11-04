@@ -66,6 +66,7 @@
                   v-model.number="bondsNonpInfo.indate"
                   :disabled="disabled"
                   placeholder="请输入有效期"
+                  clearable
                 />
               </el-form-item>
             </div>

@@ -135,6 +135,7 @@ export default {
             showClose: true
           })
         })
+        this.getCurveReferDtoList()
       }).catch(() => {
         console.info('cancle')
       })

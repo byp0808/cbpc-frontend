@@ -566,10 +566,10 @@ export default {
     bwListCheck(dataList, data) {
       return this.$lodash.findIndex(dataList, { csin: data.csin })
     },
-    getData(id, tempName) {
+    getData(id) {
       return {
         id: id,
-        filterName: tempName,
+        filterName: this.tempName,
         blwls: this.$lodash.concat(this.blackList, this.whiteList),
         rules: this.ruleList
       }
@@ -588,8 +588,8 @@ export default {
         // this.queryBondsList()
       }
     },
-    save(id, tempName) {
-      addTempList(this.getData(id, tempName)).then(response => {
+    save(id) {
+      addTempList(this.getData(id)).then(response => {
         this.$emit('saveCallBack')
         this.$message({
           message: '保存成功！',
@@ -597,11 +597,7 @@ export default {
           showClose: true
         })
       })
-    },
-    inputChange() {
-      this.$emit('childFn', this.tempName)
     }
-
   }
 }
 </script>

@@ -334,6 +334,15 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog :visible="confirmDialog.d" @close="confirmDialog.d = false">
+      <div>{{ resMsg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="8" :offset="16">
+          <el-button @click="confirmDialog.d = false">取消</el-button>
+          <el-button type="primary" @click="taskconfirm('S101', 'd')">忽略并导入</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -343,7 +352,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond, searchBondNum } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
-import { upload } from '@/utils/file-request'
+import { upload, downloadFile } from '@/utils/file-request'
 export default {
   name: 'SchemeAllList',
   components: {
@@ -355,7 +364,7 @@ export default {
     return {
       activeElement: '01',
       uploadUrl: `${basic_api_valuation}/task/batch-valu-scheme`,
-      downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/bonds-nonp/batch-in`,
+      downloadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_valuation}/task/download-task`,
       labelPosition: 'right',
       allocationDialog: false,
       noValuationDialog: false,
@@ -382,7 +391,8 @@ export default {
       confirmDialog: {
         a: false,
         b: false,
-        c: false
+        c: false,
+        d: false
       },
       filtedMarket: [],
       rules: {
@@ -538,6 +548,10 @@ export default {
           }
           if (res.respCode === 'YBL100001104-3') {
             this.confirmDialog.c = true
+            this.taskLoading = false
+          }
+          if (res.respCode === 'YBL100001015' || res.respCode === 'YBL100001016') {
+            this.confirmDialog.d = true
             this.taskLoading = false
           }
         }).catch(() => {
@@ -844,9 +858,7 @@ export default {
       this.uploadMethodDialog = true
     },
     downScheme() {
-      // downloadFile(this.downloadUrl, this.params).then(res => {
-
-      // })
+      downloadFile(this.downloadUrl)
     },
     handleSizeChange(pageSize) {
       this.params.page.pageSize = pageSize

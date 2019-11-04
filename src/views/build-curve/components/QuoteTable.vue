@@ -6,6 +6,9 @@
       :selectable="makeHighLight"
       :interval="makeInterval"
       :edit-enable="true"
+      :type="type"
+      :slip="intervalBy"
+      :curve-id="curveId"
       @open="computePrice"
       @header-click="headerScreening"
     />
@@ -76,13 +79,80 @@ export default {
     total: {
       type: Number,
       default: 0
+    },
+    type: {
+      type: String,
+      default: ''
+    },
+    curveId: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      selectable: { '收益率': ['估值日买入收益率', '市场收益率(%)'], '偏差值': ['推荐收益率偏差'] },
-      intervalBy: 'MTRTY',
-      selectBy: 'MTRTY',
+      selectable: {
+        '收益率': [
+          '估值日买入收益率',
+          '估值日卖出收益率',
+          '参考日曲线收益率',
+          '参考日单券估值收益率(%)',
+          '估值日市场中间价收益率',
+          '估值日买入收益率(T+n)',
+          '估值日卖出收益率(T+n)',
+          '估值日市场中间价收益率(T+n)',
+          '票面利率/利差',
+          '基础利率',
+          '参考日基准利率（%）',
+          '上一日估算的行权后票面利率(%)',
+          '曲线收益率(%)',
+          '市场收益率(%)',
+          '市场收益率(%)(T+n)',
+          '经纪成交收益率(%)',
+          '本日经纪成交收益率（%）',
+          '前日经纪成交收益率（%）',
+          '双边范围内成交收益率（%）',
+          '单边报价收益率（%）',
+          '曲线基础利率',
+          '估值日收盘收益率(%)',
+          '参考日收盘收益率(%)',
+          '经纪成交收益率(%)(T+n)',
+          '参考日曲线收益率',
+          '非推荐估值收益率',
+          '估值日均价收益率(%)',
+          '参考日均价收益率(%)'
+        ],
+        '偏差值': [
+          '买卖点差(BP)',
+          '买收益率变动(BP)',
+          '卖收益率变动(BP)',
+          '买偏差(BP)',
+          '卖偏差(BP)',
+          '估值日市场中间价收益率-参考日曲线收益率(BP)',
+          '收益率偏差值(市场收益率-参考日单券估值收益率)(BP)',
+          '非推荐收益率偏差',
+          '推荐收益率偏差',
+          '买收益率变动(BP)(T+n)',
+          '卖收益率变动(BP)(T+n)',
+          '估值日市场中间价收益率-参考日曲线收益率(BP)(T+n)',
+          '中间价',
+          '最优卖',
+          '票面利率-曲线利率',
+          '偏差值(BP)',
+          '收益率偏差值(经纪成交收益率-参考日单券估值收益率)(BP)',
+          '偏差值(BP)(T+n)',
+          '曲线收益率与估值日收盘收益率差(BP)',
+          '收盘收益率偏差值(收盘收益率-参考日单券估值收益率)(BP)',
+          '两日收盘收益率差(BP)',
+          '曲线收益率与估值日市场收益率差(BP)',
+          '两日收益率差(BP)',
+          '曲线收益率与估值日均价收益率差(BP)',
+          '均价收益率偏差值(均价收益率-参考日单券估值收益率)(BP)',
+          '两日均价收益率差(BP)'
+        ]
+      },
+      intervalBy: 'mtrty',
+      selectBy: 'bondId',
       listQuery: {
         pageNumber: 1,
         pageSize: 100,
@@ -122,14 +192,15 @@ export default {
   methods: {
     computePrice({ arr, standSlip, type, result }) {
       const flag = arr.map(value => value.row[this.selectBy]).filter((v, i, a) => a.indexOf(v, 0) === i).length > 0
-      const values = arr.map(v => v.row[v.label])
+      const values = arr.map(v => v.row[v.property])
+      const res = getMode(values)
       Object.assign(result, {
         standSlip: flag ? standSlip : 0 + arr[0].row[this.intervalBy],
         type: type,
         num: arr.length,
         avg: getMean(values),
         mid: getMedian(values),
-        plu: getMode(values).length < 1 ? 0 : getMode(values),
+        plu: res.length < 1 ? [0] : res,
         max: Math.max.apply(Math, values),
         min: Math.min.apply(Math, values)
       })

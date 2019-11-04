@@ -116,7 +116,7 @@
       </el-table-column>
       <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createdTs }}</span>
+          <span>{{ scope.row.cptDate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布批次" align="center">
@@ -126,7 +126,7 @@
       </el-table-column>
     </el-table>
     <transition name="dialog-fade-in">
-      <el-dialog v-if="AdjustDialog" :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
+      <el-dialog :visible.sync="dialogInfo.closeDialog" width="100%" style="bottom:0;top:20%">
         <scheme-form :adjust-data="adjustParams" />
       </el-dialog>
     </transition>
@@ -169,6 +169,19 @@ export default {
       }
     }
   },
+  computed: {
+    dialogInfo: {
+      get() {
+        return this.$store.state.scheme.dialogInfo
+      },
+      set(dialogInfo) {
+        this.$store.commit('scheme/setCloseDialog', dialogInfo)
+      }
+
+    }
+  },
+  created() {
+  },
   methods: {
     causeFilter(params) {
       switch (params) {
@@ -186,11 +199,23 @@ export default {
       this.$router.push({ name: 'SchemeConstruct', params: e })
     },
     adjust(e) {
-      this.AdjustDialog = true
+      this.dialogInfo.closeDialog = true
       this.adjustParams.taskId = e.id
+      this.$store.commit('scheme/setSchemeInfo', {
+        bondId: '',
+        curveId: '',
+        valuScene: '01',
+        marketGrade: '',
+        cdsPremAdjType: '01',
+        cdsPremAdjWay: '01',
+        recoDire: '01'
+      })
     },
     getDataList() {
       return this.taskList
+    },
+    clickAdjust(data) {
+      console.log('data', data)
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
