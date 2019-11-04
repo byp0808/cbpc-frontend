@@ -40,6 +40,7 @@
           <RelationTable
             :curves="relation.curves"
             :main-curve="makeNow"
+            :curve-id="curveId"
             :slips="relation.slips"
             :columns="relation.columns"
             :name="relation.name"
@@ -248,8 +249,7 @@ export default {
       queryHistoryDivision(this.list).then(response => {
         const map = {}
         response.forEach(el => {
-          const value = el.historyDivision
-          map[el.standSlip] = value + '%'
+          map[el.standSlip] = el.historyDivision
         })
         this.$store.dispatch('curveBuild/updateVariation', { curveId: this.curveId, map })
       })

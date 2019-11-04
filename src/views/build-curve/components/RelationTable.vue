@@ -19,6 +19,10 @@ export default {
       type: Object,
       default: () => {}
     },
+    curveId: {
+      type: String,
+      default: ''
+    },
     slips: {
       type: Array,
       default: () => []
@@ -47,7 +51,8 @@ export default {
         const arr = [...Array.from({ length: this.curves.length }).keys()]
         const temp = this.curves.map(v => {
           return v.list.map(el => {
-            return { [el.standSlip]: { [v.curveId]: el.yesterdayYield }}
+            const _yield = v.curveId === this.curveId && v.nowOrderFlag ? this.mainCurve[el.standSlip] : el.yesterdayYield
+            return { [el.standSlip]: { [v.curveId]: _yield }}
           }).reduce((k, i) => _.merge(k, i), {})
         }).reduce((k, i) => { return _.merge(k, i) }, {})
         arr.forEach(value => {
@@ -55,12 +60,12 @@ export default {
             const obj = temp[val]
             const list = Object.keys(obj)
             if (value < _up) {
-              obj[list[value]] = subtract(obj[list[_up]], obj[list[value]])
+              obj[list[value]] = subtract(obj[list[value]], obj[list[_up]])
             } else if (value > _down) {
-              obj[list[value]] = subtract(obj[list[value]], obj[list[_down]])
+              obj[list[value]] = subtract(obj[list[_down]], obj[list[value]])
             } else {
               if (value !== 0) {
-                obj[list[value]] = subtract(obj[list[value]], obj[list[value - 1]])
+                obj[list[value]] = obj[list[value - 1]]
               }
             }
           })
