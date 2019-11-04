@@ -17,9 +17,9 @@
         <el-col :span="10">
           <el-input v-model="orderSet.curveCreditShkPercent" type="number" />
         </el-col>
-        <el-co :span="5">
+        <el-col :span="5">
           %
-        </el-co>
+        </el-col>
       </el-form-item>
       <el-form-item label="信用类曲线收益率波动偏差阈值">
         <el-col :span="10">
