@@ -52,7 +52,8 @@ export default {
         businessNo: this.businessNo,
         taskStatus: status,
         taskOpinions: '',
-        taskType: '02'
+        taskType: '02',
+        taskName: this.taskName
       }).then(response => {
         this.$message({
           message: '提交成功！',
