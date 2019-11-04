@@ -94,14 +94,12 @@ const curveRouter = {
       component: () => import('@/views/curve/report/curve-search-solutions.vue'),
       name: 'CurveSearchCase',
       meta: { title: '查询曲线方案', noCache: true }
-    },
-    // {
-    //   path: 'curve-timecmp-index',
-    //   component: () => import('@/views/curve/compute/curve-timecmp-index.vue'),
-    //   name: 'CurveTimecmpIndex',
-    //   meta: { title: '估值曲线协同计算', noCache: true }
-    // },
-    {
+    }, {
+      path: 'curve-timecmp-index',
+      component: () => import('@/views/curve/compute/curve-timecmp-index.vue'),
+      name: 'CurveTimecmpIndex',
+      meta: { title: '估值曲线协同计算', noCache: true }
+    }, {
       path: 'curve-sampleticket-list',
       component: () => import('@/views/curve/report/curve-sampleticket-list.vue'),
       name: 'CurveSampleTicketList',
