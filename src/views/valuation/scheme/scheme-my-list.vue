@@ -17,7 +17,7 @@
             </el-dropdown>
           </template>
           <el-button v-loading="backLoading" type="primary" @click="backTask">任务退回</el-button>
-          <el-button type="primary">方案确认</el-button>
+          <el-button type="primary" @click="confirmMethod">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :xl="16" :lg="14">
@@ -55,7 +55,7 @@
         />
       </div>
       <div v-if="activeElement === '02'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -69,7 +69,7 @@
         />
       </div>
       <div v-if="activeElement === '03'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -608,7 +608,7 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum, confirm } from '@/api/valuation/task.js'
 import { getCurveList, calculateExchange, viewExchange, adjustCredit, adjustInterest } from '@/api/valuation/adjust.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
@@ -912,6 +912,16 @@ export default {
         this.tabList = res
       })
     },
+    confirmMethod() {
+      this.selectionCheck()
+      if (this.selection.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
+      confirm(this.selection).then(res => {
+        this.$message.success('方案确认成功')
+        this.loadTable()
+      })
+    },
     querySearch(query, call) {
       if (query) {
         searchBondNum(query).then(res => {
@@ -989,11 +999,12 @@ export default {
       this.selection = Array.from(new Set(this.selection))
     },
     selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
-      if (this.taskLists && this.taskLists.length > 0) {
-        this.taskLists.map(v => {
-          this.tasks.push({ bondId: v.bondId })
-        })
-      }
+      // if (this.taskLists && this.taskLists.length > 0) {
+      this.tasks = []
+      this.taskLists.map(v => {
+        this.tasks.push({ bondId: v.bondId })
+      })
+      // }
       this.valuationScheme.tasks = this.tasks
       console.log('cc', this.tasks)
     },

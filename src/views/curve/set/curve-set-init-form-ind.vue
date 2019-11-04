@@ -53,7 +53,7 @@ import { sortStandSlip } from '@/api/curve/curve-set-rela.js'
 
 export default {
   name: 'CurveSetInitDetailForm',
-  props: ['detailInfo', 'disabled', 'initInfo'],
+  props: ['detailInfo', 'disabled', 'initInfo', 'currentSelectStandSlip'],
   data() {
     return {
       curveList: [],
@@ -115,6 +115,21 @@ export default {
           key: i,
           standSlip: tmp_standSlip[i]
         })
+      }
+      console.info(this.currentSelectStandSlip)
+      this.removeStandSlip()
+    },
+    // 协调曲线期限不可选成与当前期限一致
+    removeStandSlip() {
+      if (this.detailInfo.depCurveId === this.initInfo) {
+        for (let j = 0; j < this.selectStandSlip.length; j++) {
+          // console.info(this.currentSelectStandSlip)
+          // console.info(this.selectStandSlip[j].standSlip)
+          const qixian = Number(this.currentSelectStandSlip)
+          if (qixian === this.selectStandSlip[j].standSlip) {
+            this.selectStandSlip.splice(j, 1)
+          }
+        }
       }
     }
   }

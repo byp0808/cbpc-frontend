@@ -104,4 +104,13 @@ export function searchBondNum(data) { // 查询债券编码
     }
   )
 }
+export function confirm(data) { // 方案确认
+  return request(
+    {
+      url: `${basic_api_valuation}/task/scheme-confirm`,
+      method: 'post',
+      data: data
+    }
+  )
+}
 

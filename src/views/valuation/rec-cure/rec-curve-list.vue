@@ -53,7 +53,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="{row}">
-          {{ $dft('APPROVE_STATUS', row.approveStatus) }}
+          {{ $dft('REVIEW_STATUS', row.approveStatus) }}
         </template>
       </el-table-column>
       <el-table-column
