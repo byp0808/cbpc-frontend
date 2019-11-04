@@ -76,7 +76,7 @@
               <h3 style="font-size:40px;">场<br><br>景</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" :current-select-stand-slip="currentSelectStandSlip" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
@@ -112,7 +112,7 @@
               <h3 style="font-size:40px;">行<br><br>为</h3>
             </el-col>
             <el-col :span="19" class="box">
-              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" />
+              <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :init-info="querycueid" :detail-info="item" :disabled="disabled" :current-select-stand-slip="currentSelectStandSlip" />
               <el-row style="margin-top:5px">
                 <el-col :span="8">
                   <el-form-item
