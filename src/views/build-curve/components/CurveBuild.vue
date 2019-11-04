@@ -40,6 +40,7 @@
           <RelationTable
             :curves="relation.curves"
             :main-curve="makeNow"
+            :curve-id="curveId"
             :slips="relation.slips"
             :columns="relation.columns"
             :name="relation.name"
