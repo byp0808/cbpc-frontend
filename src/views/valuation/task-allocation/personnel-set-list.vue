@@ -16,7 +16,7 @@
             <span>{{ ruleDetail(scope.row.groupId) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="approveStatus" label="复核状态" min-width="10%" show-overflow-tooltip>
+        <el-table-column prop="approveStatus" label="审核状态" min-width="10%" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ $dft('APPROVE_STATUS', scope.row.approveStatus) }}
           </template>
@@ -25,8 +25,24 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="edit(scope.row.groupId)">设置</el-button>
             <el-button type="text" size="small" :disabled="scope.row.approveStatus === '01'?true:false" @click="delTaskAllocation(scope.row.groupId)">删除</el-button>
-            <el-button v-if="scope.row.busiStatus==='02'" type="text" size="small" @click="stop(scope.row.groupId)">停用</el-button>
-            <el-button v-else-if="scope.row.busiStatus==='03'" type="text" size="small" @click="start(scope.row.groupId)">启用</el-button>
+            <el-button
+              v-if="scope.row.busiStatus==='02'"
+              type="text"
+              size="small"
+              :disabled="scope.row.approveStatus === '01'?true:false"
+              @click="stop(scope.row.groupId)"
+            >
+              停用
+            </el-button>
+            <el-button
+              v-else-if="scope.row.busiStatus==='03'"
+              type="text"
+              size="small"
+              :disabled="scope.row.approveStatus === '01'?true:false"
+              @click="start(scope.row.groupId)"
+            >
+              启用
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,11 +140,6 @@ export default {
       }).then(() => {
         delTaskAllocation({ groupId: id }).then(response => {
           this.load()
-          this.$message({
-            message: '删除成功！',
-            type: 'success',
-            showClose: true
-          })
         })
       }).catch(() => {
         this.$message({
@@ -138,23 +149,34 @@ export default {
       })
     },
     start(id) {
-      editTaskAllocation({ groupId: id, busiStatus: '02' }).then(response => {
-        console.log(id)
-        this.load()
+      this.$confirm('确定要启用吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        editTaskAllocation({ groupId: id, busiStatus: '02' }).then(response => {
+          this.load()
+        })
+      }).catch(() => {
         this.$message({
-          message: '已启用！',
-          type: 'success',
-          showClose: true
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },
     stop(id) {
-      editTaskAllocation({ groupId: id, busiStatus: '03' }).then(response => {
-        this.load()
+      this.$confirm('确定要停用吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        editTaskAllocation({ groupId: id, busiStatus: '03' }).then(response => {
+          this.load()
+        })
+      }).catch(() => {
         this.$message({
-          message: '已停用！',
-          type: 'success',
-          showClose: true
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },
