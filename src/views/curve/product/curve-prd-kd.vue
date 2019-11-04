@@ -405,7 +405,10 @@ export default {
         })
         return false
       }
-      this.curvePrdNkList = getCurvePrdNkListByModId(forwardFlagMod)
+      this.curvePrdNkList = getCurvePrdNkListByModId(this.forwardFlagModsList, forwardFlagMod)
+      if (this.curvePrdNkList) {
+        this.curvePrdNkList.sort(this.sortCurvePrdNkList)
+      }
     },
     handleEdit(index, rows) {
       // copy obj

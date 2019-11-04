@@ -233,7 +233,6 @@ export function finishRefer(data) {
 }
 
 // 从行情应用获取关键期限模板
-// TODO 改为接口获取值
 export function prdKdModsList(data) {
   return request({
     url: `${basic_api_market}/curve-temp/kd-list`,
@@ -243,7 +242,6 @@ export function prdKdModsList(data) {
 }
 
 // 远期NK模板列表
-// TODO 改为接口获取值
 export function forwardFlagModsList(data) {
   console.info('远期NK模板列表，后期需要改为接口')
   // return [
@@ -261,13 +259,33 @@ export function forwardFlagModsList(data) {
 
 // 根据远期NK模板ID，获取列表
 // TODO 改为接口获取值
-export function getCurvePrdNkListByModId(id) {
-  console.info('根据远期NK模板ID，获取列表：' + id + '，后期需要改为接口')
-  return [
-    { nvalue: '0', kvalue: '11', operateTs: 1568968332449, remark: '' },
-    { nvalue: '12', kvalue: '33', operateTs: 1568968332449, remark: '' },
-    { nvalue: '13', kvalue: '0', operateTs: 1568968332449, remark: '' }
-  ]
+export function getCurvePrdNkListByModId(list, id) {
+  console.info('根据远期NK模板ID，获取NK列表：' + id)
+  var option = []
+  // return [
+  //   { nvalue: '0', kvalue: '11', operateTs: 1568968332449, remark: '' },
+  //   { nvalue: '12', kvalue: '33', operateTs: 1568968332449, remark: '' },
+  //   { nvalue: '13', kvalue: '0', operateTs: 1568968332449, remark: '' }
+  // ]
+  if (list && list.length > 0) {
+    let nvalue = []
+    let kvalue = []
+    for (const item of list) {
+      if (item.id === id) {
+        nvalue = item.nvalue.split(';')
+        kvalue = item.kvalue.split(';')
+        break
+      }
+    }
+    if (nvalue && kvalue && nvalue.length === kvalue.length) {
+      for (let i = 0; i < kvalue.length; i++) {
+        if (nvalue[i] !== '' && kvalue[i] !== '') {
+          option.push({ nvalue: nvalue[i], kvalue: kvalue[i], operateTs: new Date(), remark: '' })
+        }
+      }
+    }
+  }
+  return option
 }
 
 // 获取信用债初始化方案列表
