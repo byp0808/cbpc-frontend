@@ -6,8 +6,8 @@
       :disabled="disabled"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit('02')">审批通过</el-button>
-      <el-button type="primary" @click="taskSubmit('03')">审批拒绝</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('02')">审批通过</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('03')">审批拒绝</el-button>
       <el-button @click="backPage">取 消</el-button>
     </div>
   </div>
@@ -24,11 +24,20 @@ export default {
   data() {
     return {
       businessNo: '',
+      taskName: '',
       disabled: true
+    }
+  },
+  computed: {
+    taskStatus: {
+      get() {
+        return this.$store.state.task.taskStatus
+      }
     }
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
+    this.taskName = this.$store.state.task.taskName
   },
   mounted() {
     this.$store.commit('task/clear')
