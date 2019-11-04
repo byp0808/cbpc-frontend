@@ -10,6 +10,7 @@
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
           :disabled="disabled"
+          @blur="dateCheck"
         />
       </el-form-item>
       <el-form-item label="批次">
@@ -240,6 +241,11 @@ export default {
       console.info('singleRoute.singleRoute...')
       this.activeName = activeName
       this.queryForm.curveId = curveId
+    },
+    dateCheck() {
+      if (this.queryForm.taskDay === null) {
+        this.$message('日期不能为空')
+      }
     }
   }
 }

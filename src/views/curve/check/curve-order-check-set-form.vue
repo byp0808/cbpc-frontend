@@ -17,9 +17,9 @@
         <el-col :span="10">
           <el-input v-model="orderSet.curveCreditShkPercent" type="number" />
         </el-col>
-        <el-co :span="5">
+        <el-col :span="5">
           %
-        </el-co>
+        </el-col>
       </el-form-item>
       <el-form-item label="信用类曲线收益率波动偏差阈值">
         <el-col :span="10">
@@ -88,9 +88,18 @@ export default {
     },
 
     setCurveQcParm() {
+      this.dataCheck()
       setCurveQcParm(this.orderSet).then(response => {
         console.info('setCurveQcParm.setCurveQcParm...')
       })
+    },
+    dataCheck() {
+      if (this.orderSet.curveCreditShkBp === null &&
+        this.orderSet.curveCreditShkPercent === null &&
+        this.orderSet.curveRateShkBp === null &&
+        this.orderSet.curveRateShkPercent === null) {
+        this.$message('没有输入阈值，无法保存')
+      }
     }
   }
 }
