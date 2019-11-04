@@ -282,9 +282,13 @@ export default {
     certainIgnore(type) {
       var data
       if (type === 'ADD') {
-        data = this.addNumList
+        data = {
+          changeList: this.addNumList
+        }
       } else {
-        data = this.subNumList
+        data = {
+          changeList: this.subNumList
+        }
       }
       certainIgnore(data).then(response => {
         this.$message({
