@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <el-tabs v-model="activeName" type="card">
-      <el-tab-pane label="所有人" name="01">
+      <el-tab-pane v-if="routerName === 'SchemeTaskAllotList'" label="所有人" name="01">
         <all-list />
       </el-tab-pane>
 
-      <el-tab-pane label="我的任务" name="02">
+      <el-tab-pane v-if="routerName === 'SchemeMyTaskAllotList'" label="我的任务" name="01">
         <my-list />
       </el-tab-pane>
     </el-tabs>
@@ -27,6 +27,7 @@ export default {
       bondId: '',
       valuationAllTask: [],
       valuationMyTask: [],
+      routerName: '',
       myList: [],
       params: {
         page: {
@@ -40,6 +41,8 @@ export default {
     }
   },
   created() {
+    console.log('11', this.$route.name)
+    this.routerName = this.$route.name
   },
   methods: {
   }

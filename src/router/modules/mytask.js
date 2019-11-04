@@ -20,6 +20,13 @@ const mytaskRouter = {
       meta: { title: '我的审核', noCache: true, roles: ['auditApprove'] }
     },
     {
+      path: 'audit-all',
+      component: () => import('@/views/common/myAudit/audit-index.vue'),
+      name: 'auditAll',
+      hidden: true,
+      meta: { title: '审核和复核', noCache: true, roles: ['auditApprove'] }
+    },
+    {
       path: 'audit-review',
       component: () => import('@/views/common/myAudit/audit-index.vue'),
       name: 'auditReview',

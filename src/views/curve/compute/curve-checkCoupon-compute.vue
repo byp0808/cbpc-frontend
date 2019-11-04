@@ -219,8 +219,7 @@ export default {
       this.allVisible = true
       var data = {
         curveId: rows[index].curveId,
-        orderId: this.orderId,
-        taskDay: ''
+        orderId: this.orderId
       }
       findAll(data).then(response => {
         this.allCouponList = response.dataList

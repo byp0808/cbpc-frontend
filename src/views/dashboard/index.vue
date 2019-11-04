@@ -322,7 +322,8 @@ export default {
       })
     },
     lookMore() {
-      this.$router.push('commons/audit-index')
+      // this.$router.push('commons/audit-index')
+      this.$router.push({ name: 'auditAll' })
     },
     onPageUpdate(page) {
       const m = this.$moment().set('year', page.year).set('month', page.month - 1).format('YYYYMM')
