@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <el-row :gutter="1" style="height: 650px">
+    <el-row :gutter="1" :style="{height: scrollerHeight}">
       <el-col :span="6">
         <el-card class="box-card margin-top calendar-job">
           <el-form ref="MarketTempForm" :model="marketTempInfo" :rules="tempInfoRules">
@@ -33,7 +33,7 @@
                 <el-option v-for="item in showAreaOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <br><br><br><br><br><br><br><br><br><br><br>
+            <el-input type="hidden" :style="{height: blankHeight}" size="mini" />
             <el-form-item label="最后操作人" class="blackItem">
               <el-input v-model="marketTempInfo.lastUpdBy" disabled style="width:165px" size="mini" />
             </el-form-item>
@@ -51,7 +51,7 @@
               :data="colData"
               tooltip-effect="dark"
               style="width: 100%"
-              height="275px"
+              :height="midTabHeight"
               :header-cell-style="tableHeaderColor"
             >
               <el-table-column
@@ -130,39 +130,67 @@
         <el-row>
           <el-card class="box-card margin-top calendar-job">
             <el-row>
-              <el-col :offset="4">
+              <el-col>
                 <el-form ref="extendColForm" :model="extendColInfo" :rules="tempInfoRules" style="height: 200px">
-                  <el-form-item label="字段名称" class="blackItem">&emsp;&emsp;&emsp;
-                    <el-input v-model="extendColInfo.colChiName" :disabled="disabled" size="mini" style="width:180px" />
-                  </el-form-item>
-                  <el-form-item>
-                    <el-select
-                      v-model="extendColInfo.relationCol"
-                      size="mini"
-                      value-key="code"
-                      style="width:150px"
-                      :disabled="disabled"
-                      @change="selectColName"
-                    >
-                      <el-option
-                        v-for="item in relationColsOptions"
-                        :key="item.code"
-                        :label="item.value"
-                        :value="item.code"
-                      />
-                    </el-select>&emsp;&emsp;&emsp;
-                    <el-select v-model="extendColInfo.operatorType" value-key="value" size="mini" style="width:150px" :disabled="disabled">
-                      <el-option v-for="item in operatorTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-input v-model="extendColInfo.computeExp" type="textarea" :disabled="disabled" rows="3" style="width:350px" />
-                  </el-form-item>
-                  <el-form-item label="添加至" class="blackItem">&emsp;&emsp;
-                    <el-select v-model="extendColInfo.colCategory" value-key="value" size="mini" style="width:160px" :disabled="disabled">
-                      <el-option label="扩展字段" value="02" />
-                    </el-select>
-                  </el-form-item>
+                  <el-row>
+                    <el-col :offset="5">
+                      <el-form-item label="字段名称" class="blackItem">&emsp;&emsp;&emsp;
+                        <el-input v-model="extendColInfo.colChiName" :disabled="disabled" size="mini" style="width:150px" />
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :offset="3" :span="12">
+                      <el-form-item label="数值类字段" class="blackItem">
+                        <el-select
+                          v-model="extendColInfo.relationCol"
+                          size="mini"
+                          value-key="code"
+                          style="width:140px"
+                          :disabled="disabled"
+                          @change="selectColName"
+                        >
+                          <el-option
+                            v-for="item in relationColsOptions"
+                            :key="item.code"
+                            :label="item.value"
+                            :value="item.code"
+                          />
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="操作符" class="blackItem">
+                        <el-select v-model="extendColInfo.operatorType" value-key="value" size="mini" style="width:100px" :disabled="disabled">
+                          <el-option v-for="item in operatorTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :offset="5">
+                      <el-form-item>
+                        <el-input
+                          v-model="extendColInfo.computeExp"
+                          type="textarea"
+                          :disabled="disabled"
+                          rows="3"
+                          style="width:350px"
+                        />
+                      </el-form-item>
+                      <el-form-item label="添加至" class="blackItem">&emsp;&emsp;
+                        <el-select
+                          v-model="extendColInfo.colCategory"
+                          value-key="value"
+                          size="mini"
+                          style="width:160px"
+                          :disabled="disabled"
+                        >
+                          <el-option label="扩展字段" value="02" />
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
                 </el-form>
               </el-col>
             </el-row>
@@ -181,7 +209,7 @@
               :data="colDataResult"
               tooltip-effect="dark"
               style="width: 100%"
-              height="512"
+              :height="rightTabHeight"
               :header-cell-style="tableHeaderColor"
             >
               <el-table-column
@@ -215,6 +243,8 @@ export default {
   data() {
     return {
       disabled: '',
+      midTabHeight: (window.innerHeight - 474) + 'px',
+      rightTabHeight: (window.innerHeight - 216) + 'px',
       tempInfodisabled: '',
       defaultDisabled: true,
       tempInfoRules: {
@@ -269,6 +299,12 @@ export default {
       set(marketTempInfo) {
         this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
       }
+    },
+    scrollerHeight: function() {
+      return (window.innerHeight - 50) + 'px'
+    },
+    blankHeight: function() {
+      return (window.innerHeight - 554) + 'px'
     }
   },
   beforeMount() {

@@ -61,27 +61,6 @@
           >
             查看
           </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="toDownload(scope.row.id)"
-          >
-            下载
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="toDelete(scope.row)"
-          >
-            删除
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="toPublish(scope.row)"
-          >
-            发布
-          </el-button>
         </template>
       </el-table-column>
     </el-table>

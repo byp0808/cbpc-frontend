@@ -115,11 +115,11 @@
       :visible.sync="checkCouponVisible"
     />
     <el-row>
-      <el-col :span="3" :offset="9">未计算:{{computeInfo.uncomplate}}个</el-col>
+      <el-col :span="3" :offset="9">未计算:{{ computeInfo.uncomplate }}个</el-col>
       <el-col :span="3">计算中: 0个</el-col>
-      <el-col :span="3">计算完成:{{computeInfo.complate}}个</el-col>
-      <el-col :span="3">计算出错:{{computeInfo.error}}个</el-col>
-      <el-col :span="3">总曲线个数:{{computeInfo.total}}个</el-col>
+      <el-col :span="3">计算完成:{{ computeInfo.complate }}个</el-col>
+      <el-col :span="3">计算出错:{{ computeInfo.error }}个</el-col>
+      <el-col :span="3">总曲线个数:{{ computeInfo.total }}个</el-col>
     </el-row>
   </div>
 </template>
@@ -313,10 +313,17 @@ export default {
             computes: selection
           }
           deployAndCheckCurve(data).then(response => {
-            this.$message({
-              type: 'success',
-              message: '曲线发布成功！'
-            })
+            if (response.data === 'true') {
+              this.$message({
+                type: 'success',
+                message: new Date().format('YYYY-MM-DD') + ':' + this.orderInfo.orderName + '曲线数据已全部发布！发布时间：' + new Date().format('YYYY-MM-DD')
+              })
+            } else {
+              this.$message({
+                type: 'success',
+                message: '曲线发布成功！'
+              })
+            }
             this.query()
             setTimeout(1.5 * 1000)
           })
