@@ -91,24 +91,7 @@ export default [
           'expireDt': null,
           'userOrgName': null,
           'menus': [
-            'Valuation',
-            'ValuationProdList',
-            'ValuationRecCurve',
-            'ValuationCurveRelationList',
-            'ValuationMandatoryList',
-            'ValuationBondsNonpList',
-            'ValuationDateSetList',
-            'ValuationTaskAllocationList',
-            'Curve',
-            'CurveProduct',
-            'FlowDifference',
-            'CurveProductDef',
-            'CurveSetHisIndex',
-            'QueryValuation',
-            'OrderInfoList',
-            'QueryCountValuation',
-            'SchemeTaskAllotList',
-            'ReportManage'
+            'ValuationRecCurve', 'CurveAllTask', 'CurveSetRefer', 'ValuationCurveRelationList', 'SecondaryMarketList', 'Dashboard', 'Product', 'CurveReportManage', 'CurveTaskRules', 'SetValuationScheme', 'CurveQuality', 'Mytask', 'CurveSearchCase', 'CurveSetHomology', 'CurveSetHisIndex', 'CurveComputeIndex', 'primaryMarket', 'ValReportManage', 'Curve', 'ValuationDateSetList', 'ValuationBondsNonpList', 'Market', 'FlowDifference', 'Busimng', 'CurveSetRela', 'CurveMyTask', 'Setvaluationfactor', 'CurveKdTempList', 'ElementControl', 'ProdView', 'Valuation', 'auditReview', 'TempMng', 'SetCurvescheme', 'ParaInfo', 'CurveQuery', 'CurveSampleTicketList', 'CurveSetInit', 'CurveNkTempList', 'ValQualityIndex', 'secondaryMarket', 'auditApprove', 'ValuationMandatoryList', 'ValuationQuery', 'TmplFilter', 'SchemeTaskAllotList', 'SetCurvefactor', 'QueryValuation', 'PublishList', 'queryTemp', 'QueryCountValuation', 'ValuationTaskAllocationList', 'SchemeMyTaskAllotList', 'OrderInfoList'
           ]
         },
         'msg': null,
