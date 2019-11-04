@@ -17,7 +17,7 @@
             </el-dropdown>
           </template>
           <el-button v-loading="backLoading" type="primary" @click="backTask">任务退回</el-button>
-          <el-button type="primary">方案确认</el-button>
+          <el-button type="primary" @click="confirmMethod">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :xl="16" :lg="14">
@@ -912,6 +912,9 @@ export default {
         this.tabList = res
       })
     },
+    confirmMethod() {
+
+    },
     querySearch(query, call) {
       if (query) {
         searchBondNum(query).then(res => {
@@ -989,11 +992,12 @@ export default {
       this.selection = Array.from(new Set(this.selection))
     },
     selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
-      if (this.taskLists && this.taskLists.length > 0) {
-        this.taskLists.map(v => {
-          this.tasks.push({ bondId: v.bondId })
-        })
-      }
+      // if (this.taskLists && this.taskLists.length > 0) {
+      this.tasks = []
+      this.taskLists.map(v => {
+        this.tasks.push({ bondId: v.bondId })
+      })
+      // }
       this.valuationScheme.tasks = this.tasks
       console.log('cc', this.tasks)
     },
