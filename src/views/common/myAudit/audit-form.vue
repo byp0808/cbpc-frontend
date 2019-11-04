@@ -55,7 +55,7 @@
       <el-table-column label="事件明细" align="center" width="160px">
         <template slot-scope="scope">
           <!-- <el-button type="text">{{ scope.row.taskName }}</el-button> -->
-          <span style="color:#09f;font-size:14px;cursor: pointer;" class="detail" @click="toAudit(scope.row.businessNo, scope.row.taskStatus, scope.row.businessRouter)">{{ scope.row.taskName }}</span>
+          <span style="color:#09f;font-size:14px;cursor: pointer;" class="detail" @click="toAudit(scope.row.businessNo, scope.row.taskStatus, scope.row.taskName, scope.row.businessRouter)">{{ scope.row.taskName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" align="center">
@@ -80,8 +80,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button :type="scope.row.taskStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '02', scope.row.businessRouter)">通过</el-button>
-          <el-button :type="scope.row.taskStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '03', scope.row.businessRouter)">拒绝</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '02', scope.row.taskName, scope.row.businessRouter)">通过</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '03', scope.row.taskName, scope.row.businessRouter)">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -188,14 +188,16 @@ export default {
         }
       )
     },
-    toAudit(businessNo, taskStatus, router) {
+    toAudit(businessNo, taskStatus, taskName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
       this.$store.commit('task/setTaskStatus', taskStatus)
+      this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },
-    audit(businessNo, auditStatus, router) {
+    audit(businessNo, auditStatus, taskName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
       this.$store.commit('task/setAuditStatus', auditStatus)
+      this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },
     selectDate(e) {
