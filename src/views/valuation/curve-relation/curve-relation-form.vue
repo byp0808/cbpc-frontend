@@ -144,7 +144,6 @@ export default {
     if (this.relationId) {
       queryCurveRelation(this.relationId).then(response => {
         this.curveRelationInfo = response
-        console.log('this.curveRelationInfo', this.curveRelationInfo)
         if (this.isCopy) {
           this.curveRelationInfo.Id = ''
         }
