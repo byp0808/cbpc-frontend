@@ -22,8 +22,8 @@
         </el-col>
         <el-col :xl="16" :lg="14">
           <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
-          <el-button type="primary" @click="addTask">添加任务</el-button>
-          <el-button type="primary" @click="batchAddTask">批量添加</el-button>
+          <el-button v-elepermission="['AddTask']" type="primary" @click="addTask">添加任务</el-button>
+          <el-button v-elepermission="['BatchAddTask']" type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
         </el-col>
@@ -612,8 +612,10 @@ import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, sea
 import { getCurveList, calculateExchange, viewExchange, adjustCredit, viewAdjustCredit } from '@/api/valuation/adjust.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
+import elepermission from '@/directive/elepermission'
 export default {
   name: 'SchemeMyList',
+  directives: { elepermission },
   components: {
     // BatchTaskForm,
     AssetList,
