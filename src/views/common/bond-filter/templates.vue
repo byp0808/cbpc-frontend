@@ -17,12 +17,12 @@
       />
       <el-table-column
         prop="tempName"
-        label="模板名称"
-        width="100"
+        label="筛选模板名称"
+        width="150"
       />
       <el-table-column
         prop="rules"
-        label="筛选规则 "
+        label="规则详细"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
