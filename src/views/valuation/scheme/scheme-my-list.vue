@@ -238,13 +238,13 @@
         <el-form-item label="交易量" required>
           <!-- <el-row> -->
           <el-col :span="9">
-            <el-form-item prop="starNumber">
+            <el-form-item prop="minVolume">
               <el-input v-model="param.minVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
-            <el-form-item prop="endNumber">
+            <el-form-item prop="maxVolume">
               <el-input v-model="param.maxVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
@@ -477,7 +477,7 @@
       </transition>
     </el-dialog>
     <el-dialog :visible.sync="oppositeDialog" title="对敲券人工识别" width="1000px">
-      <opposite-form :is-opposite="islookOpposite" />
+      <opposite-form :is-opposite="islookOpposite" :page="param.page" />
     </el-dialog>
     <el-dialog v-loading="Dialog.a" :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
       <el-form>
@@ -609,7 +609,7 @@ import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
 import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum, confirm } from '@/api/valuation/task.js'
-import { getCurveList, calculateExchange, viewExchange, adjustCredit, adjustInterest } from '@/api/valuation/adjust.js'
+import { getCurveList, calculateExchange, viewExchange, adjustCredit, viewAdjustCredit } from '@/api/valuation/adjust.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -678,6 +678,7 @@ export default {
       selection: [],
       param: { // 往后台传递的参数
         curves: [], // 曲线集合
+        type: '', // 利率点差-INTEREST 信用点差-CREDIT
         minVolume: '', // 最小成交量
         maxVolume: '', // 最大成交量
         baseTime: '', // 基准时间
@@ -694,7 +695,12 @@ export default {
         transactionContinuityOp: '',
         transactionContinuityValue: '',
         historyScoreOp: '',
-        historyScoreSum: ''
+        historyScoreSum: '',
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       },
       selectCreditList: [],
       selectInterestList: [],
@@ -1179,8 +1185,14 @@ export default {
     countDiff() {
       this.$refs['interestDom'].validate(val => {
         if (val) {
-          adjustInterest(this.param).then(response => {
-            this.adjustList = response
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          this.param.type = 'INTEREST' // 利率点差计算
+          adjustCredit(this.param).then(response => {
+            const { dataList, page } = response
+            this.adjustList = dataList
+            this.param.page = page
             this.countTitle = '利率债点差调整'
             this.isCredit = false
             this.isLook = false
@@ -1192,18 +1204,33 @@ export default {
     lookDiff() {
       this.$refs['interestDom'].validate(val => {
         if (val) {
-          this.countTitle = '利率债点差调整'
-          this.isCredit = false
-          this.isLook = true
-          this.adjustDialog = true
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          this.param.type = 'CREDIT' // 查看利率点差
+          viewAdjustCredit(this.param).then(response => {
+            const { dataList, page } = response
+            this.adjustList = dataList
+            this.param.page = page
+            this.countTitle = '利率债点差调整'
+            this.isCredit = false
+            this.isLook = true
+            this.adjustDialog = true
+          })
         }
       })
     },
     countcreditDiff() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          this.param.type = 'CREDIT' // 信用点差计算
           adjustCredit(this.param).then(response => {
-            this.adjustList = response
+            const { dataList, page } = response
+            this.adjustList = dataList
+            this.param.page = page
             this.countTitle = '信用债点差调整'
             this.isCredit = true
             this.isLook = false
@@ -1215,19 +1242,35 @@ export default {
     lookcreditDiff() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
-          this.countTitle = '信用债点差调整'
-          this.isCredit = true
-          this.isLook = true
-          this.adjustDialog = true
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          this.param.type = 'CREDIT' // 查看信用点差
+          viewAdjustCredit(this.param).then(response => {
+            const { dataList, page } = response
+            this.adjustList = dataList
+            this.param.page = page
+            this.countTitle = '信用债点差调整'
+            this.isCredit = true
+            this.isLook = true
+            this.adjustDialog = true
+          })
         }
       })
     },
     countOpposite() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          // 保存本次选中的曲线
+          // 计算对敲
           calculateExchange(this.param).then(response => {
+            const { dataList, page } = response
             this.islookOpposite = false
-            this.$store.commit('scheme/setAdjustList', response)
+            this.$store.commit('scheme/setAdjustList', dataList)
+            this.param.page = page
             this.oppositeDialog = true
           })
         }
@@ -1236,9 +1279,14 @@ export default {
     lookOpposite() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
           viewExchange(this.param).then(response => {
+            const { dataList, page } = response
             this.islookOpposite = true
-            this.$store.commit('scheme/setAdjustList', response)
+            this.$store.commit('scheme/setAdjustList', dataList)
+            this.param.page = page
             this.oppositeDialog = true
           })
         }
