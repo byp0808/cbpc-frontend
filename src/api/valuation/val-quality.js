@@ -116,7 +116,7 @@ export function dwnlValQcRpt(data) {
 
 // 上传估值质检报告
 export function uplValQcRpt(data) {
-  upload({
+  return upload({
     url: `${basic_api_valuation}` + '/file/file/uplValQcRpt',
     data: data
   })
