@@ -746,6 +746,7 @@ export default {
     save(data, msg) {
       const reqData = { step: this.stepActive + 1, prodId: this.prodId }
       this.$lodash.assign(reqData, data)
+      reqData.valuationBasicProd = this.$store.state.valuationProd.prodBasicInfo
       saveProd(reqData).then(response => {
         this.prodId = response
         this.next()
