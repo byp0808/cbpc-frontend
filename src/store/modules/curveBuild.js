@@ -60,7 +60,6 @@ export default {
       commit('UPDATE_BUILD', data)
     },
     updateData({ commit, state }, obj) {
-      console.log(state.curveBuildList)
       const list = state.curveBuildList[obj.curveId]
       const i = list.findIndex(v => v.standSlip === obj.standSlip)
       _.merge(list[i], temp, obj)
@@ -69,7 +68,6 @@ export default {
       } else {
         list[i].adjResult = add(list[i].lastYield, divide(list[i].adjRange, 100))
       }
-      console.log('=========>', list)
       saveCurveBuild(list).then(response => {
         commit('SET_BUILD', response)
       })

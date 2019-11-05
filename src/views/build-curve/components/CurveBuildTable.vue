@@ -25,7 +25,7 @@
       </el-table-column>
       <el-table-column label="所选券期限" align="center">
         <template slot-scope="{ row }">
-          <span>{{ credit ? row.standSlip : row.slip }}</span>
+          <span>{{ credit && !!row.slip ? row.standSlip : row.slip }}</span>
         </template>
       </el-table-column>
       <el-table-column label="所选收益率" align="center">
@@ -53,7 +53,7 @@
           <span slot="content">{{ row.homology || '-' }}</span>
           <template slot="edit-component-slot">
             <el-option value="-" label="请选择" />
-            <el-option v-for="option in options" :key="option.id" :value="option.value" :label="option.label" />
+            <el-option v-for="(option, index) in makeOptions(row)" :key="index" :value="option.value" :label="option.label" />
             <el-option value="" label="自定义" />
           </template>
         </editable-cell>
@@ -179,9 +179,11 @@
         </el-row>
       </el-form>
     </el-dialog>
-    <el-dialog title="自定义同调" :visible="customEnabled" :fullscreen="true" @close="customEnabled = false">
+    <el-dialog title="自定义同调" :visible.sync="customEnabled" :fullscreen="true" @close="customHomology">
       <custom-homology
-        :row="formulaRow"
+        :curve-id="curveId"
+        :stand-slip="formulaRow.standSlip"
+        :homology="formulaRow.homology"
         @change-formula="customHomology"
       />
     </el-dialog>
@@ -241,6 +243,8 @@ export default {
     }
   },
   data() {
+    const map = {}
+    this.list.forEach(l => { map[l.standSlip] = l.homology })
     return {
       editModeEnabled: true,
       customEnabled: false,
@@ -248,6 +252,7 @@ export default {
       weight: {},
       showResult: false,
       limit: [],
+      homologyMap: map,
       formulaRow: {}
     }
   },
@@ -257,7 +262,7 @@ export default {
         return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].lock : false
       },
       credit: function(state) {
-        return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].confirm : false
+        return state.curveBuild.curveStatus[this.curveId] ? state.curveBuild.curveStatus[this.curveId].credit : false
       }
     }),
     makeData() {
@@ -266,6 +271,13 @@ export default {
     makeCalcEnable() {
       const l = Object.keys(this.weight).filter(value => !!this.weight[value]).length
       return l !== 7
+    }
+  },
+  watch: {
+    list: function(nl) {
+      const map = {}
+      nl.forEach(l => { map[l.standSlip] = l.homology })
+      this.homologyMap = map
     }
   },
   mounted() {
@@ -286,6 +298,10 @@ export default {
     })
   },
   methods: {
+    makeOptions(data) {
+      const standSlip = '[' + data.standSlip + 'Y]'
+      return this.options.filter(value => value.label !== standSlip)
+    },
     changeData(name, row) {
       const obj = {}
       if (name === 'adjRange') {
@@ -305,6 +321,7 @@ export default {
     },
     changeHomology(name, row) {
       if (row.homology === '') {
+        row.homology = this.homologyMap[row.standSlip] || '-'
         this.formulaRow = row
         this.customEnabled = true
         return
@@ -312,21 +329,25 @@ export default {
       const obj = {}
       obj.calcYield = true
       obj.standSlip = row.standSlip
-      obj.homology = row.homology
+      obj.homology = !row.homology || row.homology === '' ? '-' : row.homology
       obj.curveId = this.curveId
       obj.adjReason = '混合同调'
-      if (row.homology.includes('?')) {
+      if (obj.homology.indexOf('?') !== -1) {
         obj.adjReason = '自定义同调'
       }
-      if (/^#\[[\d.]+(Y|R|YR|BR|YBR)\]/g.test(row.homology)) {
+      if (/^#\[[\d.]+(Y|R|YR|BR|YBR)\]/g.test(obj.homology)) {
         obj.adjReason = '自身同调'
+      }
+      if (obj.homology === '-') {
+        obj.adjReason = ''
       }
       this.$store.dispatch('curveBuild/updateData', obj)
     },
     historyDivision() {
       this.$emit('click-history-division')
     },
-    customHomology(data) {
+    customHomology() {
+      // this.$set(this.homologyMap, data.standSlip, data.homology)
       this.customEnabled = false
     },
     openDialog() {

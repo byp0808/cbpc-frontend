@@ -71,7 +71,7 @@ export default {
     // 初始化页面数据
     async initPageData() {
       const news = { curveId: this.initInfo, approveStatus: '02' }
-      this.curveList = getQueryCurvOptions(news)
+      this.curveList = getQueryCurvOptions(news, this.detailInfo)
       this.loadCurvePrdKd()
     },
     getCurveName(id) {
