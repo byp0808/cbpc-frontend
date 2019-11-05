@@ -76,7 +76,6 @@
           <el-col :span="8" :offset="14">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
-            <!-- <el-button class="filter-item" type="primary" @click="download">下载曲线方案</el-button> -->
             <el-button type="primary" style="margin-right: 9px" @click="download">下载曲线方案</el-button>
           </el-col>
         </el-row>
