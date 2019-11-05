@@ -107,7 +107,7 @@
       >
         <template slot-scope="scope">
           <el-button
-            :disabled="scope.row.approveStatus!=='01'"
+            :disabled="!(scope.row.approveStatus!=='01')"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -115,7 +115,7 @@
             设置
           </el-button>
           <el-button
-            :disabled="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
+            :disabled="!(scope.row.approveStatus==='02' || scope.row.approveStatus==='03')"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -123,7 +123,7 @@
             移出
           </el-button>
           <el-button
-            :disabled="isShowChangeStatusBtn(scope.row.busiStatus, scope.row.approveStatus)"
+            :disabled="!isShowChangeStatusBtn(scope.row.busiStatus, scope.row.approveStatus)"
             type="text"
             size="small"
             @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
