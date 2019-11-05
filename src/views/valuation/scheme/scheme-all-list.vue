@@ -9,7 +9,7 @@
     <div style="margin-bottom: 20px">
       <el-row>
         <el-col :xl="8" :lg="10">
-          <el-button type="primary" @click="allotTask">任务分配</el-button>
+          <el-button v-loading="allotLoading" type="primary" @click="allotTask">任务分配</el-button>
           <el-button v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
           <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
@@ -349,6 +349,15 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog :visible="confirmTaskDialog" @close="confirmTaskDialog = false">
+      <div>{{ confirmMeg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="6" :offset="18">
+          <el-button @click="confirmTaskDialog = false">取消</el-button>
+          <el-button type="primary" @click="confirmAllot">确认</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -356,7 +365,8 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond, searchBondNum } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask,
+  getTask, saveTask, searchBond, saveBond, searchBondNum, taskConfirm } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload, downloadFile } from '@/utils/file-request'
 export default {
@@ -383,8 +393,10 @@ export default {
       isBatch: false,
       remaindDialog: false,
       isMy: false,
+      allotLoading: false,
       message: '',
       code: '',
+      confirmMeg: '',
       bondsNonpInfo: {},
       failMessage: '',
       taskTitle: '',
@@ -463,6 +475,7 @@ export default {
       marketLists: [],
       selectBondId: '',
       flag: false,
+      confirmTaskDialog: false,
       params: {
         page: {
           pageNumber: 1,
@@ -794,11 +807,28 @@ export default {
       if (this.taskList.length === 0) {
         return this.$message.warning('请选择任务')
       }
+      this.selectionCheck()
+      this.allotLoading = true
+      taskConfirm({ ids: this.selection }).then(res => {
+        this.allotLoading = false
+        if (res.respCode === 'YBL100001017') {
+          this.confirmTaskDialog = true
+          this.confirmMeg = res.respMsg
+        } else {
+          this.showDialog()
+        }
+      })
+    },
+    showDialog() {
       this.allocationDialog = true
       this.nameModel.userId = ''
       getUserName('00001').then(res => {
         this.nameList = res
       })
+    },
+    confirmAllot() {
+      this.showDialog()
+      this.confirmTaskDialog = false
     },
     selectionCheck() { // 防止点击取消后还会被添加上
       this.selection = []
