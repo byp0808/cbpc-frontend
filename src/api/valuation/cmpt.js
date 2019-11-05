@@ -45,3 +45,12 @@ export function taskCmpt(data) {
     data
   })
 }
+
+// 单资产计算
+export function review(data) {
+  return request({
+    url: `${basic_api_valuation}/cmpt/batch-review`,
+    method: 'post',
+    data
+  })
+}
