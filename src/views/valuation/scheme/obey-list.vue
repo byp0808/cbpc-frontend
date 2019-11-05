@@ -79,7 +79,7 @@
       </el-table-column>
       <el-table-column label="进入时间" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createdTs }}</span>
+          <span>{{ scope.row.cptDate }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发布批次" align="center">
@@ -89,8 +89,8 @@
       </el-table-column>
     </el-table>
     <transition name="dialog-fade-in">
-      <el-dialog :visible.sync="AdjustDialog" width="100%" style="bottom:0;top:20%">
-        <scheme-form />
+      <el-dialog v-if="dialogInfo.closeDialog" :visible.sync="dialogInfo.closeDialog" width="100%" style="bottom:0;top:20%">
+        <scheme-form :adjust-data="adjustParams" />
       </el-dialog>
     </transition>
 
@@ -136,6 +136,13 @@ export default {
       }
     }
   },
+  computed: {
+    dialogInfo: {
+      get() {
+        return this.$store.state.scheme.dialogInfo
+      }
+    }
+  },
   watch: {
     activeName(val) {
       console.log('val', this.activeName)
@@ -159,7 +166,8 @@ export default {
       this.$router.push({ name: 'SchemeConstruct', params: e })
     },
     adjust(e) {
-      this.AdjustDialog = true
+      // this.$store.commit('scheme/setCloseDialog', true)
+      this.dialogInfo.closeDialog = true
       this.adjustParams.taskId = e.id
     },
     handleSelectionChange(val) {

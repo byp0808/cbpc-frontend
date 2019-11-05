@@ -15,18 +15,18 @@
             <h3>工作日历</h3>
           </div>
           <el-row :gutter="10">
-	          <div style="width: 520px;display: inline-block;vertical-align:top;">
-		          <div class="grid-content bg-purple" style="">
-			          <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
-				          <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
-					          <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{ day.day }}</span>
-					          <div class="flex-grow overflow-y-scroll">
-						          <el-tag v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" hit size="small" :type="getTagType(index)">{{ getSubName(m) }}</el-tag>
-					          </div>
-				          </div>
-			          </v-calendar>
-		          </div>
-	          </div>
+            <div style="width: 520px;display: inline-block;vertical-align:top;">
+              <div class="grid-content bg-purple" style="">
+                <v-calendar :attributes="calendar.attributes" class="custom-calendar" @update:fromPage="onPageUpdate">
+                  <div slot="day-content" slot-scope="{ day }" class="flex flex-col h-full z-10 overflow-hidden" style="">
+                    <span class="day-label text-sm text-gray-900" style="width: 100%;display: block">{{ day.day }}</span>
+                    <div class="flex-grow overflow-y-scroll">
+                      <el-tag v-for=" (m, index) in calendar.workday[day.day]" :key="day.day + index" hit size="small" :type="getTagType(index)">{{ getSubName(m) }}</el-tag>
+                    </div>
+                  </div>
+                </v-calendar>
+              </div>
+            </div>
             <div style="display: inline-block; vertical-align:top; margin-left: 10px;">
               <el-button type="primary" icon="el-icon-setting" @click="openMyCalendarSetting" />
               <ul style="margin-top:50px">
@@ -76,7 +76,7 @@
                   <el-button
                     type="text"
                     size="small"
-                    @click.native.prevent="toApproval(scope.row.businessNo, scope.row.businessRouter)"
+                    @click.native.prevent="toApproval(scope.row.businessNo,scope.row.taskName, scope.row.businessRouter)"
                   >
                     审核
                   </el-button>
@@ -322,7 +322,8 @@ export default {
       })
     },
     lookMore() {
-      this.$router.push('commons/audit-index')
+      // this.$router.push('commons/audit-index')
+      this.$router.push({ name: 'auditAll' })
     },
     onPageUpdate(page) {
       const m = this.$moment().set('year', page.year).set('month', page.month - 1).format('YYYYMM')
@@ -359,8 +360,10 @@ export default {
     queryTaskList() {
       this.$store.dispatch('homePage/queryTaskList')
     },
-    toApproval(businessNo, router) {
+    toApproval(businessNo, taskName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
+      this.$store.commit('task/setTaskStatus', '01')
+      this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },
     getCalendarName(code) {
@@ -435,7 +438,7 @@ export default {
       .el-tag--small {
         line-height: 16px;
         padding: 0 2px 0 2px;
-	      height: 20px;
+        height: 20px;
       }
       .el-tag {
         /*line-height: 26px;*/

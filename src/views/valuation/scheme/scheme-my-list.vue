@@ -17,7 +17,7 @@
             </el-dropdown>
           </template>
           <el-button v-loading="backLoading" type="primary" @click="backTask">任务退回</el-button>
-          <el-button type="primary">方案确认</el-button>
+          <el-button type="primary" @click="confirmMethod">方案确认</el-button>
           <el-button icon="el-icon-refresh" @click="refrech" />
         </el-col>
         <el-col :xl="16" :lg="14">
@@ -55,7 +55,7 @@
         />
       </div>
       <div v-if="activeElement === '02'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -69,7 +69,7 @@
         />
       </div>
       <div v-if="activeElement === '03'" v-loading="tableLoading">
-        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskLists" />
+        <obey-list :all-list="myList" :is-my="isMy" :active-name="activeElement" @taskList="taskList" />
         <el-pagination
           style="margin-top:20px"
           align="center"
@@ -157,6 +157,7 @@
               drag
               :on-exceed="handleExceed1"
               :http-request="memSuccess1"
+              accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             >
               <i class="el-icon-upload" />
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -216,7 +217,7 @@
     </el-dialog>
     <el-dialog :visible.sync="interestDialog" title="利率债点差调整">
       <el-table
-        :data="interestList"
+        :data="creditList"
         style="width: 100%"
         max-height="280"
         :header-cell-style="{background:'#f6f6f6'}"
@@ -228,30 +229,30 @@
       >
         <el-table-column label="作业线名称" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.remark }}</span>
+            <span>{{ scope.row.productName }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="全选" type="selection" />
       </el-table>
-      <el-form ref="interestDom" style="margin-top:20px" :rules="interestRule" :model="interestObj">
+      <el-form ref="interestDom" style="margin-top:20px" :rules="paramRule" :model="param">
         <el-form-item label="交易量" required>
           <!-- <el-row> -->
           <el-col :span="9">
             <el-form-item prop="starNumber">
-              <el-input v-model="interestObj.starNumber" type="number" min="0" clearable />
+              <el-input v-model="param.minVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left:20px">至</el-col>
           <el-col :span="9">
             <el-form-item prop="endNumber">
-              <el-input v-model="interestObj.endNumber" type="number" min="0" clearable />
+              <el-input v-model="param.maxVolume" type="number" min="0" clearable />
             </el-form-item>
           </el-col>
           <!-- </el-row> -->
         </el-form-item>
         <el-form-item label="参考基准线时间" prop="baseTime">
           <el-time-select
-            v-model="interestObj.baseTime"
+            v-model="param.baseTime"
             :picker-options="{
               start: '00:00',
               step: '00:15',
@@ -260,7 +261,7 @@
             placeholder="请选择基准时间"
           />
         </el-form-item>
-        <el-form-item label="点差补0的券" prop="addZero">
+        <el-form-item label="点差补0的券">
           <!-- <el-input v-model="interestObj.addZero" style="width:50%" />
           <div class="icon-box" @click="addZero">
             <i class="el-icon-circle-plus-outline" />
@@ -268,11 +269,11 @@
           <el-upload
             style="display: inline-block;"
             action=""
-            :multiple="false"
             name="attach"
-            :http-request="upload"
-            :show-file-list="false"
-            :accept="'excel'"
+            :http-request="uploadAddZero"
+            :on-exceed="handleExceed1"
+            limit="1"
+            accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           >
             <div class="icon-box">
               <el-button class="el-icon-circle-plus-outline" />
@@ -302,7 +303,7 @@
       >
         <el-table-column label="作业线名称" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.remark }}</span>
+            <span>{{ scope.row.productName }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="全选" type="selection" />
@@ -393,7 +394,7 @@
           </el-col>
           <el-col :span="10" :offset="1">
             <el-form-item prop="reliableYearValue">
-              <el-input v-model="param.reliableYearValue" type="reliableYearValue" min="0" clearable @change="numberChange" />
+              <el-input v-model="param.reliableYearValue" min="0" clearable @change="numberChange" />
             </el-form-item>
           </el-col>
         </el-form-item>
@@ -471,7 +472,7 @@
       </el-tabs>
       <transition name="el-fade-in-linear">
         <div>
-          <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" />
+          <adjust-form :is-look="isLook" :active-name="activeName" :is-credit="isCredit" :adjust-list="adjustList" />
         </div>
       </transition>
     </el-dialog>
@@ -607,8 +608,8 @@ import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
 import AdjustForm from '@/views/valuation/scheme/adjustCount-form.vue'
 import OppositeForm from '@/views/valuation/scheme/opposite-form.vue'
-import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum } from '@/api/valuation/task.js'
-import { getCurveList, calculateExchange, viewExchange } from '@/api/valuation/scheme.js'
+import { getAllTableList, returnTask, addOneTask, addBatchTask, batchAdjust, searchBondNum, confirm } from '@/api/valuation/task.js'
+import { getCurveList, calculateExchange, viewExchange, adjustCredit, adjustInterest } from '@/api/valuation/adjust.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload } from '@/utils/file-request'
 export default {
@@ -679,6 +680,7 @@ export default {
         curves: [], // 曲线集合
         minVolume: '', // 最小成交量
         maxVolume: '', // 最大成交量
+        baseTime: '', // 基准时间
         todayBrokerMarketOp: '',
         todayBrokerMarketDiff: '',
         yesterdayBrokerMarketOp: '',
@@ -724,12 +726,12 @@ export default {
         batchId: '2222',
         attach: ''
       },
-      interestRule: {
-        starNumber: [
+      paramRule: {
+        minVolume: [
           { required: true, message: '请输入最小数量', trigger: 'blur' },
           { validator: this.checkNumber, trigger: 'blur' }
         ],
-        endNumber: [
+        maxVolume: [
           { required: true, message: '请输入最大数量', trigger: 'blur' },
           { validator: this.checkNumber, trigger: 'blur' }
         ],
@@ -889,6 +891,9 @@ export default {
   },
   created() {
     this.loadTable()
+    getCurveList().then(response => {
+      this.creditList = response
+    })
   },
   methods: {
     loadTable() {
@@ -905,6 +910,16 @@ export default {
       })
       getAllTableList({ tab: '02' }).then(res => {
         this.tabList = res
+      })
+    },
+    confirmMethod() {
+      this.selectionCheck()
+      if (this.selection.length === 0) {
+        return this.$message.warning('请选择任务')
+      }
+      confirm(this.selection).then(res => {
+        this.$message.success('方案确认成功')
+        this.loadTable()
       })
     },
     querySearch(query, call) {
@@ -934,10 +949,12 @@ export default {
       // }
     },
     checkCompare(rule, value, callback) {
-      if (this.params.todayBrokerMarketDiff < 0 || this.params.yesterdayBrokerMarketDiff < 0 || this.params.curveRangeBondDayDiff < 0 ||
-      this.params.reliableYearValue < 0 || this.params.valuationDeviationValue < 0 || this.params.transactionContinuityValue < 0 ||
-      this.params.historyScoreSum < 0) {
+      if (this.param.todayBrokerMarketDiff < 0 || this.param.yesterdayBrokerMarketDiff < 0 || this.param.curveRangeBondDayDiff < 0 ||
+      this.param.reliableYearValue < 0 || this.param.valuationDeviationValue < 0 || this.param.transactionContinuityValue < 0 ||
+      this.param.historyScoreSum < 0) {
         callback(new Error('输入的值不能小于0'))
+      } else {
+        callback()
       }
     },
     checkNumber(rule, value, callback) {
@@ -982,11 +999,12 @@ export default {
       this.selection = Array.from(new Set(this.selection))
     },
     selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
-      if (this.taskLists && this.taskLists.length > 0) {
-        this.taskLists.map(v => {
-          this.tasks.push({ bondId: v.bondId })
-        })
-      }
+      // if (this.taskLists && this.taskLists.length > 0) {
+      this.tasks = []
+      this.taskLists.map(v => {
+        this.tasks.push({ bondId: v.bondId })
+      })
+      // }
       this.valuationScheme.tasks = this.tasks
       console.log('cc', this.tasks)
     },
@@ -1161,10 +1179,13 @@ export default {
     countDiff() {
       this.$refs['interestDom'].validate(val => {
         if (val) {
-          this.countTitle = '利率债点差调整'
-          this.isCredit = false
-          this.isLook = false
-          this.adjustDialog = true
+          adjustInterest(this.param).then(response => {
+            this.adjustList = response
+            this.countTitle = '利率债点差调整'
+            this.isCredit = false
+            this.isLook = false
+            this.adjustDialog = true
+          })
         }
       })
     },
@@ -1180,12 +1201,15 @@ export default {
     },
     countcreditDiff() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        this.countTitle = '信用债点差调整'
-        this.isCredit = true
-        this.isLook = false
-        this.adjustDialog = true
-        // }
+        if (val) {
+          adjustCredit(this.param).then(response => {
+            this.adjustList = response
+            this.countTitle = '信用债点差调整'
+            this.isCredit = true
+            this.isLook = false
+            this.adjustDialog = true
+          })
+        }
       })
     },
     lookcreditDiff() {
@@ -1200,27 +1224,27 @@ export default {
     },
     countOpposite() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        calculateExchange(this.param).then(response => {
-          this.islookOpposite = false
-          this.$store.commit('scheme/setAdjustList', response)
-          this.oppositeDialog = true
-        })
-        // }
+        if (val) {
+          calculateExchange(this.param).then(response => {
+            this.islookOpposite = false
+            this.$store.commit('scheme/setAdjustList', response)
+            this.oppositeDialog = true
+          })
+        }
       })
     },
     lookOpposite() {
       this.$refs['creditDom'].validate(val => {
-        // if (val) {
-        viewExchange(this.param).then(response => {
-          this.islookOpposite = true
-          this.$store.commit('scheme/setAdjustList', response)
-          this.oppositeDialog = true
-        })
-        // }
+        if (val) {
+          viewExchange(this.param).then(response => {
+            this.islookOpposite = true
+            this.$store.commit('scheme/setAdjustList', response)
+            this.oppositeDialog = true
+          })
+        }
       })
     },
-    upload() {
+    uploadAddZero() {
 
     },
     handleSelect(e) {

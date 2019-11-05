@@ -38,7 +38,7 @@
         :selectable="selectToBatch"
       />
       <el-table-column
-        prop="bondId"
+        prop="assetCode"
         label="资产编码"
         show-overflow-tooltip
         width="100"
@@ -314,6 +314,9 @@ export default {
               this.$refs.uploadZone.clearFiles()
               this.$message.success('批量上传成功')
               this.loadTable()
+            }).catch(() => {
+              this.$refs.uploadZone.clearFiles()
+              this.$message.error('上传失败，请联系管理员')
             })
           }).catch(() => {
             this.$refs.uploadZone.clearFiles()

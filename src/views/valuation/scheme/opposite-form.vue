@@ -11,7 +11,7 @@
         </el-col>
         <el-col :span="2" :offset="12">
           <!-- <el-button type="primary" @click="bondSearch">查询</el-button> -->
-          <el-button :type="isOpposite? 'info' : 'primary'" :disabled="isOpposite" @click="transform">转换</el-button>
+          <el-button type="primary" :disabled="isOpposite" @click="transform">转换</el-button>
         </el-col>
       </el-row>
     </el-form>

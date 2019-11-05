@@ -15,11 +15,18 @@
             >修改
             </el-button>
             <el-button
-              v-if="disabled"
+              v-if="!disabled"
               type="text"
               size="big"
               @click="curveHomologyUpdate(scope.$index)"
             >查看
+            </el-button>
+            <el-button
+              v-if="!disabled"
+              type="text"
+              size="big"
+              @click="curveHomologyDelete(scope.$index)"
+            >删除
             </el-button>
           </template>
         </el-table-column>
@@ -34,7 +41,15 @@
             <h3 style="font-size:40px;">场<br><br>景</h3>
           </el-col>
           <el-col :span="19" class="box">
-            <CurveSetInitDetailForm v-for="(item, index) in tmp_sceneList" :key="index" ref="refSceneList" :index="index" :detail-info="item" :disabled="disabled" />
+            <CurveSetInitDetailForm
+              v-for="(item, index) in tmp_sceneList"
+              :key="index"
+              ref="refSceneList"
+              :init-info="curveId"
+              :index="index"
+              :detail-info="item"
+              :disabled="disabled"
+            />
             <el-row style="margin-top:5px">
               <el-col :span="8">
                 <el-form-item
@@ -53,7 +68,7 @@
                   prop="sceneFormulaValue"
                   :rules="[{ required: true, message: '请输入', trigger: 'change' }]"
                 >
-                  <el-input v-model="detailForm.sceneFormulaValue" :disabled="disabled" style="height:20px;width: 100%" />
+                  <el-input v-model="detailForm.sceneFormulaValue" :disabled="disabled" oninput="value = value.replace(/[^\d.]/g,'')" style="height:20px;width: 100%" />
                 </el-form-item>
               </el-col>
               <el-col :span="2" :offset="1" style="height:34px;line-height: 34px">BP</el-col>
@@ -69,7 +84,15 @@
             <h3 style="font-size:40px;">行<br><br>为</h3>
           </el-col>
           <el-col :span="19" class="box">
-            <CurveSetInitDetailForm v-for="(item, index) in tmp_actionList" :key="index" ref="refActionList" :index="index" :detail-info="item" :disabled="disabled" />
+            <CurveSetInitDetailForm
+              v-for="(item, index) in tmp_actionList"
+              :key="index"
+              ref="refActionList"
+              :index="index"
+              :init-info="curveId"
+              :detail-info="item"
+              :disabled="disabled"
+            />
             <el-row style="margin-top:5px">
               <el-col :span="8">
                 <el-form-item
@@ -86,9 +109,9 @@
                 <el-form-item
                   label-width="0px"
                   prop="actionFormulaValue"
-                  :rules="[{ required: true, message: '请选择', trigger: 'change' }]"
+                  :rules="[{ required: true, message: '请输入', trigger: 'change' }]"
                 >
-                  <el-input v-model="detailForm.actionFormulaValue" :disabled="disabled" style="height:20px;width: 100%" />
+                  <el-input v-model="detailForm.actionFormulaValue" :disabled="disabled" oninput="value = value.replace(/[^\d.]/g,'')" style="height:20px;width: 100%" />
                 </el-form-item>
               </el-col>
               <el-col :span="2" :offset="1" style="height:34px;line-height: 34px">BP</el-col>
@@ -128,6 +151,7 @@ export default {
   data() {
     return {
       disabled: false,
+      curveId: '',
       formulaList: [], // 公式缓存数据
       formulaEditList: [], // 中间公式列表: 编辑数据
       detailList: [], // 场景行为明细缓存数据
@@ -156,6 +180,7 @@ export default {
     // 先加载列表
     this.resolve(this.row.homology)
     if (this.row) {
+      this.curveId = this.row.curveId
       this.detailForm.opType = 'EDIT'
     } else {
       this.detailForm.opType = 'ADD'
@@ -207,6 +232,16 @@ export default {
       this.tmp_sceneList.push({ depCurveId: '', percent: 0, standSlip: '', depInd: 'Y' })
       this.tmp_actionList.push({ depCurveId: '', percent: 0, standSlip: '', depInd: 'Y' })
     },
+    // 删除场景行为
+    curveHomologyDelete(index) {
+      this.$confirm('是否确认删除', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.formulaEditList.splice(index, 1)
+      })
+    },
     addScene() {
       this.tmp_sceneList.push({ depCurveId: '', percent: 0, standSlip: '', depInd: 'Y' })
     },
@@ -239,7 +274,6 @@ export default {
           }
         })
       })
-      console.info(isAllOk)
       refActionList.map((actionInfo, index) => {
         actionInfo.$refs['detailInfo'].validate((valid) => {
           if (!valid) {
@@ -249,7 +283,6 @@ export default {
           }
         })
       })
-      console.info(isAllOk)
       this.$refs['detailForm'].validate((valid) => {
         if (!valid) {
           isAllOk = false
@@ -325,13 +358,19 @@ export default {
       // 权重 * [产品 关键期限 指标]
       return detailList.map(item => divide(item.percent, 100) + ' * #[' + func(item.depCurveId) + '' + item.depStandSlip + '' + item.depInd + ']').join('+')
     },
+    // 保存到主页面
     save() {
       const _formula = this.formulaEditList.map(value => value.sceneFormula + ' ? ' + value.actionFormula + ' : ').join('') + '0'
       console.log(_formula)
-      const row = this.row
-      row.homology = _formula === '0' ? '-' : _formula
-      this.$emit('change-formula', row)
+      const obj = {}
+      obj.curveId = this.row.curveId
+      obj.standSlip = this.row.standSlip
+      obj.homology = _formula === '0' ? '-' : _formula
+      obj.adjReason = _formula === '0' ? '' : '自定义同调'
+      this.$store.dispatch('curveBuild/updateData', obj)
+      this.$emit('change-formula')
     },
+    // 解析公式
     resolve(data) {
       const _ = this.$lodash
       // const m = '0.1 * #[NIED0.08Y] + 0.2 * #[NIED0.5Y] <> 5 ? 0.2 * #[NIED0.08Y] + 3 : 0.3 * #[NIED0.08Y] + 0.3 * #[NIED0.5Y] <> 4 ? 0.3 * #[NIED0.08Y] : 0.2 * #[NIED0.08Y] + 5'

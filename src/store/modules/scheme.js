@@ -27,11 +27,17 @@ export default {
       yield: '',
       ttmType: ''
     },
+    dialogInfo: {
+      closeDialog: false
+    },
     adjustList: []
   },
   mutations: {
     setSchemeInfo(state, schemeInfo) {
       state.schemeInfo = schemeInfo
+    },
+    setCloseDialog(state, dialogInfo) {
+      state.dialogInfo = dialogInfo
     },
     setDefaultSchemeInfo(state, defaultSchemeInfo) {
       state.defaultSchemeInfo = defaultSchemeInfo
@@ -60,6 +66,9 @@ export default {
   actions: {
     initScheme({ commit }, taskInfo) {
       taskScheme(taskInfo.taskId).then(response => {
+        if (!response.recoDire) {
+          response.recoDire = '01'
+        }
         commit('setSchemeInfo', response)
         commit('setDefaultSchemeInfo', response)
       })

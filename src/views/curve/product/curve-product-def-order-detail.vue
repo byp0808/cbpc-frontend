@@ -116,7 +116,7 @@
       <el-select v-model="curvePrdOrder.orderAutoBuildRule" placeholder="请选择自动编制规则" :disabled="orderAutoBuildRuleDisabled">
         <el-option v-for="item in autoRuleOptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-button type="primary" @click="toSetRule" :disabled="toSetRuleDisabled">设置</el-button>
+      <el-button type="primary" :disabled="toSetRuleDisabled" @click="toSetRule">设置</el-button>
     </el-row>
 
     <el-dialog :lock-scroll="lockScroll" append-to-body :close-on-click-modal="false" width="80%" title="设置" :visible.sync="addAutoRuleFormVisible">
@@ -157,8 +157,8 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click.native.prevent="deleteCurvePrdOrderAutoList(scope.$index)"
                   :disabled="disabled"
+                  @click.native.prevent="deleteCurvePrdOrderAutoList(scope.$index)"
                 >
                   删除
                 </el-button>
@@ -311,20 +311,20 @@ export default {
         this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
         if (maturityFlag === 'N') {
           const index = this.curvePubTypeSelected.indexOf('1')
-          if ( index >= 0 ) {
-            this.curvePubTypeSelected.splice(index,1)
+          if (index >= 0) {
+            this.curvePubTypeSelected.splice(index, 1)
           }
         }
         if (spotFlag === 'N') {
           const index = this.curvePubTypeSelected.indexOf('2')
-          if ( index >= 0 ) {
-            this.curvePubTypeSelected.splice(index,1)
+          if (index >= 0) {
+            this.curvePubTypeSelected.splice(index, 1)
           }
         }
         if (forwardFlag === 'N') {
           const index = this.curvePubTypeSelected.indexOf('3')
-          if ( index >= 0 ) {
-            this.curvePubTypeSelected.splice(index,1)
+          if (index >= 0) {
+            this.curvePubTypeSelected.splice(index, 1)
           }
         }
       }
@@ -423,6 +423,7 @@ export default {
       this.tmp_curvePrdOrderAutoList = []
       if (this.curvePrdOrderAutoList) {
         for (const item of this.curvePrdOrderAutoList) {
+          // eslint-disable-next-line no-undef
           var newItem = _.assign({}, item)
           this.tmp_curvePrdOrderAutoList.push(newItem)
         }
@@ -544,6 +545,7 @@ export default {
           if (!kds) {
             kds = []
           }
+          // eslint-disable-next-line no-undef
           this.curveKdsIntersection = _.intersection(this.curveKdsIntersection, kds)
         }
         console.info('所有关键期限交集:' + JSON.stringify(this.curveKdsIntersection))
@@ -604,6 +606,7 @@ export default {
       this.curvePrdOrderAutoList.length = 0
       if (this.tmp_curvePrdOrderAutoList) {
         for (const item of this.tmp_curvePrdOrderAutoList) {
+          // eslint-disable-next-line no-undef
           var newItem = _.assign({}, item)
           this.curvePrdOrderAutoList.push(newItem)
         }

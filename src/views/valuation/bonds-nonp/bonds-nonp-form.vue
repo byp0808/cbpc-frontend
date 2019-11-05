@@ -19,7 +19,7 @@
                 label="资产编码"
               >
                 <el-input
-                  v-model="bondsNonpInfo.bondId"
+                  v-model="bondsNonpInfo.assetCode"
                   :disabled="csinDisabled"
                   placeholder="请输入资产编码"
                   clearable
@@ -66,6 +66,7 @@
                   v-model.number="bondsNonpInfo.indate"
                   :disabled="disabled"
                   placeholder="请输入有效期"
+                  clearable
                 />
               </el-form-item>
             </div>
@@ -105,7 +106,7 @@ export default {
     return {
       filtedMarket: [],
       rules: {
-        bondId: [{ required: true, message: '请输入资产编码', trigger: ['blur', 'change'] }],
+        assetCode: [{ required: true, message: '请输入资产编码', trigger: ['blur', 'change'] }],
         indate: [
           { required: true, message: '请输入有效期', trigger: 'blur' },
           { type: 'number', message: '请输入一个整数', trigger: 'blur' },
@@ -170,11 +171,11 @@ export default {
       }
     },
     queryBondsAttr() {
-      const bondId = this.bondsNonpInfo.bondId
+      const assetCode = this.bondsNonpInfo.assetCode
       const that = this
-      if (bondId) {
-        queryBondsById(bondId).then(response => {
-          that.bondsNonpInfo.bondId = response.bondId
+      if (assetCode) {
+        queryBondsById(assetCode).then(response => {
+          that.bondsNonpInfo.assetCode = response.assetCode
           that.bondsNonpInfo.bondsConceptType = response.bondsConceptType
           that.bondsNonpInfo.bondsShortName = response.bondsShortName
           that.bondsNonpInfo.bondsIssuer = response.bondsIssuer
@@ -196,7 +197,7 @@ export default {
           }
         })
       } else {
-        that.bondsNonpInfo.bondId = ''
+        that.bondsNonpInfo.assetCode = ''
         this.$message.warning('未查到该债券信息')
       }
     }

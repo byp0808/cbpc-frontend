@@ -39,7 +39,7 @@
       </el-row>
       <el-row>
         <el-col :span="12" :offset="6">
-          <el-form-item label="推进待偿期区间" required>
+          <el-form-item label="推荐待偿期区间" required>
             <div class="input-box">
               <div class="first">
                 <el-form-item prop="rangeStart">

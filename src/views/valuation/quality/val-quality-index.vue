@@ -35,8 +35,8 @@
       <el-tab-pane label="收益率波动" name="sylbd" />
       <el-tab-pane label="容错" name="rc" />
       <el-tab-pane label="应计利息报警" name="yjlxbj" />
-      <el-tab-pane label="估值为0" name="gzwl" />
-      <el-tab-pane label="成本法" name="cbf" />
+      <el-tab-pane label="估值收益率为0" name="gzwl" />
+      <el-tab-pane label="估值净价为100" name="cbf" />
       <el-tab-pane label="重复估值" name="cfgz" />
     </el-tabs>
     <el-card v-if="activeName === 'zl'" class="box-card">
@@ -77,13 +77,13 @@
     </el-card>
     <el-card v-if="activeName === 'gzwl'" class="box-card ">
       <div slot="header" class="clearfix card-head">
-        <h3>估值为0</h3>
+        <h3>估值收益率为0</h3>
       </div>
       <ValValList ref="gzwl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
     <el-card v-if="activeName === 'cbf'" class="box-card ">
       <div slot="header" class="clearfix card-head">
-        <h3>成本法</h3>
+        <h3>估值净价为100</h3>
       </div>
       <ValNetPrcList ref="cbf" :task-day="taskDayStr" :order-id="queryForm.orderId" />
     </el-card>
@@ -267,6 +267,7 @@ export default {
     // 设置保存
     saveOrderSet() {
       console.info('saveOrderSet')
+      this.$refs.refValParamSetForm.setValQcParm()
       this.orderSetFormVisible = false
     },
     // 主页面查询方法

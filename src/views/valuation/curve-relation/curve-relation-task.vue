@@ -7,8 +7,8 @@
       :is-copy="isCopy"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
-      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('02')">审核通过</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
       <el-button @click="backPage">取 消</el-button>
     </div>
   </div>
@@ -31,9 +31,21 @@ export default {
       disabled: true
     }
   },
+  computed: {
+    taskStatus: {
+      get() {
+        return this.$store.state.task.taskStatus
+      }
+    }
+  },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
     this.taskName = this.$store.state.task.taskName
+  },
+  created() {
+    if (this.$store.state.task.auditStatus) {
+      this.taskSubmit(this.$store.state.task.auditStatus)
+    }
   },
   mounted() {
     this.$store.commit('task/clear')

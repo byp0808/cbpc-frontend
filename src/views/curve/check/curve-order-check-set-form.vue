@@ -6,32 +6,32 @@
 
     <el-form :inline="true" label-width="250px">
       <el-form-item label="利率类曲线收益率波动偏差阈值">
-        <el-col :span="15">
-          <el-input v-model="orderSet.curveCreditShkBp" type="nubmer" />
+        <el-col :span="10">
+          <el-input v-model="orderSet.curveCreditShkBp" type="number" />
         </el-col>
         <el-col :span="5">
           BP
         </el-col>
       </el-form-item>
       <el-form-item label="利率类曲线收益率波动偏差阈值">
-        <el-col :span="15">
-          <el-input v-model="orderSet.curveCreditShkPercent" type="nubmer" />
+        <el-col :span="10">
+          <el-input v-model="orderSet.curveCreditShkPercent" type="number" />
         </el-col>
-        <el-co :span="5">
+        <el-col :span="5">
           %
-        </el-co>
+        </el-col>
       </el-form-item>
       <el-form-item label="信用类曲线收益率波动偏差阈值">
-        <el-col :span="15">
-          <el-input v-model="orderSet.curveRateShkBp" type="nubmer" />
+        <el-col :span="10">
+          <el-input v-model="orderSet.curveRateShkBp" type="number" />
         </el-col>
         <el-col :span="5">
           BP
         </el-col>
       </el-form-item>
       <el-form-item label="信用类曲线收益率波动偏差阈值">
-        <el-col :span="15">
-          <el-input v-model="orderSet.curveRateShkPercent" type="nubmer" />
+        <el-col :span="10">
+          <el-input v-model="orderSet.curveRateShkPercent" type="number" />
         </el-col>
         <el-col :span="5">
           %
@@ -47,12 +47,7 @@ import { qryCurveQcParm, setCurveQcParm } from '@/api/curve/curve-quality.js'
 
 export default {
   name: 'CurveOrderCheckSetForm',
-  props: {
-    orderList: {
-      type: Array,
-      default: () => { return [] }
-    }
-  },
+  props: ['orderList'],
   data() {
     return {
       activeName: '',
@@ -78,7 +73,7 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
       console.info('curve-order-check-set-form.vue handleClick:')
-      this.activeName = this.orderList[0].id
+      // this.activeName = this.orderList[0].id
       this.qryCurveQcParm()
     },
 
@@ -93,9 +88,18 @@ export default {
     },
 
     setCurveQcParm() {
+      this.dataCheck()
       setCurveQcParm(this.orderSet).then(response => {
         console.info('setCurveQcParm.setCurveQcParm...')
       })
+    },
+    dataCheck() {
+      if (this.orderSet.curveCreditShkBp === null &&
+        this.orderSet.curveCreditShkPercent === null &&
+        this.orderSet.curveRateShkBp === null &&
+        this.orderSet.curveRateShkPercent === null) {
+        this.$message('没有输入阈值，无法保存')
+      }
     }
   }
 }

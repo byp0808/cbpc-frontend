@@ -189,15 +189,15 @@ export default {
         this.bondFilterVisible = false
         return
       }
-      this.$prompt('保存模板', '提示', {
+      this.$confirm('是否保存模板', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputValue: this.tempName
-      }).then(({ value }) => {
+        type: 'warning'
+      }).then(() => {
         if (this.editable) {
-          this.$refs.refTmpBondFilter.save(this.tempId, value)
+          this.$refs.refTmpBondFilter.save(this.tempId)
         } else {
-          this.$refs.refTmpBondFilter.save(null, value)
+          this.$refs.refTmpBondFilter.save(null)
         }
         this.bondFilterVisible = false
       }).catch(() => {
@@ -292,6 +292,7 @@ export default {
       this.bondFilterVisible = true
     },
     saveCallBack() {
+      console.log('saveCallBack')
       this.bondFilterVisible = false
       this.loadTable()
     },

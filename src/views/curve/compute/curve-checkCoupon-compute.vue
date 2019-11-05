@@ -219,8 +219,7 @@ export default {
       this.allVisible = true
       var data = {
         curveId: rows[index].curveId,
-        orderId: this.orderId,
-        taskDay: ''
+        orderId: this.orderId
       }
       findAll(data).then(response => {
         this.allCouponList = response.dataList
@@ -283,9 +282,13 @@ export default {
     certainIgnore(type) {
       var data
       if (type === 'ADD') {
-        data = this.addNumList
+        data = {
+          changeList: this.addNumList
+        }
       } else {
-        data = this.subNumList
+        data = {
+          changeList: this.subNumList
+        }
       }
       certainIgnore(data).then(response => {
         this.$message({
