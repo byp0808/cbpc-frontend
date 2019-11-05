@@ -161,7 +161,7 @@
                     </el-col>
                     <el-col :span="8">
                       <el-form-item label="操作符" class="blackItem">
-                        <el-select v-model="extendColInfo.operatorType" value-key="value" size="mini" style="width:100px" :disabled="disabled">
+                        <el-select v-model="extendColInfo.operator" value-key="value" size="mini" style="width:100px" :disabled="disabled" @change="changeComputeExp">
                           <el-option v-for="item in operatorTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                       </el-form-item>
@@ -200,14 +200,15 @@
       </el-col>
       <el-col :span="7">
         <el-card class="box-card margin-top calendar-job">
-          <el-row>
-            <el-button type="primary" style="width: 300px" size="mini">效果预览</el-button>
+          <el-row style="width: 100%;text-align: center">
+            <h4>效果预览</h4>
           </el-row>
           <el-row>
             <el-table
               ref="marketTempTable"
               :data="colDataResult"
               tooltip-effect="dark"
+              border
               style="width: 100%"
               :height="rightTabHeight"
               :header-cell-style="tableHeaderColor"
@@ -244,7 +245,7 @@ export default {
     return {
       disabled: '',
       midTabHeight: (window.innerHeight - 474) + 'px',
-      rightTabHeight: (window.innerHeight - 216) + 'px',
+      rightTabHeight: (window.innerHeight - 241) + 'px',
       tempInfodisabled: '',
       defaultDisabled: true,
       tempInfoRules: {
@@ -266,7 +267,9 @@ export default {
       marketTempFormVisible: false,
       extendColInfo: {
         baseColChiName: {},
-        colCategory: '02'
+        colCategory: '02',
+        computeExp: '',
+        operatorType: ''
       },
       colData: [],
       colDataResult: [],
@@ -378,14 +381,15 @@ export default {
       console.log(this.multipleSelection)
     },
     addtempcol() {
-      // console.log(this.extendColInfo.index)
-      if (!this.extendColInfo.relationCol) {
-        this.$message({
-          message: '请选择通用字段',
-          type: 'error'
-        })
-        return false
-      }
+      // console.log(this.extendColInfo.computeExp)
+      // console.log(this.extendColInfo.operatorType)
+      // if (!this.extendColInfo.relationCol) {
+      //   this.$message({
+      //     message: '请选择通用字段',
+      //     type: 'error'
+      //   })
+      //   return false
+      // }
       if (!this.extendColInfo.colCategory) {
         this.$message({
           message: '请选择通用/扩展字段',
@@ -394,22 +398,15 @@ export default {
         return false
       }
       if (this.extendColInfo.colCategory === '02') {
-        if (!this.extendColInfo.operatorType || !this.extendColInfo.computeExp || !this.extendColInfo.colChiName) {
+        if (!this.extendColInfo.computeExp || !this.extendColInfo.colChiName) {
           this.$message({
-            message: '扩展字段字段名、运算符、计算方式不能为空',
+            message: '扩展字段名称、计算表达式不能为空',
             type: 'error'
           })
           return false
         }
       }
       // console.log(this.extendColInfo.operatorType, this.extendColInfo.computeExp)
-      if (this.extendColInfo.operatorType === '4' && this.extendColInfo.computeExp === '0') {
-        this.$message({
-          message: '除数不能为0',
-          type: 'error'
-        })
-        return false
-      }
       if (this.extendColInfo.index != null) {
         var index = this.extendColInfo.index
         var that = this
@@ -420,7 +417,7 @@ export default {
         } else {
           that.colData[index].colChiName = this.extendColInfo.colChiName
         }
-        that.colData[index].operatorType = this.extendColInfo.operatorType
+        that.colData[index].operatorType = this.getComputeExp(this.extendColInfo.computeExp)
         that.colData[index].computeExp = this.extendColInfo.computeExp
         // console.log(that.colData[index])
         this.extendColInfo.index = null
@@ -452,6 +449,46 @@ export default {
         })
       }
       // console.log(this.colData)
+    },
+    getComputeExp(val) {
+      var resultComputeExp = ''
+      var expList = []
+      var value = ''
+      var operList = ['(', ')', '+', '-', '*', '/']
+      for (let i = 0; i < val.length; i++) {
+        // console.log(operList.indexOf(val[i]))
+        if (operList.indexOf(val[i]) === -1) {
+          value += val[i]
+        } else {
+          if (value) {
+            expList.push(value)
+            value = ''
+          }
+          expList.push(val[i])
+        }
+      }
+      if (value) {
+        expList.push(value)
+      }
+      // console.log(expList)
+      for (let i = 0; i < expList.length; i++) {
+        if (operList.indexOf(expList[i]) === -1) {
+          let obj = {}
+          obj = this.relationColsOptions.find((item) => {
+            return item.value === expList[i]
+          })
+          // console.log(obj)
+          if (!obj) {
+            resultComputeExp += expList[i]
+          } else {
+            resultComputeExp += obj.code
+          }
+        } else {
+          resultComputeExp += expList[i]
+        }
+      }
+      console.log(resultComputeExp)
+      return resultComputeExp
     },
     moveUp(index, row) {
       var that = this
@@ -489,12 +526,13 @@ export default {
           colChiName: '',
           relationCol: '',
           operatorType: '',
+          operator: '',
           computeExp: '',
           colCategory: '',
           index: ''
         }
         that.extendColInfo.colChiName = row.colChiName
-        that.extendColInfo.relationCol = row.relationCol
+        // that.extendColInfo.relationCol = row.relationCol
         that.extendColInfo.operatorType = row.operatorType
         that.extendColInfo.computeExp = row.computeExp
         that.extendColInfo.colCategory = row.colCategory
@@ -502,7 +540,7 @@ export default {
       } else {
         // that.extendColInfo = {}
         that.extendColInfo.colChiName = row.colChiName
-        that.extendColInfo.relationCol = row.relationCol
+        // that.extendColInfo.relationCol = row.relationCol
         that.extendColInfo.operatorType = row.operatorType
         that.extendColInfo.computeExp = row.computeExp
         that.extendColInfo.colCategory = row.colCategory
@@ -557,12 +595,24 @@ export default {
       }
     },
     selectColName(val) {
+      var that = this
       let obj = {}
       obj = this.relationColsOptions.find((item) => {
         return item.code === val
       })
       this.extendColInfo.baseColChiName = obj.value
-      console.log(this.extendColInfo.baseColChiName)
+      that.extendColInfo.computeExp += obj.value
+      // that.extendColInfo.operatorType += val
+      // console.log(obj)
+    },
+    changeComputeExp(val) {
+      var that = this
+      const obj = this.operatorTypeOptions.find((item) => {
+        return item.value === val
+      })
+      that.extendColInfo.computeExp += obj.value
+      // that.extendColInfo.operatorType += val
+      // console.log(obj)
     },
     getOneAllcols(val) {
       this.relationColsOptions = []
