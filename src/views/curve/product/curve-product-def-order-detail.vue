@@ -37,11 +37,6 @@
           <el-checkbox v-for="item in publishStepSizeOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="付息频率">
-        <el-checkbox-group v-model="interestDueFreqSelected">
-          <el-checkbox v-for="item in interestDueFreqOption" :key="item.value" :disabled="disabled" :label="item.value">{{ item.label }}</el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
     </el-form>
 
     <div class="clearfix card-head">
@@ -203,7 +198,6 @@ export default {
       lockScroll: true,
       curvePrdOrder: {
       },
-      interestDueFreqSelected: [],
       curvePubTypeSelected: [],
       publishStepSizeSelected: [],
       // 自动编制规则
@@ -260,10 +254,6 @@ export default {
     publishStepSizeOption() {
       return optioins(this, 'PUBLISH_STEP_SIZE')
     },
-    // 付息频率
-    interestDueFreqOption() {
-      return optioins(this, 'INTEREST_DUE_FREQ')
-    },
     // 自动编制规则
     autoRuleOptions() {
       return optioins(this, 'AUTO_RULE')
@@ -286,11 +276,8 @@ export default {
   beforeMount() {
     console.info('curve-product-def-order-detail.vue.beforeMount:')
     this.curvePrdOrder = this.orderData
-    // 更新曲线发布类型、发布步长、付息频率
+    // 更新曲线发布类型、发布步长
     if (this.curvePrdOrder) {
-      if (this.curvePrdOrder.interestDueFreq) {
-        this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
-      }
       var maturityFlag = this.productInfo.maturityFlag
       var spotFlag = this.productInfo.spotFlag
       var forwardFlag = this.productInfo.forwardFlag
@@ -355,15 +342,11 @@ export default {
   methods: {
     // 获取获取批次信息
     getCurvePrdOrder() {
-      this.curvePrdOrder.interestDueFreq = this.interestDueFreqSelected.join(',')
       this.curvePrdOrder.curvePubType = this.curvePubTypeSelected.join(',')
       this.curvePrdOrder.publishStepSize = this.publishStepSizeSelected.join(',')
       return this.curvePrdOrder
     },
     setCurvePrdOrder() {
-      if (this.curvePrdOrder.interestDueFreq) {
-        this.interestDueFreqSelected = this.curvePrdOrder.interestDueFreq.split(',')
-      }
       if (this.curvePrdOrder.curvePubType) {
         this.curvePubTypeSelected = this.curvePrdOrder.curvePubType.split(',')
       }
