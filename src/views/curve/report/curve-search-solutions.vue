@@ -3,7 +3,7 @@
     <div style="margin-bottom: 20px">
       <el-form ref="plan" :model="plan" :label-position="'right'" label-width="130px">
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="开始日期及批次" prop="search_dateBegin_GTE">
               <el-date-picker
                 v-model="plan.search_dateBegin_GTE"
@@ -16,7 +16,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="结束日期及批次" prop="search_dateEnd_LTE">
               <el-date-picker
                 v-model="plan.search_dateEnd_LTE"
@@ -29,7 +29,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="批次" prop="search_orderName_LIKE">
               <el-autocomplete
                 v-model="plan.search_orderName_LIKE"
@@ -43,7 +43,7 @@
           <el-col :span="6" />
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :span="5">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-input
                 v-model="plan.search_productName_LIKE"
@@ -52,7 +52,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="5">
             <el-form-item label="编制方法" prop="search_buildType_EQ">
               <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
                 <el-option
@@ -73,11 +73,11 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="6" :push="2">
+          <el-col :span="8">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
             <!-- <el-button class="filter-item" type="primary" @click="download">下载曲线方案</el-button> -->
-            <i class="el-icon-download" title="下载曲线方案" style="font-size:30px;line-height:40px" @click="download" />
+            <el-button type="primary" style="margin-right: 9px" @click="download">下载曲线方案</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -176,7 +176,7 @@ export default {
     },
     // 下载曲线方案
     download() {
-      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/curve/exportCurveTasks', this.plan)
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_curve}` + '/scheme/exportCurveSolutions', this.plan)
     },
     querySearch1(queryString, cb) {
       const data = queryString ? { search_orderName_LIKE: queryString } : {}

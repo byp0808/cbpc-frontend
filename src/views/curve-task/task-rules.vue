@@ -82,7 +82,7 @@
         </el-table-column>
         <el-table-column label="审批状态">
           <template slot-scope="{ row }">
-            <span>{{ $dft('APPROVE_STATUS', row.approveStatus) }}</span>
+            <span>{{ $dft('APPROVE_STATUS', row.approveStatus ) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="责任人">
@@ -92,7 +92,7 @@
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
           <template slot-scope="{ row }">
-            <el-button type="primary" size="mini" @click="openDialog(row)">
+            <el-button :disabled="row.approveStatus === '01' ?true:false" type="primary" size="mini" @click="openDialog(row)">
               修改
             </el-button>
           </template>
