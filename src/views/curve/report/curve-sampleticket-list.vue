@@ -26,7 +26,7 @@
         <el-col :span="6">
           <div class="grid-content bg-purple-dark">
             <el-form-item label="债券代码">
-              <el-input v-model="queryForm.bondId" placeholder="请输入内容" />
+              <el-input v-model="queryForm.bondNo" placeholder="请输入内容" />
             </el-form-item>
           </div>
         </el-col>
@@ -78,7 +78,7 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="sampleBond.curveName" label="曲线名称" width="120" />
       <el-table-column prop="sampleBond.bondName" label="债券简称" width="140" show-overflow-tooltip />
-      <el-table-column prop="sampleBond.bondId" label="债券代码" width="100" show-overflow-tooltip />
+      <el-table-column prop="sampleBond.bondNo" label="债券代码" width="100" show-overflow-tooltip />
       <el-table-column prop="sampleBond.valDate" label="估值日期" width="100" show-overflow-tooltip />
       <el-table-column prop="sampleBond.valOrderId" label="估值批次" width="140" show-overflow-tooltip />
       <el-table-column prop="sampleBond.marketId" label="流通场所" width="120" show-overflow-tooltip />
