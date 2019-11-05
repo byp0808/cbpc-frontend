@@ -388,13 +388,16 @@ export function getDetalInitOptions() {
 }
 
 // 获取初同调曲线始化列表，仅包含曲线产品，key为曲线产品编号
-export function getQueryCurvOptions(news) {
+export function getQueryCurvOptions(news, data) {
   var options = []
   querycurveHomology(news).then(response => {
     var datalist = response.dataList
     if (datalist && datalist.length > 0) {
       for (var i = 0; i < datalist.length; i++) {
         var item = datalist[i]
+        if (!!data.productShortName && data.productShortName === item.productShortName) {
+          data.depCurveId = item.homologyCurveId
+        }
         options.push({ label: item.productName, value: item.homologyCurveId, curveId: item.homologyCurveId, productName: item.productName, productShortName: item.productShortName })
       }
     }
