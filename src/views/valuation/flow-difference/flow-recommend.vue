@@ -211,7 +211,7 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  {{ $dft('REVIEW_STATUS', scope.row.spreadRule.approveStatus) }}
+                  {{ $dft('APPROVE_STATUS', scope.row.spreadRule.approveStatus) }}
                 </template>
               </el-table-column>
               <el-table-column
@@ -466,9 +466,11 @@ export default {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
       this.$lodash.forEach(ruleList, function(value, key) {
-        ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-        if (key < ruleList.length - 1) {
-          ruleDetail += ', '
+        if (value.ruleValue !== null && value.ruleValue !== '') {
+          ruleDetail += value.ruleCode + ' = ' + value.ruleValue
+          if (key < ruleList.length - 1) {
+            ruleDetail += ', '
+          }
         }
       })
       return ruleDetail

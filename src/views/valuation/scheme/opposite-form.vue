@@ -151,6 +151,11 @@ export default {
     isOpposite: {
       type: Boolean,
       default: false
+    },
+    page: {
+      pageNumber: 1,
+      pageSize: 10,
+      totalRecord: 0
     }
   },
   data() {
@@ -160,12 +165,7 @@ export default {
       selectionList: [],
       bondCodeList: [],
       adjustList: [],
-      tabHeight: '',
-      page: {
-        pageNumber: 1,
-        pageSize: 10,
-        totalRecord: 0
-      }
+      tabHeight: ''
     }
   },
   created() {
