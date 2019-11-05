@@ -195,10 +195,10 @@
             <div slot="header" class="clearfix card-head">
               <span>白名单</span>
               <el-upload
-                style="float: right;"
-                :action="uploadUrl"
+                action=""
                 :multiple="false"
                 name="attach"
+                :http-request="uploadFile"
                 :on-success="uploadWhiteList"
                 :show-file-list="false"
               >
