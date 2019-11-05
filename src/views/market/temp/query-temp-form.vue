@@ -171,6 +171,7 @@
                     <el-col :offset="5">
                       <el-form-item>
                         <el-input
+                          id="textarea"
                           v-model="extendColInfo.computeExp"
                           type="textarea"
                           :disabled="disabled"
@@ -601,7 +602,15 @@ export default {
         return item.code === val
       })
       this.extendColInfo.baseColChiName = obj.value
-      that.extendColInfo.computeExp += obj.value
+      const myField = document.querySelector('#textarea')
+      // console.log(myField)
+      const cursurPosition = myField.selectionStart
+      // console.log(cursurPosition)
+      var firstPart = this.extendColInfo.computeExp.substring(0, cursurPosition)
+      var lastPart = this.extendColInfo.computeExp.substring(cursurPosition, this.extendColInfo.computeExp.length)
+
+      that.extendColInfo.computeExp = firstPart + obj.value + lastPart
+      // console.log(that.extendColInfo.computeExp)
       // that.extendColInfo.operatorType += val
       // console.log(obj)
     },
@@ -610,7 +619,13 @@ export default {
       const obj = this.operatorTypeOptions.find((item) => {
         return item.value === val
       })
-      that.extendColInfo.computeExp += obj.value
+      const myField = document.querySelector('#textarea')
+      // console.log(myField)
+      const cursurPosition = myField.selectionStart
+      // console.log(cursurPosition)
+      var firstPart = this.extendColInfo.computeExp.substring(0, cursurPosition)
+      var lastPart = this.extendColInfo.computeExp.substring(cursurPosition, this.extendColInfo.computeExp.length)
+      that.extendColInfo.computeExp = firstPart + obj.value + lastPart
       // that.extendColInfo.operatorType += val
       // console.log(obj)
     },
