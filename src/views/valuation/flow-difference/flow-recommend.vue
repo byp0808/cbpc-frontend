@@ -295,6 +295,7 @@ import SpreadParamForm from '@/views/valuation/flow-difference/spread-param-form
 import SpreadRuleForm from '@/views/valuation/flow-difference/spread-rule-form.vue'
 import FlowForm from '@/views/valuation/flow-difference/flow-form.vue'
 import { getAssetData, deleteAssetData, spreadParamList, deleteSpreadParam, someBadList, delSomeBad } from '@/api/valuation/flow.js'
+import { queryFilterIndex } from '@/api/common/bond-filter.js'
 export default {
   name: 'FlowDifference',
   components: {
@@ -316,6 +317,7 @@ export default {
       paramsDialog: false,
       spreadRuleDialog: false,
       disabled: false,
+      filterIndex: [],
       page: {
         pageNumber: 1,
         pageSize: 10,
@@ -337,6 +339,9 @@ export default {
     this.assetTable()
     this.spreadParamTable()
     this.someBadRuleList()
+    queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+      this.filterIndex = response
+    })
   },
   methods: {
     getSpreadType(spreadType) {
@@ -465,9 +470,12 @@ export default {
     ruleDetail(bondFilterId) {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
+      const that = this
       this.$lodash.forEach(ruleList, function(value, key) {
         if (value.ruleValue !== null && value.ruleValue !== '') {
-          ruleDetail += value.ruleCode + ' = ' + value.ruleValue
+          const index = that.$lodash.findIndex(that.filterIndex, function(o) { return o.paraId === value.ruleCode })
+          console.log(index)
+          ruleDetail += that.filterIndex[index].paraDesc + ' = ' + value.ruleValue
           if (key < ruleList.length - 1) {
             ruleDetail += ', '
           }

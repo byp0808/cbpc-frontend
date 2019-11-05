@@ -35,7 +35,7 @@ export function viewExchange(data) {
   )
 }
 
-// 信用点差计算
+// 点差计算
 export function adjustCredit(data) {
   return request(
     {
@@ -45,23 +45,34 @@ export function adjustCredit(data) {
     }
   )
 }
-// 利率点差计算
-export function adjustInterest(data) {
+// 查看点差
+export function viewAdjustCredit(data) {
   return request(
     {
-      url: `${basic_api_valuation}/point-adjust/adjust-interest`,
+      url: `${basic_api_valuation}/point-adjust/get-last-credit-point`,
       method: 'post',
       data
     }
   )
 }
+
 // 保存/修改 本次选中的曲线
 export function modifySelectedCurve(data) {
   return request(
     {
       url: `${basic_api_valuation}/point-adjust/modify-selected-curve`,
       method: 'post',
-      data
+      data: data
+    }
+  )
+}
+// 获取选中的曲线
+export function getSelectedCurve(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/point-adjust/get-selected-curve`,
+      method: 'post',
+      data: data
     }
   )
 }
