@@ -34,7 +34,6 @@ export default {
   components: { CurveBuild, FloatCurve, InitCurve },
   data() {
     const curves = JSON.parse(localStorage.getItem('ids'))
-    console.log(curves)
     return {
       curves
     }

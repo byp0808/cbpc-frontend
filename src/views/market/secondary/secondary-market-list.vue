@@ -1060,7 +1060,7 @@ export default {
         const data = {
           page: {
             pageNumber: 1,
-            pageSize: 100
+            pageSize: 10000
           },
           dataMarket: '02',
           showArea: '01'
@@ -1077,7 +1077,7 @@ export default {
         const data = {
           page: {
             pageNumber: 1,
-            pageSize: 100
+            pageSize: 10000
           },
           dataMarket: '02',
           showArea: '02'

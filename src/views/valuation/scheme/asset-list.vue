@@ -126,7 +126,7 @@
       </el-table-column>
     </el-table>
     <transition name="dialog-fade-in">
-      <el-dialog :visible.sync="dialogInfo.closeDialog" width="100%" style="bottom:0;top:20%">
+      <el-dialog v-if="dialogInfo.closeDialog" :visible.sync="dialogInfo.closeDialog" width="100%" style="bottom:0;top:20%">
         <scheme-form :adjust-data="adjustParams" />
       </el-dialog>
     </transition>

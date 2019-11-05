@@ -66,7 +66,7 @@ export default {
   actions: {
     initScheme({ commit }, taskInfo) {
       taskScheme(taskInfo.taskId).then(response => {
-        if (response.recoDire) {
+        if (!response.recoDire) {
           response.recoDire = '01'
         }
         commit('setSchemeInfo', response)

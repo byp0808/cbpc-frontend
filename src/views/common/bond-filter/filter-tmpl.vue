@@ -3,7 +3,7 @@
     <el-card class="box-card">
       <div>
         <span>模板名称</span>
-        <el-input v-model="tempName" :disabled="disabled" placeholder="请输入模板名称" class="" style="width:150px;" @change="inputChange" />
+        <el-input v-model="tempName" :disabled="disabled" placeholder="请输入模板名称" class="" style="width:150px;" />
         <el-button type="primary" :disabled="disabled" @click="screenBonds">债券筛选</el-button>
         <el-button type="danger" :disabled="disabled" @click="empty">清空所有条件</el-button>
       </div>
@@ -145,10 +145,10 @@
             <div slot="header" class="clearfix card-head">
               <span>黑名单</span>
               <el-upload
-                style="float: right;"
-                :action="uploadUrl"
+                action=""
                 :multiple="false"
                 name="attach"
+                :http-request="uploadFile"
                 :on-success="uploadBlackList"
                 :show-file-list="false"
               >
@@ -195,10 +195,10 @@
             <div slot="header" class="clearfix card-head">
               <span>白名单</span>
               <el-upload
-                style="float: right;"
-                :action="uploadUrl"
+                action=""
                 :multiple="false"
                 name="attach"
+                :http-request="uploadFile"
                 :on-success="uploadWhiteList"
                 :show-file-list="false"
               >
@@ -301,7 +301,7 @@ export default {
       ruleTags: [],
       othRuleList: [],
       ruleListAll: [],
-      uploadUrl: `${process.env.VUE_APP_BASE_API}${basic_api_market}/tmpl-filter/batch-in`,
+      uploadUrl: `${basic_api_market}/tmpl-filter/batch-in`,
       bondTemps: [],
       tempName: '',
       ruleCode: '',

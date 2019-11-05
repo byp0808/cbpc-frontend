@@ -183,9 +183,11 @@ export default {
       }
       assetAdd(this.assetId).then(response => {
         this.bondList = response
+        if (response.length === 0) {
+          return this.$message.warning('暂无此资产编码信息')
+        }
+        this.addBondDialog = true
       })
-
-      this.addBondDialog = true
       this.checkedSite = this.sizeList
     },
     changeSite(e) {
@@ -195,6 +197,9 @@ export default {
     saveSite() {
       taskAdd(this.checkedSite).then(response => {
         this.taskList = response
+        if (response.length === 0) {
+          return this.$message.warning('暂无此单资产信息')
+        }
         this.addBondDialog = false
       })
     },

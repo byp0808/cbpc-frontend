@@ -457,7 +457,7 @@ export default {
         const data = {
           page: {
             pageNumber: 1,
-            pageSize: 100
+            pageSize: 10000
           },
           dataMarket: '01'
         }
