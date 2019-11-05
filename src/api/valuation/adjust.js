@@ -20,7 +20,7 @@ export function calculateExchange(data) {
     {
       url: `${basic_api_valuation}/point-adjust/calculate-exchange`,
       method: 'post',
-      data
+      data: data
     }
   )
 }
@@ -28,9 +28,9 @@ export function calculateExchange(data) {
 export function viewExchange(data) {
   return request(
     {
-      url: `${basic_api_valuation}/point-adjust/calculate-exchange`,
+      url: `${basic_api_valuation}/point-adjust/get-last-exchange`,
       method: 'post',
-      data
+      data: data
     }
   )
 }
@@ -39,7 +39,7 @@ export function viewExchange(data) {
 export function adjustCredit(data) {
   return request(
     {
-      url: `${basic_api_valuation}/point-adjust/adjust-credit`,
+      url: `${basic_api_valuation}/point-adjust/calculate-credit-point`,
       method: 'post',
       data
     }
@@ -50,6 +50,16 @@ export function adjustInterest(data) {
   return request(
     {
       url: `${basic_api_valuation}/point-adjust/adjust-interest`,
+      method: 'post',
+      data
+    }
+  )
+}
+// 保存/修改 本次选中的曲线
+export function modifySelectedCurve(data) {
+  return request(
+    {
+      url: `${basic_api_valuation}/point-adjust/modify-selected-curve`,
       method: 'post',
       data
     }

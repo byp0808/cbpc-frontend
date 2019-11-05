@@ -113,7 +113,7 @@ export default {
           }
         })
         // 主表信息数据状态为 ‘05’ 为删除状态，列表信息要根据relId去查询
-        if( this.mainInfo.dataStatus === '05'){
+        if (this.mainInfo.dataStatus === '05') {
           // 查询曲线列表
           this.getCurveHomologyList({
             homologyId: this.mainInfo.relId

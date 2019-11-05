@@ -477,7 +477,7 @@
       </transition>
     </el-dialog>
     <el-dialog :visible.sync="oppositeDialog" title="对敲券人工识别" width="1000px">
-      <opposite-form :is-opposite="islookOpposite" />
+      <opposite-form :is-opposite="islookOpposite" :page="param.page" />
     </el-dialog>
     <el-dialog v-loading="Dialog.a" :visible.sync="batchAdjustDialog.a" title="批量调整目标估值曲线">
       <el-form>
@@ -694,7 +694,12 @@ export default {
         transactionContinuityOp: '',
         transactionContinuityValue: '',
         historyScoreOp: '',
-        historyScoreSum: ''
+        historyScoreSum: '',
+        page: {
+          pageNumber: 1,
+          pageSize: 10,
+          totalRecord: 0
+        }
       },
       selectCreditList: [],
       selectInterestList: [],
@@ -1225,9 +1230,16 @@ export default {
     countOpposite() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
+          // 保存本次选中的曲线
+          // 计算对敲
           calculateExchange(this.param).then(response => {
+            const { dataList, page } = response
             this.islookOpposite = false
-            this.$store.commit('scheme/setAdjustList', response)
+            this.$store.commit('scheme/setAdjustList', dataList)
+            this.param.page = page
             this.oppositeDialog = true
           })
         }
@@ -1236,9 +1248,14 @@ export default {
     lookOpposite() {
       this.$refs['creditDom'].validate(val => {
         if (val) {
+          this.param.curves = this.selectCreditList.map((item) => {
+            return item.curveId
+          })
           viewExchange(this.param).then(response => {
+            const { dataList, page } = response
             this.islookOpposite = true
-            this.$store.commit('scheme/setAdjustList', response)
+            this.$store.commit('scheme/setAdjustList', dataList)
+            this.param.page = page
             this.oppositeDialog = true
           })
         }
