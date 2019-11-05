@@ -327,6 +327,11 @@ export default {
       if (data.product === '0018') {
         this.addCurveSampleFormVisible = true
       } else if (data.product === '0001') {
+        this.$store.commit('valuationProd/setProdBasicInfo', {
+          prdBaseId: data.product,
+          prdGrpId: data.productGroup,
+          prdLineId: data.productLine
+        })
         this.addValuationProductDefFormVisible = true
       } else {
         // 显示曲线产品定义框

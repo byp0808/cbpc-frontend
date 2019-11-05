@@ -200,6 +200,7 @@
                 name="attach"
                 :http-request="uploadFile"
                 :on-success="uploadWhiteList"
+                :on-error="ErrorWhiteList"
                 :show-file-list="false"
               >
                 <el-button size="mini" type="primary" :disabled="disabled">批量添加</el-button>
@@ -345,6 +346,11 @@ export default {
         data: form
       }).then(response => {
         data.onSuccess(response)
+      }).catch(() => {
+        this.$message({
+          type: 'error',
+          message: '文件上传失败'
+        })
       })
     },
     getAllParas() {
@@ -528,9 +534,10 @@ export default {
       }
     },
     uploadBlackList(response) {
-      if (response.data) {
-        for (const index in response.data) {
-          const bondInfoBlack = response.data[index]
+      console.log(response)
+      if (response) {
+        for (const index in response) {
+          const bondInfoBlack = response[index]
           console.log(bondInfoBlack)
           if (this.bwListCheck(this.whiteList, bondInfoBlack) >= 0) {
             this.$message.error('该券已经添加到白名单中')
@@ -547,9 +554,9 @@ export default {
       }
     },
     uploadWhiteList(response) {
-      if (response.data) {
-        for (const index in response.data) {
-          const bondInfoWhite = response.data[index]
+      if (response) {
+        for (const index in response) {
+          const bondInfoWhite = response[index]
           if (this.bwListCheck(this.blackList, bondInfoWhite) >= 0) {
             this.$message.error('该券已经添加到黑名单中')
             bondInfoWhite.className = 'error-row'
