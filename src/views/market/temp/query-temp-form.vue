@@ -434,7 +434,7 @@ export default {
           showOrhide: true,
           colCategory: this.extendColInfo.colCategory,
           relationCol: this.extendColInfo.relationCol,
-          operatorType: this.extendColInfo.operatorType,
+          operatorType: this.getComputeExp(this.extendColInfo.computeExp),
           computeExp: this.extendColInfo.computeExp,
           tableName: tableName
         })
@@ -443,7 +443,7 @@ export default {
           showOrhide: true,
           colCategory: this.extendColInfo.colCategory,
           relationCol: this.extendColInfo.relationCol,
-          operatorType: this.extendColInfo.operatorType,
+          operatorType: this.getComputeExp(this.extendColInfo.computeExp),
           computeExp: this.extendColInfo.computeExp,
           tableName: tableName
         })
