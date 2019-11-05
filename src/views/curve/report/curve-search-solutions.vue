@@ -43,7 +43,7 @@
           <el-col :span="6" />
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="5">
+          <el-col :span="8">
             <el-form-item label="对应收益曲线" prop="search_productName_LIKE">
               <el-input
                 v-model="plan.search_productName_LIKE"
@@ -52,7 +52,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="8">
             <el-form-item label="编制方法" prop="search_buildType_EQ">
               <el-select v-model="plan.search_buildType_EQ" placeholder="请选择">
                 <el-option
@@ -73,7 +73,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" :offset="14">
             <el-button class="filter-item" type="primary" icon="el-icon-search" @click="getList">查询</el-button>
             <el-button class="filter-item" type="primary" icon="el-icon-refresh" @click="reset">重置</el-button>
             <!-- <el-button class="filter-item" type="primary" @click="download">下载曲线方案</el-button> -->
