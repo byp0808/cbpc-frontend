@@ -80,7 +80,7 @@
 <script>
 import RuleSetForm from '@/views/valuation/task-allocation/rule-set-form.vue'
 import { queryTaskRangeList, editBusiStatus, delTaskRange } from '@/api/valuation/task-allocation.js'
-
+import { queryFilterIndex } from '@/api/common/bond-filter.js'
 export default {
   name: 'RuleSetList',
   components: { RuleSetForm },
@@ -90,6 +90,7 @@ export default {
       taskRangeId: '',
       taskRangeList: [],
       bondFilterList: [],
+      filterIndex: [],
       page: {
         pageNumber: 1,
         pageSize: 10,
@@ -111,6 +112,9 @@ export default {
   },
   beforeMount() {
     this.load()
+    queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+      this.filterIndex = response
+    })
   },
   methods: {
     load() {
@@ -125,9 +129,12 @@ export default {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
       this.$lodash.forEach(ruleList, function(value, key) {
-        ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-        if (key < ruleList.length - 1) {
-          ruleDetail += ', '
+        if (value.ruleValue !== null || value.ruleValue !== '') {
+          const index = this.$lodash.findIndex(this.filterIndex, function(o) { return o.paraId === value.ruleCode })
+          ruleDetail += this.filterIndex[index].paraDesc + ' = ' + value.ruleValue
+          if (key < ruleList.length - 1) {
+            ruleDetail += ', '
+          }
         }
       })
       return ruleDetail

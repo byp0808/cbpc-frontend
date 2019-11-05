@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div class="con-box">
+    <!-- <div class="right-btn">
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+    </div> -->
     <div style="margin-bottom: 20px">
       <el-row>
         <el-col :xl="8" :lg="10">
@@ -877,6 +883,26 @@ export default {
      overflow-x: scroll;
      height: 60px;
  }
+//  .con-box {
+//    position:relative;
+//    min-height:500px;
+//  }
+//  .right-btn {
+//    position: absolute;
+//    height: 100%;
+//    right: 0px;
+//    top: 50px;
+//     z-index: 100;
+//   .btn-vertical {
+//     display: block;
+//     margin-top: 5px;
+//     padding: 10px;
+//     writing-mode: tb-rl;
+//     background: #FF8901;
+//     border-radius: 2px;
+//     color: #fff;
+//   }
+//  }
  .assset {
      font-weight: 700;
      font-size: 16px;

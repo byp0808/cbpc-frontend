@@ -59,9 +59,9 @@ export default {
             const obj = temp[val]
             const list = Object.keys(obj)
             if (value < _up) {
-              obj[list[value]] = subtract(obj[list[value]], obj[list[_up]])
+              obj[list[value]] = subtract(obj[list[_up]], obj[list[value]])
             } else if (value > _down) {
-              obj[list[value]] = subtract(obj[list[_down]], obj[list[value]])
+              obj[list[value]] = subtract(obj[list[value]], obj[list[_down]])
             } else {
               if (value !== 0) {
                 obj[list[value]] = obj[list[value - 1]]
@@ -90,10 +90,10 @@ export default {
             const list = Object.keys(obj)
             if (value < _up) {
               obj[list[value]] = subtract(obj[list[value]], obj[list[_up]])
-              obj[list[v2 + value]] = subtract(add(obj[list[v2 + _up]], obj[list[value]]), add(obj[list[_up]], obj[v2 + value]))
+              obj[list[v2 + value]] = subtract(add(obj[list[_up]], obj[v2 + value]), add(obj[list[v2 + _up]], obj[list[value]]))
             } else if (value > _down) {
               obj[list[value]] = subtract(obj[list[_down]], obj[list[value]])
-              obj[list[v2 + value]] = subtract(add(obj[list[_down]], obj[list[v2 + value]]), add(obj[list[value]], obj[list[v2 + _down]]))
+              obj[list[v2 + value]] = subtract(add(obj[list[value]], obj[list[v2 + _down]]), add(obj[list[_down]], obj[list[v2 + value]]))
             } else {
               if (value !== 0) {
                 obj[list[value]] = obj[list[value - 1]]
