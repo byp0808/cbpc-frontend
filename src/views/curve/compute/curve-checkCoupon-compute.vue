@@ -60,9 +60,9 @@
           <span class="link-type" @click="subNumDetails(scope.$index,checkCurveCouponList)">详情</span>
         </template>
       </el-table-column>
-      <el-table-column prop="ignoredCouponSum" label="忽略的样本券总数" width="140" show-overflow-tooltip>
+      <el-table-column prop="ignoreNum" label="忽略的样本券总数" width="140" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.ignoredCouponSum }}</span>
+          <span>{{ scope.row.ignoreNum }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -83,11 +83,7 @@
         style="width: 100%"
       >
         <el-table-column prop="bondName" label="债券名称" width="140" />
-        <el-table-column prop="change" label="状态" width="100" show-overflow-tooltip>
-          <template slot-scope="{ row }">
-            {{ $dft('CHANGE', row.change) }}
-          </template>
-        </el-table-column>
+        <el-table-column prop="bondShortName" label="债券简称" width="140" />
       </el-table>
     </el-dialog>
 
@@ -106,17 +102,17 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList, 'ADD')">
+            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList)">
               忽略
             </el-button>
-            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList, 'ADD')">
+            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, addNumList)">
               取消忽略
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="certainIgnore('ADD')">
+        <el-button type="primary" @click="certainIgnore()">
           确定忽略
         </el-button>
       </div>
@@ -135,22 +131,7 @@
             {{ $dft('CHANGE', row.change) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="100" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <el-button v-if="scope.row.isCancle" :visible.sync="scope.row.isCancle" type="text" size="big" @click="overpass(scope.$index, addNumList,'SUB')">
-              忽略
-            </el-button>
-            <el-button v-else type="text" size="big" @click="cancleOverpass(scope.$index, subNumList ,'SUB')">
-              取消忽略
-            </el-button>
-          </template>
-        </el-table-column>
       </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="certainIgnore('SUB')">
-          确定忽略
-        </el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -200,9 +181,19 @@ export default {
     },
     // 复核样本券
     checkOrDeployComp() {
+      var selection = this.$refs.checkCurveCouponList.selection
       var data = {
         action: '2',
-        checkCoupons: this.$refs.checkCurveCouponList.selection
+        checkCoupons: selection
+      }
+      for (var i = 0; i < selection.length; i++) {
+        if (selection[i].sampleCompStatus !== '1') {
+          this.$message({
+            type: 'error',
+            message: '请选择待复核的数据进行复核！'
+          })
+          return false
+        }
       }
       checkOrDeployComp(data).then(response => {
         this.$message({
@@ -253,42 +244,23 @@ export default {
       }
       findAddOrSub(data).then(response => {
         this.subNumList = response.dataList
-        // eslint-disable-next-line no-return-assign
-        this.subNumList.map(item => item.isCancle = true)
         setTimeout(1.5 * 1000)
       })
     },
     // 忽略
-    overpass(index, rows, type) {
-      console.log()
+    overpass(index, rows) {
       rows[index].change = '3'
-      if (type === 'ADD') {
-        rows[index].isCancle = false
-      } else {
-        rows[index].isCancle = false
-      }
+      rows[index].isCancle = false
     },
     // 取消忽略
-    cancleOverpass(index, rows, type) {
-      if (type === 'ADD') {
-        rows[index].change = '1'
-        rows[index].isCancle = true
-      } else {
-        rows[index].change = '2'
-        rows[index].isCancle = true
-      }
+    cancleOverpass(index, rows) {
+      rows[index].change = '1'
+      rows[index].isCancle = true
     },
     // 确定忽略
-    certainIgnore(type) {
-      var data
-      if (type === 'ADD') {
-        data = {
-          changeList: this.addNumList
-        }
-      } else {
-        data = {
-          changeList: this.subNumList
-        }
+    certainIgnore() {
+      var data = {
+        changeList: this.addNumList
       }
       certainIgnore(data).then(response => {
         this.$message({
@@ -296,13 +268,8 @@ export default {
           type: 'success',
           showClose: true
         })
-
-        // 关闭弹窗
-        if (type === 'ADD') {
-          this.addNumVisible = false
-        } else {
-          this.subNumVisible = false
-        }
+        this.addNumVisible = false
+        this.queryCheckCurveCouponList()
       })
     },
     sizeChange(pageSize) {
