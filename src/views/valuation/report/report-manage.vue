@@ -16,7 +16,7 @@
       </el-upload>
       <el-button type="primary" style="margin-left: 10px;" @click="batchDelete">删除</el-button>
       <el-button type="primary" @click="batchDownload">下载</el-button>
-      <el-button type="primary" @click="batchPublish">发布</el-button>
+      <el-button v-elepermission="['ReportPublish']" type="primary" @click="batchPublish">发布</el-button>
     </div>
     <el-table
       ref="refReportList"
@@ -90,11 +90,13 @@ import ReportForm from '@/views/valuation/report/report-form.vue'
 import { queryReportList, deleteReport, publishReport, uploadReport } from '@/api/valuation/report.js'
 import { basic_api_valuation } from '@/api/base-api'
 import { downloadFile } from '@/utils/file-request.js'
+import { elepermission } from '@/directive/elepermission'
 export default {
   name: 'ReportList',
   components: {
     ReportForm
   },
+  directives: { elepermission },
   data() {
     return {
       ReportFormVisible: false,
