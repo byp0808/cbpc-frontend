@@ -75,7 +75,8 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <span> {{ $dft('APPROVE_STATUS', scope.row.taskStatus) }}</span>
+          <span v-if="activeName === '01'"> {{ $dft('APPROVE_STATUS', scope.row.taskStatus) }}</span>
+          <span v-else> {{ $dft('REVIEW_STATUS', scope.row.taskStatus) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
@@ -137,7 +138,7 @@ export default {
       ],
       reviewStatus: [
         { name: '不限', value: '' },
-        { name: '待通过', value: '01' },
+        { name: '待复核', value: '01' },
         { name: '复核不通过', value: '03' },
         { name: '复核通过', value: '02' }
       ],
