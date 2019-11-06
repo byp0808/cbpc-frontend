@@ -12,6 +12,7 @@
                 v-model="task.search_productName_LIKE"
                 class="inline-input"
                 placeholder="请输入曲线名称"
+                :disabled="true"
               />
             </el-form-item>
           </el-col>
@@ -23,6 +24,7 @@
                 :value-key="'label'"
                 :fetch-suggestions="querySearch"
                 placeholder="请输入批次名称"
+                :disabled="true"
                 @select="handleSelect"
               />
             </el-form-item>
@@ -36,13 +38,14 @@
                 :fetch-suggestions="queryPersonSearch"
                 placeholder="请输入责任人"
                 :trigger-on-focus="false"
+                :disabled="true"
                 @select="handlePersonSelect"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12" :offset="10">
-            <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
-            <el-button type="primary" style="margin-right: 9px" @click="download">下载分配规则</el-button>
+            <el-button type="primary" icon="el-icon-search" :disabled="true" @click="getList">查询</el-button>
+            <el-button type="primary" style="margin-right: 9px" :disabled="true" @click="download">下载分配规则</el-button>
             <el-upload
               style="display: inline-block;"
               action=""
@@ -52,9 +55,9 @@
               :show-file-list="false"
               :accept="'excel'"
             >
-              <el-button type="primary" style="margin-right: 9px">导入分配规则</el-button>
+              <el-button type="primary" style="margin-right: 9px" :disabled="true">导入分配规则</el-button>
             </el-upload>
-            <el-button type="primary" @click="openDialog(null, true)">批量保存</el-button>
+            <el-button type="primary" :disabled="true" @click="openDialog(null, true)">批量保存</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -94,7 +97,7 @@
         </el-table-column>
         <el-table-column align="center" label="操作" width="180">
           <template slot-scope="{ row }">
-            <el-button type="primary" size="mini" @click="openDialog(row)">
+            <el-button type="primary" size="mini" :disabled="true" @click="openDialog(row)">
               修改
             </el-button>
           </template>

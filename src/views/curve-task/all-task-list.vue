@@ -239,6 +239,7 @@ export default {
     },
     claim(item) {
       chaimCurveTask(item.id).then(() => {
+        this.$message.success('认领成功')
         this.getList()
       })
     },
