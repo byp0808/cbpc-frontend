@@ -765,7 +765,7 @@ export default {
     bwListCheck(dataList, data) {
       return this.$lodash.findIndex(dataList, { csin: data.csin, marketId: data.exchng })
     },
-    getRepead() {
+    getRepeat() {
       return this.repeatBonds
     },
     getData(busiCode) {

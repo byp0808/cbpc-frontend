@@ -66,6 +66,7 @@
         ref="refBondFilter"
         :filter-id="recMandatoryInfo.bondFilterId"
         :disabled="disabled"
+        check-type="weak"
       />
     </el-card>
   </div>
@@ -73,7 +74,7 @@
 
 <script>
 import BondFilter from '@/views/common/bond-filter/filter.vue'
-import { saveRecMandatory, queryRecMandatory } from '@/api/valuation/rec-mandatory.js'
+import { saveRecMandatory, queryRecMandatory, checkDirection } from '@/api/valuation/rec-mandatory.js'
 
 export default {
   name: 'RecMandatoryForm',
@@ -136,12 +137,51 @@ export default {
             // 校验筛选器结果
             const that = this
             this.$refs.refBondFilter.getData('VAL00003').then(function(data) {
-              if (data) {
+              const repeat = that.$refs.refBondFilter.getRepeat()
+              var filterId = []
+              for (const i in repeat) {
+                filterId.push(i)
+                break
+              }
+              if (!that.$refs.refBondFilter.getRepeat()) { // 没有重复债券则直接保存
                 const req = {
                   recForce: that.recMandatoryInfo,
                   bondFilterInfo: data
                 }
                 that.saveBusi(req)
+              } else {
+                const reqData = {
+                  bondFilterId: filterId,
+                  recoRuleForceId: that.recMandatoryInfo.id,
+                  recoDirection: that.recMandatoryInfo.recoDirection,
+                  recoRuleName: that.recMandatoryInfo.ruleName
+                }
+                const that_2 = that
+                checkDirection(reqData).then(response => {
+                  if (response.respCode === 'YBL100002005') {
+                    that.$confirm(response.respMsg, '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(r => {
+                      const req = {
+                        recForce: that_2.recMandatoryInfo,
+                        bondFilterInfo: data
+                      }
+                      that_2.saveBusi(req)
+                    }).catch(r => {
+
+                    })
+                  } else if (response.respCode === 'YBL100002006') {
+                    that.$alert(response.respMsg)
+                  } else {
+                    const req = {
+                      recForce: that.recMandatoryInfo,
+                      bondFilterInfo: data
+                    }
+                    that.saveBusi(req)
+                  }
+                })
               }
             })
           } else {
