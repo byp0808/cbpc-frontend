@@ -217,7 +217,7 @@
     </el-dialog>
     <el-dialog :visible.sync="interestDialog" title="利率债点差调整">
       <el-table
-        :data="creditList"
+        :data="interestList"
         style="width: 100%"
         max-height="280"
         :header-cell-style="{background:'#f6f6f6'}"
@@ -664,9 +664,9 @@ export default {
       failMessage: '',
       myList: [],
       curveList: [],
-      interestList: [],
       adjustList: [],
-      creditList: [],
+      interestList: [], // 利率债曲线
+      creditList: [], // 信用债曲线
       interestObj: {},
       creditObject: {
         // compareList: [{
@@ -899,7 +899,12 @@ export default {
   },
   created() {
     this.loadTable()
-    getCurveList().then(response => {
+    // 利率债曲线
+    getCurveList({ search_curveBuildType_EQ: '01' }).then(response => {
+      this.interestList = response
+    })
+    // 信用债曲线
+    getCurveList({ search_curveBuildType_EQ: '02' }).then(response => {
       this.creditList = response
     })
   },

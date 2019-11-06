@@ -40,7 +40,7 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="toDetail('EDIT', scope.row.id)"
+            @click.native.prevent="toDetail('EDIT', scope.row)"
           >
             设置
           </el-button>
@@ -77,6 +77,8 @@
         :business-id="marketTempId"
         :op-type="opType"
         :is-copy="isCopy"
+        :data-market="dataMarket"
+        :show-area="showArea"
         @saveCallBack="saveCallBack"
         @closeDialog="closeDialog"
       />
@@ -99,6 +101,8 @@ export default {
       copyTempId: '',
       radio: '',
       opType: '',
+      dataMarket: '',
+      showArea: '',
       isCopy: false,
       marketTempList: [],
       marketTempData: {},
@@ -159,11 +163,13 @@ export default {
       this.$store.commit('marketTemp/setMarketTempInfo', {})
       this.marketTempFormVisible = false
     },
-    toDetail(opType, id) {
+    toDetail(opType, row) {
       // console.log(id)
       this.opType = opType
-      this.marketTempId = id
+      this.marketTempId = row.id
       this.isCopy = false
+      this.dataMarket = row.dataMarket
+      this.showArea = row.showArea
       this.marketTempFormVisible = true
     },
     toDelete(id) {
