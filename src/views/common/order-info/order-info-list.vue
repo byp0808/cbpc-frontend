@@ -249,7 +249,7 @@ export default {
       }).then(() => {
         deleteOrderInfo(id).then(response => {
           this.$message({
-            message: '删除成功！',
+            message: '提交复核成功！',
             type: 'success',
             showClose: true
           })

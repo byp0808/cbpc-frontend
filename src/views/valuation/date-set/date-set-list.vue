@@ -197,7 +197,7 @@ export default {
       }).then(() => {
         deleteDateSet(id).then(response => {
           this.$message({
-            message: '删除成功！',
+            message: '提交复核成功！',
             type: 'success',
             showClose: true
           })
