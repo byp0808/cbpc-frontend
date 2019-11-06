@@ -107,6 +107,13 @@ const valuationRouter = {
           meta: { title: '我的任务', noCache: true, roles: ['SchemeMyTaskAllotList'] }
         },
         {
+          path: 'scheme-construct',
+          component: () => import('@/views/valuation/scheme/scheme-construct.vue'),
+          hidden: true,
+          name: 'SchemeConstruct',
+          meta: { title: '分析影响因子', noCache: true, breadcrumb: false }
+        },
+        {
           path: 'publish-list',
           component: () => import('@/views/valuation/publish-bond/publish-list.vue'),
           name: 'PublishList',

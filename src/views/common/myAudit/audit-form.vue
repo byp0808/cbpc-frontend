@@ -63,12 +63,12 @@
           <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核时间" align="center">
+      <el-table-column :label="activeName === '01'?'审核时间': '复核时间'" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.auditTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" align="center">
+      <el-table-column :label="activeName === '01'?'审核人': '复核人'" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.auditUser }}</span>
         </template>
