@@ -223,13 +223,19 @@ export default {
       var data = {
         curveId: rows[index].curveId,
         orderId: this.orderId,
-        change: '1',
+        change: '13',
         taskDay: rows[index].taskDay
       }
       findAddOrSub(data).then(response => {
         this.addNumList = response.dataList
         // eslint-disable-next-line no-return-assign
-        this.addNumList.map(item => item.isCancle = true)
+        for (var i = 0; i<this.addNumList.length;i++) {
+          if(this.addNumList[i].change === '3'){
+            this.addNumList[i].isCancle = false
+          }else{
+            this.addNumList[i].isCancle = true
+          }
+        }
         setTimeout(1.5 * 1000)
       })
     },
