@@ -59,7 +59,7 @@
       </el-table-column>
       <el-table-column prop="curveId" label="操作" width="100" show-overflow-tooltip>
         <template v-if="scope.row.curveBuildStatus=='4' || scope.row.curveBuildStatus=='5'" slot-scope="scope">
-          <el-button type="text" size="big" @click="fallbackContact(scope.$index, overallList.dataList)">退回至责任人</el-button>
+          <el-button type="text" size="big" @click="fallbackContact(scope.$index, overallList.dataList)" v-elepermission="['CurveFallbackContact']">退回至责任人</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -134,10 +134,12 @@
 
 <script>
 import { qryCurveOverallQcRpt, qryCurveOverallNum, fallbackContact } from '@/api/curve/curve-quality.js'
+import { elepermission } from '@/directive/elepermission'
 
 export default {
   name: 'CurveQualityOverallList', // 质检总览
   props: ['taskDay', 'orderId'],
+  directives: { elepermission },
   data() {
     return {
       overallList: {
