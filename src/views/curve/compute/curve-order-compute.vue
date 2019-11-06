@@ -236,10 +236,10 @@ export default {
       var curveTaskId = []
       for (let i = 0; i < items.length; i++) {
         const buildStatus = items[i].buildStatus
-        if (buildStatus !== '3' && buildStatus !== '4') {
+        if (buildStatus !== '3' && buildStatus !== '4' && buildStatus !== '6') {
           this.$message({
             type: 'error',
-            message: '曲线[' + items[i].curveName + ']编制状态非已确认、已计算，不能进行计算'
+            message: '曲线[' + items[i].curveName + ']编制状态非已确认、已计算、已复核，不能进行计算'
           })
           return false
         }
