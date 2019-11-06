@@ -156,6 +156,13 @@
               <el-input v-model="productInfo.remark" type="text" :disabled="disabled" />
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="付息频率" prop="interestDueFreq" placeholder="请选择曲线价格源" :disabled="disabled">
+              <el-select v-model="productInfo.interestDueFreq">
+                <el-option v-for="(name, key) in $dict('INTEREST_DUE_FREQ')" :key="key" :label="name" :value="key" />
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <div class="text-center">
@@ -302,6 +309,9 @@ export default {
         sort: [
           { required: true, message: '排序不能为空' },
           { type: 'number', message: '排序必须为数字值' }
+        ],
+        interestDueFreq: [
+          { required: true, message: '请选择付息频率', trigger: 'blur' }
         ],
         markets: [
           { required: true, message: '请选择市场', trigger: 'blur' }

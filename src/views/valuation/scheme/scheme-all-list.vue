@@ -1,20 +1,26 @@
 <template>
-  <div>
+  <div class="con-box">
+    <!-- <div class="right-btn">
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+      <div class="btn-vertical">估值任务</div>
+    </div> -->
     <div style="margin-bottom: 20px">
       <el-row>
         <el-col :xl="8" :lg="10">
-          <el-button type="primary" @click="allotTask">任务分配</el-button>
-          <el-button v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
-          <el-button type="primary" @click="addBondsNonp">添加不估值</el-button>
+          <el-button v-elepermission="['TaskAllot']" v-loading="allotLoading" type="primary" @click="allotTask">任务分配</el-button>
+          <el-button v-elepermission="['TaskClaim']" v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
+          <el-button v-elepermission="['SetBondNonp']" type="primary" @click="addBondsNonp">添加不估值</el-button>
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
         <el-col :xl="16" :lg="14">
           <!-- <el-input v-model="bondId" placeholder="输入资产编码后添加任务" clearable style="width:200px" /> -->
           <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
-          <el-button type="primary" @click="addTask">添加任务</el-button>
-          <el-button type="primary" @click="batchAddTask">批量添加</el-button>
+          <el-button v-elepermission="['AddTask']" type="primary" @click="addTask">添加任务</el-button>
+          <el-button v-elepermission="['BatchAddTask']" type="primary" @click="batchAddTask">批量添加</el-button>
           <!-- <div style="margin-top:7px"> -->
-          <el-button type="primary" @click="uploadScheme">上传估值方案</el-button>
+          <el-button v-elepermission="['UploadTaskScheme']" type="primary" @click="uploadScheme">上传估值方案</el-button>
           <el-button type="primary" @click="downScheme">下载估值方案</el-button>
           <!-- </div> -->
         </el-col>
@@ -343,6 +349,15 @@
         </el-col>
       </el-row>
     </el-dialog>
+    <el-dialog :visible="confirmTaskDialog" @close="confirmTaskDialog = false">
+      <div>{{ confirmMeg }}</div>
+      <el-row style="margin-top:20px">
+        <el-col :span="6" :offset="18">
+          <el-button @click="confirmTaskDialog = false">取消</el-button>
+          <el-button type="primary" @click="confirmAllot">确认</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -350,11 +365,14 @@
 import AssetList from '@/views/valuation/scheme/asset-list.vue'
 import ObeyList from '@/views/valuation/scheme/obey-list.vue'
 import PeopleUpload from '@/views/valuation/scheme/people-upload.vue'
-import { getAllTableList, getUserName, addBatchTask, addOneTask, getTask, saveTask, searchBond, saveBond, searchBondNum } from '@/api/valuation/task.js'
+import { getAllTableList, getUserName, addBatchTask, addOneTask,
+  getTask, saveTask, searchBond, saveBond, searchBondNum, taskConfirm } from '@/api/valuation/task.js'
 import { basic_api_valuation } from '../../../api/base-api'
 import { upload, downloadFile } from '@/utils/file-request'
+import elepermission from '@/directive/elepermission'
 export default {
   name: 'SchemeAllList',
+  directives: { elepermission },
   components: {
     AssetList,
     PeopleUpload,
@@ -377,8 +395,10 @@ export default {
       isBatch: false,
       remaindDialog: false,
       isMy: false,
+      allotLoading: false,
       message: '',
       code: '',
+      confirmMeg: '',
       bondsNonpInfo: {},
       failMessage: '',
       taskTitle: '',
@@ -457,6 +477,7 @@ export default {
       marketLists: [],
       selectBondId: '',
       flag: false,
+      confirmTaskDialog: false,
       params: {
         page: {
           pageNumber: 1,
@@ -788,11 +809,28 @@ export default {
       if (this.taskList.length === 0) {
         return this.$message.warning('请选择任务')
       }
+      this.selectionCheck()
+      this.allotLoading = true
+      taskConfirm({ ids: this.selection }).then(res => {
+        this.allotLoading = false
+        if (res.respCode === 'YBL100001017') {
+          this.confirmTaskDialog = true
+          this.confirmMeg = res.respMsg
+        } else {
+          this.showDialog()
+        }
+      })
+    },
+    showDialog() {
       this.allocationDialog = true
       this.nameModel.userId = ''
       getUserName('00001').then(res => {
         this.nameList = res
       })
+    },
+    confirmAllot() {
+      this.showDialog()
+      this.confirmTaskDialog = false
     },
     selectionCheck() { // 防止点击取消后还会被添加上
       this.selection = []
@@ -877,6 +915,26 @@ export default {
      overflow-x: scroll;
      height: 60px;
  }
+//  .con-box {
+//    position:relative;
+//    min-height:500px;
+//  }
+//  .right-btn {
+//    position: absolute;
+//    height: 100%;
+//    right: 0px;
+//    top: 50px;
+//     z-index: 100;
+//   .btn-vertical {
+//     display: block;
+//     margin-top: 5px;
+//     padding: 10px;
+//     writing-mode: tb-rl;
+//     background: #FF8901;
+//     border-radius: 2px;
+//     color: #fff;
+//   }
+//  }
  .assset {
      font-weight: 700;
      font-size: 16px;

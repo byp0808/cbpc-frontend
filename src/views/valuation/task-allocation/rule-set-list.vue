@@ -6,11 +6,11 @@
     </div>
     <div>
       <el-table ref="multipleTable" :data="taskRangeList" tooltip-effect="dark">
-        <el-table-column align="center" label="选择" min-width="5%">
-          <template slot-scope="scope">
-            <el-radio :label="scope.row.id" class="textRadio">&nbsp;</el-radio>
-          </template>
-        </el-table-column>
+        <!--        <el-table-column align="center" label="选择" min-width="5%">-->
+        <!--          <template slot-scope="scope">-->
+        <!--            <el-radio :label="scope.row.id" class="textRadio">&nbsp;</el-radio>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column prop="taskRangeName" label="范围名称" min-width="30%" show-overflow-tooltip />
         <el-table-column prop="filterId" label="范围描述" min-width="40%" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -80,7 +80,7 @@
 <script>
 import RuleSetForm from '@/views/valuation/task-allocation/rule-set-form.vue'
 import { queryTaskRangeList, editBusiStatus, delTaskRange } from '@/api/valuation/task-allocation.js'
-
+import { queryFilterIndex } from '@/api/common/bond-filter.js'
 export default {
   name: 'RuleSetList',
   components: { RuleSetForm },
@@ -90,6 +90,7 @@ export default {
       taskRangeId: '',
       taskRangeList: [],
       bondFilterList: [],
+      filterIndex: [],
       page: {
         pageNumber: 1,
         pageSize: 10,
@@ -111,6 +112,9 @@ export default {
   },
   beforeMount() {
     this.load()
+    queryFilterIndex({ paraType: 'BONND_FILTER_INDEX' }).then(response => {
+      this.filterIndex = response
+    })
   },
   methods: {
     load() {
@@ -124,10 +128,15 @@ export default {
     ruleDetail(bondFilterId) {
       const ruleList = this.$lodash.get(this.bondFilterList, bondFilterId)
       let ruleDetail = ''
+      const that = this
       this.$lodash.forEach(ruleList, function(value, key) {
-        ruleDetail += value.ruleCode + ' = ' + value.ruleValue
-        if (key < ruleList.length - 1) {
-          ruleDetail += ', '
+        if (value.ruleValue !== null && value.ruleValue !== '') {
+          const index = that.$lodash.findIndex(that.filterIndex, function(o) { return o.paraId === value.ruleCode })
+          console.log(index)
+          ruleDetail += that.filterIndex[index].paraDesc + ' = ' + value.ruleValue
+          if (key < ruleList.length - 1) {
+            ruleDetail += ', '
+          }
         }
       })
       return ruleDetail

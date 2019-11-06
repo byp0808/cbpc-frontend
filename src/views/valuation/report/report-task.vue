@@ -5,9 +5,9 @@
       :business-id="businessNo"
     />
     <div class="button-box-fixed">
-      <el-button type="primary" @click="taskSubmit('02')">审核通过</el-button>
-      <el-button type="primary" @click="taskSubmit('03')">审核拒绝</el-button>
-      <el-button @click="backPage">取 消</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('02')">复核通过</el-button>
+      <el-button :disabled="taskStatus!=='01'" type="primary" @click="taskSubmit('03')">复核拒绝</el-button>
+      <el-button @click="$router.go(-1)">取 消</el-button>
     </div>
   </div>
 </template>
@@ -22,11 +22,20 @@ export default {
   },
   data() {
     return {
-      businessNo: ''
+      businessNo: '',
+      taskName: ''
+    }
+  },
+  computed: {
+    taskStatus: {
+      get() {
+        return this.$store.state.task.taskStatus
+      }
     }
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
+    this.taskName = this.$store.state.task.taskName
   },
   mounted() {
     this.$store.commit('task/clear')

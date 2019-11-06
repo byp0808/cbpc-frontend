@@ -236,10 +236,10 @@ export default {
       var curveTaskId = []
       for (let i = 0; i < items.length; i++) {
         const buildStatus = items[i].buildStatus
-        if (buildStatus !== '3' && buildStatus !== '4') {
+        if (buildStatus !== '3' && buildStatus !== '4' && buildStatus !== '6') {
           this.$message({
             type: 'error',
-            message: '曲线[' + items[i].curveName + ']编制状态非已确认、已计算，不能进行计算'
+            message: '曲线[' + items[i].curveName + ']编制状态非已确认、已计算、已复核，不能进行计算'
           })
           return false
         }
@@ -313,17 +313,10 @@ export default {
             computes: selection
           }
           deployAndCheckCurve(data).then(response => {
-            if (response.data === 'true') {
-              this.$message({
-                type: 'success',
-                message: new Date().format('YYYY-MM-DD') + ':' + this.orderInfo.orderName + '曲线数据已全部发布！发布时间：' + new Date().format('YYYY-MM-DD')
-              })
-            } else {
-              this.$message({
-                type: 'success',
-                message: '曲线发布成功！'
-              })
-            }
+            this.$message({
+              type: 'success',
+              message: '曲线发布成功！'
+            })
             this.query()
             setTimeout(1.5 * 1000)
           })
@@ -363,10 +356,18 @@ export default {
           computes: selection
         }
         deployAndCheckCurve(data).then(response => {
-          this.$message({
-            type: 'success',
-            message: '曲线复核成功！'
-          })
+          debugger
+          if (response === 'true') {
+            this.$message({
+              type: 'success',
+              message: new Date() + ':' + this.orderInfo.orderName + '曲线数据已全部发布！发布时间：' + new Date()
+            })
+          } else {
+            this.$message({
+              type: 'success',
+              message: '曲线发布成功！'
+            })
+          }
           this.query()
           setTimeout(1.5 * 1000)
         })

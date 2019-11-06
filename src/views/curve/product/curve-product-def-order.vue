@@ -101,6 +101,9 @@ export default {
       // 查询产品关键期限，如果选择批次未生成生成相应 产品批次关键期限 信息，则默认取产品关键期限
       await queryCurvePrdKd({ curveId: this.productIdLocal }).then(response => {
         this.curvePrdKdList = response.dataList
+        if (this.curvePrdKdList) {
+          this.curvePrdKdList.sort((a, b) => Number(a.standSlip) - Number(b.standSlip))
+        }
       })
 
       // 查询产品已经关联批次
@@ -114,6 +117,9 @@ export default {
       // 查询产品批次-发布关键期限
       await queryCurvePrdOrderKtList({ curveId: this.productIdLocal }).then(response => {
         this.curvePrdOrderKtList = response
+        if (this.curvePrdOrderKtList) {
+          this.curvePrdOrderKtList.sort((a, b) => Number(a.standSlip) - Number(b.standSlip))
+        }
       })
 
       // 查询产品-自动编制-关联曲线对应的产品关键期限
@@ -304,9 +310,6 @@ export default {
       }
       if (!info.publishStepSize) {
         msg.push('发布步长不能为空')
-      }
-      if (!info.interestDueFreq) {
-        msg.push('付息频率不能为空')
       }
       if (info.orderClosedFlag === '1' && (!(info.orderClosedSt) || !(info.orderClosedEt))) {
         msg.push('批次关闭的生效时间,开始和结束时间都不可为空')

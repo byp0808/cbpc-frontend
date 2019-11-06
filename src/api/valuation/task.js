@@ -113,4 +113,13 @@ export function confirm(data) { // 方案确认
     }
   )
 }
+export function taskConfirm(data) { // 任务分配验证
+  return request(
+    {
+      url: `${basic_api_valuation}/task/has-allot`,
+      method: 'post',
+      data: data
+    }
+  )
+}
 

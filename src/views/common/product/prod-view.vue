@@ -83,16 +83,16 @@
             v-if="scope.row.relationId === null "
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01'"
             @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
           >
             编辑
           </el-button>
           <el-button
-            v-if="scope.row.relationId === null "
+            v-if="scope.row.relationId === null"
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.approveStatus === '02'"
             @click.native.prevent="handleDelete(scope.row.prdType,scope.row.prdId)"
           >
             删除
@@ -327,6 +327,11 @@ export default {
       if (data.product === '0018') {
         this.addCurveSampleFormVisible = true
       } else if (data.product === '0001') {
+        this.$store.commit('valuationProd/setProdBasicInfo', {
+          prdBaseId: data.product,
+          prdGrpId: data.productGroup,
+          prdLineId: data.productLine
+        })
         this.addValuationProductDefFormVisible = true
       } else {
         // 显示曲线产品定义框

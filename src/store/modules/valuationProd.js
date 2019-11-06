@@ -4,6 +4,11 @@ export default {
   state: {
     prodId: '',
     parentFilterId: '',
+    prodBasicInfo: {
+      prdBaseId: '',
+      prdGrpId: '',
+      prdLineId: ''
+    },
     prodInfo: {
       prodStatus: '',
       currency: []
@@ -52,6 +57,9 @@ export default {
     },
     setProdInfo(state, prodInfo) {
       state.prodInfo = prodInfo
+    },
+    setProdBasicInfo(state, prodBasicInfo) {
+      state.prodBasicInfo = prodBasicInfo
     },
     setProdIndices(state, { basicIndices, basicIndicesResult, compIndices, compIndicesResult }) {
       if (basicIndices) state.prodIndices.basicIndices = basicIndices

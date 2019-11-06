@@ -233,7 +233,7 @@ export default {
       queryHomology({ curveId: this.curveId, orderId: this.orderId, curveOrderId: this.curveOrderId }).then(response => {
         this.homology = response.map(v => {
           const name = v.curveId === this.curveId ? '' : v.curveShortName
-          return { label: '[' + name + v.standSlip + 'Y]', value: '#' + '[' + name + v.standSlip + 'Y]', id: v.id }
+          return { label: '[' + name + v.standSlip + 'Y]', value: '#' + '[' + name + v.standSlip + 'Y]' }
         })
       })
     },

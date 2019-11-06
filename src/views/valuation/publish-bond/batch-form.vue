@@ -26,12 +26,12 @@
         <i class="el-icon-caret-right" />
         <el-button type="primary" @click="publishBond">估值发布</el-button>
         <i class="el-icon-caret-right" />
-        <i class="el-icon-caret-right" />
+        <!-- <i class="el-icon-caret-right" />
         <el-button type="primary" @click="selectBefore">使用上一批次曲线数据立即计算</el-button>
         <i class="el-icon-caret-right" />
         <i class="el-icon-caret-right" />
-        <el-button type="primary" @click="waitNow">等待本批次曲线数据</el-button>
-        <i class="el-icon-caret-right" />
+        <el-button type="primary" @click="waitNow">等待本批次曲线数据</el-button> -->
+        <!-- <i class="el-icon-caret-right" /> -->
         <i class="el-icon-caret-right" />
         <el-button type="primary" @click="review">复核</el-button>
       </el-col>
@@ -66,7 +66,8 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.taskStatus }}</span>
+          <!-- <span>{{ scope.row.taskStatus }}</span> -->
+          <span>{{ $dft("VALUATION_TASK_STATUS", scope.row.taskStatus) }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -94,7 +95,7 @@
 
 <script>
 import { queryBatches } from '@/api/common/common.js'
-import { cmptBatchList, cmptBatch } from '@/api/valuation/cmpt.js'
+import { cmptBatchList, cmptBatch, review } from '@/api/valuation/cmpt.js'
 export default {
   name: 'BatchForm',
   components: {
@@ -188,7 +189,19 @@ export default {
 
     },
     review() {
-
+      const prodIds = []
+      if (this.selectList && this.selectList.length > 0) {
+        this.$lodash(this.selectList).forEach(function(value, key) {
+          prodIds.push(value.prodId)
+        })
+        review({ prodIds: prodIds, batchId: this.isActive }).then(response => {
+          this.$message({
+            showClose: true,
+            message: `复核成功`,
+            type: 'success'
+          })
+        })
+      }
     },
     handleSelectionChange(e) {
       this.selectList = e

@@ -44,6 +44,11 @@ const marketRouter = {
       component: () => import('@/views/market/temp/query-temp-list.vue'),
       name: 'QueryTempList',
       meta: { title: '筛选模板设置', noCache: true, roles: ['queryTemp'] }
+    }, {
+      path: 'curve-influence-factor',
+      component: () => import('@/views/curve/influencefactor/curve-influence-factor-index.vue'),
+      name: 'CurveInfluenceFactor',
+      meta: { title: '市场利率', noCache: true, roles: ['CurveInfluenceFactor'] }
     }
   ]
 }

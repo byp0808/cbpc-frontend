@@ -18,13 +18,6 @@
               v-if="!disabled"
               type="text"
               size="big"
-              @click="curveHomologyUpdate(scope.$index)"
-            >查看
-            </el-button>
-            <el-button
-              v-if="!disabled"
-              type="text"
-              size="big"
               @click="curveHomologyDelete(scope.$index)"
             >删除
             </el-button>
@@ -46,6 +39,7 @@
               :key="index"
               ref="refSceneList"
               :init-info="curveId"
+              :current-select-stand-slip="standSlip"
               :index="index"
               :detail-info="item"
               :disabled="disabled"
@@ -90,6 +84,7 @@
               ref="refActionList"
               :index="index"
               :init-info="curveId"
+              :current-select-stand-slip="standSlip"
               :detail-info="item"
               :disabled="disabled"
             />
@@ -143,6 +138,18 @@ import { multiply, divide } from '@/utils/math'
 export default {
   components: { CurveSetInitDetailForm },
   props: {
+    curveId: {
+      type: String,
+      default: ''
+    },
+    standSlip: {
+      type: String,
+      default: ''
+    },
+    homology: {
+      type: String,
+      default: ''
+    },
     row: {
       type: Object,
       default: () => {}
@@ -151,7 +158,6 @@ export default {
   data() {
     return {
       disabled: false,
-      curveId: '',
       formulaList: [], // 公式缓存数据
       formulaEditList: [], // 中间公式列表: 编辑数据
       detailList: [], // 场景行为明细缓存数据
@@ -176,11 +182,15 @@ export default {
       return selectFormulaTypeN()
     }
   },
+  watch: {
+    homology(newValue) {
+      this.resolve(newValue)
+    }
+  },
   beforeMount() {
     // 先加载列表
-    this.resolve(this.row.homology)
-    if (this.row) {
-      this.curveId = this.row.curveId
+    this.resolve(this.homology)
+    if (this.homology) {
       this.detailForm.opType = 'EDIT'
     } else {
       this.detailForm.opType = 'ADD'
@@ -191,6 +201,7 @@ export default {
     curveHomologyUpdate(index) {
       const _ = this.$lodash
       this.detailColVisible = true
+      console.log(this.formulaEditList)
       // 获取记录
       this.detailForm = this.formulaEditList[index]
       if (!this.detailForm) {
@@ -329,6 +340,7 @@ export default {
         this.formulaList.push(this.detailForm)
         this.detailForm.opType = 'EDIT'
       }
+      this.detailColVisible = false
 
       // 用过滤器方式删除数据
       const formulaId = this.detailForm.formulaId
@@ -363,8 +375,8 @@ export default {
       const _formula = this.formulaEditList.map(value => value.sceneFormula + ' ? ' + value.actionFormula + ' : ').join('') + '0'
       console.log(_formula)
       const obj = {}
-      obj.curveId = this.row.curveId
-      obj.standSlip = this.row.standSlip
+      obj.curveId = this.curveId
+      obj.standSlip = this.standSlip
       obj.homology = _formula === '0' ? '-' : _formula
       obj.adjReason = _formula === '0' ? '' : '自定义同调'
       this.$store.dispatch('curveBuild/updateData', obj)
@@ -372,6 +384,10 @@ export default {
     },
     // 解析公式
     resolve(data) {
+      if (data === '-') {
+        this.formulaEditList = []
+        return
+      }
       const _ = this.$lodash
       // const m = '0.1 * #[NIED0.08Y] + 0.2 * #[NIED0.5Y] <> 5 ? 0.2 * #[NIED0.08Y] + 3 : 0.3 * #[NIED0.08Y] + 0.3 * #[NIED0.5Y] <> 4 ? 0.3 * #[NIED0.08Y] : 0.2 * #[NIED0.08Y] + 5'
       const array = data.split(/(\?|\:)/).filter(value => value !== '?' && value !== ':')
@@ -394,7 +410,7 @@ export default {
             item.formulaId = value.formulaId
             item.formulaType = '1'
             item.percent = multiply(sceneList[i - 1], 100)
-            item.depCurveId = temp.replace(ind, '').replace(slip, '')
+            item.productShortName = temp.replace(ind, '').replace(slip, '')
             item.depStandSlip = slip
             item.depInd = ind
             console.log(item)
@@ -413,7 +429,7 @@ export default {
             item.formulaId = value.formulaId
             item.formulaType = '2'
             item.percent = multiply(sceneList[i - 1], 100)
-            item.depCurveId = temp.replace(ind, '').replace(slip, '')
+            item.productShortName = temp.replace(ind, '').replace(slip, '')
             item.depStandSlip = slip
             item.depInd = ind
             console.log(item)
@@ -424,6 +440,9 @@ export default {
         if (actionList[actionList.length - 1].indexOf('#') === -1) {
           detailForm.actionFormulaType = actionList[actionList.length - 2]
           detailForm.actionFormulaValue = actionList[actionList.length - 1]
+        } else {
+          detailForm.actionFormulaType = '+'
+          detailForm.actionFormulaValue = 0
         }
         return _.assign(value, detailForm)
       })

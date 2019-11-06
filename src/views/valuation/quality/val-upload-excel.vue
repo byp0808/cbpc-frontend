@@ -72,21 +72,24 @@ export default {
       fileFormData.append('batchId', this.orderId)
       fileFormData.append('compDate', this.taskDay)
       fileFormData.append('attach', this.files)
-      const resp = uplValQcRpt(fileFormData)
-      console.log(resp)
-      //   .then(resp => {
-      //   if (resp.flag !== 0) {
-      //     // this.$message.error("excel上传失败，请重新上传");
-      //   } else {
-      //     this.$message.success('excel上传成功!')
-      //     this.query()
-      //   }
-      // }).catch((e) => {
-      //   // console.log(e);
-      //   // this.$message.error("excel上传失败，请重新上传");
-      // }).finally(() => {
-      //
-      // })
+      // const resp = uplValQcRpt(fileFormData)
+
+      uplValQcRpt(fileFormData).then(resp => {
+        console.log(resp)
+        if (resp.hasOwnProperty('data')) {
+          this.$message({
+            type: 'success',
+            message: 'excel上传成功'
+          })
+        } else {
+          this.$message.error('excel上传失败，请重新上传')
+        }
+      }).catch((e) => {
+        console.log(e)
+        this.$message.error('excel上传失败，请重新上传')
+      }).finally(() => {
+
+      })
     }
   }
 }

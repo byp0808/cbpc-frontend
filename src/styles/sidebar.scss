@@ -70,7 +70,9 @@
         background-color: $menuHover !important;
       }
     }
-
+    .is-active {
+      color: #FF8901!important;
+    }
     .is-active>.el-submenu__title {
       color: $subMenuActiveText !important;
     }
