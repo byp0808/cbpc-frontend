@@ -58,7 +58,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="curveId" label="操作" width="100" show-overflow-tooltip>
-        <template v-if="scope.row.curveBuildStatus=='4' || scope.row.curveBuildStatus=='5'|| scope.row.curveBuildStatus=='6' || scope.row.curveBuildStatus=='7'" slot-scope="scope">
+        <template v-if="scope.row.curveBuildStatus=='4' || scope.row.curveBuildStatus=='5'" slot-scope="scope">
           <el-button type="text" size="big" @click="fallbackContact(scope.$index, overallList.dataList)">退回至责任人</el-button>
         </template>
       </el-table-column>
