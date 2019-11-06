@@ -15,7 +15,7 @@
                 <el-input v-model="bondsNonpInfo.bondsConceptType" disabled />
               </el-form-item>
               <el-form-item
-                prop="bondId"
+                prop="assetCode"
                 label="资产编码"
               >
                 <el-input
@@ -103,10 +103,22 @@ export default {
         callback()
       }
     }
+    const validAssetCode = (rule, value, callback) => {
+      console.log(value)
+      const regex = /^[a-zA-Z0-9.]{6,15}$/
+      if (!regex.test(value)) {
+        callback(new Error('请输入包含字母数字.的6-15位字符'))
+      } else {
+        callback()
+      }
+    }
     return {
       filtedMarket: [],
       rules: {
-        assetCode: [{ required: true, message: '请输入资产编码', trigger: ['blur', 'change'] }],
+        assetCode: [
+          { required: true, message: '请输入资产编码', trigger: ['blur', 'change'] },
+          { validator: validAssetCode, trigger: 'blur' }
+        ],
         indate: [
           { required: true, message: '请输入有效期', trigger: 'blur' },
           { type: 'number', message: '请输入一个整数', trigger: 'blur' },

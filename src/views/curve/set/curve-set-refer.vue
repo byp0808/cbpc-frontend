@@ -102,6 +102,9 @@ export default {
     getCurveReferDtoList() {
       queryCurveReferDto({ page: this.page }).then(response => {
         this.curveReferDtoList = response.dataList
+        if (response) {
+          this.page = response.page
+        }
         setTimeout(1.5 * 1000)
       })
     },

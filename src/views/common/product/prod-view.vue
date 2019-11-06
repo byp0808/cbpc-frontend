@@ -83,16 +83,16 @@
             v-if="scope.row.relationId === null "
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
-            @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.rowNo)"
+            :disabled="scope.row.approveStatus === '01'"
+            @click.native.prevent="toAddProduct('EDIT',scope.row.prdType,scope.row.rowNo, scope.row)"
           >
             编辑
           </el-button>
           <el-button
-            v-if="scope.row.relationId === null "
+            v-if="scope.row.relationId === null"
             type="text"
             size="small"
-            :disabled="scope.row.approveStatus === '01' || scope.row.relationId != null || (scope.row.dataStatus === '04' && scope.row.approveStatus === '01' )"
+            :disabled="scope.row.approveStatus === '01' || scope.row.approveStatus === '02'"
             @click.native.prevent="handleDelete(scope.row.prdType,scope.row.prdId)"
           >
             删除
@@ -142,7 +142,6 @@
       <ValuationProdForm
         ref="refValuationProductDefForm"
         :lock-scroll="lockScroll"
-        :product-id="productId"
         :base-prd-code="basePrdCode"
         :op-type="opType"
         @confirmValuationInfoCallBack="confirmValuationInfoCallBack"
@@ -246,7 +245,7 @@ export default {
       })
     },
     // 打开新增产品页面
-    toAddProduct(opType, prdType, rowId) {
+    toAddProduct(opType, prdType, rowId, row) {
       this.saveCureSampleBtnVisible = true
       // 产品ID
       this.productId = ''
@@ -283,6 +282,17 @@ export default {
           this.addCurveProductDefFormVisible = true
         } else {
           this.productId = rowId
+          this.$store.commit('valuationProd/setProdId', rowId)
+          if (row) {
+            this.$store.commit('valuationProd/setProdBasicInfo', {
+              prdBaseId: row.prdBaseId,
+              prdGrpId: row.prdGrpId,
+              prdLineId: row.prdLineId
+            })
+          }
+          // if (parentFilterId) {
+          //   this.$store.commit('valuationProd/setParentFilterId', parentFilterId)
+          // }
           this.addValuationProductDefFormVisible = true
         }
       } else if (opType === 'ADD') {
@@ -327,6 +337,7 @@ export default {
       if (data.product === '0018') {
         this.addCurveSampleFormVisible = true
       } else if (data.product === '0001') {
+        this.$store.commit('valuationProd/clear')
         this.$store.commit('valuationProd/setProdBasicInfo', {
           prdBaseId: data.product,
           prdGrpId: data.productGroup,

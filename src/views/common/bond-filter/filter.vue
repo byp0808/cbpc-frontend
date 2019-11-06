@@ -383,6 +383,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    checkType: {
+      type: String,
+      default: 'strong'
     }
   },
   data() {
@@ -793,14 +797,21 @@ export default {
         checkRepeat(data).then(response => {
           if (response && Object.keys(response).length > 0) {
             this.repeatBonds = response
-            this.$message.error('债券已经存在其他同业务筛选器范围中')
-            this.$lodash(response).forEach(function(value, key) {
-              const index = that.$lodash.findIndex(that.bondListResult, { csin: value.csin, marketId: value.marketId })
-              if (index >= 0) {
-                that.bondListResult[index].className = 'error-row'
-              }
-            })
-            resolve(false)
+            switch (this.checkType) {
+              case 'strong':
+                this.$message.error('债券已经存在其他同业务筛选器范围中')
+                // this.$lodash(response).forEach(function(value, key) {
+                //   const index = that.$lodash.findIndex(that.bondListResult, { csin: value.csin, marketId: value.marketId })
+                //   if (index >= 0) {
+                //     that.bondListResult[index].className = 'error-row'
+                //   }
+                // })
+                resolve(false)
+                break
+              case 'weak':
+                resolve(data)
+                break
+            }
           } else {
             resolve(data)
           }

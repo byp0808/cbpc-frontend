@@ -105,6 +105,9 @@ export default {
     getCurveHomologyDtoList() {
       querycurveHomologyDto({ page: this.page }).then(response => {
         this.curveHomologyDtoList = response.dataList
+        if (response) {
+          this.page = response.page
+        }
         setTimeout(1.5 * 1000)
       })
     },

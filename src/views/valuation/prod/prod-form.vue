@@ -485,17 +485,17 @@ export default {
   },
   created() {
     // 在页面刷新时将vuex里的信息保存到localStorage里
-    window.addEventListener('beforeunload', () => {
-      if (this.prodId) {
-        localStorage.setItem('valuation-prod-id', this.prodId)
-      }
-    })
+    // window.addEventListener('beforeunload', () => {
+    //   if (this.prodId) {
+    //     sessionStorage.setItem('valuation-prod-id', this.prodId)
+    //   }
+    // })
   },
   beforeMount() {
     this.initData()
     // this.getStandard()
-    if (this.$store.state.valuationProd.prodId || localStorage.getItem('valuation-prod-id')) {
-      this.prodId = this.$store.state.valuationProd.prodId || localStorage.getItem('valuation-prod-id')
+    if (this.$store.state.valuationProd.prodId) {
+      this.prodId = this.$store.state.valuationProd.prodId
       this.initDetailData()
     }
   },
@@ -828,14 +828,18 @@ export default {
         businessName: '估值产品定义',
         businessRouter: 'ValuationProdTask',
         taskName: `估值产品定义-${this.prodInfo.prodName}`,
-        taskType: '01'
+        taskType: '01',
+        busiData: {
+          prodId: this.prodId,
+          valuationBasicProd: this.$store.state.valuationProd.prodBasicInfo
+        }
       }).then(response => {
         this.$message({
           showClose: true,
           message: '流程提交成功',
           type: 'success'
         })
-        this.$router.push({ name: 'ValuationProdList' })
+        this.$router.push({ name: 'ProdView' })
       })
     },
     checkProdName(rule, value, callback) {

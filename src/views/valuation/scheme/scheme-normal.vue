@@ -34,7 +34,7 @@
                 <el-radio v-model="marketInfo.ttmType" label="02">非行权</el-radio>
               </el-form-item>
               <el-form-item label="代偿期" class="display-inline">
-                <el-input v-model="marketInfo.ttmValue" placeholder="请输入内容" />
+                <el-input v-model="marketInfo.ttmValue" placeholder="请输入内容" :disabled="true" />
               </el-form-item>
               <el-form-item label="净价" class="display-inline" style="margin-left:10px">
                 <el-input v-model="marketInfo.cPrice" placeholder="请输入内容" />

@@ -56,7 +56,7 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.approveStatus!=='01'"
+            :disabled="!(scope.row.approveStatus!=='01')"
             type="text"
             size="small"
             @click.native.prevent="toDetail(scope.row.id)"
@@ -64,7 +64,7 @@
             设置
           </el-button>
           <el-button
-            v-if="scope.row.approveStatus==='02' || scope.row.approveStatus==='03'"
+            :disabled="!(scope.row.approveStatus==='02' || scope.row.approveStatus==='03')"
             type="text"
             size="small"
             @click.native.prevent="toDelete(scope.row.id)"
@@ -72,7 +72,7 @@
             删除
           </el-button>
           <el-button
-            v-if="isShowChangeStatusBtn(scope.row.busiStatus)"
+            :disabled="!isShowChangeStatusBtn(scope.row.busiStatus, scope.row.approveStatus)"
             type="text"
             size="small"
             @click.native.prevent="changeStatus(scope.row.busiStatus, scope.row.id)"
@@ -140,9 +140,9 @@ export default {
       return function(status) {
         switch (status) {
           case '02':
-            return '启用中'
+            return '停用'
           case '03':
-            return '停用中'
+            return '启用'
         }
       }
     },
@@ -217,17 +217,31 @@ export default {
     },
     changeStatus(status, id) {
       if (status === '02') {
-        switchStatus({ id: id, busiStatus: '03' }).then(response => {
-          this.loadTable()
+        this.$confirm('规则正在启用中，确定停用吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
         })
+          .then(() => {
+            switchStatus({ id: id, busiStatus: '03' }).then(response => {
+              this.$message.success('提交复核成功')
+              this.loadTable()
+            })
+          })
       } else if (status === '03') {
-        switchStatus({ id: id, busiStatus: '02' }).then(response => {
-          this.loadTable()
+        this.$confirm('数据已经停用，确定启用吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
         })
+          .then(() => {
+            switchStatus({ id: id, busiStatus: '02' }).then(response => {
+              this.$message.success('提交复核成功')
+              this.loadTable()
+            })
+          })
       }
     },
-    isShowChangeStatusBtn(status) {
-      return status === '02' || status === '03'
+    isShowChangeStatusBtn(busiStatus, approveStatus) {
+      return approveStatus !== '01' && (busiStatus === '02' || busiStatus === '03')
     },
     handleSizeChange(pageSize) {
       this.page.pageSize = pageSize
