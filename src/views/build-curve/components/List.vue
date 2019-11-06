@@ -278,13 +278,11 @@ export default {
     },
     saveData(v, i) {
       let value = this.compute[v]
-      if (i) {
+      if (i >= 0) {
         value = value[i]
       }
       const arr = this.selected.filter(value => value.standSlip === this.selectedTerm)
       const obj = this.selectedType === '收益率' ? { yield: value } : { deviations: value }
-      this.selectedType = ''
-      this.selectedTerm = ''
       this.dialogFlag = false
       const standSlip = this.compute.standSlip
       const label = arr.map(e => e.label).filter((t, i, a) => a.indexOf(t, 0) === i).join(',')
