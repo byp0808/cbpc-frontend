@@ -130,4 +130,11 @@ export function getValOrderList(data) {
     data: data
   })
 }
-
+// 退回单资产
+export function fallbackSingle(data) {
+  return request({
+    url: `${basic_api_valuation}` + '/vql/quality/fallbackSingle',
+    method: 'post',
+    data: data
+  })
+}

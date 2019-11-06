@@ -43,8 +43,8 @@
         </template>
       </el-table-column>
       <el-table-column prop="bondId" label="操作" width="100" show-overflow-tooltip>
-        <template>
-          <el-button type="text" size="big">退回单资产估值</el-button>
+        <template v-if="scope.row.bckTskIncd=='0'" slot-scope="scope">
+          <el-button type="text" size="big" @click="fallbackSingle(scope.$index, overallList.dataList)">退回计算</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,7 +61,8 @@
 </template>
 
 <script>
-import { qryOverallQcRpt } from '@/api/valuation/val-quality.js'
+import { qryOverallQcRpt, fallbackSingle } from '@/api/valuation/val-quality.js'
+import { addOneTask } from '@/api/valuation/task.js'
 
 export default {
   name: 'ValOverallList', // 质检总览
@@ -106,6 +107,52 @@ export default {
         const { dataList, page } = response
         this.overallList.dataList = dataList
         this.overallList.page = page
+      })
+    },
+    fallbackSingle(index, rows) {
+      this.$confirm('是否确认退回', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        if (this.overallList.batchId === 'init_batch') {
+          var addTaskData = {
+            tab: '01',
+            assetCode: rows[index].csin,
+            batchId: this.overallList.batchId
+          }
+          addOneTask(addTaskData).then(response => {
+            this.$message({
+              type: 'success',
+              message: '操作成功',
+              showClose: true
+            })
+            var fallbackData = {
+              batchId: this.overallList.batchId,
+              compDate: this.overallList.compDate,
+              bondId: rows[index].bondId
+            }
+            fallbackSingle(fallbackData)
+          })
+        } else {
+          var fallbackData = {
+            batchId: this.overallList.batchId,
+            compDate: this.overallList.compDate,
+            bondId: rows[index].bondId
+          }
+          fallbackSingle(fallbackData).then(response => {
+            this.$message({
+              type: 'success',
+              message: '操作成功',
+              showClose: true
+            })
+          })
+        }
+        this.qryOverallQcRpt()
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      }).catch(() => {
+        console.info('cancle')
       })
     }
   }
