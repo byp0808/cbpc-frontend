@@ -15,12 +15,11 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8" :offset="8">
+          <el-col :span="8" :offset="6">
             <el-button-group>
               <el-button type="primary" icon="el-icon-search" @click="getList">查询</el-button>
               <el-button v-elepermission="['updateAssign']" type="primary" @click="openDialog(null, true)">批量替换责任人</el-button>
               <el-upload
-                v-elepermission="['uploadSolutions']"
                 style="display: inline-block; float: right"
                 action=""
                 :multiple="false"
@@ -29,7 +28,7 @@
                 :show-file-list="false"
                 :accept="'excel'"
               >
-                <el-button type="primary">上传曲线方案</el-button>
+                <el-button v-elepermission="['uploadSolutions']" type="primary">上传曲线方案</el-button>
               </el-upload>
             </el-button-group>
           </el-col>
@@ -243,6 +242,7 @@ export default {
     },
     claim(item) {
       chaimCurveTask(item.id).then(() => {
+        this.$message.success('认领成功')
         this.getList()
       })
     },

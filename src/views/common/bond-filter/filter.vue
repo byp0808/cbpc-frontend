@@ -386,7 +386,7 @@ export default {
     },
     checkType: {
       type: String,
-      default: 'Strong'
+      default: 'strong'
     }
   },
   data() {
