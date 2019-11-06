@@ -155,12 +155,13 @@ import { qryValYieldShkQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValYieldShkList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       valYieldShkList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -170,6 +171,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryValYieldShkQcRpt()
   },
   methods: {
     handleFilter() {
@@ -191,6 +195,7 @@ export default {
     qryValYieldShkQcRpt() {
       this.valYieldShkList.compDate = this.taskDay
       this.valYieldShkList.batchId = this.orderId
+      this.valYieldShkList.bondId = this.bondId
       qryValYieldShkQcRpt(this.valYieldShkList).then(response => {
         console.info('qryValYieldShkQcRpt.qryValYieldShkQcRpt...')
         const { dataList, page } = response

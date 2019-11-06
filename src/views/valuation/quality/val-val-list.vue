@@ -80,12 +80,13 @@ import { qryValValQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValValList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       valValList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -95,6 +96,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryValValQcRpt()
   },
   methods: {
     handleFilter() {
@@ -116,6 +120,7 @@ export default {
     qryValValQcRpt() {
       this.valValList.compDate = this.taskDay
       this.valValList.batchId = this.orderId
+      this.valValList.bondId = this.bondId
       qryValValQcRpt(this.valValList).then(response => {
         console.info('qryValValQcRpt.qryValValQcRpt...')
         const { dataList, page } = response

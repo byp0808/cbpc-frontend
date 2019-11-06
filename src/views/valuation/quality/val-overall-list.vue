@@ -34,7 +34,7 @@
       </el-table-column>
       <el-table-column prop="qcKind" label="质检类别" width="150" show-overflow-tooltip>
         <template slot-scope="scope">
-          {{ scope.row.qcKind }}
+          <el-button type="text" size="big" @click="singleRoute(scope.$index, overallList.dataList)">{{ scope.row.qcKind }}</el-button>
         </template>
       </el-table-column>
       <el-table-column prop="excptRsn" label="异常原因" width="100" show-overflow-tooltip>
@@ -154,6 +154,32 @@ export default {
       }).catch(() => {
         console.info('cancle')
       })
+    },
+    singleRoute(index, rows) {
+      let activeName = 'zl'
+      if (rows[index].qcKind === '入库变动') {
+        activeName = 'rkbd'
+      } else if (rows[index].qcKind === '净价波动') {
+        activeName = 'jjbd'
+      } else if (rows[index].qcKind === '收益率波动') {
+        activeName = 'sylbd'
+      } else if (rows[index].qcKind === '容错') {
+        activeName = 'rc'
+      } else if (rows[index].qcKind === '应计利息报警') {
+        activeName = 'yjlxbj'
+      } else if (rows[index].qcKind === '估值收益率为0') {
+        activeName = 'gzwl'
+      } else if (rows[index].qcKind === '估值净价为100') {
+        activeName = 'cbf'
+      } else if (rows[index].qcKind === '重复估值') {
+        activeName = 'cfgz'
+      } else {
+        activeName = 'zl'
+      }
+      console.info('singleRouteCallback.reason:' + rows[index].qcKind)
+      console.info('singleRouteCallback.activeName:' + activeName)
+      console.info('singleRouteCallback.bondId:' + rows[index].bondId)
+      this.$emit('singleRouteCallback', rows[index].bondId, activeName)
     }
   }
 }

@@ -85,12 +85,13 @@ import { qryValFTQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValFTQList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       valFTQList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -100,6 +101,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryValFTQcRpt()
   },
   methods: {
     handleFilter() {
@@ -121,6 +125,7 @@ export default {
     qryValFTQcRpt() {
       this.valFTQList.compDate = this.taskDay
       this.valFTQList.batchId = this.orderId
+      this.valFTQList.bondId = this.bondId
       qryValFTQcRpt(this.valFTQList).then(response => {
         console.info('qryValFTQcRpt.qryValFTQcRpt...')
         const { dataList, page } = response

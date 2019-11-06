@@ -96,12 +96,13 @@ import { qryValAccIntrstAlertQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValAccIntrstAlertList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       valAccIntrstAlertList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -111,6 +112,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryValAccIntrstAlertQcRpt()
   },
   methods: {
     handleFilter() {
@@ -132,6 +136,7 @@ export default {
     qryValAccIntrstAlertQcRpt() {
       this.valAccIntrstAlertList.compDate = this.taskDay
       this.valAccIntrstAlertList.batchId = this.orderId
+      this.valAccIntrstAlertList.bondId = this.bondId
       qryValAccIntrstAlertQcRpt(this.valAccIntrstAlertList).then(response => {
         console.info('qryValAccIntrstAlertQcRpt.qryValAccIntrstAlertQcRpt...')
         const { dataList, page } = response

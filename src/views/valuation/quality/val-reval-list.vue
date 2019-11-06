@@ -70,12 +70,13 @@ import { qryReValQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ReValList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       reValList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -85,6 +86,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryReValQcRpt()
   },
   methods: {
     handleFilter() {
@@ -106,6 +110,7 @@ export default {
     qryReValQcRpt() {
       this.reValList.compDate = this.taskDay
       this.reValList.batchId = this.orderId
+      this.reValList.bondId = this.bondId
       qryReValQcRpt(this.reValList).then(response => {
         console.info('qryReValQcRpt.qryReValQcRpt...')
         const { dataList, page } = response

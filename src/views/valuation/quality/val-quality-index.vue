@@ -43,49 +43,49 @@
       <div slot="header" class="clearfix card-head">
         <h3>总览</h3>
       </div>
-      <ValOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValOverallList ref="zl" :task-day="taskDayStr" :order-id="queryForm.orderId" @singleRouteCallback="singleRoute" />
     </el-card>
     <el-card v-if="activeName === 'rkbd'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>入库变动</h3>
       </div>
-      <ValNumChgList ref="rkbd" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValNumChgList ref="rkbd" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'jjbd'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>净价波动</h3>
       </div>
-      <ValNetPrcShkList ref="jjbd" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValNetPrcShkList ref="jjbd" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'sylbd'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>收益率波动</h3>
       </div>
-      <ValYieldShkList ref="sylbd" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValYieldShkList ref="sylbd" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'rc'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>容错</h3>
       </div>
-      <ValFTQList ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValFTQList ref="rc" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'yjlxbj'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>应计利息报警</h3>
       </div>
-      <ValAccIntrstAlertList ref="yjlxbj" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValAccIntrstAlertList ref="yjlxbj" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'gzwl'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>估值收益率为0</h3>
       </div>
-      <ValValList ref="gzwl" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValValList ref="gzwl" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'cbf'" class="box-card ">
       <div slot="header" class="clearfix card-head">
         <h3>估值净价为100</h3>
       </div>
-      <ValNetPrcList ref="cbf" :task-day="taskDayStr" :order-id="queryForm.orderId" />
+      <ValNetPrcList ref="cbf" :task-day="taskDayStr" :order-id="queryForm.orderId" :bond-id="queryForm.bondId" />
     </el-card>
     <el-card v-if="activeName === 'cfgz'" class="box-card ">
       <div slot="header" class="clearfix card-head">
@@ -155,7 +155,8 @@ export default {
       orderList: [], // 批次列表
       queryForm: {
         taskDay: null,
-        orderId: ''
+        orderId: '',
+        bondId: ''
       },
       activeName: 'zl'
     }
@@ -216,6 +217,7 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event)
+      this.queryForm.bondId = ''
     },
     async getValOrderOptions(orderList) {
       console.info('getValOrderOptions...')
@@ -296,6 +298,11 @@ export default {
       // } else if (this.activeName === 'rc') {
       //   this.$refs.zl.handleFilter()
       // }
+    },
+    singleRoute(bondId, activeName) {
+      console.info('singleRoute.singleRoute...')
+      this.activeName = activeName
+      this.queryForm.bondId = bondId
     }
   }
 }

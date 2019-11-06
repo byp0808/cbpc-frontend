@@ -155,12 +155,13 @@ import { qryValNetPrcShkQcRpt } from '@/api/valuation/val-quality.js'
 
 export default {
   name: 'ValNetPrcShkList', // 质检总览
-  props: ['taskDay', 'orderId'],
+  props: ['taskDay', 'orderId', 'bondId'],
   data() {
     return {
       valNetPrcShkList: {
         compDate: '',
         batchId: '',
+        bondId: '',
         dataList: [],
         page: {
           pageNumber: 1,
@@ -170,6 +171,9 @@ export default {
       lockScroll: true,
       multipleSelection: '' // 选择记录
     }
+  },
+  beforeMount() {
+    this.qryValNetPrcShkQcRpt()
   },
   methods: {
     handleFilter() {
@@ -191,6 +195,7 @@ export default {
     qryValNetPrcShkQcRpt() {
       this.valNetPrcShkList.compDate = this.taskDay
       this.valNetPrcShkList.batchId = this.orderId
+      this.valNetPrcShkList.bondId = this.bondId
       qryValNetPrcShkQcRpt(this.valNetPrcShkList).then(response => {
         console.info('qryValNetPrcShkQcRpt.qryValNetPrcShkQcRpt...')
         const { dataList, page } = response
