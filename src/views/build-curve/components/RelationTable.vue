@@ -122,14 +122,15 @@ export default {
             return { [el.standSlip]: { [v.curveId]: subtract(this.mainCurve[el.standSlip], _yield) }}
           }).reduce((k, i) => _.merge(k, i), {})
         }).reduce((k, i) => { return _.merge(k, i) }, {})
-        Object.keys(temp).forEach((value, i) => {
+        const _list = Object.keys(temp).sort((m1, m2) => m1 - 0 < m2 - 0 ? -1 : (m1 - 0 > m2 - 0 ? 1 : 0))
+        _list.forEach((value, i) => {
           if (i === 0) {
             Object.keys(temp[value]).forEach(key => {
               temp[value][key] = 0
             })
           } else {
             Object.keys(temp[value]).forEach(key => {
-              temp[value][key] = subtract(temp[value][key], temp[value - 1][key])
+              temp[value][key] = subtract(temp[value][key], temp[_list[i - 1]][key])
             })
           }
         })

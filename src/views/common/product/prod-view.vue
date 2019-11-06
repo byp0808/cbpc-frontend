@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div style="margin-bottom: 20px">
-      <el-button type="primary" @click="toAddProduct('ADD')">新增</el-button>
+      <el-button v-elepermission="['ProdAdd']" type="primary" @click="toAddProduct('ADD')">新增</el-button>
       <el-button v-if="false" type="primary" @click="toAddProduct('COPY')">复制新增</el-button>
       <el-input v-model="input" placeholder="请输入查询内容" style="width: 15%" />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
@@ -81,6 +81,7 @@
           </el-button>
           <el-button
             v-if="scope.row.relationId === null "
+            v-elepermission="['ProdModify']"
             type="text"
             size="small"
             :disabled="scope.row.approveStatus === '01'"
@@ -170,6 +171,7 @@ import CurveSampleForm from '@/views/curve/sample/curve-sample-form.vue'
 import ValuationProdForm from '@/views/valuation/prod/prod-form.vue'
 import { queryALlProductList, queryProdByID, dwnlProducts, delCurveProduct } from '@/api/common/prod-list.js'
 import { showCodeLabel } from '@/api/curve/code-type.js'
+import { elepermission } from '@/directive/elepermission'
 
 export default {
   name: 'ProdList', // 产品列表
@@ -182,6 +184,7 @@ export default {
   filters: {
     showCodeLabel: showCodeLabel
   },
+  directives: { elepermission },
   data() {
     return {
       input: '',

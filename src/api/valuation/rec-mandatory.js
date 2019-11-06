@@ -9,6 +9,16 @@ export function queryMandatoryList(data) {
     data: data
   })
 }
+
+// 判断推荐方向是否相同
+export function checkDirection(data) {
+  return request({
+    url: `${basic_api_valuation}/valuation-force/check-direction`,
+    method: 'post',
+    data
+  })
+}
+
 // 保存估值强制推荐规则信息
 export function saveRecMandatory(data) {
   return request({

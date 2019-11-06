@@ -8,11 +8,11 @@
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="refRuleInfo" :model="ruleInfo" label-width="150px">
-              <el-form-item label="规则ID">
-                <el-input v-model="ruleInfo.id" disabled />
-              </el-form-item>
-              <el-form-item label="最后操作人">
-                <el-input v-model="ruleInfo.lastUpdBy" disabled />
+              <!--              <el-form-item label="规则ID">-->
+              <!--                <el-input v-model="ruleInfo.id" disabled />-->
+              <!--              </el-form-item>-->
+              <el-form-item label="任务范围名称" prop="taskRangeName">
+                <el-input v-model="ruleInfo.taskRangeName" type="textarea" :disabled="disabled" />
               </el-form-item>
             </el-form>
           </div>
@@ -20,8 +20,8 @@
         <el-col :span="8">
           <div class="grid-content bg-purple">
             <el-form ref="refRuleInfo" :rules="rules" :model="ruleInfo" label-width="150px">
-              <el-form-item label="任务范围名称" prop="taskRangeName">
-                <el-input v-model="ruleInfo.taskRangeName" type="textarea" :disabled="disabled" />
+              <el-form-item label="最后操作人">
+                <el-input v-model="ruleInfo.lastUpdBy" disabled />
               </el-form-item>
               <el-form-item label="最后操作时间">
                 <el-input v-model="ruleInfo.lastUpdTs" disabled />

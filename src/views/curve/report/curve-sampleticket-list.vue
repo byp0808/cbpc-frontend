@@ -65,6 +65,7 @@
         </el-col>
         <el-col :span="12" style="text-align:right;">
           <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+          <el-button class="filter-item" type="primary" icon="el-icon-search" @click="download">下载</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -126,7 +127,7 @@
 <script>
 
 // import { optioins } from '@/api/curve/code-type.js'
-import { queryCurveSampleBondsList } from '@/api/curve/curve-sampleticket-list.js'
+import { queryCurveSampleBondsList, downloadSample } from '@/api/curve/curve-sampleticket-list.js'
 import { getOrderListOptions } from '@/api/curve/curve-product-order.js'
 import { selectPerson } from '@/api/curve/curve-task'
 
@@ -230,6 +231,7 @@ export default {
       this.bondsIdList = [{ value: 'a', label: '123' }]
     },
     queryCurveSampleBondsList() {
+      // eslint-disable-next-line no-undef
       var data = _.assign({}, this.queryForm)
       data.page = this.sampleBondsList.page
       queryCurveSampleBondsList(data).then(response => {
@@ -239,6 +241,14 @@ export default {
         this.sampleBondsList.dataList = dataList
         this.sampleBondsList.page = page
       })
+    },
+    // 下载
+    download() {
+      // downloadSample
+      // eslint-disable-next-line no-undef
+      var data = _.assign({}, this.queryForm)
+      data.page = this.sampleBondsList.page
+      downloadSample(data)
     }
   }
 }

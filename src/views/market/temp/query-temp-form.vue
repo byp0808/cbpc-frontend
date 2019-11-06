@@ -195,7 +195,11 @@
                 </el-form>
               </el-col>
             </el-row>
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<el-button type="primary" style="width:200px" @click="addtempcol">确认添加</el-button>
+            <el-row>
+              <el-col :offset="7">
+                <el-button type="primary" style="width:200px" @click="addtempcol">确认添加</el-button>
+              </el-col>
+            </el-row>
           </el-card>
         </el-row>
       </el-col>
@@ -241,7 +245,7 @@ import { saveMarketTemp, getMarketTemp, getMarketColsInfo, checkTempName } from 
 export default {
   name: 'MarketTempForm',
   components: {},
-  props: ['businessId', 'opType', 'isCopy'],
+  props: ['businessId', 'opType', 'isCopy', 'dataMarket', 'showArea'],
   data() {
     return {
       disabled: '',
@@ -318,12 +322,16 @@ export default {
         const { marketTempInfo, colData } = response
         this.$store.commit('marketTemp/setMarketTempInfo', marketTempInfo)
         this.colData = colData
+        this.marketTempInfo = marketTempInfo
         // this.extendColInfo = {}
         this.setColDataResult()
       })
       var data = {}
-      data.dataMarket = this.marketTempInfo.dataMarket
-      data.showArea = this.marketTempInfo.showArea
+      // data.dataMarket = this.marketTempInfo.dataMarket
+      // data.showArea = this.marketTempInfo.showArea
+      data.dataMarket = this.dataMarket
+      data.showArea = this.showArea
+      console.log(data)
       getMarketColsInfo(data).then(response => {
         const { numberCols } = response
         this.relationColsOptions = numberCols
@@ -453,7 +461,6 @@ export default {
     },
     getComputeExp(val) {
       var resultComputeExp = ''
-      var expList = []
       var value = ''
       var operList = ['(', ')', '+', '-', '*', '/']
       for (let i = 0; i < val.length; i++) {
@@ -462,30 +469,29 @@ export default {
           value += val[i]
         } else {
           if (value) {
-            expList.push(value)
+            let obj = {}
+            obj = this.relationColsOptions.find((item) => {
+              return item.value === value
+            })
+            if (!obj) {
+              resultComputeExp += value
+            } else {
+              resultComputeExp += obj.code
+            }
             value = ''
           }
-          expList.push(val[i])
+          resultComputeExp += val[i]
         }
       }
       if (value) {
-        expList.push(value)
-      }
-      // console.log(expList)
-      for (let i = 0; i < expList.length; i++) {
-        if (operList.indexOf(expList[i]) === -1) {
-          let obj = {}
-          obj = this.relationColsOptions.find((item) => {
-            return item.value === expList[i]
-          })
-          // console.log(obj)
-          if (!obj) {
-            resultComputeExp += expList[i]
-          } else {
-            resultComputeExp += obj.code
-          }
+        let obj = {}
+        obj = this.relationColsOptions.find((item) => {
+          return item.value === value
+        })
+        if (!obj) {
+          resultComputeExp += value
         } else {
-          resultComputeExp += expList[i]
+          resultComputeExp += obj.code
         }
       }
       console.log(resultComputeExp)

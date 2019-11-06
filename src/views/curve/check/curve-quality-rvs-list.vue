@@ -62,23 +62,7 @@ export default {
         compDate: '',
         curveId: '',
         batchId: '',
-        dataList: [{
-          keyTerm: 0.08,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.1,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.2,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }, {
-          keyTerm: 0.3,
-          keyTermYield: 0.1,
-          tgtKeyTermYield: 3
-        }],
+        dataList: [],
         page: {
           pageNumber: 1,
           pageSize: 10
