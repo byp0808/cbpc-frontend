@@ -8,7 +8,8 @@
 docs/_book
 
 # TODO: where does this rule come from?
-test/
+test
+dist
 
 ### Node template
 # Logs

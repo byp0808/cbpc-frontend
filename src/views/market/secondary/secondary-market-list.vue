@@ -18,6 +18,7 @@
           />
         </el-select>
         <el-button type="primary" @click="offerToUse">应用</el-button>
+        <el-button type="primary" @click="offerExport">导出报价CSV</el-button>
       </span>
       <span>
         <el-select v-model="moduleId" filterable placeholder="成交展示模板" @visible-change="loadModuleList">
@@ -29,6 +30,7 @@
           />
         </el-select>
         <el-button type="primary" @click="toUse">应用</el-button>
+        <el-button type="primary" @click="cjExport">导出成交CSV</el-button>
       </span>
     </div>
     <!--报价表格-->
@@ -322,6 +324,8 @@ import ScreeningCheckboxForm from '@/views/market/secondary/screening-checkbox-f
 import { queryDefaultCols, queryMarketData, getTempList, getTempById, saveTempInfo, saveMarketData } from '@/api/market/market.js'
 import { getCurveList } from '@/api/curve/curve-product-list.js'
 import { optioins } from '@/api/curve/code-type.js'
+import { downloadFile } from '@/utils/file-request'
+import { basic_api_market } from '@/api/base-api.js'
 export default {
   name: 'SecondaryMarketList',
   components: {
@@ -445,8 +449,6 @@ export default {
       }
       queryDefaultCols(data).then(response => {
         const { showCols, colData } = response
-        // console.info(showCols)
-        // console.info(colData)
         this.offerTableHeader = showCols
         this.offerColData = colData
       })
@@ -1387,6 +1389,34 @@ export default {
       } else {
         return row[column.colName]
       }
+    },
+    cjExport() {
+      // 处理筛选数据
+      this.formatScreeningForm(this.screeningFormList)
+      // 获取满足条件的行情数据
+      const data = {
+        page: this.page,
+        dataMarket: '02',
+        showArea: '02',
+        tempId: this.currentModuleId,
+        searchParam: this.searchParam,
+        queryForm: this.queryForm
+      }
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_market}` + '/market-temp/unLoadMarketData', data)
+    },
+    offerExport() {
+      this.formatScreeningForm(this.offerScreeningFormList)
+      // 获取满足条件的行情数据
+      const data = {
+        page: this.offerPage,
+        dataMarket: '02',
+        showArea: '01',
+        tempId: this.offerCurrentModuleId,
+        searchParam: this.searchParam,
+        queryForm: this.queryForm,
+        specialChecked: this.specialChecked
+      }
+      downloadFile(`${process.env.VUE_APP_BASE_API}${basic_api_market}` + '/market-temp/unLoadMarketData', data)
     }
   }
 
