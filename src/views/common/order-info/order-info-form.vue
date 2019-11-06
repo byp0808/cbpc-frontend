@@ -27,7 +27,7 @@
                   :disabled="disabled"
                   placeholder="请选择批次计算时间"
                   style="width: 100%"
-                  :picker-options="{ start:'00:00', end: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'23:30'}` , step:'00:30'}"
+                  :picker-options="{ start:'00:00', end: `${orderInfoForm.remindTime?orderInfoForm.remindTime:'23:30'}` , step:'00:30', maxTime:orderInfoForm.remindTime}"
                 />
               </el-form-item>
             </div>
@@ -53,7 +53,7 @@
                   :disabled="disabled"
                   placeholder="请选择批次提醒时间"
                   style="width: 100%"
-                  :picker-options="{ start: `${orderInfoForm.compTime?orderInfoForm.compTime:'00:00'}` , end:'23:30', step:'00:30' }"
+                  :picker-options="{ start: `${orderInfoForm.compTime?orderInfoForm.compTime:'00:00'}` , end:'23:30', step:'00:30', minTime:orderInfoForm.compTime}"
                 />
               </el-form-item>
             </div>
@@ -107,7 +107,17 @@ import { checkSpecificKey } from '@/utils/custom-validate.js'
 export default {
   name: 'OrderInfoForm',
   components: {},
-  props: ['businessId', 'disabled'],
+  // props: ['businessId', 'disabled'],
+  props: {
+    businessId: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     // eslint-disable-next-line no-unused-vars
     const validOrderName = (rule, value, callback) => {
@@ -132,12 +142,14 @@ export default {
         ],
         compTime: [
           { required: true, message: '请选择批次计算时间', trigger: 'change' }
+          // { validator: this.timeChange, trigger: 'change' }
         ],
         marketId: [
           { required: true, message: '请选择所属市场', trigger: 'change' }
         ],
         remindTime: [
           { required: true, message: '请选择批次提醒时间', trigger: 'change' }
+          // { validator: this.timeChange, trigger: 'change' }
         ],
         orderName: [
           { required: true, message: '请输入批次名称', trigger: 'blur' }
@@ -180,6 +192,15 @@ export default {
     }
   },
   methods: {
+    timeChange(rule, value, callback) {
+      if (this.orderInfoForm.compTime && this.orderInfoForm.compTime === this.orderInfoForm.remindTime) {
+        callback(new Error('批次提醒时间和批次计算时间不能相同'))
+      }
+      if (this.orderInfoForm.remindTime && this.orderInfoForm.compTime === this.orderInfoForm.remindTime) {
+        callback(new Error('批次提醒时间和批次计算时间不能相同'))
+      }
+      callback()
+    },
     save() {
       const data = this.orderInfoForm
       this.$refs.orderInfoForm.validate((valid) => {
