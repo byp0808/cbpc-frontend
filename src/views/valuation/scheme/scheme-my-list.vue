@@ -23,6 +23,7 @@
         <el-col :xl="16" :lg="14">
           <el-autocomplete v-model="bondId" placeholder="输入资产编码后添加任务" clearable :fetch-suggestions="querySearch" @select="handleSelectInput" />
           <el-button v-elepermission="['AddTask']" type="primary" @click="addTask">添加任务</el-button>
+          <!-- <el-button type="primary" @click="addTask">添加任务</el-button> -->
           <el-button v-elepermission="['BatchAddTask']" type="primary" @click="batchAddTask">批量添加</el-button>
           <el-button type="primary" @click="uploadScheme">批量上传人工估值</el-button>
           <el-button type="primary" @click="marketAdjust">盯市券点差调整</el-button>
@@ -1011,7 +1012,7 @@ export default {
       })
       this.selection = Array.from(new Set(this.selection))
     },
-    selectBondId() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
+    selectBondIds() { // 解决选择任务重复问题，taskLists变化导致重复添加到tasks中
       // if (this.taskLists && this.taskLists.length > 0) {
       this.tasks = []
       this.taskLists.map(v => {
@@ -1032,7 +1033,7 @@ export default {
       if (!this.valuationScheme.curveId) {
         return this.$message.warning('请至少选择一条曲线')
       }
-      this.selectBondId()
+      this.selectBondIds()
       this.Dialog.a = true
       batchAdjust(this.valuationScheme).then(res => {
         this.Dialog.a = false
@@ -1049,7 +1050,7 @@ export default {
       if (!this.valuationScheme.marketGrade) {
         return this.$message.warning('请至少选择一个隐含评级')
       }
-      this.selectBondId()
+      this.selectBondIds()
       this.Dialog.b = true
       batchAdjust(this.valuationScheme).then(res => {
         this.Dialog.b = false
@@ -1103,7 +1104,7 @@ export default {
       !this.valuationScheme.relaSpread && !this.valuationScheme.spreadValue && this.valuationScheme.relaSpread !== 0) {
         return this.$message.warning('请输入一种目标点差')
       }
-      this.selectBondId()
+      this.selectBondIds()
       this.Dialog.c = true
       batchAdjust(this.valuationScheme).then(res => {
         this.Dialog.c = false
@@ -1124,7 +1125,7 @@ export default {
         return this.$message.warning('目标流动性点差范围是-99999~+99999,请重新输入')
       }
       // this.valuationScheme.tasks = this.tasks
-      this.selectBondId()
+      this.selectBondIds()
       this.Dialog.d = true
       batchAdjust(this.valuationScheme).then(res => {
         this.Dialog.d = false
@@ -1144,7 +1145,7 @@ export default {
       if (this.valuationScheme.otAdjValue >= 99999 || this.valuationScheme.otAdjValue <= -99999) {
         return this.$message.warning('目标其他点差范围是-99999~+99999,请重新输入')
       }
-      this.selectBondId()
+      this.selectBondIds()
       this.Dialog.e = true
       // this.$refs.otherDom.validate(val => {
       //   if (val) {
