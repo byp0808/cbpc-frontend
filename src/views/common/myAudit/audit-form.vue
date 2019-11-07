@@ -81,8 +81,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="150px">
         <template slot-scope="scope">
-          <el-button :type="scope.row.taskStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '02', scope.row.taskName, scope.row.businessRouter)">通过</el-button>
-          <el-button :type="scope.row.taskStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '03', scope.row.taskName, scope.row.businessRouter)">拒绝</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'primary' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '02', scope.row.businessName, scope.row.businessRouter)">通过</el-button>
+          <el-button :type="scope.row.taskStatus === '01'? 'danger' : 'info'" size="small" :disabled="scope.row.taskStatus !== '01'" @click="audit(scope.row.businessNo, '03', scope.row.businessName, scope.row.businessRouter)">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -195,10 +195,10 @@ export default {
       this.$store.commit('task/setTaskName', taskName)
       this.$router.push({ name: router })
     },
-    audit(businessNo, auditStatus, taskName, router) {
+    audit(businessNo, auditStatus, businessName, router) {
       this.$store.commit('task/setBusinessNo', businessNo)
       this.$store.commit('task/setAuditStatus', auditStatus)
-      this.$store.commit('task/setTaskName', taskName)
+      this.$store.commit('task/setBusinessName', businessName)
       this.$router.push({ name: router })
     },
     selectDate(e) {

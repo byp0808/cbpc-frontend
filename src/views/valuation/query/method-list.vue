@@ -93,7 +93,7 @@
             <span>{{ scope.row.yield }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="回售率" align="center">
+        <el-table-column label="回收率" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.recovery }}</span>
           </template>

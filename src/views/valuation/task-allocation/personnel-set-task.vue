@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       businessNo: '',
-      taskName: '',
+      businessName: '',
       disabled: true
     }
   },
@@ -36,7 +36,7 @@ export default {
   },
   beforeMount() {
     this.businessNo = this.$store.state.task.businessNo
-    this.taskName = this.$store.state.task.taskName
+    this.businessName = this.$store.state.task.businessName
   },
   created() {
     if (this.$store.state.task.auditStatus) {
@@ -57,7 +57,7 @@ export default {
         taskStatus: status,
         taskOpinions: '',
         taskType: '01',
-        taskName: this.taskName
+        businessName: this.businessName
       }).then(response => {
         this.$message({
           message: '提交成功！',
