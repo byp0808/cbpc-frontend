@@ -12,6 +12,7 @@
           <el-button v-elepermission="['TaskAllot']" v-loading="allotLoading" type="primary" @click="allotTask">任务分配</el-button>
           <el-button v-elepermission="['TaskClaim']" v-loading="taskLoading" type="primary" @click="getTask">任务认领</el-button>
           <el-button v-elepermission="['SetBondNonp']" type="primary" @click="addBondsNonp">添加不估值</el-button>
+          <!-- <el-button type="primary" @click="addBondsNonp">添加不估值</el-button> -->
           <el-button icon="el-icon-refresh" @click="refresh" />
         </el-col>
         <el-col :xl="16" :lg="14">
@@ -141,7 +142,7 @@
                     prop="bondId"
                     label="资产编码"
                   >
-                    <el-input v-model="bondsNonpInfo.bondId" disabled placeholder="请输入资产编码" clearable />
+                    <el-input v-model="bondsNonpInfo.assetCode" disabled placeholder="请输入资产编码" clearable />
                   </el-form-item>
                 </div>
               </el-col>
@@ -416,7 +417,7 @@ export default {
       },
       filtedMarket: [],
       rules: {
-        bondId: [{ required: true, message: '请输入资产编码', trigger: 'blur' }],
+        assetCode: [{ required: true, message: '请输入资产编码', trigger: 'blur' }],
         indate: [
           { required: true, message: '请输入有效期', trigger: 'blur' },
           { type: 'number', message: '请输入一个整数', trigger: 'blur' },
@@ -673,7 +674,7 @@ export default {
             this.bondsNonpInfo = {}
           }).catch(() => {
             this.bondLoading = false
-            this.bondsNonpInfo = {}
+            // this.bondsNonpInfo = {}
           })
         }
       })
@@ -878,7 +879,7 @@ export default {
       const bondId = this.taskList[0].bondId
       searchBond(bondId).then(res => {
         this.noValuationDialog = true
-        this.bondsNonpInfo.bondId = res.bondId
+        this.bondsNonpInfo.assetCode = res.assetCode
         this.bondsNonpInfo.bondsShortName = res.bondsShortName
         this.bondsNonpInfo.bondsConceptType = res.bondsConceptType
         this.bondsNonpInfo.bondsIssuer = res.bondsIssuer

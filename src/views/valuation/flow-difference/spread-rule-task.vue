@@ -50,7 +50,8 @@ export default {
   methods: {
     backPage() {
       this.$store.dispatch('homePage/queryTaskList')
-      this.$router.push({ path: '/' })
+      // this.$router.push({ path: '/' })
+      this.$router.go(-1)
     },
     taskSubmit(status) {
       someBadTask({
