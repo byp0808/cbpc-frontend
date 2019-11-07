@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column label="流通场所" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.maketId }}</span>
+          <span>{{ $dft('MARKET', scope.row.marketId) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="含权说明" align="center">
@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column label="是否推荐" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
+          <span>{{ getName(scope.row.reliability) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="估值方法" align="center">
@@ -46,7 +46,7 @@
       </el-table-column>
       <el-table-column label="目标曲线" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.curveId }}</span>
+          <span>{{ scope.row.curveId | getCurve }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标信用点差" align="center" width="120px">
@@ -773,6 +773,12 @@ export default {
   methods: {
     look() {
 
+    },
+    getName(val) {
+      switch (val) {
+        case '01': return '推荐'
+        case '02': return '不推荐'
+      }
     },
     searchBond() {
       this.basicLoading = true

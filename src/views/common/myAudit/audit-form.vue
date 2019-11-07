@@ -8,7 +8,8 @@
         </el-col>
       </el-row>
       <el-row style="margin-bottom:15px;">
-        <el-col :span="3" style="margin-top:10px">审核状态:</el-col>
+        <el-col v-if="activeName === '01'" :span="3" style="margin-top:10px">审核状态:</el-col>
+        <el-col v-else :span="3" style="margin-top:10px">复核状态:</el-col>
         <el-col :span="20">
           <!-- <el-button>不限</el-button>
           <el-button>审核通过</el-button>
