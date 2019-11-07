@@ -268,6 +268,12 @@ export default {
       var data = {
         changeList: this.addNumList
       }
+      if (!this.addNumList) {
+        this.$message({
+          message: '没有需要忽略的数据！',
+          type: 'error'
+        })
+      }
       certainIgnore(data).then(response => {
         this.$message({
           message: '操作成功！',
