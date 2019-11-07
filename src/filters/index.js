@@ -76,6 +76,14 @@ export function taskStatus(params) {
     case '07': return '已发布'
   }
 }
+export function getCurve(params) {
+  switch (params) {
+    case 'curve1': return '曲线一'
+    case 'curve2': return '曲线二'
+    case 'curve3': return '曲线三'
+    case 'curve4': return '曲线四'
+  }
+}
 
 /**
  * Upper case first char

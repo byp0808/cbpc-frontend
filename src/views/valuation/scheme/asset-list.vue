@@ -61,22 +61,22 @@
       </el-table-column>
       <el-table-column label="含权说明" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ scope.row.filterId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="推荐方向" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.recoDire }}</span>
+          <span>{{ $dft('RECO_DIRE',scope.row.recoDire) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="隐含评级" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.marketGrade }}</span>
+          <span>{{ $dft('MARKET_GRADE', scope.row.marketGrade) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="目标曲线" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.curveId }}</span>
+          <span>{{ scope.row.curveId | getCurve }}</span>
         </template>
       </el-table-column>
       <el-table-column label="信用点差" align="center">
